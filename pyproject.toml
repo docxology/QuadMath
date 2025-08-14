@@ -1,0 +1,24 @@
+[project]
+name = "quadmath-project"
+version = "0.1.0"
+description = "QuadMath: Quadray coordinates, optimization on tetrahedral lattices, and information geometry"
+authors = [{ name = "QuadMath Project" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.22",
+  "matplotlib>=3.7",
+  "sympy>=1.12",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+]
+
+[tool.uv]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["src"]
+

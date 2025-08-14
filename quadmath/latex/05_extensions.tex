@@ -1,0 +1,304 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Extensions of 4D and Quadrays}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
+\date{August 14, 2025}
+
+\begin{document}
+\maketitle
+
+\hypertarget{extensions-of-4d-and-quadrays}{%
+\section{Extensions of 4D and
+Quadrays}\label{extensions-of-4d-and-quadrays}}
+
+Here we review some extensions of the Quadray 4D framework, including
+multi-objective optimization, machine learning, active inference,
+complex systems, pedagogy, and implementations, with an emphasis on
+cognitive security.
+
+\hypertarget{multi-objective-optimization}{%
+\subsection{Multi-Objective
+Optimization}\label{multi-objective-optimization}}
+
+\begin{itemize}
+\tightlist
+\item
+  Simplex faces encode trade-offs; integer volume measures solution
+  diversity.
+\item
+  Pareto front exploration via tetrahedral traversal.
+\end{itemize}
+
+\hypertarget{machine-learning-and-robustness}{%
+\subsection{Machine Learning and
+Robustness}\label{machine-learning-and-robustness}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Geometric regularization}: Quadray-constrained
+  weights/topologies yield structural priors and improved stability.
+\item
+  \textbf{Adversarial robustness}: Discrete lattice projection reduces
+  vulnerability to gradient-based adversarial perturbations by limiting
+  directions.
+\item
+  \textbf{Ensembles}: Tetrahedral vertex voting and consensus improve
+  robustness.
+\end{itemize}
+
+References: see
+\href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
+information},
+\href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient},
+and quadray conversion notes by Urner for embedding choices.
+
+\hypertarget{active-inference-and-free-energy}{%
+\subsection{Active Inference and Free
+Energy}\label{active-inference-and-free-energy}}
+
+\begin{itemize}
+\tightlist
+\item
+  Free energy
+  \(\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]\) (see
+  Eq. \eqref{eq:supp_free_energy}); background:
+  \href{https://en.wikipedia.org/wiki/Free_energy_principle}{Free energy
+  principle} and overviews connecting to predictive coding and control.
+\item
+  Belief updates follow steepest descent in Fisher geometry using the
+  natural gradient (see Eq. \eqref{eq:supp_natgrad}); quadray
+  constraints improve stability/interpretability.
+\item
+  Links to metabolic efficiency and biologically plausible computation.
+\end{itemize}
+
+\hypertarget{complex-systems-and-collective-intelligence}{%
+\subsection{Complex Systems and Collective
+Intelligence}\label{complex-systems-and-collective-intelligence}}
+
+\begin{itemize}
+\tightlist
+\item
+  Tetrahedral interaction patterns support distributed consensus and
+  emergent behavior.
+\item
+  Resource allocation and network flows benefit from geometric
+  constraints.
+\item
+  \textbf{Cognitive security}: Applying cognitive security can safeguard
+  distributed consensus mechanisms from manipulation, preserving the
+  reliability of emergent behaviors in complex systems. Incorporating
+  cognitive security measures can protect the integrity of belief
+  updates and decision-making processes, ensuring that actions are based
+  on accurate and unmanipulated information.
+\end{itemize}
+
+\hypertarget{quadrays-synergetics-fuller.4d-and-william-blake}{%
+\subsection{Quadrays, Synergetics (Fuller.4D), and William
+Blake}\label{quadrays-synergetics-fuller.4d-and-william-blake}}
+
+\begin{itemize}
+\tightlist
+\item
+  Quadrays (tetrahedral coordinates) instantiate Fuller's Synergetics
+  emphasis on the tetrahedron as a structural primitive; in this
+  manuscript's terminology this corresponds to Fuller.4D. Tetrahedral
+  frames support part--whole reasoning and efficient decompositions used
+  throughout.
+\item
+  William Blake's ``fourfold vision'' (single, twofold, threefold,
+  fourfold) provides a historical metaphor for multiscale perception and
+  inference. Read through Fisher geometry and natural gradient dynamics,
+  it parallels multilayer predictive processing and counterfactual
+  simulation. For background, see a concise overview of Blake's
+  visionary psycho‑topographies in British Art Studies
+  (\href{https://www.britishartstudies.ac.uk/index/article-index/visionary-sense-of-london/article-category/cover-collaboration}{visionary
+  art analysis}) and the Active Inference Institute's MathArt Stream \#8
+  (\href{https://zenodo.org/records/13711302}{Active Inference \&
+  Blake}).
+\item
+  Juxtaposing Blake and Fuller foregrounds ``comprehensivity'': holistic
+  design and sensemaking via geometric primitives. Context:
+  (\href{https://zenodo.org/records/7519132}{Fuller \& Blake: Lives in
+  Juxtaposition}) and pedagogical antecedents in experimental design
+  education at Black Mountain College
+  (\href{https://commons.princeton.edu/eng574-s23/wp-content/uploads/sites/348/2023/03/Diaz-The-Experimenters-Chance-and-Design-at-Black-Mountain-College.pdf}{Diaz,
+  Chance and Design at Black Mountain College -- PDF}).
+\item
+  Implications for Quadray practice: four‑facet summaries of
+  models/trajectories, tetrahedral consensus in ensembles, and
+  stigmergic annotation patterns for cognitive security and distributed
+  sensemaking.
+\end{itemize}
+
+\hypertarget{pedagogy-and-implementations}{%
+\subsection{Pedagogy and
+Implementations}\label{pedagogy-and-implementations}}
+
+Kirby Urner's comprehensive
+\href{https://github.com/4dsolutions}{4dsolutions ecosystem} provides
+extensive educational resources and cross-platform implementations for
+Quadray computation and visualization:
+
+\hypertarget{educational-framework-and-curricula}{%
+\subsubsection{Educational Framework and
+Curricula}\label{educational-framework-and-curricula}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Oregon Curriculum Network (OCN)}:
+  \href{http://www.4dsolutions.net/ocn/}{OCN portal} and
+  \href{http://www.4dsolutions.net/ocn/pymath.html}{Python for Everyone}
+  integrate Quadrays with progressive mathematical education
+\item
+  \textbf{School of Tomorrow}:
+  \href{https://github.com/4dsolutions/School_of_Tomorrow}{Repository}
+  with comprehensive notebooks and modular teaching materials including:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\texttt{QuadCraft\_Project.ipynb}}:
+    1,255 lines of interactive CCP navigation with QWERTY keyboard
+    mapping to 12 IVM directions
+  \item
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/TetraBook.ipynb}{\texttt{TetraBook.ipynb}},
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/CascadianSynergetics.ipynb}{\texttt{CascadianSynergetics.ipynb}}:
+    Regional curriculum integration
+  \item
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Rendering_IVM.ipynb}{\texttt{Rendering\_IVM.ipynb}}:
+    3D visualization techniques
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{cross-language-implementation-portfolio}{%
+\subsubsection{Cross-Language Implementation
+Portfolio}\label{cross-language-implementation-portfolio}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python (primary)}:
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
+  with SymPy integration,
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}
+  with multiple algorithms
+\item
+  \textbf{Rust (performance)}:
+  \href{https://github.com/4dsolutions/rusty_rays}{\texttt{rusty\_rays}}
+  for computational geometry optimization
+\item
+  \textbf{Clojure (functional)}:
+  \href{https://github.com/4dsolutions/synmods}{\texttt{synmods}} with
+  protocol-based design patterns
+\item
+  \textbf{POV-Ray (rendering)}:
+  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\texttt{quadcraft.py}}
+  with 15 test functions and automated scene generation
+\item
+  \textbf{VPython (interactive)}:
+  \href{https://github.com/4dsolutions/BookCovers}{\texttt{BookCovers}}
+  for real-time educational animations
+\end{itemize}
+
+\hypertarget{historical-context-and-evolution}{%
+\subsubsection{Historical Context and
+Evolution}\label{historical-context-and-evolution}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Early innovations}:
+  \href{https://mail.python.org/pipermail/edu-sig/2000-May/000498.html}{Python
+  edu-sig post (May 2000)} documenting original 4D Turtle
+  implementations
+\item
+  \textbf{Foundational materials}:
+  \href{https://www.grunch.net/synergetics/quadintro.html}{Urner --
+  Quadray intro} and
+  \href{https://www.grunch.net/synergetics/quadxyz.html}{Quadrays and
+  XYZ} conversion notes
+\item
+  \textbf{Community development}: Evolution through
+  \href{https://coda.io/@daniel-ari-friedman/math4wisdom/ivm-xyz-40}{Math4Wisdom}
+  collaboration and \href{https://groups.io/g/synergeo/topics}{synergeo}
+  discussions
+\end{itemize}
+
+\hypertarget{higher-dimensions-and-decompositions}{%
+\subsection{Higher Dimensions and
+Decompositions}\label{higher-dimensions-and-decompositions}}
+
+\begin{itemize}
+\tightlist
+\item
+  Decompose higher-dimensional simplexes into tetrahedra; sum integer
+  volumes to maintain quantization.
+\item
+  Tessellations support parallel/distributed implementations.
+\end{itemize}
+
+\hypertarget{limitations-and-future-work}{%
+\subsection{Limitations and Future
+Work}\label{limitations-and-future-work}}
+
+\begin{itemize}
+\tightlist
+\item
+  Benchmark breadth: extend beyond convex/quadratic toys to real tasks
+  (registration, robust regression, control) with ablations.
+\item
+  Distance sensitivity: compare embeddings and their effect on optimizer
+  trajectories; document recommended defaults.
+\item
+  Hybrid schemes: study schedules that interleave continuous proposals
+  with lattice projection.
+\end{itemize}
+
+\end{document}

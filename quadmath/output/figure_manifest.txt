@@ -1,0 +1,25 @@
+# Generated figure/data paths
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/fisher_information_matrix.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/fisher_information_eigenspectrum.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/fisher_information_eigenvalues.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/partition_tetrahedron.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/natural_gradient_path.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/natural_gradient_path.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/free_energy_curve.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/discrete_path.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/volumes_scale_plot.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/volumes_scale_data.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/ivm_neighbors.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/ivm_neighbors_edges.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/ivm_neighbors_data.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/quadray_clouds.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/quadray_clouds_data.npz
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/simplex_animation.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/simplex_trace.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/simplex_final.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/ivm_neighbors.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/discrete_path.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/discrete_path_final.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/discrete_path.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/discrete_path.npz
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/bridging_vs_native.csv

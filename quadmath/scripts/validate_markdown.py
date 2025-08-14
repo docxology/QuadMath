@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import os
+import re
+import sys
+from typing import Dict, List, Set, Tuple
+
+
+def find_markdown_files(markdown_dir: str) -> List[str]:
+    return [
+        os.path.join(markdown_dir, f)
+        for f in sorted(os.listdir(markdown_dir))
+        if f.endswith(".md")
+    ]
+
+
+IMG_PATTERN = re.compile(r"!\[[^\]]*\]\(([^\)]+)\)")
+EQ_LABEL_PATTERN = re.compile(r"\\label\{([^}]+)\}")
+EQ_REF_PATTERN = re.compile(r"\\eqref\{([^}]+)\}")
+ANCHOR_PATTERN = re.compile(r"\{#([^}]+)\}")
+INTERNAL_LINK_PATTERN = re.compile(r"\(#([^\)]+)\)")
+LINK_PATTERN = re.compile(r"\[([^\]]+)\]\((https?://[^\)]+)\)")
+BARE_URL_PATTERN = re.compile(r"(?<!\]\()https?://\S+")
+
+
+def collect_symbols(md_paths: List[str]) -> Tuple[Set[str], Set[str]]:
+    labels: Set[str] = set()
+    anchors: Set[str] = set()
+    for path in md_paths:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+        labels.update(EQ_LABEL_PATTERN.findall(text))
+        anchors.update(ANCHOR_PATTERN.findall(text))
+    return labels, anchors
+
+
+def validate_images(md_paths: List[str], repo_root: str) -> List[str]:
+    problems: List[str] = []
+    for path in md_paths:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+        for img in IMG_PATTERN.findall(text):
+            # Strip optional attributes after ) are not included by regex
+            img_clean = img.split()[0]
+            # Normalize relative paths (most are ../output/...)
+            abs_path = os.path.normpath(os.path.join(os.path.dirname(path), img_clean))
+            if not os.path.isabs(abs_path):
+                abs_path = os.path.join(repo_root, abs_path)
+            if not os.path.exists(abs_path):
+                problems.append(f"Missing image: {img_clean} referenced from {os.path.relpath(path, repo_root)}")
+    return problems
+
+
+def validate_refs(md_paths: List[str], labels: Set[str], anchors: Set[str], repo_root: str) -> List[str]:
+    problems: List[str] = []
+    for path in md_paths:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+        for ref in EQ_REF_PATTERN.findall(text):
+            if ref not in labels:
+                problems.append(f"Missing equation label for \\eqref{{{ref}}} in {os.path.relpath(path, repo_root)}")
+        for link in INTERNAL_LINK_PATTERN.findall(text):
+            if link not in anchors and link not in labels:
+                problems.append(f"Missing anchor/label for link (#{link}) in {os.path.relpath(path, repo_root)}")
+        # Flag bare URLs not inside Markdown links
+        for m in BARE_URL_PATTERN.finditer(text):
+            problems.append(f"Bare URL found (use informative Markdown link text): '{m.group(0)}' in {os.path.relpath(path, repo_root)}")
+        # Flag non-informative link text (label equals URL)
+        for m in LINK_PATTERN.finditer(text):
+            label = m.group(1).strip()
+            url = m.group(2).strip()
+            if label == url or label.lower().startswith("http") or "/" in label:
+                problems.append(
+                    f"Non-informative link text for {url} in {os.path.relpath(path, repo_root)}; replace with descriptive text"
+                )
+    return problems
+
+
+def validate_math(md_paths: List[str], repo_root: str) -> List[str]:
+    problems: List[str] = []
+    eq_block = re.compile(r"\\begin\{equation\}([\s\S]*?)\\end\{equation\}", re.MULTILINE)
+    label_pattern = re.compile(r"\\label\{([^}]+)\}")
+    seen_labels: Set[str] = set()
+    for path in md_paths:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+        # Disallow $$ and \[ \] display math in sources
+        if "$$" in text:
+            problems.append(f"Use equation environment instead of $$ in {os.path.relpath(path, repo_root)}")
+        if "\\[" in text or "\\]" in text:
+            problems.append(f"Use equation environment instead of \\[ \\] in {os.path.relpath(path, repo_root)}")
+        # Ensure each equation block carries a label and detect duplicates
+        for m in eq_block.finditer(text):
+            block = m.group(1)
+            labels_in_block = label_pattern.findall(block)
+            if not labels_in_block:
+                problems.append(f"Equation missing \\label{{...}} in {os.path.relpath(path, repo_root)}")
+            else:
+                for lab in labels_in_block:
+                    if lab in seen_labels:
+                        problems.append(f"Duplicate equation label '{{{lab}}}' found in {os.path.relpath(path, repo_root)}")
+                    seen_labels.add(lab)
+    return problems
+
+
+def main() -> None:
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    markdown_dir = os.path.join(repo_root, "quadmath", "markdown")
+    md_paths = find_markdown_files(markdown_dir)
+
+    labels, anchors = collect_symbols(md_paths)
+    problems: List[str] = []
+    problems += validate_images(md_paths, repo_root)
+    problems += validate_refs(md_paths, labels, anchors, repo_root)
+    problems += validate_math(md_paths, repo_root)
+
+    strict = "--strict" in sys.argv
+    if problems:
+        header = "Markdown validation issues (non-strict)" if not strict else "Validation issues found"
+        print(header + ":")
+        for p in problems:
+            print(" -", p)
+        if strict:
+            sys.exit(1)
+        else:
+            sys.exit(0)
+    else:
+        print("Markdown validation passed: all images and references resolved.")
+
+
+if __name__ == "__main__":
+    main()
+
+

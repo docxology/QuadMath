@@ -1,0 +1,6 @@
+case,V_ace_ivm_int,V_cm_s3_ivm_sym,match
+unit_tetrahedron,1,2.0*sqrt(2),False
+scaled_unit_tetrahedron,8,16.0*sqrt(2),False
+mixed_tetrahedron,1,3.0*sqrt(2),False
+centered_tetrahedron,2,4.0*sqrt(2),False
+large_mixed_tetrahedron,8,16.0*sqrt(2),False

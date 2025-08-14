@@ -1,0 +1,157 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{QuadMath: Front Matter and Abstract}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
+\date{August 14, 2025}
+
+\begin{document}
+\maketitle
+
+\hypertarget{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}{%
+\section{QuadMath: An Analytical Review of 4D and Quadray
+Coordinates}\label{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}}
+
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+We review a unified analytical framework for four dimensional (4D)
+modeling and Quadray coordinates, synthesizing geometric foundations,
+optimization on tetrahedral lattices, and information geometry. Building
+on R. Buckminster Fuller's synergetics
+\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics
+(Fuller)} and the Quadray coordinate system, with extensive reference to
+Kirby Urner's computational implementations across multiple programming
+languages (see the comprehensive
+\href{https://github.com/4dsolutions}{4dsolutions ecosystem} including
+Python, Rust, Clojure, and POV-Ray implementations), we review how
+integer lattice constraints yield integer volume quantization of
+tetrahedral simplexes, creating discrete ``energy levels'' that
+regularize optimization and enable integer-based optimization. We adapt
+standard methods (e.g.,
+\href{https://en.wikipedia.org/wiki/Nelder\%E2\%80\%93Mead_method}{Nelder--Mead
+method}) to the quadray lattice, define
+\href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
+information} in Quadray parameter space, and analyze optimization as
+geodesic motion on an information manifold via the
+\href{https://en.wikipedia.org/wiki/Natural_gradient}{natural gradient}.
+We also integrate 4D namespaces (Quadray, Extended Euclidean,
+relativistic Einsteinian spaces), develop analytical tools and
+equations, and survey extensions and applications across AI,
+\href{https://welcome.activeinference.institute/}{active inference},
+cognitive security, and complex systems. The result is a cohesive,
+interpretable approach for robust, geometry-grounded computation in 4D.
+
+Keywords: Quadray coordinates, 4D geometry, tetrahedral lattice, integer
+volume quantization, information geometry, optimization, synergetics,
+active inference.
+
+\hypertarget{manuscript-structure}{%
+\subsection{Manuscript structure}\label{manuscript-structure}}
+
+\begin{itemize}
+\tightlist
+\item
+  Introduction: motivates Quadrays, clarifies 4D namespaces (Coxeter.4D,
+  Einstein.4D, Fuller.4D), and summarizes contributions.
+\item
+  Methods: details coordinate conventions, exact tetravolumes,
+  conversions, and lattice-aware optimization methods (Nelder--Mead and
+  discrete IVM descent).
+\item
+  Results: empirical comparisons and demonstrations are shown inline and
+  saved under \texttt{quadmath/output/} (PNG/CSV/NPZ/MP4) for
+  reproducibility.
+\item
+  Discussion: interprets results, limitations, and implications;
+  outlines future work.
+\item
+  Appendices: equations, free-energy background, and a consolidated
+  symbols/glossary with an auto-generated API index.
+\end{itemize}
+
+\hypertarget{reproducibility-and-data-availability}{%
+\subsection{Reproducibility and data
+availability}\label{reproducibility-and-data-availability}}
+
+\begin{itemize}
+\tightlist
+\item
+  The manuscript Markdown and code to generate the PDF are available on
+  the project repository (\texttt{QuadMath} on GitHub, @docxology
+  username). See the repository home page for source, figures, and
+  scripts: \href{https://github.com/docxology/quadmath}{QuadMath
+  repository}.
+\item
+  The manuscript is licensed under the Apache License 2.0. See the
+  \href{../LICENSE}{LICENSE} file for details.
+\item
+  The manuscript is accompanied by a fully-tested Python codebase under
+  \texttt{src/} with unit tests under \texttt{tests/}, complemented by
+  extensive cross-validation against Kirby Urner's reference
+  implementations in the
+  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}.
+\item
+  All figures referenced in the manuscript are generated by scripts
+  under \texttt{quadmath/scripts/} and saved to
+  \texttt{quadmath/output/} with lightweight CSV/NPZ alongside images.
+\item
+  Tests accompany all methods under \texttt{src/} and enforce 100\%
+  coverage for \texttt{src/}; external validation includes comparisons
+  with
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
+  and
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}
+  algorithms.
+\item
+  Symbols and notation are standardized across sections; see Appendix:
+  Symbols and Glossary for a consolidated table of variables and
+  constants used throughout. Equation labels (e.g., Eq.
+  \eqref{eq:lattice_det} and Eq. \eqref{eq:supp_fim}) and figure labels
+  (e.g., Fig. \ref{fig:volumes_scale}) are used consistently.
+\end{itemize}
+
+\end{document}

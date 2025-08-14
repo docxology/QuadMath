@@ -1,0 +1,4 @@
+V_xyz_unit_regular_tetra = sqrt(2)/12
+V_ivm_unit_regular_tetra = 1/8
+magnitude_symbolic = sqrt((a - b - c + d)**2 + (a - b + c - d)**2 + (a + b - c - d)**2)
+magnitude_vector_module_symbolic = sqrt(x**2 + y**2 + z**2)

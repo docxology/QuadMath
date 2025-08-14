@@ -1,0 +1,449 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Resources}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
+\date{August 14, 2025}
+
+\begin{document}
+\maketitle
+
+\hypertarget{resources-references-and-further-reading}{%
+\section{Resources (References and Further
+Reading)}\label{resources-references-and-further-reading}}
+
+\hypertarget{quadrays-and-synergetics-core-starting-points}{%
+\subsection{Quadrays and Synergetics (core starting
+points)}\label{quadrays-and-synergetics-core-starting-points}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Quadray coordinates (intro and conversions)}:
+  \href{https://www.grunch.net/synergetics/quadintro.html}{Urner --
+  Quadray intro},
+  \href{https://www.grunch.net/synergetics/quadxyz.html}{Urner --
+  Quadrays and XYZ}
+\item
+  \textbf{Synergetics background and IVM}:
+  \href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics
+  (Fuller, overview)}
+\end{itemize}
+
+\hypertarget{dsolutions-kirby-urner-repositories-and-key-artifacts}{%
+\subsection{4dsolutions (Kirby Urner) --- repositories and key
+artifacts}\label{dsolutions-kirby-urner-repositories-and-key-artifacts}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Organization overview}:
+  \href{https://github.com/4dsolutions}{4dsolutions (GitHub org)} ---
+  Python-centered explorations of Quadrays and synergetic geometry.
+\item
+  \textbf{Math for Wisdom (m4w)}:
+  \href{https://github.com/4dsolutions/m4w}{m4w (repo)}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Quadray vectors and conversions:
+    \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}
+    (Qvector, SymPy-aware)}
+  \item
+    Synergetic tetravolumes and modules:
+    \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{tetravolume.py
+    - PdF/CM vs native IVM, BEAST}
+  \end{itemize}
+\item
+  \textbf{School\_of\_Tomorrow (notebooks/code)}:
+  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow
+  (repo)}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Tom Ace 5×5 determinant:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{Qvolume.ipynb}
+  \item
+    Bridging vs native tetravolumes:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{VolumeTalk.ipynb}
+  \end{itemize}
+\item
+  \textbf{Historical variants}: \texttt{qrays.py} also appears in
+  \href{https://github.com/4dsolutions/Python5/blob/master/qrays.py}{Python5
+  (archive)}.
+\end{itemize}
+
+Context: These materials popularize the IVM/CCP/FCC framing of space,
+integer tetravolumes, and projective Quadray normalization. They inform
+the methods in this paper and complement the \texttt{src/}
+implementations (see \texttt{quadray.py}, \texttt{cayley\_menger.py},
+\texttt{linalg\_utils.py}).
+
+\hypertarget{comprehensive-index-of-4dsolutions-artifacts-selected}{%
+\subsection{Comprehensive index of 4dsolutions artifacts
+(selected)}\label{comprehensive-index-of-4dsolutions-artifacts-selected}}
+
+\hypertarget{primary-hub-school_of_tomorrow-python-notebooks}{%
+\subsubsection{Primary hub: School\_of\_Tomorrow (Python +
+notebooks)}\label{primary-hub-school_of_tomorrow-python-notebooks}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Repository}:
+  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}
+\item
+  \textbf{Core modules}:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{qrays.py}: Quadray implementation with normalization,
+    conversions, and vector ops
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/qrays.py}{qrays.py
+    source --- School\_of\_Tomorrow})
+  \item
+    \texttt{quadcraft.py}: POV-Ray scenes for CCP/IVM arrangements,
+    animations, and tutorials
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{quadcraft.py
+    source --- School\_of\_Tomorrow})
+  \item
+    \texttt{flextegrity.py}: Polyhedron framework, concentric hierarchy,
+    POV-Ray export
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/flextegrity.py}{flextegrity.py
+    source --- School\_of\_Tomorrow})
+  \item
+    Additional: \texttt{polyhedra.py}, \texttt{identities.py},
+    \texttt{smod\_play.py} (synergetic modules)
+  \end{itemize}
+\item
+  \textbf{Notebooks}:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{QuadCraft\_Project.ipynb}: Interactive tutorials; CCP
+    navigation and tetra demos
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{QuadCraft\_Project.ipynb
+    --- School\_of\_Tomorrow})
+  \item
+    \texttt{Qvolume.ipynb}: Tom Ace 5×5 determinant; random-walk IVM
+    volumes
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{Qvolume.ipynb
+    --- School\_of\_Tomorrow})
+  \item
+    \texttt{VolumeTalk.ipynb}: Bridging (CM/PdF) vs native (Ace/GdJ)
+    tetravolumes
+    (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{VolumeTalk.ipynb
+    --- School\_of\_Tomorrow})
+  \item
+    \texttt{TetraBook.ipynb}, \texttt{CascadianSynergetics.ipynb},
+    \texttt{Rendering\_IVM.ipynb}, \texttt{SphereVolumes.ipynb} (visual
+    and curricular materials)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{additional-repositories}{%
+\subsubsection{Additional repositories}\label{additional-repositories}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{tetravolumes}: algorithms and pedagogy for tetra volumes
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Repo:
+    \href{https://github.com/4dsolutions/tetravolumes}{tetravolumes}
+  \item
+    Code:
+    \href{https://github.com/4dsolutions/tetravolumes/blob/master/tetravolume.py}{\texttt{tetravolume.py}}
+  \item
+    Notebooks:
+    \href{https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Atoms\%20R\%20Us.ipynb}{Atoms
+    R Us.ipynb},
+    \href{https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Computing\%20Volumes.ipynb}{Computing
+    Volumes.ipynb}
+  \end{itemize}
+\item
+  \textbf{rusty\_rays}: Rust port highlighting cross-language
+  consistency
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Repo: \href{https://github.com/4dsolutions/rusty_rays}{rusty\_rays}
+  \item
+    Sources:
+    \href{https://github.com/4dsolutions/rusty_rays/blob/master/src/lib.rs}{Rust
+    library implementation},
+    \href{https://github.com/4dsolutions/rusty_rays/blob/master/src/main.rs}{Rust
+    command-line interface}
+  \end{itemize}
+\item
+  \textbf{synmods}: Clojure/functional approach to Quadrays and
+  synergetic modules
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Repo: \href{https://github.com/4dsolutions/synmods}{synmods}
+  \item
+    Sources:
+    \href{https://github.com/4dsolutions/synmods/blob/master/qrays.clj}{\texttt{qrays.clj}},
+    \href{https://github.com/4dsolutions/synmods/blob/master/ramping_up.clj}{\texttt{ramping\_up.clj}}
+  \end{itemize}
+\item
+  \textbf{BookCovers}: VPython for interactive educational animations
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Repo: \href{https://github.com/4dsolutions/BookCovers}{BookCovers}
+  \item
+    Examples:
+    \href{https://github.com/4dsolutions/BookCovers/blob/master/bookdemo.py}{\texttt{bookdemo.py}},
+    \href{https://github.com/4dsolutions/BookCovers/blob/master/stickworks.py}{\texttt{stickworks.py}},
+    \href{https://github.com/4dsolutions/BookCovers/blob/master/tetravolumes.py}{\texttt{tetravolumes.py}}
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{additional-educational-resources}{%
+\subsubsection{Additional educational
+resources}\label{additional-educational-resources}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Oregon Curriculum Network (OCN)}:
+  \href{http://www.4dsolutions.net/ocn/}{OCN portal}
+\item
+  \textbf{Python for Everyone}:
+  \href{http://www.4dsolutions.net/ocn/pymath.html}{pymath page}
+\item
+  \textbf{Python5 notebooks}:
+  \href{https://raw.githubusercontent.com/4dsolutions/Python5/master/Polyhedrons\%20101.ipynb}{Polyhedrons
+  101.ipynb}
+\end{itemize}
+
+\hypertarget{media-and-publications}{%
+\subsubsection{Media and publications}\label{media-and-publications}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{YouTube demonstrations}:
+  \href{https://www.youtube.com/watch?v=g14mu4uWD4E}{Synergetics talk
+  1}, \href{https://www.youtube.com/watch?v=i9oij02oje0}{Synergetics
+  talk 2},
+  \href{https://www.youtube.com/watch?v=D0M1h_gjA_w}{Additional}
+\item
+  \textbf{Academia profile}:
+  \href{https://princeton.academia.edu/kirbyurner}{Kirby Urner at
+  Academia.edu}
+\item
+  \textbf{Fuller Institute}:
+  \href{https://www.bfi.org/about-fuller/big-ideas/synergetics/}{BFI ---
+  Big Ideas: Synergetics}
+\end{itemize}
+
+\hypertarget{background-and-community-materials}{%
+\subsubsection{Background and community
+materials}\label{background-and-community-materials}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{RW Gray projects --- Synergetics text}:
+  \href{http://www.rwgrayprojects.com/synergetics/s00/p0000.html}{rwgrayprojects.com
+  (synergetics)}
+\item
+  \textbf{Fuller FAQ}:
+  \href{https://www.cjfearnley.com/fuller-faq.pdf}{C. J. Fearnley's
+  Fuller FAQ}
+\item
+  \textbf{Synergetics resource list}:
+  \href{https://www.cjfearnley.com/fuller-faq-2.html}{C. J. Fearnley's
+  resource page}
+\item
+  \textbf{Wikieducator}:
+  \href{https://wikieducator.org/Synergetics}{Synergetics hub}
+\item
+  \textbf{Quadray animation}:
+  \href{https://commons.wikimedia.org/wiki/File:Quadray.gif}{Quadray.gif
+  (Wikimedia Commons)}
+\end{itemize}
+
+\hypertarget{geometry-and-volumes-coxeter.4d-context}{%
+\subsection{Geometry and volumes (Coxeter.4D
+context)}\label{geometry-and-volumes-coxeter.4d-context}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Regular polytopes (Euclidean E⁴)}: H. S. M. Coxeter, Regular
+  Polytopes (Dover ed.), p.~119 clarifies Euclidean 4D vs spacetime.
+\item
+  \textbf{Sphere packings and lattices}: J. H. Conway \& N. J. A.
+  Sloane,
+  \href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
+  Packings, Lattices and Groups (Springer)}
+\item
+  \textbf{Cayley--Menger determinant}:
+  \href{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Menger_determinant}{Cayley--Menger
+  determinant (reference)}
+\item
+  \textbf{Tetrahedron --- volume}:
+  \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron:
+  volume (reference)}
+\item
+  \textbf{Bareiss algorithm (exact determinants)}:
+  \href{https://en.wikipedia.org/wiki/Bareiss_algorithm}{Bareiss
+  algorithm (reference)}
+\end{itemize}
+
+\hypertarget{optimization-and-information-geometry}{%
+\subsection{Optimization and information
+geometry}\label{optimization-and-information-geometry}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Nelder--Mead method}:
+  \href{https://en.wikipedia.org/wiki/Nelder\%E2\%80\%93Mead_method}{Nelder--Mead
+  (reference)}
+\item
+  \textbf{Fisher information}:
+  \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
+  information (reference)} --- see also Eq. \eqref{eq:supp_fim}
+\item
+  \textbf{Natural gradient}:
+  \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient
+  (reference)} --- see Eq. \eqref{eq:supp_natgrad}
+\end{itemize}
+
+\hypertarget{active-inference}{%
+\subsection{Active Inference}\label{active-inference}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Free energy principle}:
+  \href{https://en.wikipedia.org/wiki/Free_energy_principle}{Free energy
+  principle (reference)}
+\item
+  \textbf{Comprehensive review}:
+  \href{https://discovery.ucl.ac.uk/id/eprint/10176959/1/1-s2.0-S1571064523001094-main.pdf}{Active
+  Inference --- recent review (UCL Discovery, 2023)}
+\end{itemize}
+
+\hypertarget{community-discussions-and-context}{%
+\subsection{Community discussions and
+context}\label{community-discussions-and-context}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Math4Wisdom}:
+  \href{https://coda.io/@daniel-ari-friedman/math4wisdom/ivm-xyz-40}{IVM↔XYZ
+  conversions (curated page)}
+\item
+  \textbf{synergeo (groups.io)}:
+  \href{https://groups.io/g/synergeo/topics}{Synergetics discussion
+  archive}
+\item
+  \textbf{GeodesicHelp}:
+  \href{https://groups.google.com/g/GeodesicHelp/}{Geodesic computations
+  archive (Google Groups)}
+\end{itemize}
+
+\hypertarget{related-projects-and-applications}{%
+\subsection{Related projects and
+applications}\label{related-projects-and-applications}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{QuadCraft}:
+  \href{https://github.com/docxology/quadcraft/}{Tetrahedral voxel
+  engine using Quadrays}
+\item
+  \textbf{Flextegrity}:
+  \href{https://www.academia.edu/44531954/Generating_the_Flextegrity_Lattice}{Generating
+  the Flextegrity Lattice (academia.edu)}
+\end{itemize}
+
+\hypertarget{tooling}{%
+\subsection{Tooling}\label{tooling}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{GCC libquadmath (binary128)}:
+  \href{https://gcc.gnu.org/onlinedocs/libquadmath/index.html}{Official
+  GCC libquadmath documentation}
+\end{itemize}
+
+\hypertarget{cross-language-and-cross-platform-validation}{%
+\subsection{Cross-language and cross-platform
+validation}\label{cross-language-and-cross-platform-validation}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Rust (rusty\_rays)} and \textbf{Clojure (synmods)} mirror the
+  Python algorithms for vector ops and tetravolumes, serving as
+  independent checks on correctness and performance comparisons.
+\item
+  \textbf{POV-Ray (quadcraft.py)} and \textbf{VPython (BookCovers)}
+  demonstrate rendering pipelines for CCP/IVM scenes and educational
+  animations.
+\end{itemize}
+
+\end{document}
