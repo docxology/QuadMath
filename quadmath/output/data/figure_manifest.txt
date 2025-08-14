@@ -1,0 +1,25 @@
+# Generated figure/data paths
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/fisher_information_matrix.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/fisher_information_eigenspectrum.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/fisher_information_eigenvalues.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/partition_tetrahedron.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/natural_gradient_path.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/natural_gradient_path.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/free_energy_curve.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/volumes_scale_plot.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/volumes_scale_data.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors_edges.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/ivm_neighbors_data.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/quadray_clouds.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/quadray_clouds_data.npz
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_animation.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_trace.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_final.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path_final.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.csv
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.npz
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/bridging_vs_native.csv

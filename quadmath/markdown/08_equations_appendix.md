@@ -92,12 +92,12 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 ### Figures
 
 
-![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/natural_gradient_path.png){#fig:natural_gradient_path}
-![Free energy curve for a 2-state model.](../output/free_energy_curve.png){#fig:free_energy_curve}
+![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/figures/natural_gradient_path.png){#fig:natural_gradient_path}
+![Free energy curve for a 2-state model.](../output/figures/free_energy_curve.png){#fig:free_energy_curve}
 
-![Discrete IVM descent path (final frame).](../output/discrete_path_final.png){#fig:discrete_path}
+![Discrete IVM descent path (final frame).](../output/figures/discrete_path_final.png){#fig:discrete_path}
 
-![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/bridging_vs_native.png){#fig:bridging_native_eq_appendix}
+![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png){#fig:bridging_native_eq_appendix}
 
 ## Quadray Normalization (Fuller.4D)
 

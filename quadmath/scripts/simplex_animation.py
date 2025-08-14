@@ -25,7 +25,7 @@ def main() -> None:
     from visualize import animate_simplex  # noqa: WPS433
     from visualize import plot_simplex_trace  # noqa: WPS433
     from visualize import plot_ivm_neighbors  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
 
     def f(q: Quadray) -> float:
@@ -62,8 +62,9 @@ def main() -> None:
         ax.set_box_aspect((1, 1, 1))  # type: ignore[attr-defined]
     except Exception:
         pass
-    outdir = get_output_dir()
-    static_path = os.path.join(outdir, "simplex_final.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    static_path = os.path.join(figure_dir, "simplex_final.png")
     fig.savefig(static_path, dpi=160)
     plt.close(fig)
     print(static_path)

@@ -25,7 +25,7 @@ def main() -> None:
 
     import numpy as np  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     from quadray import DEFAULT_EMBEDDING  # noqa: WPS433
 
     # Axes in Quadray units (one-step spokes); embed to XYZ
@@ -119,8 +119,8 @@ def main() -> None:
         for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
             axis.set_tick_params(labelsize=9)
 
-    outdir = get_output_dir()
-    outpath = os.path.join(outdir, "graphical_abstract_quadray.png")
+    figure_dir = get_figure_dir()
+    outpath = os.path.join(figure_dir, "graphical_abstract_quadray.png")
     # Avoid tight_layout on mixed text/3D; manual margins
     fig.subplots_adjust(left=0.04, right=0.98, top=0.95, bottom=0.06, wspace=0.08)
     fig.savefig(outpath, dpi=240)

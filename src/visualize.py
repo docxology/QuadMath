@@ -10,7 +10,7 @@ import os
 
 from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING
 from nelder_mead_quadray import SimplexState
-from paths import get_output_dir
+from paths import get_output_dir, get_data_dir, get_figure_dir
 from discrete_variational import DiscretePath
 
 
@@ -64,15 +64,16 @@ def plot_ivm_neighbors(embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING,
 
     outpath = ""
     if save:
-        outdir = get_output_dir()
-        outpath = f"{outdir}/ivm_neighbors.png"
+        figure_dir = get_figure_dir()
+        data_dir = get_data_dir()
+        outpath = f"{figure_dir}/ivm_neighbors.png"
         plt.savefig(outpath, dpi=160, bbox_inches="tight")
         # Save full raw data alongside the figure
         q_arr = np.array([p.as_tuple() for p in points], dtype=int)
         xyz_arr = np.array(xyz, dtype=float)
         emb_arr = np.array(embedding, dtype=float)
-        np.savez(os.path.join(outdir, "ivm_neighbors_data.npz"), quadrays=q_arr, xyz=xyz_arr, embedding=emb_arr)
-        with open(os.path.join(outdir, "ivm_neighbors_data.csv"), "w", newline="") as f:
+        np.savez(os.path.join(data_dir, "ivm_neighbors_data.npz"), quadrays=q_arr, xyz=xyz_arr, embedding=emb_arr)
+        with open(os.path.join(data_dir, "ivm_neighbors_data.csv"), "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["a", "b", "c", "d", "x", "y", "z"])
             for (a, b, c, d), (x, y, z) in zip(q_arr.tolist(), xyz_arr.tolist()):
@@ -114,8 +115,9 @@ def animate_simplex(vertices_list, embedding: Iterable[Iterable[float]] = DEFAUL
 
     ani = animation.FuncAnimation(fig, update, frames=len(vertices_list), interval=400, blit=False)
     outpath = ""
-    outdir = get_output_dir()
-    outpath = f"{outdir}/simplex_animation.mp4"
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    outpath = f"{figure_dir}/simplex_animation.mp4"
     ani.save(outpath, writer="ffmpeg", fps=2)
     # Save raw vertices and xyz trajectory
     verts_ivm = np.array([[v.as_tuple() for v in verts] for verts in vertices_list], dtype=int)
@@ -124,9 +126,9 @@ def animate_simplex(vertices_list, embedding: Iterable[Iterable[float]] = DEFAUL
         dtype=float,
     )
     emb_arr = np.array(embedding, dtype=float)
-    np.savez(os.path.join(outdir, "simplex_animation_vertices.npz"), vertices_ivm=verts_ivm, vertices_xyz=verts_xyz, embedding=emb_arr)
+    np.savez(os.path.join(data_dir, "simplex_animation_vertices.npz"), vertices_ivm=verts_ivm, vertices_xyz=verts_xyz, embedding=emb_arr)
     # CSV (one row per vertex per frame)
-    with open(os.path.join(outdir, "simplex_animation_vertices.csv"), "w", newline="") as f:
+    with open(os.path.join(data_dir, "simplex_animation_vertices.csv"), "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["frame", "vertex_index", "a", "b", "c", "d", "x", "y", "z"])
         for t, verts in enumerate(vertices_list):
@@ -174,22 +176,23 @@ def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
     ax1.legend(lines + lines2, labels + labels2, loc="upper right")
     fig.tight_layout()
 
-    outdir = get_output_dir()
-    png_path = os.path.join(outdir, "simplex_trace.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    png_path = os.path.join(figure_dir, "simplex_trace.png")
     fig.savefig(png_path, dpi=160, bbox_inches="tight")
 
     # Save raw arrays
     import numpy as np  # local import to keep module imports minimal
     import csv
     np.savez(
-        os.path.join(outdir, "simplex_trace.npz"),
+        os.path.join(data_dir, "simplex_trace.npz"),
         iterations=np.array(iterations, dtype=int),
         best_values=np.array(state.best_values, dtype=float),
         worst_values=np.array(state.worst_values, dtype=float),
         spreads=np.array(state.spreads, dtype=float),
         volumes=np.array(state.volumes, dtype=int),
     )
-    with open(os.path.join(outdir, "simplex_trace.csv"), "w", newline="") as f:
+    with open(os.path.join(data_dir, "simplex_trace.csv"), "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["iteration", "best", "worst", "spread", "volume"])
         for i, b, w, s, v in zip(iterations, state.best_values, state.worst_values, state.spreads, state.volumes):
@@ -248,16 +251,17 @@ def plot_partition_tetrahedron(
 
     outpath = ""
     if save:
-        outdir = get_output_dir()
-        outpath = f"{outdir}/partition_tetrahedron.png"
+        figure_dir = get_figure_dir()
+        data_dir = get_data_dir()
+        outpath = f"{figure_dir}/partition_tetrahedron.png"
         plt.savefig(outpath, dpi=160, bbox_inches="tight")
         # Save raw named points as CSV and NPZ
         emb_arr = np.array(embedding, dtype=float)
         names = list(points.keys())
         q_arr = np.array([points[n].as_tuple() for n in names], dtype=int)
         xyz_arr = np.array([xyz[n] for n in names], dtype=float)
-        np.savez(os.path.join(outdir, "partition_tetrahedron_data.npz"), names=np.array(names), quadrays=q_arr, xyz=xyz_arr, embedding=emb_arr)
-        with open(os.path.join(outdir, "partition_tetrahedron_data.csv"), "w", newline="") as f:
+        np.savez(os.path.join(data_dir, "partition_tetrahedron_data.npz"), names=np.array(names), quadrays=q_arr, xyz=xyz_arr, embedding=emb_arr)
+        with open(os.path.join(data_dir, "partition_tetrahedron_data.csv"), "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["name", "a", "b", "c", "d", "x", "y", "z"])
             for name, (a, b, c, d), (x, y, z) in zip(names, q_arr.tolist(), xyz_arr.tolist()):
@@ -297,8 +301,9 @@ def animate_discrete_path(
         return []
 
     ani = animation.FuncAnimation(fig, update, frames=len(path.path), interval=300, blit=False)
-    outdir = get_output_dir()
-    outpath = f"{outdir}/discrete_path.mp4"
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    outpath = f"{figure_dir}/discrete_path.mp4"
     ani.save(outpath, writer="ffmpeg", fps=3)
 
     # Save raw data
@@ -310,8 +315,8 @@ def animate_discrete_path(
     xyz_arr = np.array([to_xyz(q, embedding) for q in path.path], dtype=float)
     vals = np.array(path.values, dtype=float)
     emb_arr = np.array(embedding, dtype=float)
-    np.savez(os.path.join(outdir, "discrete_path.npz"), quadrays=q_arr, xyz=xyz_arr, values=vals, embedding=emb_arr)
-    with open(os.path.join(outdir, "discrete_path.csv"), "w", newline="") as f:
+    np.savez(os.path.join(data_dir, "discrete_path.npz"), quadrays=q_arr, xyz=xyz_arr, values=vals, embedding=emb_arr)
+    with open(os.path.join(data_dir, "discrete_path.csv"), "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["step", "a", "b", "c", "d", "x", "y", "z", "value"])
         for i, (q, (x, y, z), v) in enumerate(zip(path.path, xyz_arr.tolist(), vals.tolist())):
@@ -328,7 +333,7 @@ def animate_discrete_path(
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     _set_axes_equal(ax)
-    static_png = os.path.join(outdir, "discrete_path_final.png")
+    static_png = os.path.join(figure_dir, "discrete_path_final.png")
     fig.savefig(static_png, dpi=160, bbox_inches="tight")
     plt.close(fig)
     return outpath

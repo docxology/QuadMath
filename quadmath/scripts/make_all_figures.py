@@ -29,6 +29,13 @@ def _get_output_dir() -> str:
     return get_output_dir()
 
 
+def _get_data_dir() -> str:
+    _ensure_src_on_path()
+    from paths import get_data_dir  # noqa: WPS433
+
+    return get_data_dir()
+
+
 def _run_script(path: str) -> List[str]:
     env = os.environ.copy()
     env.setdefault("MPLBACKEND", "Agg")
@@ -67,8 +74,8 @@ def main() -> None:
         out_paths = _run_script(script)
         all_paths.extend(out_paths)
 
-    outdir = _get_output_dir()
-    manifest_path = os.path.join(outdir, "figure_manifest.txt")
+    data_dir = _get_data_dir()
+    manifest_path = os.path.join(data_dir, "figure_manifest.txt")
     with open(manifest_path, "w") as f:
         f.write("# Generated figure/data paths\n")
         for p in all_paths:

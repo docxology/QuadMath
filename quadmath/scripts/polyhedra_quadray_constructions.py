@@ -24,7 +24,7 @@ def main() -> None:
     _ensure_src_on_path()
 
     import matplotlib.pyplot as plt  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
 
     fig, ax = plt.subplots(figsize=(9.0, 5.2))
     ax.set_facecolor("#ffffff")
@@ -72,8 +72,8 @@ def main() -> None:
     ax.set_xlim(-4.0, 3.0)
     ax.set_ylim(-1.8, 1.6)
 
-    outdir = get_output_dir()
-    outpath = os.path.join(outdir, "polyhedra_quadray_constructions.png")
+    figure_dir = get_figure_dir()
+    outpath = os.path.join(figure_dir, "polyhedra_quadray_constructions.png")
     fig.savefig(outpath, dpi=240)
     print(outpath)
 

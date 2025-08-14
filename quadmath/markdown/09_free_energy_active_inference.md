@@ -32,7 +32,7 @@ Figures: Fig. \ref{fig:fisher_information_matrix}, Fig. \ref{fig:fim_eigenspectr
 
 Discrete variational optimization on the quadray lattice: `discrete_ivm_descent` greedily descends a free-energy-like objective over IVM moves, yielding integer-valued trajectories. See the path animation artifact `discrete_path.mp4` in `quadmath/output/`.
 
-![Four-fold partition mapped to a Quadray tetrahedron — vertices labeled as Internal (μ), Sensory (s), Active (a), External (ψ). Edges depict pairwise couplings: (μ–s) perceptual inference, (a–ψ) control, and cross-couplings capturing active perception and sensorimotor contingencies.](../output/partition_tetrahedron.png){#fig:partition_tetrahedron}
+![Four-fold partition mapped to a Quadray tetrahedron — vertices labeled as Internal (μ), Sensory (s), Active (a), External (ψ). Edges depict pairwise couplings: (μ–s) perceptual inference, (a–ψ) control, and cross-couplings capturing active perception and sensorimotor contingencies.](../output/figures/partition_tetrahedron.png){#fig:partition_tetrahedron}
 
 ## Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)
 
@@ -49,7 +49,7 @@ Tetrahedral mapping via Quadrays (Fuller.4D): assign each state to a vertex of a
 
 Interpretation note: this Quadray-based mapping is a didactic geometric scaffold. It is not standard in the Active Inference literature, which typically develops the four-state partition in probabilistic graphical terms. Our use highlights structural symmetries and discrete volumetric quantities available in Fuller.4D, building on the computational foundations developed in the [4dsolutions ecosystem](https://github.com/4dsolutions) for tetrahedral modeling and volume calculations.
 
-Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and the figure [Four-fold partition mapped to a Quadray tetrahedron](../output/partition_tetrahedron.png){#fig:partition_tetrahedron}.
+Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and the figure [Four-fold partition mapped to a Quadray tetrahedron](../output/figures/partition_tetrahedron.png){#fig:partition_tetrahedron}.
 
 ## How the 4D namespaces relate here
 

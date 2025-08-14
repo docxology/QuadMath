@@ -24,7 +24,7 @@ def main() -> None:
 
     import matplotlib.pyplot as plt  # noqa: WPS433
     from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     from conversions import urner_embedding, quadray_to_xyz  # noqa: WPS433
     import numpy as np  # noqa: WPS433
 
@@ -65,8 +65,9 @@ def main() -> None:
     ax3.scatter(xs, ys, zs, s=10, c="tab:purple")
     ax3.set_title("Urner embedding")
 
-    outdir = get_output_dir()
-    outpath = os.path.join(outdir, "quadray_clouds.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    outpath = os.path.join(figure_dir, "quadray_clouds.png")
     # Avoid tight_layout on 3D subplots; set margins manually
     fig.subplots_adjust(left=0.03, right=0.98, top=0.92, bottom=0.08, wspace=0.08)
     fig.savefig(outpath, dpi=160)
@@ -82,7 +83,7 @@ def main() -> None:
     emb_scaled = np.array(scaled, dtype=float)
     emb_urner = np.array(urner_embedding(scale=1.0), dtype=float)
     np.savez(
-        os.path.join(outdir, "quadray_clouds_data.npz"),
+        os.path.join(data_dir, "quadray_clouds_data.npz"),
         quadrays=q_arr,
         xyz_default=xyz1_arr,
         xyz_scaled=xyz2_arr,
@@ -91,7 +92,7 @@ def main() -> None:
         embedding_scaled=emb_scaled,
         embedding_urner=emb_urner,
     )
-    print(os.path.join(outdir, "quadray_clouds_data.npz"))
+    print(os.path.join(data_dir, "quadray_clouds_data.npz"))
 
 
 if __name__ == "__main__":

@@ -15,6 +15,12 @@ OUTPUT_DIR="$REPO_ROOT/quadmath/output"
 PREAMBLE_TEX="$LATEX_DIR/preamble.tex"
 COMBINED_MD="$OUTPUT_DIR/quadmath_review.md"
 
+# Output subdirectories
+PDF_DIR="$OUTPUT_DIR/pdf"
+TEX_DIR="$OUTPUT_DIR/tex"
+DATA_DIR="$OUTPUT_DIR/data"
+FIGURE_DIR="$OUTPUT_DIR/figures"
+
 # Author/metadata (used for all module PDFs and the combined review)
 AUTHOR_NAME="Daniel Ari Friedman"
 AUTHOR_ORCID="0000-0001-6232-9096"
@@ -23,7 +29,7 @@ AUTHOR_EMAIL="daniel@activeinference.institute"
 AUTHOR_TEX="$AUTHOR_NAME\\\\ ORCID: $AUTHOR_ORCID\\\\ Email: $AUTHOR_EMAIL"
 
 # Ensure directories exist
-mkdir -p "$MARKDOWN_DIR" "$LATEX_DIR" "$OUTPUT_DIR"
+mkdir -p "$MARKDOWN_DIR" "$LATEX_DIR" "$OUTPUT_DIR" "$PDF_DIR" "$TEX_DIR" "$DATA_DIR" "$FIGURE_DIR"
 
 # Dependency checks
 if ! command -v pandoc >/dev/null 2>&1; then
@@ -62,6 +68,10 @@ COMMON_ARGS=(
   -V monofont="DejaVu Sans Mono"
   -V fontsize=10pt
   -V linestretch=1.0
+  -V geometry:margin=0.4cm
+  -V geometry:top=0.8cm
+  -V geometry:bottom=0.8cm
+  -V geometry:includeheadfoot
   -V colorlinks=true
   -V linkcolor=red
   -V urlcolor=red
@@ -124,8 +134,8 @@ build_one() {
   local in_md="$1"
   local title="$2"
   local base="${in_md%.md}"
-  local pdf_out="$OUTPUT_DIR/${base}.pdf"
-  local tex_out="$LATEX_DIR/${base}.tex"
+  local pdf_out="$PDF_DIR/${base}.pdf"
+  local tex_out="$TEX_DIR/${base}.tex"
   pandoc "$MARKDOWN_DIR/$in_md" \
     -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
     -V title="$title" \
@@ -146,17 +156,17 @@ build_one() {
   # Resolve cross-references by compiling the generated TeX with multiple passes
   if command -v latexmk >/dev/null 2>&1; then
     (
-      cd "$LATEX_DIR"
-      latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$OUTPUT_DIR" "$base.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" "$base.tex"
-      latexmk -c -output-directory="$OUTPUT_DIR" "$base.tex" >/dev/null 2>&1 || true
+      cd "$TEX_DIR"
+      latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex"
+      latexmk -c -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
     )
   else
     # Fallback: run xelatex multiple times to resolve refs
     (
-      cd "$LATEX_DIR"
-      xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" "$base.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" "$base.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" "$base.tex" >/dev/null 2>&1 || true
+      cd "$TEX_DIR"
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
     )
   fi
 }
@@ -195,7 +205,7 @@ pandoc "$COMBINED_MD" \
   -V date="$DATE_STR" \
   --highlight-style=tango \
   "${COMMON_ARGS[@]}" \
-  -o "$OUTPUT_DIR/quadmath_review.pdf"
+  -o "$PDF_DIR/quadmath_review.pdf"
 
 pandoc "$COMBINED_MD" \
   -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
@@ -203,22 +213,26 @@ pandoc "$COMBINED_MD" \
   -V title="QuadMath: A Unified Analytical Review of 4D and Quadray Coordinates" \
   -V author="$AUTHOR_TEX" \
   -V date="$DATE_STR" \
-  -o "$LATEX_DIR/quadmath_review.tex"
+  -o "$TEX_DIR/quadmath_review.tex"
 
 # Post-compile combined TeX to resolve figure/table references
 if command -v latexmk >/dev/null 2>&1; then
   (
-    cd "$LATEX_DIR"
-    latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$OUTPUT_DIR" quadmath_review.tex >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" quadmath_review.tex
-    latexmk -c -output-directory="$OUTPUT_DIR" quadmath_review.tex >/dev/null 2>&1 || true
+    cd "$OUTPUT_DIR"
+    latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex"
+    latexmk -c -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
   )
 else
   (
-    cd "$LATEX_DIR"
-    xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" quadmath_review.tex >/dev/null 2>&1 || true
-    xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" quadmath_review.tex >/dev/null 2>&1 || true
-    xelatex -interaction=nonstopmode -output-directory="$OUTPUT_DIR" quadmath_review.tex >/dev/null 2>&1 || true
+    cd "$OUTPUT_DIR"
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
   )
 fi
 
 echo "All outputs in: $OUTPUT_DIR"
+echo "  PDFs: $PDF_DIR"
+echo "  LaTeX: $TEX_DIR"
+echo "  Data: $DATA_DIR"
+echo "  Figures: $FIGURE_DIR"

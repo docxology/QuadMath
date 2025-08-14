@@ -37,13 +37,13 @@ while not converged:
 
 ### Figures
 
-![Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.](../output/simplex_trace.png){#fig:simplex_trace}
+![Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.](../output/figures/simplex_trace.png){#fig:simplex_trace}
 
-![Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.](../output/volumes_scale_plot.png){#fig:volumes_scale}
+![Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.](../output/figures/volumes_scale_plot.png){#fig:volumes_scale}
 
 As shown in Fig. \ref{fig:simplex_final}, the discrete Nelder–Mead converges on plateaus; Fig. \ref{fig:volumes_scale} summarizes the scaling behavior used in volume diagnostics.
 
-![Final converged simplex configuration.](../output/simplex_final.png){#fig:simplex_final}
+![Final converged simplex configuration.](../output/figures/simplex_final.png){#fig:simplex_final}
 
 Raw artifacts: the full trajectory animation `simplex_animation.mp4` and per-frame vertices (`simplex_animation_vertices.csv`/`.npz`) are available in `quadmath/output/`.
 The full optimization trajectory is provided as an animation (MP4) in the repository's output directory.
@@ -81,13 +81,13 @@ animate_discrete_path(path)
 - **Curvature directions**: leading eigenvalues/eigenvectors of `F` (see `fim_eigenspectrum`) reveal stiff and sloppy directions; this supports step-size selection and preconditioning.
 - **Figures**: empirical FIM heatmap (Fig. \ref{fig:fisher_information_matrix}) and eigenspectrum (Fig. \ref{fig:fim_eigenspectrum}). Raw data available as NPZ/CSV in `quadmath/output/`.
 
-![Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).](../output/fisher_information_matrix.png){#fig:fisher_information_matrix}
+![Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).](../output/figures/fisher_information_matrix.png){#fig:fisher_information_matrix}
 
-![Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).](../output/fisher_information_eigenspectrum.png){#fig:fim_eigenspectrum}
+![Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).](../output/figures/fisher_information_eigenspectrum.png){#fig:fim_eigenspectrum}
 
-![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/natural_gradient_path.png){#fig:natural_gradient_path}
+![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/figures/natural_gradient_path.png){#fig:natural_gradient_path}
 
-![Free energy curve for a 2-state model.](../output/free_energy_curve.png){#fig:free_energy_curve}
+![Free energy curve for a 2-state model.](../output/figures/free_energy_curve.png){#fig:free_energy_curve}
 
 - **Quadray relevance**: block-structured and symmetric patterns often arise under quadray parameterizations, simplifying `F` inversion for natural-gradient steps.
 

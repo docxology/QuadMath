@@ -1,0 +1,1034 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Appendix: Symbols and Glossary}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
+\date{August 14, 2025}
+
+\begin{document}
+\maketitle
+
+\hypertarget{appendix-symbols-and-glossary}{%
+\section{Appendix: Symbols and
+Glossary}\label{appendix-symbols-and-glossary}}
+
+This appendix consolidates the symbols, variables, and constants used
+throughout the manuscript.
+
+\hypertarget{sets-and-spaces}{%
+\subsection{Sets and Spaces}\label{sets-and-spaces}}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+Symbol & Name\tabularnewline
+\midrule
+\endhead
+\(\mathbb{R}^n\) & Euclidean space\tabularnewline
+IVM & Isotropic Vector Matrix\tabularnewline
+Coxeter.4D & Euclidean 4D (E⁴)\tabularnewline
+Einstein.4D & Minkowski spacetime (3+1)\tabularnewline
+Fuller.4D & Synergetics/Quadray tetrahedral space\tabularnewline
+\bottomrule
+\end{longtable}
+
+Descriptions:
+
+\begin{itemize}
+\tightlist
+\item
+  \(\mathbb{R}^n\): \(n\)-dimensional real vector space.
+\item
+  IVM: Quadray integer lattice (CCP sphere centers).
+\item
+  Coxeter.4D: Four-dimensional Euclidean geometry (not spacetime); see
+  Coxeter, Regular Polytopes (Dover ed., p.~119); related
+  lattice/packing background in Conway \& Sloane.
+\item
+  Einstein.4D: Relativistic spacetime with Minkowski metric.
+\item
+  Fuller.4D: Quadrays with projective normalization and IVM unit
+  conventions.
+\end{itemize}
+
+\hypertarget{quadray-coordinates-and-geometry}{%
+\subsection{Quadray Coordinates and
+Geometry}\label{quadray-coordinates-and-geometry}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Name\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(q=(a,b,c,d)\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Quadray point\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Non-negative coordinates with at least one zero after
+normalization\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(A,B,C,D\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Quadray axes\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Canonical tetrahedral axes mapped by the embedding\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(k\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Normalization offset\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(k=\min(a,b,c,d)\) used to set \(q' = q - (k,k,k,k)\)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(q'\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Normalized Quadray\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Canonical representative with at least one zero and non-negative
+entries\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(P_0,\ldots,P_3\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tetrahedron vertices\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Vertices used in volume formulas\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(d_{ij}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Pairwise distances\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Distance between vertices \(P_i\) and \(P_j\) (squared in CM
+matrix)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\det(\cdot)\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Determinant\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Determinant of a matrix\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\lvert\cdot\rvert\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Magnitude\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Absolute value (determinant magnitude)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(V_{ivm}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tetravolume (IVM)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tetrahedron volume in synergetics/IVM units; unit regular tetra has
+\(V_{ivm}=1\)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(V_{xyz}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tetravolume (XYZ)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Euclidean tetrahedron volume\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(S3\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Scale factor\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(S3=\sqrt{9/8}\) with \(V_{ivm} = S3\,V_{xyz}\) (synergetics unit
+convention)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Coxeter.4D\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Namespace\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Euclidean E⁴; regular polytopes\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Einstein.4D\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Namespace\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Minkowski spacetime (metric analogy only here)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Fuller.4D\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Namespace\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Quadrays/IVM; integer tetravolume\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Eq. (lattice\_det)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Lattice determinant\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Integer-lattice volume via 3x3 determinant\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Eq. (ace5x5)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tom Ace 5x5\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Direct IVM tetravolume from Quadrays\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Eq. (cayley\_menger)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Cayley--Menger\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Length-based formula: 288 V\^{}2 = det(·)\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{optimization-and-algorithms}{%
+\subsection{Optimization and
+Algorithms}\label{optimization-and-algorithms}}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+Symbol & Name\tabularnewline
+\midrule
+\endhead
+\(\alpha\) & Reflection coefficient\tabularnewline
+\(\gamma\) & Expansion coefficient\tabularnewline
+\(\rho\) & Contraction coefficient\tabularnewline
+\(\sigma\) & Shrink coefficient\tabularnewline
+\(V_{ivm}\) & Integer volume monitor\tabularnewline
+\bottomrule
+\end{longtable}
+
+Descriptions:
+
+\begin{itemize}
+\tightlist
+\item
+  \(\alpha,\gamma,\rho,\sigma\): Nelder--Mead parameters (typical values
+  1, 2, 0.5, 0.5).
+\item
+  \(V_{ivm}\): Tracks simplex volume across iterations.
+\end{itemize}
+
+\hypertarget{information-theory-and-geometry}{%
+\subsection{Information Theory and
+Geometry}\label{information-theory-and-geometry}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Name\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\log\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Natural logarithm\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Logarithm base \(e\)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\mathbb{E}[\cdot]\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Expectation\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Mean with respect to a distribution\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(F_{i,j}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Fisher Information entry\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Empirical/expected
+\(\mathbb{E}[\partial_{\theta_i}\log p\,\partial_{\theta_j}\log p]\);
+Eq. \eqref{eq:supp_fim}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\mathcal{F}\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Variational free energy\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]\); Eq.
+\eqref{eq:supp_free_energy}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\mathrm{KL}[Q\,\|\,P]\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Kullback--Leibler divergence\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\sum Q\log(Q/P)\); information distance\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\nabla_{\theta}L\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Gradient\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Gradient of loss \(L\) with respect to parameters \(\theta\) (column
+vector)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\eta\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Step size\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Learning-rate scalar used in updates\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\theta\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Parameters\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Model parameter vector; indices \(\theta_i\)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(ds^2\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Minkowski line element\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(-c^2\,dt^2 + dx^2 + dy^2 + dz^2\); Eq. \eqref{eq:supp_minkowski}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(c\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Speed of light\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Physical constant appearing in Minkowski metric\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{embeddings-and-distances}{%
+\subsection{Embeddings and Distances}\label{embeddings-and-distances}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Name\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(M\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Embedding matrix\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Linear map from Quadray to \(\mathbb{R}^3\) (Urner-style unless
+noted)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\lVert\cdot\rVert_2\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Euclidean norm\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\sqrt{x_1^2+\cdots+x_n^2}\)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(R, D\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Edge scales\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Cube edge \(R\) and Quadray edge \(D\) with \(D=2R\) (common
+convention)\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{greek-letters-usage}{%
+\subsection{Greek Letters (usage)}\label{greek-letters-usage}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Name\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\alpha,\gamma,\rho,\sigma\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+NM coefficients\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Nelder--Mead parameters (reflection, expansion, contraction,
+shrink)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\theta\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Theta\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Parameter vector in models and metrics\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\mu\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Mu\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Internal states (Active Inference)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\psi\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Psi\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+External states (Active Inference)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+\(\eta\)\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Eta\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Step size / learning rate\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{notes-usage-and-cross-references}{%
+\subsection{Notes (usage and
+cross-references)}\label{notes-usage-and-cross-references}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Figures referenced}: In-text carry identifiers (e.g., Fig.
+  \ref{fig:volumes_scale}).
+\item
+  \textbf{Equation references}: Use labels defined in the text (e.g.,
+  Eq. \eqref{eq:lattice_det}).
+\item
+  \textbf{Namespaces}: We use Coxeter.4D, Einstein.4D, Fuller.4D
+  consistently to designate Euclidean E⁴, Minkowski spacetime, and
+  Quadray/IVM synergetics, respectively. This avoids conflation of
+  Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and
+  synergetic tetravolume conventions.
+\item
+  \textbf{External validation}: Cross-reference implementations from the
+  \href{https://github.com/4dsolutions}{4dsolutions ecosystem} including
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}},
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}},
+  and educational notebooks in
+  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}.
+\item
+  \textbf{Multi-language implementations}: Rust
+  (\href{https://github.com/4dsolutions/rusty_rays}{rusty\_rays}),
+  Clojure (\href{https://github.com/4dsolutions/synmods}{synmods}),
+  POV-Ray (quadcraft.py), and VPython
+  (\href{https://github.com/4dsolutions/BookCovers}{BookCovers}) provide
+  algorithmic verification and performance comparison baselines.
+\end{itemize}
+
+\hypertarget{acronyms-and-abbreviations}{%
+\subsection{Acronyms and
+abbreviations}\label{acronyms-and-abbreviations}}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\begin{minipage}[b]{0.47\columnwidth}\raggedright
+Acronym\strut
+\end{minipage} & \begin{minipage}[b]{0.47\columnwidth}\raggedright
+Meaning\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+CM\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Cayley--Menger (determinant-based tetrahedron volume)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+PdF\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Piero della Francesca (Heron-like tetrahedron volume)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+GdJ\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Gerald de Jong (Quadray-native tetravolume expression)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+K-FAC\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Kronecker-Factored Approximate Curvature (optimizer using structured
+Fisher)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+CCP\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Cubic Close Packing (same centers as FCC)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+FCC\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Face-Centered Cubic (same centers as CCP)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+E⁴\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Four-dimensional Euclidean space (Coxeter.4D)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+NM\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Nelder--Mead (simplex optimization algorithm)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+4dsolutions\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Kirby Urner's GitHub organization with extensive Quadray
+implementations\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+BEAST\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Synergetic modules (B, E, A, S, T) in Fuller's hierarchical system\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+OCN\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Oregon Curriculum Network (educational framework integrating
+Quadrays)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+POV-Ray\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Persistence of Vision Raytracer (used in quadcraft.py
+visualizations)\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{api-index-auto-generated-methods-linkage}{%
+\subsection{API Index (auto-generated; Methods
+linkage)}\label{api-index-auto-generated-methods-linkage}}
+
+The table below enumerates public symbols from \texttt{src/} modules.
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule
+\begin{minipage}[b]{0.17\columnwidth}\raggedright
+Module\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Kind\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Signature\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Summary\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{cayley\_menger}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{ivm\_tetra\_volume\_cayley\_menger}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(d2)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Compute IVM tetravolume from squared distances via Cayley--Menger.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{cayley\_menger}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{tetra\_volume\_cayley\_menger}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(d2)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Compute Euclidean tetrahedron volume from squared distances
+(Coxeter.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{conversions}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray\_to\_xyz}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q,\ M)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Map a \texttt{Quadray} to Cartesian XYZ via a 3x4 embedding matrix
+(Fuller.4D -\textgreater{} Coxeter.4D slice).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{conversions}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{urner\_embedding}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(scale)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return a 3x4 Urner-style symmetric embedding matrix (Fuller.4D
+-\textgreater{} Coxeter.4D slice).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{discrete\_variational}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{DiscretePath}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+class\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{\textbar{}\ Optimization\ trajectory\ on\ the\ integer\ quadray\ lattice.\ \textbar{}\ \textbar{}\ \textasciigrave{}discrete\_variational\textasciigrave{}\ \textbar{}\ \textasciigrave{}OptionalMoves\textasciigrave{}\ \textbar{}\ class\ \textbar{}}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{discrete\_variational}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{apply\_move}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q,\ delta)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Apply a lattice move and normalize to the canonical
+representative.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{discrete\_variational}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{discrete\_ivm\_descent}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(objective,\ start,\ moves=,\ max\_iter=,\ on\_step=)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Greedy discrete descent over the quadray integer lattice.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{discrete\_variational}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{neighbor\_moves\_ivm}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return the 12 canonical IVM neighbor moves as Quadray deltas.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_cuboctahedron\_neighbors}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return twelve-around-one IVM neighbors (vector equilibrium shell).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_cuboctahedron\_vertices\_xyz}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return XYZ coordinates for the twelve-around-one neighbors.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_ivm\_neighbors}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return the 12 nearest IVM neighbors as permutations of \{2,1,1,0\}
+(Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_optimize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Run Nelder--Mead over integer quadrays for a simple convex objective
+(Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_partition\_tetra\_volume}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(mu,\ s,\ a,\ psi)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Construct a tetrahedron from the four-fold partition and return
+tetravolume (Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{examples}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{example\_volume}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Compute the unit IVM tetrahedron volume from simple quadray vertices
+(Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{geometry}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{minkowski\_interval}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(dt,\ dx,\ dy,\ dz,\ c)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return the Minkowski interval squared ds\^{}2 (Einstein.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{glossary\_gen}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{ApiEntry}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+class\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{\textbar{}\ \ \textbar{}\ \textbar{}\ \textasciigrave{}glossary\_gen\textasciigrave{}\ \textbar{}\ \textasciigrave{}build\_api\_index\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(src\_dir)\textasciigrave{}\ \textbar{}\ \ \textbar{}\ \textbar{}\ \textasciigrave{}glossary\_gen\textasciigrave{}\ \textbar{}\ \textasciigrave{}generate\_markdown\_table\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(entries)\textasciigrave{}\ \textbar{}\ \ \textbar{}\ \textbar{}\ \textasciigrave{}glossary\_gen\textasciigrave{}\ \textbar{}\ \textasciigrave{}inject\_between\_markers\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(markdown\_text,\ begin,\ end,\ payload)\textasciigrave{}\ \textbar{}\ \ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}action\_update\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(action,\ free\_energy\_fn,\ step\_size,\ epsilon)\textasciigrave{}\ \textbar{}\ Continuous-time\ action\ update:\ da/dt\ =\ -\ dF/da.\ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}finite\_difference\_gradient\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(function,\ x,\ epsilon)\textasciigrave{}\ \textbar{}\ Compute\ numerical\ gradient\ of\ a\ scalar\ function\ via\ central\ differences.\ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}fisher\_information\_matrix\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(gradients)\textasciigrave{}\ \textbar{}\ Estimate\ the\ Fisher\ information\ matrix\ via\ sample\ gradients.\ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}free\_energy\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(log\_p\_o\_given\_s,\ q,\ p)\textasciigrave{}\ \textbar{}\ Variational\ free\ energy\ for\ discrete\ latent\ states.\ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}natural\_gradient\_step\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(gradient,\ fisher,\ step\_size,\ ridge)\textasciigrave{}\ \textbar{}\ Compute\ a\ natural\ gradient\ step\ using\ a\ damped\ inverse\ Fisher.\ \textbar{}\ \textbar{}\ \textasciigrave{}information\textasciigrave{}\ \textbar{}\ \textasciigrave{}perception\_update\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(mu,\ derivative\_operator,\ free\_energy\_fn,\ step\_size,\ epsilon)\textasciigrave{}\ \textbar{}\ Continuous-time\ perception\ update:\ dmu/dt\ =\ D\ mu\ -\ dF/dmu.\ \textbar{}\ \textbar{}\ \textasciigrave{}linalg\_utils\textasciigrave{}\ \textbar{}\ \textasciigrave{}bareiss\_determinant\_int\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(matrix)\textasciigrave{}\ \textbar{}\ Compute\ an\ exact\ integer\ determinant\ using\ the\ Bareiss\ algorithm.\ \textbar{}\ \textbar{}\ \textasciigrave{}metrics\textasciigrave{}\ \textbar{}\ \textasciigrave{}fim\_eigenspectrum\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(F)\textasciigrave{}\ \textbar{}\ Eigen-decomposition\ of\ a\ Fisher\ information\ matrix.\ \textbar{}\ \textbar{}\ \textasciigrave{}metrics\textasciigrave{}\ \textbar{}\ \textasciigrave{}information\_length\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(path\_gradients)\textasciigrave{}\ \textbar{}\ Path\ length\ in\ information\ space\ via\ gradient-weighted\ arc\ length.\ \textbar{}\ \textbar{}\ \textasciigrave{}metrics\textasciigrave{}\ \textbar{}\ \textasciigrave{}shannon\_entropy\textasciigrave{}\ \textbar{}\ function\ \textbar{}\ \textasciigrave{}(p,\ eps)\textasciigrave{}\ \textbar{}\ Shannon\ entropy\ H(p)\ for\ a\ discrete\ distribution.\ \textbar{}\ \textbar{}\ \textasciigrave{}nelder\_mead\_quadray\textasciigrave{}\ \textbar{}\ \textasciigrave{}SimplexState\textasciigrave{}\ \textbar{}\ class\ \textbar{}}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{centroid\_excluding}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(vertices,\ exclude\_idx)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Integer centroid of three vertices, excluding the specified index.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{compute\_volume}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(vertices)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Integer IVM tetra-volume from the first four vertices.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(f,\ initial\_vertices,\ alpha,\ gamma,\ rho,\ sigma,\ max\_iter,\ tol,\ on\_step)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Nelder--Mead on the integer quadray lattice.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{order\_simplex}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(vertices,\ f)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Sort vertices by objective value ascending and return paired
+lists.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{nelder\_mead\_quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{project\_to\_lattice}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Project a quadray to the canonical lattice representative via
+normalize.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{paths}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{get\_data\_dir}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return \texttt{quadmath/output/data} path and ensure it exists.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{paths}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{get\_figure\_dir}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return \texttt{quadmath/output/figures} path and ensure it exists.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{paths}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{get\_output\_dir}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{()}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return \texttt{quadmath/output} path at the repo root and ensure it
+exists.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{paths}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{get\_repo\_root}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(start)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Heuristically find repository root by walking up from
+\texttt{start}.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{DEFAULT\_EMBEDDING}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+constant\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{\textbar{}\ \ \textbar{}\ \textbar{}\ \textasciigrave{}quadray\textasciigrave{}\ \textbar{}\ \textasciigrave{}Quadray\textasciigrave{}\ \textbar{}\ class\ \textbar{}}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Quadray vector with non-negative components and at least one zero
+(Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{ace\_tetravolume\_5x5}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(p0,\ p1,\ p2,\ p3)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Tom Ace 5x5 determinant in IVM units (Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{dot}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q1,\ q2,\ embedding)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return Euclidean dot product \textless q1,q2\textgreater{} under the
+given embedding.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{integer\_tetra\_volume}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(p0,\ p1,\ p2,\ p3)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Compute integer tetra-volume using det{[}p1-p0, p2-p0, p3-p0{]}
+(Fuller.4D).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{magnitude}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q,\ embedding)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return Euclidean magnitude \textbar\textbar q\textbar\textbar{} under
+the given embedding (vector norm).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{quadray}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{to\_xyz}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(q,\ embedding)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Map quadray to R\^{}3 via a 3x4 embedding matrix (Fuller.4D
+-\textgreater{} Coxeter.4D slice).\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{symbolic}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{cayley\_menger\_volume\_symbolic}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(d2)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Return symbolic Euclidean tetrahedron volume from squared
+distances.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{symbolic}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{convert\_xyz\_volume\_to\_ivm\_symbolic}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(V\_xyz)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Convert a symbolic Euclidean volume to IVM tetravolume via S3.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{visualize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{animate\_discrete\_path}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(path,\ embedding,\ save)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Animate a point moving along a discrete quadray path.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{visualize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{animate\_simplex}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(vertices\_list,\ embedding,\ save)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Animate simplex evolution across iterations.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{visualize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{plot\_ivm\_neighbors}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(embedding,\ save)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Scatter the 12 IVM neighbor points in 3D.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{visualize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{plot\_partition\_tetrahedron}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(mu,\ s,\ a,\ psi,\ embedding,\ save)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Plot the four-fold partition as a labeled tetrahedron in 3D.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{visualize}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{plot\_simplex\_trace}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+function\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\texttt{(state,\ save)}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+Plot per-iteration diagnostics for Nelder--Mead.\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\end{document}

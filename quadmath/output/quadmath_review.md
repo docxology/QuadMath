@@ -81,7 +81,7 @@ The manuscript is accompanied by a fully-tested Python codebase under `src/` wit
 
 Fig. \ref{fig:graphical_abstract} (graphical abstract): Panel A shows Quadray axes (A,B,C,D) under a symmetric embedding with wireframe context. Panel B shows close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, “twelve around one”).
 
-![Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](../output/graphical_abstract_quadray.png){#fig:graphical_abstract}
+![Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](../output/figures/graphical_abstract_quadray.png){#fig:graphical_abstract}
 
 Tests illustrate expected behavior and edge cases (see `tests/`), and coverage is enforced at 100% for `src/`.
 
@@ -122,9 +122,9 @@ In this section, we clarify the three internal meanings of “4D,” following a
 
 ### Figures
 
-![IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.](../output/ivm_neighbors_edges.png){#fig:ivm_neighbors_edges}
-![Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).](../output/quadray_clouds.png){#fig:quadray_clouds}
-![Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).](../output/vector_equilibrium_panels.png){#fig:vector_equilibrium}
+![IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.](../output/figures/ivm_neighbors_edges.png){#fig:ivm_neighbors_edges}
+![Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).](../output/figures/quadray_clouds.png){#fig:quadray_clouds}
+![Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).](../output/figures/vector_equilibrium_panels.png){#fig:vector_equilibrium}
 
 In Fig. \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM neighbors with radial edges under a standard Urner embedding; Fig. \ref{fig:quadray_clouds} illustrates random Quadray clouds under several embeddings.
 
@@ -444,9 +444,9 @@ References and discussion: [Urner – tetravolume.py (School of Tomorrow)](https
 
 Figure: automated comparison (native Ace 5×5 vs CM+S3) across small examples (see script `sympy_formalisms.py`). The figure and source CSV/NPZ are in `quadmath/output/`.
 
-![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace’s native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: `bridging_vs_native.csv`.](../output/bridging_vs_native.png){#fig:bridging_native}
+![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace’s native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png){#fig:bridging_native}
 
-![Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).](../output/polyhedra_quadray_constructions.png){#fig:polyhedra_quadray_map}
+![Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).](../output/figures/polyhedra_quadray_constructions.png){#fig:polyhedra_quadray_map}
 
 ### Short Python snippets (paper reproducibility)
 
@@ -699,13 +699,13 @@ while not converged:
 
 ### Figures
 
-![Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.](../output/simplex_trace.png){#fig:simplex_trace}
+![Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.](../output/figures/simplex_trace.png){#fig:simplex_trace}
 
-![Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.](../output/volumes_scale_plot.png){#fig:volumes_scale}
+![Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.](../output/figures/volumes_scale_plot.png){#fig:volumes_scale}
 
 As shown in Fig. \ref{fig:simplex_final}, the discrete Nelder–Mead converges on plateaus; Fig. \ref{fig:volumes_scale} summarizes the scaling behavior used in volume diagnostics.
 
-![Final converged simplex configuration.](../output/simplex_final.png){#fig:simplex_final}
+![Final converged simplex configuration.](../output/figures/simplex_final.png){#fig:simplex_final}
 
 Raw artifacts: the full trajectory animation `simplex_animation.mp4` and per-frame vertices (`simplex_animation_vertices.csv`/`.npz`) are available in `quadmath/output/`.
 The full optimization trajectory is provided as an animation (MP4) in the repository's output directory.
@@ -743,13 +743,13 @@ animate_discrete_path(path)
 - **Curvature directions**: leading eigenvalues/eigenvectors of `F` (see `fim_eigenspectrum`) reveal stiff and sloppy directions; this supports step-size selection and preconditioning.
 - **Figures**: empirical FIM heatmap (Fig. \ref{fig:fisher_information_matrix}) and eigenspectrum (Fig. \ref{fig:fim_eigenspectrum}). Raw data available as NPZ/CSV in `quadmath/output/`.
 
-![Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).](../output/fisher_information_matrix.png){#fig:fisher_information_matrix}
+![Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).](../output/figures/fisher_information_matrix.png){#fig:fisher_information_matrix}
 
-![Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).](../output/fisher_information_eigenspectrum.png){#fig:fim_eigenspectrum}
+![Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).](../output/figures/fisher_information_eigenspectrum.png){#fig:fim_eigenspectrum}
 
-![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/natural_gradient_path.png){#fig:natural_gradient_path}
+![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/figures/natural_gradient_path.png){#fig:natural_gradient_path}
 
-![Free energy curve for a 2-state model.](../output/free_energy_curve.png){#fig:free_energy_curve}
+![Free energy curve for a 2-state model.](../output/figures/free_energy_curve.png){#fig:free_energy_curve}
 
 - **Quadray relevance**: block-structured and symmetric patterns often arise under quadray parameterizations, simplifying `F` inversion for natural-gradient steps.
 
@@ -1149,12 +1149,12 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 ### Figures
 
 
-![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/natural_gradient_path.png){#fig:natural_gradient_path}
-![Free energy curve for a 2-state model.](../output/free_energy_curve.png){#fig:free_energy_curve}
+![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/figures/natural_gradient_path.png){#fig:natural_gradient_path}
+![Free energy curve for a 2-state model.](../output/figures/free_energy_curve.png){#fig:free_energy_curve}
 
-![Discrete IVM descent path (final frame).](../output/discrete_path_final.png){#fig:discrete_path}
+![Discrete IVM descent path (final frame).](../output/figures/discrete_path_final.png){#fig:discrete_path}
 
-![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/bridging_vs_native.png){#fig:bridging_native_eq_appendix}
+![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png){#fig:bridging_native_eq_appendix}
 
 ## Quadray Normalization (Fuller.4D)
 
@@ -1233,7 +1233,7 @@ Figures: Fig. \ref{fig:fisher_information_matrix}, Fig. \ref{fig:fim_eigenspectr
 
 Discrete variational optimization on the quadray lattice: `discrete_ivm_descent` greedily descends a free-energy-like objective over IVM moves, yielding integer-valued trajectories. See the path animation artifact `discrete_path.mp4` in `quadmath/output/`.
 
-![Four-fold partition mapped to a Quadray tetrahedron — vertices labeled as Internal (μ), Sensory (s), Active (a), External (ψ). Edges depict pairwise couplings: (μ–s) perceptual inference, (a–ψ) control, and cross-couplings capturing active perception and sensorimotor contingencies.](../output/partition_tetrahedron.png){#fig:partition_tetrahedron}
+![Four-fold partition mapped to a Quadray tetrahedron — vertices labeled as Internal (μ), Sensory (s), Active (a), External (ψ). Edges depict pairwise couplings: (μ–s) perceptual inference, (a–ψ) control, and cross-couplings capturing active perception and sensorimotor contingencies.](../output/figures/partition_tetrahedron.png){#fig:partition_tetrahedron}
 
 ## Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)
 
@@ -1250,7 +1250,7 @@ Tetrahedral mapping via Quadrays (Fuller.4D): assign each state to a vertex of a
 
 Interpretation note: this Quadray-based mapping is a didactic geometric scaffold. It is not standard in the Active Inference literature, which typically develops the four-state partition in probabilistic graphical terms. Our use highlights structural symmetries and discrete volumetric quantities available in Fuller.4D, building on the computational foundations developed in the [4dsolutions ecosystem](https://github.com/4dsolutions) for tetrahedral modeling and volume calculations.
 
-Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and the figure [Four-fold partition mapped to a Quadray tetrahedron](../output/partition_tetrahedron.png){#fig:partition_tetrahedron}.
+Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and the figure [Four-fold partition mapped to a Quadray tetrahedron](../output/figures/partition_tetrahedron.png){#fig:partition_tetrahedron}.
 
 ## How the 4D namespaces relate here
 
@@ -1457,6 +1457,8 @@ The table below enumerates public symbols from `src/` modules.
 | `nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
+| `paths` | `get_data_dir` | function | `()` | Return `quadmath/output/data` path and ensure it exists. |
+| `paths` | `get_figure_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. |
 | `paths` | `get_output_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. |
 | `paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
 | `quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |

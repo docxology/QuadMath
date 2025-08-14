@@ -301,9 +301,9 @@ References and discussion: [Urner – tetravolume.py (School of Tomorrow)](https
 
 Figure: automated comparison (native Ace 5×5 vs CM+S3) across small examples (see script `sympy_formalisms.py`). The figure and source CSV/NPZ are in `quadmath/output/`.
 
-![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace’s native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: `bridging_vs_native.csv`.](../output/bridging_vs_native.png){#fig:bridging_native}
+![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace’s native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png){#fig:bridging_native}
 
-![Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).](../output/polyhedra_quadray_constructions.png){#fig:polyhedra_quadray_map}
+![Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).](../output/figures/polyhedra_quadray_constructions.png){#fig:polyhedra_quadray_map}
 
 ### Short Python snippets (paper reproducibility)
 

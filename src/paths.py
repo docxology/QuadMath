@@ -26,3 +26,19 @@ def get_output_dir() -> str:
     out = os.path.join(root, "quadmath", "output")
     os.makedirs(out, exist_ok=True)
     return out
+
+
+def get_data_dir() -> str:
+    """Return `quadmath/output/data` path and ensure it exists."""
+    out = get_output_dir()
+    data_dir = os.path.join(out, "data")
+    os.makedirs(data_dir, exist_ok=True)
+    return data_dir
+
+
+def get_figure_dir() -> str:
+    """Return `quadmath/output/figures` path and ensure it exists."""
+    out = get_output_dir()
+    figure_dir = os.path.join(out, "figures")
+    os.makedirs(figure_dir, exist_ok=True)
+    return figure_dir

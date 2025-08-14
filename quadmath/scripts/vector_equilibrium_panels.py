@@ -26,7 +26,7 @@ def main() -> None:
     import numpy as np  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     import itertools  # noqa: WPS433
 
     # Neighbor positions (12 around origin) in Quadray integers
@@ -92,8 +92,8 @@ def main() -> None:
     axB.set_zlabel("Z")
     _set_axes_equal(axB)
 
-    outdir = get_output_dir()
-    outpath = os.path.join(outdir, "vector_equilibrium_panels.png")
+    figure_dir = get_figure_dir()
+    outpath = os.path.join(figure_dir, "vector_equilibrium_panels.png")
     # Avoid tight_layout on 3D axes; set margins explicitly
     fig.subplots_adjust(left=0.04, right=0.96, top=0.95, bottom=0.06, wspace=0.08)
     fig.savefig(outpath, dpi=220)

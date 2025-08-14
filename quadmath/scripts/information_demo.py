@@ -21,7 +21,7 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     from information import fisher_information_matrix, natural_gradient_step, free_energy  # noqa: WPS433
     from discrete_variational import discrete_ivm_descent  # noqa: WPS433
     from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
@@ -57,17 +57,18 @@ def main() -> None:
     ax.set_yticks(range(3))
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cbar.set_label("F_ij")
-    outdir = get_output_dir()
-    fim_path = os.path.join(outdir, "fisher_information_matrix.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    fim_path = os.path.join(figure_dir, "fisher_information_matrix.png")
     fig.subplots_adjust(left=0.14, right=0.96, top=0.92, bottom=0.12)
     fig.savefig(fim_path, dpi=160)
     print(fim_path)
     plt.close(fig)
 
     # Save raw data alongside the figure for reproducibility and downstream use
-    np.savetxt(os.path.join(outdir, "fisher_information_matrix.csv"), F, delimiter=",")
+    np.savetxt(os.path.join(data_dir, "fisher_information_matrix.csv"), F, delimiter=",")
     np.savez(
-        os.path.join(outdir, "fisher_information_matrix.npz"),
+        os.path.join(data_dir, "fisher_information_matrix.npz"),
         F=F,
         grads=grads,
         w_true=w_true,
@@ -84,16 +85,16 @@ def main() -> None:
     ax.set_title("Fisher information eigenspectrum")
     ax.set_xlabel("eigen-index")
     ax.set_ylabel("eigenvalue (curvature)")
-    eig_path = os.path.join(outdir, "fisher_information_eigenspectrum.png")
+    eig_path = os.path.join(figure_dir, "fisher_information_eigenspectrum.png")
     fig.subplots_adjust(left=0.12, right=0.96, top=0.9, bottom=0.15)
     fig.savefig(eig_path, dpi=160)
     print(eig_path)
     plt.close(fig)
     # Save eigen-data
-    np.savetxt(os.path.join(outdir, "fisher_information_eigenvalues.csv"), evals[None, :], delimiter=",")
-    print(os.path.join(outdir, "fisher_information_eigenvalues.csv"))
+    np.savetxt(os.path.join(data_dir, "fisher_information_eigenvalues.csv"), evals[None, :], delimiter=",")
+    print(os.path.join(data_dir, "fisher_information_eigenvalues.csv"))
     np.savez(
-        os.path.join(outdir, "fisher_information_eigensystem.npz"),
+        os.path.join(data_dir, "fisher_information_eigensystem.npz"),
         eigenvalues=evals,
         eigenvectors=evecs,
         F=F,
@@ -124,7 +125,7 @@ def main() -> None:
     ax.set_xlabel("w0")
     ax.set_ylabel("w1")
     ax.set_title("Natural gradient trajectory (proj w0-w1)")
-    ng_path = os.path.join(outdir, "natural_gradient_path.png")
+    ng_path = os.path.join(figure_dir, "natural_gradient_path.png")
     fig.subplots_adjust(left=0.12, right=0.96, top=0.92, bottom=0.14)
     fig.savefig(ng_path, dpi=160)
     print(ng_path)
@@ -132,7 +133,7 @@ def main() -> None:
 
     # Save raw trajectory data for reproducibility
     import csv  # noqa: WPS433
-    ng_csv = os.path.join(outdir, "natural_gradient_path.csv")
+    ng_csv = os.path.join(data_dir, "natural_gradient_path.csv")
     with open(ng_csv, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["w0", "w1", "w2"])
@@ -140,7 +141,7 @@ def main() -> None:
             writer.writerow([float(row[0]), float(row[1]), float(row[2])])
     print(ng_csv)
     np.savez(
-        os.path.join(outdir, "natural_gradient_path.npz"),
+        os.path.join(data_dir, "natural_gradient_path.npz"),
         path=path,
         A=A,
         F=F,
@@ -157,7 +158,7 @@ def main() -> None:
     ax.set_xlabel("q(state=0)")
     ax.set_ylabel("Free energy")
     ax.set_title("Variational free energy (2-state)")
-    fe_path = os.path.join(outdir, "free_energy_curve.png")
+    fe_path = os.path.join(figure_dir, "free_energy_curve.png")
     fig.subplots_adjust(left=0.12, right=0.96, top=0.9, bottom=0.18)
     fig.savefig(fe_path, dpi=160)
     print(fe_path)

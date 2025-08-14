@@ -32,6 +32,20 @@ def _get_output_dir() -> str:
     return out
 
 
+def _get_data_dir() -> str:
+    out = _get_output_dir()
+    data_dir = os.path.join(out, "data")
+    os.makedirs(data_dir, exist_ok=True)
+    return data_dir
+
+
+def _get_figure_dir() -> str:
+    out = _get_output_dir()
+    figure_dir = os.path.join(out, "figures")
+    os.makedirs(figure_dir, exist_ok=True)
+    return figure_dir
+
+
 def cayley_menger_symbolic_unit_tetra() -> Tuple[str, str]:
     """Return simplified symbolic V_xyz and V_ivm for unit-edge regular tetra.
 
@@ -133,8 +147,9 @@ def compare_ace_vs_cm_examples() -> str:
         match = bool(simplify(V_ivm_sym - V_ace) == 0)
         rows.append((case_names[idx], str(V_ace), str(V_ivm_sym), str(match)))
 
-    outdir = _get_output_dir()
-    csv_path = os.path.join(outdir, "bridging_vs_native.csv")
+    data_dir = _get_data_dir()
+    figure_dir = _get_figure_dir()
+    csv_path = os.path.join(data_dir, "bridging_vs_native.csv")
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(rows)
@@ -185,7 +200,7 @@ def compare_ace_vs_cm_examples() -> str:
     ax.set_ylim(0.0, top * 1.12 if top > 0 else 1.0)
 
     fig.subplots_adjust(left=0.1, right=0.98, top=0.9, bottom=0.35)
-    fig.savefig(os.path.join(outdir, "bridging_vs_native.png"), dpi=220)
+    fig.savefig(os.path.join(figure_dir, "bridging_vs_native.png"), dpi=220)
     return csv_path
 
 
@@ -204,18 +219,18 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    outdir = _get_output_dir()
+    data_dir = _get_data_dir()
     V_xyz, V_ivm = cayley_menger_symbolic_unit_tetra()
     mag_expr = embedding_symbolic_magnitude()
     mag_vec_expr = magnitude_via_vector_module()
 
-    with open(os.path.join(outdir, "sympy_symbolics.txt"), "w") as f:
+    with open(os.path.join(data_dir, "sympy_symbolics.txt"), "w") as f:
         f.write("V_xyz_unit_regular_tetra = " + V_xyz + "\n")
         f.write("V_ivm_unit_regular_tetra = " + V_ivm + "\n")
         f.write("magnitude_symbolic = " + mag_expr + "\n")
         f.write("magnitude_vector_module_symbolic = " + mag_vec_expr + "\n")
 
-    print(os.path.join(outdir, "sympy_symbolics.txt"))
+    print(os.path.join(data_dir, "sympy_symbolics.txt"))
     csv_path = compare_ace_vs_cm_examples()
     print(csv_path)
 

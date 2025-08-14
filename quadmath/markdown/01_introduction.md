@@ -55,6 +55,6 @@ The manuscript is accompanied by a fully-tested Python codebase under `src/` wit
 
 Fig. \ref{fig:graphical_abstract} (graphical abstract): Panel A shows Quadray axes (A,B,C,D) under a symmetric embedding with wireframe context. Panel B shows close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, “twelve around one”).
 
-![Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](../output/graphical_abstract_quadray.png){#fig:graphical_abstract}
+![Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](../output/figures/graphical_abstract_quadray.png){#fig:graphical_abstract}
 
 Tests illustrate expected behavior and edge cases (see `tests/`), and coverage is enforced at 100% for `src/`.

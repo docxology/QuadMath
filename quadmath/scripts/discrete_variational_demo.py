@@ -26,7 +26,7 @@ def main() -> None:
     from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
     from discrete_variational import discrete_ivm_descent  # noqa: WPS433
     from visualize import animate_discrete_path  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
 
     # Simple convex objective in embedded coordinates
     def f(q: Quadray) -> float:
@@ -38,10 +38,11 @@ def main() -> None:
     print(mp4_path)
 
     # Also report auxiliary artifacts for convenience
-    outdir = get_output_dir()
-    print(os.path.join(outdir, "discrete_path_final.png"))
-    print(os.path.join(outdir, "discrete_path.csv"))
-    print(os.path.join(outdir, "discrete_path.npz"))
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    print(os.path.join(figure_dir, "discrete_path_final.png"))
+    print(os.path.join(data_dir, "discrete_path.csv"))
+    print(os.path.join(data_dir, "discrete_path.npz"))
 
 
 if __name__ == "__main__":

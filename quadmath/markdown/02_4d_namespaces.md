@@ -34,9 +34,9 @@ In this section, we clarify the three internal meanings of “4D,” following a
 
 ### Figures
 
-![IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.](../output/ivm_neighbors_edges.png){#fig:ivm_neighbors_edges}
-![Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).](../output/quadray_clouds.png){#fig:quadray_clouds}
-![Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).](../output/vector_equilibrium_panels.png){#fig:vector_equilibrium}
+![IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.](../output/figures/ivm_neighbors_edges.png){#fig:ivm_neighbors_edges}
+![Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).](../output/figures/quadray_clouds.png){#fig:quadray_clouds}
+![Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).](../output/figures/vector_equilibrium_panels.png){#fig:vector_equilibrium}
 
 In Fig. \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM neighbors with radial edges under a standard Urner embedding; Fig. \ref{fig:quadray_clouds} illustrates random Quadray clouds under several embeddings.
 

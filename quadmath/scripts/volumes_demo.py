@@ -23,7 +23,7 @@ def main() -> None:
 
     from quadray import Quadray, integer_tetra_volume  # noqa: WPS433
     from cayley_menger import tetra_volume_cayley_menger, ivm_tetra_volume_cayley_menger  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import csv  # noqa: WPS433
 
@@ -72,27 +72,28 @@ def main() -> None:
     ax.legend(loc="upper left")
     # Add small S3 reference consistent with glossary
     ax.text(0.02, 0.98, r"$S3=\sqrt{9/8}$", transform=ax.transAxes, va="top", ha="left")
-    outdir = get_output_dir()
-    outpath = os.path.join(outdir, "volumes_scale_plot.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    outpath = os.path.join(figure_dir, "volumes_scale_plot.png")
     fig.tight_layout()
     fig.savefig(outpath, dpi=160, bbox_inches="tight")
     # Also save as vector graphics for print-quality
-    fig.savefig(os.path.join(outdir, "volumes_scale_plot.svg"))
+    fig.savefig(os.path.join(figure_dir, "volumes_scale_plot.svg"))
     print(outpath)
 
     # Save raw data alongside the figure for reproducibility
     np.savez(
-        os.path.join(outdir, "volumes_scale_data.npz"),
+        os.path.join(data_dir, "volumes_scale_data.npz"),
         scales=np.array(scales, dtype=float),
         V_xyz=np.array(v_xyz_list, dtype=float),
         V_ivm=np.array(v_ivm_list, dtype=float),
     )
-    with open(os.path.join(outdir, "volumes_scale_data.csv"), "w", newline="") as f:
+    with open(os.path.join(data_dir, "volumes_scale_data.csv"), "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["scale", "V_xyz", "V_ivm"])
         for s, vx, vi in zip(scales, v_xyz_list, v_ivm_list):
             writer.writerow([float(s), float(vx), float(vi)])
-    print(os.path.join(outdir, "volumes_scale_data.csv"))
+    print(os.path.join(data_dir, "volumes_scale_data.csv"))
 
 
 if __name__ == "__main__":

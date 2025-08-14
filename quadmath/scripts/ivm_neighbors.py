@@ -26,7 +26,7 @@ def main() -> None:
 
     from visualize import plot_ivm_neighbors  # noqa: WPS433
     from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
-    from paths import get_output_dir  # noqa: WPS433
+    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import numpy as np  # noqa: WPS433
 
@@ -119,8 +119,9 @@ def main() -> None:
     axD.set_zlabel("Z")
     _set_axes_equal(axD)
 
-    outdir = get_output_dir()
-    outpath2 = os.path.join(outdir, "ivm_neighbors_edges.png")
+    figure_dir = get_figure_dir()
+    data_dir = get_data_dir()
+    outpath2 = os.path.join(figure_dir, "ivm_neighbors_edges.png")
     # Avoid tight_layout with 3D subplots; set margins manually
     fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.06, wspace=0.08, hspace=0.12)
     fig.savefig(outpath2, dpi=220)
@@ -131,9 +132,9 @@ def main() -> None:
     import csv  # noqa: WPS433
     q_arr = np.array([p.as_tuple() for p in points], dtype=int)
     xyz_arr = np.array(xyz, dtype=float)
-    np.savez(os.path.join(outdir, "ivm_neighbors_edges_data.npz"), quadrays=q_arr, xyz=xyz_arr, radius=r)
+    np.savez(os.path.join(data_dir, "ivm_neighbors_edges_data.npz"), quadrays=q_arr, xyz=xyz_arr, radius=r)
     # Also provide a simple CSV of neighbor coordinates (both Quadray and XYZ)
-    csv_path = os.path.join(outdir, "ivm_neighbors_data.csv")
+    csv_path = os.path.join(data_dir, "ivm_neighbors_data.csv")
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["a", "b", "c", "d", "x", "y", "z"])

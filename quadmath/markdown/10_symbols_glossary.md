@@ -158,6 +158,8 @@ The table below enumerates public symbols from `src/` modules.
 | `nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
+| `paths` | `get_data_dir` | function | `()` | Return `quadmath/output/data` path and ensure it exists. |
+| `paths` | `get_figure_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. |
 | `paths` | `get_output_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. |
 | `paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
 | `quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
