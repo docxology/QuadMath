@@ -7,6 +7,6 @@
 \contentsline {subsection}{\numberline {1.5}Quadray Normalization (Fuller.4D)}{3}{subsection.1.5}%
 \contentsline {subsection}{\numberline {1.6}Distance (Embedding Sketch; Coxeter.4D slice)}{3}{subsection.1.6}%
 \contentsline {subsection}{\numberline {1.7}Minkowski Line Element (Einstein.4D analogy)}{3}{subsection.1.7}%
-\contentsline {subsection}{\numberline {1.8}High-Precision Arithmetic Note}{7}{subsection.1.8}%
-\contentsline {subsubsection}{\numberline {1.8.1}Reproducibility artifacts and external validation}{7}{subsubsection.1.8.1}%
-\contentsline {subsection}{\numberline {1.9}Namespaces summary (notation)}{7}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.8}High-Precision Arithmetic Note}{9}{subsection.1.8}%
+\contentsline {subsubsection}{\numberline {1.8.1}Reproducibility artifacts and external validation}{9}{subsubsection.1.8.1}%
+\contentsline {subsection}{\numberline {1.9}Namespaces summary (notation)}{9}{subsection.1.9}%

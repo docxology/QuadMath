@@ -124,6 +124,10 @@ run_generation_scripts() {
   if [ -f "$REPO_ROOT/quadmath/scripts/information_demo.py" ]; then
     $runner "$REPO_ROOT/quadmath/scripts/information_demo.py" || exit 1
   fi
+  # Enhanced Active Inference figures (Figures 13 and 14)
+  if [ -f "$REPO_ROOT/quadmath/scripts/enhanced_active_inference_figures.py" ]; then
+    $runner "$REPO_ROOT/quadmath/scripts/enhanced_active_inference_figures.py" || exit 1
+  fi
   # Auto-generate glossary API table
   if [ -f "$REPO_ROOT/quadmath/scripts/generate_glossary.py" ]; then
     $runner "$REPO_ROOT/quadmath/scripts/generate_glossary.py" || exit 1
@@ -196,13 +200,20 @@ build_one "08_equations_appendix.md" "Equations and Math Supplement"
 build_one "09_free_energy_active_inference.md" "Appendix: Free Energy and Active Inference"
 build_one "10_symbols_glossary.md" "Appendix: Symbols and Glossary"
 
-# Build combined document
+# Build combined document with page breaks between sections
+# Each major section (01_introduction, 02_4d_namespaces, etc.) will start on a new page
+# This ensures clean separation and professional document layout
 {
   : > "$COMBINED_MD"
   for i in "${!MODULES[@]}"; do
+    # Add page break before each section (except the first)
+    if [ $i -gt 0 ]; then
+      printf '\n\\newpage\n\n' >> "$COMBINED_MD"
+    fi
     cat "$MARKDOWN_DIR/${MODULES[$i]}" >> "$COMBINED_MD"
+    # Add extra spacing after each section for better separation
     if [ $i -lt $((${#MODULES[@]} - 1)) ]; then
-      printf '\f\n\n' >> "$COMBINED_MD"
+      printf '\n\n' >> "$COMBINED_MD"
     fi
   done
 }

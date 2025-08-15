@@ -28,7 +28,7 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
   \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta).
   \end{equation}
 
-Figures: See the Fisher Information Matrix and free energy figures in the optimization section above.
+Figures: See the enhanced Figures 13 and 14 in the optimization section above, which demonstrate the integration of natural gradient descent with Active Inference principles and the 4D framework context.
 
 Discrete variational optimization on the quadray lattice: `discrete_ivm_descent` greedily descends a free-energy-like objective over IVM moves, yielding integer-valued trajectories. See the path animation artifact `discrete_path.mp4` in `quadmath/output/`.
 

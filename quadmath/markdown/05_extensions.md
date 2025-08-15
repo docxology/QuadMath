@@ -1,6 +1,6 @@
 # Extensions of 4D and Quadrays
 
-Here we review some extensions of the Quadray 4D framework, including multi-objective optimization, machine learning, active inference, complex systems, pedagogy, and implementations, with an emphasis on cognitive security.
+Here we review some extensions of the Quadray 4D framework, including multi-objective optimization, machine learning, computer graphics and GPU acceleration, active inference, complex systems, pedagogy, and implementations, with an emphasis on cognitive security.
 
 ## Multi-Objective Optimization
 
@@ -15,11 +15,22 @@ Here we review some extensions of the Quadray 4D framework, including multi-obje
 
 References: see [Fisher information](https://en.wikipedia.org/wiki/Fisher_information), [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient), and quadray conversion notes by Urner for embedding choices.
 
+## Computer Graphics and GPU Acceleration
+
+- **Quadray visualization acceleration**: GPU-accelerated rendering of tetrahedral coordinate systems enables real-time exploration of 4D geometric structures. The parallel nature of GPU architectures naturally maps to the four-basis vector representation of quadrays, allowing simultaneous computation of vertex positions, edge connections, and face tessellations across thousands of tetrahedra.
+- **Integer arithmetic optimization**: GPU compute shaders excel at integer-based volume calculations and determinant computations using the Bareiss algorithm. The discrete lattice structure of quadray coordinates benefits from parallel integer arithmetic units, achieving significant speedups over CPU implementations for large-scale geometric computations.
+- **Dynamic programming acceleration**: GPU-accelerated dynamic programming algorithms leverage CUDA Dynamic Parallelism for adaptive parallel computation of recursive geometric algorithms. This approach enables efficient handling of varying computational workloads in tetrahedral decomposition and optimization problems, as demonstrated in applications like the Mandelbrot set computation where dynamic parallelism manages computational complexity effectively.
+- **Parallel geometric algorithms**: Implementation of GPU-optimized versions of algorithms like QuickHull for convex hull computation in quadray space achieves substantial performance improvements. The tetrahedral lattice structure naturally supports parallel prefix sum operations and efficient neighbor queries, enabling real-time visualization of complex 4D geometric transformations.
+- **Memory bandwidth optimization**: The structured memory access patterns of quadray coordinates align well with GPU memory hierarchies, enabling efficient coalesced memory access for large-scale geometric datasets. This optimization is particularly beneficial for applications requiring real-time rendering of complex polyhedral structures and dynamic tessellations.
+
+References: GPU-accelerated geometry processing techniques ([arxiv.org](https://arxiv.org/abs/1501.04706?utm_source=openai)), CUDA Dynamic Parallelism for adaptive computation ([developer.nvidia.com](https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/?utm_source=openai)), and parallel scan algorithms for optimization ([developer.nvidia.com](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing?utm_source=openai)).
+
 ## Active Inference and Free Energy
 
 - Free energy $\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]$ (see Eq. \eqref{eq:supp_free_energy} in the equations appendix); background: [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and overviews connecting to predictive coding and control.
 - Belief updates follow steepest descent in Fisher geometry using the natural gradient (see Eq. \eqref{eq:supp_natgrad} in the equations appendix); quadray constraints improve stability/interpretability.
 - Links to metabolic efficiency and biologically plausible computation.
+- For more information, see the Appendix: The Free Energy Principle and Active Inference.
 
 ## Complex Systems and Collective Intelligence
 

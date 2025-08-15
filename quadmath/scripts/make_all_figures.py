@@ -59,12 +59,14 @@ def _run_script(path: str) -> List[str]:
 def main() -> None:
     scripts = [
         os.path.join(_repo_root(), "quadmath", "scripts", "information_demo.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "enhanced_active_inference_figures.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "volumes_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "ivm_neighbors.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "quadray_clouds.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "simplex_animation.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "discrete_variational_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "sympy_formalisms.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "gpu_acceleration_demo.py"),
     ]
 
     all_paths: List[str] = []

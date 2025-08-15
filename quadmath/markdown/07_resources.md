@@ -95,7 +95,7 @@ The [4dsolutions organization](https://github.com/4dsolutions) provides the most
 ## Community Discussions and Collaborative Platforms
 
 ### Active Platforms
-- **Math4Wisdom**: [Collaborative platform](https://coda.io/@daniel-ari-friedman/math4wisdom/ivm-xyz-40) with curated IVM↔XYZ conversion resources and cross-reference materials
+- **Math4Wisdom Knowledge Engineering**: [Collaborative platform](https://coda.io/d/_d0SvdI3KSto/Knowledge-Engineering_suxu39sp) with various art, resources, and cross-reference materials
 - **synergeo discussion archive**: [Groups.io platform](https://groups.io/g/synergeo/topics) with ongoing community discussions and technical exchanges
 
 ### Historical Archives
@@ -108,17 +108,6 @@ The [4dsolutions organization](https://github.com/4dsolutions) provides the most
 
 ### Academic Publications
 - **Flextegrity**: [Generating the Flextegrity Lattice (academia.edu)](https://www.academia.edu/44531954/Generating_the_Flextegrity_Lattice)
-
-## Tooling and Technical Resources
-
-### High-Precision Arithmetic
-- **GCC libquadmath (binary128)**: [Official GCC libquadmath documentation](https://gcc.gnu.org/onlinedocs/libquadmath/index.html)
-
-## Cross-Language and Cross-Platform Validation
-
-### Implementation Consistency
-- **Rust (rusty_rays)** and **Clojure (synmods)** mirror the Python algorithms for vector ops and tetravolumes, serving as independent checks on correctness and performance comparisons.
-- **POV-Ray (quadcraft.py)** and **VPython (BookCovers)** demonstrate rendering pipelines for CCP/IVM scenes and educational animations.
 
 ### Context and Integration
 These materials popularize the IVM/CCP/FCC framing of space, integer tetravolumes, and projective Quadray normalization. They inform the methods in this paper and complement the `src/` implementations (see `quadray.py`, `cayley_menger.py`, `linalg_utils.py`).

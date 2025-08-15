@@ -7,6 +7,10 @@
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/natural_gradient_path.csv
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/free_energy_curve.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
+Figure 13 saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_13_4d_trajectory.png
+Figure 14 saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_14_free_energy_landscape.png
+Figure 13: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_13_4d_trajectory.png
+Figure 14: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_14_free_energy_landscape.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/volumes_scale_plot.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/volumes_scale_data.csv
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
@@ -17,6 +21,7 @@
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_animation.mp4
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_trace.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_final.png
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_trace_visualization.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path_final.png

@@ -97,6 +97,17 @@ Descriptions:
 - **Namespaces**: We use Coxeter.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E⁴, Minkowski spacetime, and Quadray/IVM synergetics, respectively. This avoids conflation of Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and synergetic tetravolume conventions.
 - **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) for algorithmic verification and performance comparison baselines. See the [Resources](07_resources.md) section for comprehensive details.
 
+## Polyhedra and Synergetic Shapes
+
+| Symbol | Name | Description |
+| --- | --- | --- |
+| Tetrahedron | Regular tetrahedron | Fundamental unit with V=1 in IVM units |
+| Cube | Regular hexahedron | V=3 in IVM units; orthogonal space-filling |
+| Octahedron | Regular octahedron | V=4 in IVM units; edge-midpoint construction |
+| Rhombic Dodecahedron | 12-faced solid | V=6 in IVM units; Voronoi cell of FCC packing |
+| Cuboctahedron | Vector equilibrium | V=20 in IVM units; shell of 12 IVM neighbors |
+| Truncated Octahedron | Archimedean solid | V=20 in IVM units; space-filling tiling |
+
 ## Acronyms and abbreviations
 
 | Acronym | Meaning |
@@ -143,12 +154,16 @@ The table below enumerates public symbols from `src/` modules.
 | `glossary_gen` | `inject_between_markers` | function | `(markdown_text, begin, end, payload)` |  |
 | `information` | `action_update` | function | `(action, free_energy_fn, step_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. |
 | `information` | `finite_difference_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. |
-| `information` | `fisher_information_matrix` | function | `(gradients)` | Estimate the Fisher information matrix via sample gradients. |
+| `information` | `fisher_information_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. |
+| `information` | `fisher_information_quadray` | function | `(gradients, embedding_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. |
 | `information` | `free_energy` | function | `(log_p_o_given_s, q, p)` | Variational free energy for discrete latent states. |
 | `information` | `natural_gradient_step` | function | `(gradient, fisher, step_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. |
 | `information` | `perception_update` | function | `(mu, derivative_operator, free_energy_fn, step_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. |
 | `linalg_utils` | `bareiss_determinant_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. |
 | `metrics` | `fim_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. |
+| `metrics` | `fisher_condition_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. |
+| `metrics` | `fisher_curvature_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. |
+| `metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
 | `metrics` | `information_length` | function | `(path_gradients)` | Path length in information space via gradient-weighted arc length. |
 | `metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
 | `nelder_mead_quadray` | `SimplexState` | class | `` |  |

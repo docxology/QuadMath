@@ -164,6 +164,9 @@
 }
 }
 
+% Simple page break support for document structure
+% Note: Page breaks are handled in the markdown generation, not here
+
 \title{Extensions of 4D and Quadrays}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
 \date{August 15, 2025}
@@ -182,9 +185,9 @@
 Quadrays}\label{extensions-of-4d-and-quadrays}}
 
 Here we review some extensions of the Quadray 4D framework, including
-multi-objective optimization, machine learning, active inference,
-complex systems, pedagogy, and implementations, with an emphasis on
-cognitive security.
+multi-objective optimization, machine learning, computer graphics and
+GPU acceleration, active inference, complex systems, pedagogy, and
+implementations, with an emphasis on cognitive security.
 
 \hypertarget{multi-objective-optimization}{%
 \subsection{Multi-Objective
@@ -223,6 +226,58 @@ information},
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient},
 and quadray conversion notes by Urner for embedding choices.
 
+\hypertarget{computer-graphics-and-gpu-acceleration}{%
+\subsection{Computer Graphics and GPU
+Acceleration}\label{computer-graphics-and-gpu-acceleration}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Quadray visualization acceleration}: GPU-accelerated rendering
+  of tetrahedral coordinate systems enables real-time exploration of 4D
+  geometric structures. The parallel nature of GPU architectures
+  naturally maps to the four-basis vector representation of quadrays,
+  allowing simultaneous computation of vertex positions, edge
+  connections, and face tessellations across thousands of tetrahedra.
+\item
+  \textbf{Integer arithmetic optimization}: GPU compute shaders excel at
+  integer-based volume calculations and determinant computations using
+  the Bareiss algorithm. The discrete lattice structure of quadray
+  coordinates benefits from parallel integer arithmetic units, achieving
+  significant speedups over CPU implementations for large-scale
+  geometric computations.
+\item
+  \textbf{Dynamic programming acceleration}: GPU-accelerated dynamic
+  programming algorithms leverage CUDA Dynamic Parallelism for adaptive
+  parallel computation of recursive geometric algorithms. This approach
+  enables efficient handling of varying computational workloads in
+  tetrahedral decomposition and optimization problems, as demonstrated
+  in applications like the Mandelbrot set computation where dynamic
+  parallelism manages computational complexity effectively.
+\item
+  \textbf{Parallel geometric algorithms}: Implementation of
+  GPU-optimized versions of algorithms like QuickHull for convex hull
+  computation in quadray space achieves substantial performance
+  improvements. The tetrahedral lattice structure naturally supports
+  parallel prefix sum operations and efficient neighbor queries,
+  enabling real-time visualization of complex 4D geometric
+  transformations.
+\item
+  \textbf{Memory bandwidth optimization}: The structured memory access
+  patterns of quadray coordinates align well with GPU memory
+  hierarchies, enabling efficient coalesced memory access for
+  large-scale geometric datasets. This optimization is particularly
+  beneficial for applications requiring real-time rendering of complex
+  polyhedral structures and dynamic tessellations.
+\end{itemize}
+
+References: GPU-accelerated geometry processing techniques
+(\href{https://arxiv.org/abs/1501.04706?utm_source=openai}{arxiv.org}),
+CUDA Dynamic Parallelism for adaptive computation
+(\href{https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/?utm_source=openai}{developer.nvidia.com}),
+and parallel scan algorithms for optimization
+(\href{https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing?utm_source=openai}{developer.nvidia.com}).
+
 \hypertarget{active-inference-and-free-energy}{%
 \subsection{Active Inference and Free
 Energy}\label{active-inference-and-free-energy}}
@@ -242,6 +297,9 @@ Energy}\label{active-inference-and-free-energy}}
   appendix); quadray constraints improve stability/interpretability.
 \item
   Links to metabolic efficiency and biologically plausible computation.
+\item
+  For more information, see the Appendix: The Free Energy Principle and
+  Active Inference.
 \end{itemize}
 
 \hypertarget{complex-systems-and-collective-intelligence}{%

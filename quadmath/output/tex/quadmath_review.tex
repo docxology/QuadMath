@@ -186,6 +186,9 @@
 }
 }
 
+% Simple page break support for document structure
+% Note: Page breaks are handled in the markdown generation, not here
+
 \title{QuadMath: An Analytical Review of 4D and Quadray Coordinates}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
 \date{August 15, 2025}
@@ -302,8 +305,10 @@ availability}\label{reproducibility-and-data-availability}}
   constants used throughout. Equation labels (e.g., Eq.
   \eqref{eq:supp_lattice_det} and Eq. \eqref{eq:supp_fim}) and figure
   labels are automatically numbered by LaTeX for consistent
-  cross-referencing. 
+  cross-referencing.
 \end{itemize}
+
+\newpage
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -425,7 +430,31 @@ symmetric embedding with wireframe context. Panel B shows close-packed
 spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve around
 one'').
 
-\includegraphics{../output/figures/graphical_abstract_quadray.png} 
+\begin{figure}
+\centering
+\includegraphics{../output/figures/graphical_abstract_quadray.png}
+\caption{\textbf{Quadray coordinate system overview (graphical
+abstract)}. \textbf{Panel A}: Four Quadray axes (A,B,C,D) rendered as
+colored directional arrows from the origin to the vertices of a regular
+tetrahedron under the default symmetric embedding. Each axis is
+distinctly colored (A=blue, B=orange, C=green, D=red) with axis labels
+positioned at the vertex endpoints. A light gray wireframe connects the
+four vertices to emphasize the tetrahedral geometry underlying the
+coordinate system. This panel illustrates the fundamental Fuller.4D
+direction-based structure where Quadrays represent four canonical
+directions in tetrahedral space rather than orthogonal Cartesian
+dimensions. \textbf{Panel B}: The same tetrahedral vertices shown as
+close-packed spheres with radius chosen so neighboring spheres kiss
+along tetrahedron edges, emphasizing the connection to the Isotropic
+Vector Matrix (IVM), Cubic Close Packing (CCP), and Face-Centered Cubic
+(FCC) arrangements. Each sphere is colored to match its corresponding
+axis from Panel A, with light edge wireframes providing geometric
+context. This visualization demonstrates how Quadray coordinates
+naturally align with dense sphere packing and the ``twelve around one''
+coordination motif central to synergetics and Fuller.4D modeling.}
+\end{figure}
+
+\newpage
 
 \hypertarget{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}{%
 \section{4D Namespaces: Coxeter.4D, Einstein.4D,
@@ -640,8 +669,10 @@ include related visualizations in the 4dsolutions ecosystem. See the
   Cayley--Menger).
 \item
   Use \textbf{Einstein.4D} as a metric analogy when discussing geodesics
-  or time-evolution; do not mix with synergetic unit conventions. 
+  or time-evolution; do not mix with synergetic unit conventions.
 \end{itemize}
+
+\newpage
 
 \hypertarget{quadray-analytical-details-and-methods}{%
 \section{Quadray Analytical Details and
@@ -916,6 +947,14 @@ Shell of the 12 nearest IVM neighbors: permutations of
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 20\strut
 \end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Truncated octahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Archimedean solid with 6 square and 8 hexagonal faces; space-filling
+tiling\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+20\strut
+\end{minipage}\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -1147,6 +1186,7 @@ Cube & 3\tabularnewline
 Octahedron & 4\tabularnewline
 Rhombic Dodecahedron & 6\tabularnewline
 Cuboctahedron (Vector Equilibrium) & 20\tabularnewline
+Truncated Octahedron & 20\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -1341,26 +1381,28 @@ and further analysis.}
 \begin{figure}
 \centering
 \includegraphics{../output/figures/polyhedra_quadray_constructions.png}
-\caption{\textbf{Synergetic polyhedra volume relationships in the
-Quadray/IVM framework (network diagram)}. This schematic illustrates the
-hierarchical volume relationships among key polyhedra when constructed
-with consistent edge lengths and expressed as integer-coordinate linear
-combinations of Quadray basis vectors. \textbf{Nodes (volumes in IVM
-tetra-units)}: Regular tetrahedron (V=1, fundamental unit), cube (V=3),
-octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector
-equilibrium (V=20). \textbf{Directed arrows (geometric relationships)}:
-The cube emerges as approximately 3× the tetrahedron volume through
-orthogonal space-filling; the octahedron (V=4) forms from edge-midpoint
-unions on the tetrahedral frame; the rhombic dodecahedron (V=6) serves
-as the Voronoi cell of the FCC/CCP lattice when centered at the origin;
-the cuboctahedron (V=20) represents the shell of twelve nearest IVM
-neighbors at permutations of \((2,1,1,0)\) Quadray coordinates.
-\textbf{Fuller.4D significance}: These integer volume ratios reflect the
-quantized nature of space-filling in synergetics, where the regular
-tetrahedron provides a natural unit container and other polyhedra emerge
-as integer multiples, supporting discrete geometric computation and
-exact lattice-based optimization methods. All constructions respect the
-IVM unit convention where the regular tetrahedron has tetravolume 1.}
+\caption{\textbf{Enhanced synergetic polyhedra volume relationships in
+the Quadray/IVM framework (comprehensive visualization)}. This enhanced
+figure combines 3D polyhedra visualizations with an extended network
+diagram showing integer volume relationships among key synergetic
+polyhedra. \textbf{Left panel (3D visualizations)}: Color-coded
+polyhedra including regular tetrahedron (V=1, fundamental unit), cube
+(V=3), octahedron (V=4), rhombic dodecahedron (V=6), cuboctahedron
+(V=20), and truncated octahedron (V=20), all constructed with consistent
+edge lengths and proper geometric faces. \textbf{Right panel (network
+diagram)}: Extended volume relationships showing fundamental shapes
+(V=1,3,4,6), complex constructions (V=20), and scaling relationships (2×
+edge length → 8× volume). \textbf{Additional polyhedra}: Includes
+truncated octahedron (V=20) and scaled variants demonstrating the cubic
+volume scaling law V ∝ L³ in IVM units. \textbf{Geometric
+constructions}: Edge-union relationships, truncation operations, dual
+polyhedra, and Voronoi cell constructions. \textbf{Fuller.4D
+significance}: These integer volume ratios reflect the quantized nature
+of space-filling in synergetics, where the regular tetrahedron provides
+a natural unit container and other polyhedra emerge as integer
+multiples, supporting discrete geometric computation and exact
+lattice-based optimization methods. All constructions respect the IVM
+unit convention where the regular tetrahedron has tetravolume 1.}
 \end{figure}
 
 \hypertarget{short-python-snippets}{%
@@ -1641,8 +1683,10 @@ Relevant tests (\passthrough{\lstinline!tests/!}):
   plateaus.
 \item
   Face/edge analyses: interpret sensitivity along edges; subspace
-  searches across faces. 
+  searches across faces.
 \end{itemize}
+
+\newpage
 
 \hypertarget{optimization-in-4d}{%
 \section{Optimization in 4D}\label{optimization-in-4d}}
@@ -1786,27 +1830,49 @@ volume diagnostics.
 \begin{figure}
 \centering
 \includegraphics{../output/figures/simplex_final.png}
-\caption{\textbf{Final converged simplex configuration in 3D embedding
-space}. This 3D scatter plot shows the four vertices of the Nelder--Mead
-simplex after 12 iterations of discrete optimization on the integer
-Quadray lattice. \textbf{Points}: Four colored spheres representing the
-final simplex vertices, each positioned at integer Quadray coordinates
-projected to 3D space via the default embedding matrix. \textbf{Colors}:
-Each vertex has a distinct color (blue, orange, green, red) for easy
-identification. \textbf{Optimization context}: These vertices represent
-the final state of the discrete Nelder--Mead algorithm after converging
-to a local optimum on the integer lattice. The tight clustering of
-vertices indicates successful convergence, with the simplex having
-contracted around the optimal point. \textbf{Lattice constraints}: All
-vertex positions correspond to integer Quadray coordinates,
-demonstrating the discrete nature of the optimization. The final simplex
-volume is minimal on the integer lattice, representing a stable
-configuration where further discrete moves do not improve the objective
-function. This visualization complements the time-series animation
-(\passthrough{\lstinline!simplex\_animation.mp4!}) and the diagnostic
-traces in the previous figure. The final simplex volume is minimal on
-the integer lattice, representing a stable ``energy level'' where
-further discrete moves do not improve the objective function.}
+\caption{\textbf{Nelder-Mead simplex evolution on integer Quadray
+lattice (2×2 panel)}. This comprehensive visualization shows the simplex
+optimization process at key iterations (0, 3, 6, 9) to demonstrate the
+discrete convergence behavior. \textbf{Top-left (Iteration 0)}: Initial
+simplex configuration with four vertices forming a tetrahedron in 3D
+embedding space, starting from widely dispersed positions.
+\textbf{Top-right (Iteration 3)}: Early optimization state showing
+initial simplex contraction and vertex repositioning toward the optimal
+region. \textbf{Bottom-left (Iteration 6)}: Mid-optimization with
+vertices converging toward the optimum at coordinates (2,2,2).
+\textbf{Bottom-right (Iteration 9)}: Final converged state where all
+vertices have collapsed to the optimal point (2,2,2), representing
+successful convergence to the global minimum. \textbf{Key features}:
+Each subplot shows the tetrahedral simplex with vertices as red spheres
+and edges as blue lines connecting the vertices. The objective function
+values and vertex spread are displayed in each subplot title, showing
+the monotonic decrease in both quantities. \textbf{Discrete lattice
+behavior}: The step-wise convergence demonstrates how the integer
+Quadray lattice constrains optimization to discrete volume levels,
+creating the characteristic plateau behavior seen in the diagnostic
+traces.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/simplex_trace_visualization.png}
+\caption{\textbf{Complete simplex optimization trace visualization}.
+This 3D plot shows the complete trajectory of all four simplex vertices
+across all optimization iterations, providing a comprehensive view of
+the optimization path. \textbf{Vertex traces}: Each vertex follows a
+distinct colored path (red, blue, green, orange) from its initial
+position to the final converged point at (2,2,2). \textbf{Key iteration
+markers}: Large markers at iterations 0, 3, 6, and 9 highlight critical
+stages in the optimization process. \textbf{Convergence point}: The
+black star at (2,2,2) marks the final converged state where all vertices
+meet at the global optimum. \textbf{Optimization insights}: The trace
+reveals how the simplex contracts systematically, with vertices moving
+in coordinated patterns that respect the integer lattice constraints.
+The discrete nature of the optimization is evident in the step-wise
+vertex movements, which can only occur to valid integer Quadray
+coordinates. This visualization complements the 2×2 panel view by
+showing the complete optimization trajectory in a single, interpretable
+plot.}
 \end{figure}
 
 Raw artifacts: the full trajectory animation
@@ -1896,66 +1962,80 @@ form)}\label{information-geometric-view-einstein.4d-analogy-in-metric-form}}
 \begin{figure}
 \centering
 \includegraphics{../output/figures/fisher_information_matrix.png}
-\caption{\textbf{Empirical Fisher Information Matrix (FIM) for noisy
-linear regression}. This heatmap visualizes the 3×3 Fisher information
-matrix \(F_{ij}\) estimated from per-sample gradients of a misspecified
-linear regression model. \textbf{Matrix structure}: The FIM captures the
-local curvature of the log-likelihood surface around the current
-parameter estimate, with brighter colors indicating higher information
-content. \textbf{Diagonal dominance}: The diagonal elements (F₀₀, F₁₁,
-F₂₂) show the strongest information content, indicating that each
-parameter contributes independently to the model's predictive power.
-\textbf{Off-diagonal structure}: The off-diagonal elements reveal
-parameter interactions and potential redundancy in the model
-specification. \textbf{Optimization implications}: This FIM structure
-guides natural gradient descent by weighting parameter updates according
-to local curvature, leading to more efficient convergence than standard
-gradient descent. The matrix is computed empirically from training data,
-making it adaptive to the specific data distribution and current
-parameter values. This empirical approach is particularly valuable when
-the true data-generating process is unknown or when working with
-complex, non-linear models where analytical FIM computation is
-intractable.}
+\caption{\textbf{Enhanced Fisher Information Matrix (FIM) with 4D
+Framework Context}. This two-panel visualization shows the empirical
+Fisher information matrix alongside a comprehensive explanation of how
+it connects the three 4D frameworks. \textbf{Left panel}: The 3×3 Fisher
+information matrix \(F_{ij}\) estimated from per-sample gradients of a
+misspecified linear regression model, displayed as a heatmap with value
+annotations. \textbf{Matrix structure}: The FIM captures the local
+curvature of the log-likelihood surface around the current parameter
+estimate, with brighter colors indicating higher information content.
+\textbf{Right panel}: 4D framework context explaining how the FIM
+bridges different mathematical frameworks. \textbf{Coxeter.4D
+(Euclidean)}: Standard 3D parameter space with Euclidean metric.
+\textbf{Einstein.4D (Minkowski)}: Fisher metric replaces spacetime
+metric; geodesics follow \(F^{-1}\nabla L\) for optimal parameter
+updates. \textbf{Fuller.4D (Synergetics)}: Tetrahedral coordinate system
+with IVM quantization. \textbf{Mathematical foundation}:
+\(F_{ij} = \frac{1}{N}\sum_n \frac{\partial L}{\partial w_i} \frac{\partial L}{\partial w_j}\)
+where gradients are computed with respect to parameters
+\(w_0, w_1, w_2\). The diagonal dominance shows each parameter
+contributes independently to the model's predictive power, while
+off-diagonal elements reveal parameter interactions and potential
+redundancy. This FIM structure guides natural gradient descent by
+weighting parameter updates according to local curvature, leading to
+more efficient convergence than standard gradient descent.}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/fisher_information_eigenspectrum.png}
-\caption{\textbf{Fisher Information Matrix eigenspectrum: principal
-curvature directions}. This bar chart displays the eigenvalue
-decomposition of the empirical Fisher information matrix from the
-previous figure, revealing the principal curvature directions of the
-parameter manifold. \textbf{X-axis}: Eigenvalue indices (0, 1, 2) sorted
-in descending order of magnitude. \textbf{Y-axis}: Eigenvalue magnitudes
-representing the strength of curvature along each principal direction.
-\textbf{Eigenvalue interpretation}: Larger eigenvalues indicate
-directions of high curvature (tight constraints) where the objective
-function changes rapidly with parameter changes. Smaller eigenvalues
-indicate directions of low curvature (loose constraints) where the
-objective function is relatively flat. \textbf{Optimization geometry}:
-This eigenspectrum reveals the anisotropic nature of the parameter
-space, explaining why natural gradient descent (which scales updates by
-the inverse FIM) converges more efficiently than standard gradient
-descent. The principal directions provide insight into which parameter
-combinations are most sensitive to data changes and which are relatively
-stable. This geometric understanding is crucial for designing effective
-optimization strategies and understanding model behavior.}
+\caption{\textbf{Comprehensive Fisher Information Eigenspectrum with
+Curvature Analysis}. This enhanced two-panel visualization provides both
+the eigenvalue decomposition and a detailed interpretation of the
+parameter space geometry. \textbf{Left panel}: Bar chart showing the
+eigenvalue decomposition of the empirical Fisher information matrix,
+with eigenvalues sorted in descending order. Each bar is color-coded and
+annotated with its numerical value. \textbf{Right panel}: Curvature
+analysis summary providing key metrics and interpretation. \textbf{Key
+metrics}: Condition number (anisotropy measure), anisotropy index
+(normalized directional variation), and total curvature (trace of F).
+\textbf{Interpretation}: Large eigenvalues indicate directions of high
+curvature (tight constraints) where the objective function changes
+rapidly with parameter changes. Small eigenvalues indicate directions of
+low curvature (loose constraints) where the objective function is
+relatively flat. \textbf{4D connection}: The eigenvalues reveal the
+anisotropic nature of the parameter space, explaining why natural
+gradient descent (which scales updates by \(F^{-1}\)) converges more
+efficiently than standard gradient descent. The principal directions
+provide insight into which parameter combinations are most sensitive to
+data changes and which are relatively stable. This geometric
+understanding is crucial for designing effective optimization strategies
+and understanding model behavior in the context of information
+geometry.}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/natural_gradient_path.png}
-\caption{\textbf{Natural gradient descent trajectory on a quadratic
-objective (2D projection)}. This line plot with markers shows the
-parameter trajectory of natural gradient descent converging to the
-optimum of a quadratic objective function. \textbf{Trajectory}: The blue
-line with markers traces the parameter evolution from initial guess to
-final optimum, showing the path taken through the 2D parameter space.
+\caption{\textbf{Natural Gradient Trajectory: Geodesic Motion on
+Information Manifold}. This enhanced visualization shows the parameter
+trajectory of natural gradient descent with improved styling and
+geometric interpretation. \textbf{Trajectory}: The blue line with
+markers traces the parameter evolution from initial guess to final
+optimum, showing the path taken through the 2D parameter space.
 \textbf{Markers}: Each marker represents one optimization step, with
-spacing indicating the step size and convergence rate.
-\textbf{Convergence behavior}: The trajectory shows smooth, direct
-convergence to the optimum, characteristic of natural gradient descent
-on well-conditioned objectives. \textbf{Comparison with standard
+spacing indicating the step size and convergence rate. \textbf{Start/End
+markers}: Green circle marks the initial parameter values, red circle
+marks the converged optimum. \textbf{4D Framework Connection}: This
+trajectory demonstrates geodesic motion on the information manifold,
+where the Fisher metric (Einstein.4D analogy) replaces the physical
+metric. The natural gradient follows \(F^{-1}\nabla L\), creating
+optimal paths through parameter space that respect the intrinsic
+geometry. \textbf{Convergence behavior}: The trajectory shows smooth,
+direct convergence to the optimum, characteristic of natural gradient
+descent on well-conditioned objectives. \textbf{Comparison with standard
 gradient descent}: Natural gradient descent typically produces more
 direct trajectories than standard gradient descent, especially on
 ill-conditioned problems where the parameter space has strong
@@ -1963,33 +2043,106 @@ anisotropy. This efficiency comes from the FIM-based scaling that adapts
 step sizes to local curvature. The trajectory demonstrates how
 information-geometric optimization leverages the intrinsic geometry of
 the parameter space to achieve faster, more stable convergence than
-naive gradient methods.}
+naive gradient methods. \textbf{Grid overlay}: Added for better
+readability and to emphasize the discrete nature of the optimization
+steps.}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/free_energy_curve.png}
-\caption{\textbf{Variational free energy landscape for a discrete
-2-state system}. This curve shows the variational free energy
+\caption{\textbf{Enhanced Variational Free Energy Landscape with 4D
+Framework Integration}. This improved visualization shows the
+variational free energy
 \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
 \eqref{eq:supp_free_energy}) as a function of the variational
-distribution parameter. \textbf{X-axis}: Variational parameter
-controlling the distribution over the two discrete states.
-\textbf{Y-axis}: Free energy value in natural units. \textbf{Curve
-shape}: The free energy exhibits a clear minimum at the optimal
-variational distribution, representing the best approximation to the
-true posterior given the constraints of the variational family.
-\textbf{KL divergence component}: The free energy balances data fit
-(first term) with regularization (KL divergence from prior), preventing
-overfitting while maintaining good predictive performance.
-\textbf{Optimization interpretation}: Minimizing this free energy
-corresponds to finding the best variational approximation to the true
-posterior, a fundamental task in Bayesian inference and active
-inference. The smooth, convex shape of the free energy landscape makes
-optimization straightforward using standard methods like gradient
-descent or natural gradient descent. This variational framework provides
-a principled approach to approximate inference in complex models where
-exact posterior computation is intractable.}
+distribution parameter, with enhanced styling and geometric
+interpretation. \textbf{X-axis}: Variational parameter
+\(q(\text{state}=0)\) controlling the distribution over the two discrete
+states. \textbf{Y-axis}: Free energy value \(\mathcal{F}\) in natural
+units. \textbf{Curve styling}: Enhanced line plot with improved
+thickness, color scheme, and grid overlay for better readability.
+\textbf{Minimum marker}: Red circle highlights the optimal variational
+distribution where free energy is minimized. \textbf{4D Framework
+Connection}: The free energy landscape represents the geometry of the
+variational manifold, where optimization follows geodesics defined by
+the Fisher metric (Einstein.4D analogy). In active inference frameworks,
+minimizing free energy drives both perception and action, analogous to
+how geodesics minimize proper time in relativistic spacetime.
+\textbf{Curve interpretation}: The free energy exhibits a clear minimum
+at the optimal variational distribution, representing the best
+approximation to the true posterior given the constraints of the
+variational family. \textbf{KL divergence component}: The free energy
+balances data fit (first term) with regularization (KL divergence from
+prior), preventing overfitting while maintaining good predictive
+performance. \textbf{Optimization geometry}: The smooth, convex shape of
+the free energy landscape makes optimization straightforward using
+natural gradient descent, which respects the intrinsic geometry of the
+parameter space. This variational framework provides a principled
+approach to approximate inference in complex models where exact
+posterior computation is intractable, while maintaining connections to
+the broader 4D mathematical frameworks.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/enhanced_figure_13_4d_trajectory.png}
+\caption{\textbf{Figure 13: 4D Natural Gradient Trajectory with Active
+Inference Context}. This comprehensive visualization demonstrates
+natural gradient descent (Eq. \eqref{eq:supp_natgrad}) operating within
+the Active Inference framework, showing how information-geometric
+optimization drives perception-action dynamics. \textbf{3D Trajectory}:
+The main panel shows the 4D parameter evolution in 3D space with time
+encoded as color, representing the four-fold partition of Active
+Inference: perception (μ), action (a), internal states (s), and external
+causes (ψ). \textbf{Free Energy Evolution}: The right panel tracks free
+energy minimization over optimization steps, demonstrating the Active
+Inference principle of surprise reduction. \textbf{Component Dynamics}:
+The bottom-left panel shows how each component of the four-fold
+partition evolves during optimization, revealing the coordinated
+dynamics of perception and action. \textbf{4D Framework Integration}:
+The bottom-center panel explains how Coxeter.4D (Euclidean), Einstein.4D
+(Minkowski analogy), and Fuller.4D (Synergetics) frameworks integrate in
+this context. \textbf{Fisher Information}: The bottom-right panel
+displays the Fisher Information Matrix that guides natural gradient
+descent, showing the information geometry underlying the optimization
+process. This figure demonstrates how natural gradient descent
+implements geodesic motion on the information manifold, analogous to how
+particles follow geodesics in Einstein.4D spacetime, while operating
+within the tetrahedral structure of Fuller.4D coordinates.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/enhanced_figure_14_free_energy_landscape.png}
+\caption{\textbf{Figure 14: Enhanced Free Energy Landscape with 4D
+Active Inference Context}. This comprehensive visualization explores the
+variational free energy landscape
+\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
+\eqref{eq:supp_free_energy}) within the 4D Active Inference framework.
+\textbf{3D Landscape}: The main panel shows the free energy surface over
+a 2D parameter space representing perception-action balance, with the
+global minimum marked for optimal inference. \textbf{Contour Analysis}:
+The top-right panel provides 2D contours of the free energy landscape,
+revealing the information geometry structure that guides optimization.
+\textbf{Cross-Sections}: The bottom-left panel shows free energy
+cross-sections at different parameter values, demonstrating parameter
+sensitivity and the smoothness of the optimization landscape.
+\textbf{Four-Fold Partition}: The bottom-center panel illustrates the
+Active Inference tetrahedral structure connecting internal states (μ),
+sensory observations (s), actions (a), and external causes (ψ), showing
+how Fuller.4D geometry naturally encodes this partition. \textbf{Local
+Curvature}: The bottom-right panel displays local curvature information
+derived from the Fisher Information structure, revealing how the
+information geometry adapts to different regions of the parameter space.
+This figure demonstrates how the Free Energy Principle operates within
+the 4D framework: Coxeter.4D provides exact Euclidean geometry for
+measurements, Einstein.4D supplies information-geometric flows for
+optimization, and Fuller.4D offers the tetrahedral structure for
+representing the four-fold partition of Active Inference. The landscape
+shows how minimizing free energy balances prediction error with model
+complexity, driving both perception and action through natural gradient
+descent on the information manifold.}
 \end{figure}
 
 \begin{itemize}
@@ -2037,17 +2190,19 @@ materials, and cross-language validation, see the
   \passthrough{\lstinline!quadmath/output/!}.
 \item
   The greedy IVM descent produces monotone trajectories with
-  integer-valued objectives; see the discrete descent figure below. 
+  integer-valued objectives; see the discrete descent figure below.
 \end{itemize}
+
+\newpage
 
 \hypertarget{extensions-of-4d-and-quadrays}{%
 \section{Extensions of 4D and
 Quadrays}\label{extensions-of-4d-and-quadrays}}
 
 Here we review some extensions of the Quadray 4D framework, including
-multi-objective optimization, machine learning, active inference,
-complex systems, pedagogy, and implementations, with an emphasis on
-cognitive security.
+multi-objective optimization, machine learning, computer graphics and
+GPU acceleration, active inference, complex systems, pedagogy, and
+implementations, with an emphasis on cognitive security.
 
 \hypertarget{multi-objective-optimization}{%
 \subsection{Multi-Objective
@@ -2086,6 +2241,58 @@ information},
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient},
 and quadray conversion notes by Urner for embedding choices.
 
+\hypertarget{computer-graphics-and-gpu-acceleration}{%
+\subsection{Computer Graphics and GPU
+Acceleration}\label{computer-graphics-and-gpu-acceleration}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Quadray visualization acceleration}: GPU-accelerated rendering
+  of tetrahedral coordinate systems enables real-time exploration of 4D
+  geometric structures. The parallel nature of GPU architectures
+  naturally maps to the four-basis vector representation of quadrays,
+  allowing simultaneous computation of vertex positions, edge
+  connections, and face tessellations across thousands of tetrahedra.
+\item
+  \textbf{Integer arithmetic optimization}: GPU compute shaders excel at
+  integer-based volume calculations and determinant computations using
+  the Bareiss algorithm. The discrete lattice structure of quadray
+  coordinates benefits from parallel integer arithmetic units, achieving
+  significant speedups over CPU implementations for large-scale
+  geometric computations.
+\item
+  \textbf{Dynamic programming acceleration}: GPU-accelerated dynamic
+  programming algorithms leverage CUDA Dynamic Parallelism for adaptive
+  parallel computation of recursive geometric algorithms. This approach
+  enables efficient handling of varying computational workloads in
+  tetrahedral decomposition and optimization problems, as demonstrated
+  in applications like the Mandelbrot set computation where dynamic
+  parallelism manages computational complexity effectively.
+\item
+  \textbf{Parallel geometric algorithms}: Implementation of
+  GPU-optimized versions of algorithms like QuickHull for convex hull
+  computation in quadray space achieves substantial performance
+  improvements. The tetrahedral lattice structure naturally supports
+  parallel prefix sum operations and efficient neighbor queries,
+  enabling real-time visualization of complex 4D geometric
+  transformations.
+\item
+  \textbf{Memory bandwidth optimization}: The structured memory access
+  patterns of quadray coordinates align well with GPU memory
+  hierarchies, enabling efficient coalesced memory access for
+  large-scale geometric datasets. This optimization is particularly
+  beneficial for applications requiring real-time rendering of complex
+  polyhedral structures and dynamic tessellations.
+\end{itemize}
+
+References: GPU-accelerated geometry processing techniques
+(\href{https://arxiv.org/abs/1501.04706?utm_source=openai}{arxiv.org}),
+CUDA Dynamic Parallelism for adaptive computation
+(\href{https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/?utm_source=openai}{developer.nvidia.com}),
+and parallel scan algorithms for optimization
+(\href{https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing?utm_source=openai}{developer.nvidia.com}).
+
 \hypertarget{active-inference-and-free-energy}{%
 \subsection{Active Inference and Free
 Energy}\label{active-inference-and-free-energy}}
@@ -2105,6 +2312,9 @@ Energy}\label{active-inference-and-free-energy}}
   appendix); quadray constraints improve stability/interpretability.
 \item
   Links to metabolic efficiency and biologically plausible computation.
+\item
+  For more information, see the Appendix: The Free Energy Principle and
+  Active Inference.
 \end{itemize}
 
 \hypertarget{complex-systems-and-collective-intelligence}{%
@@ -2240,8 +2450,10 @@ Work}\label{limitations-and-future-work}}
   trajectories; document recommended defaults.
 \item
   Hybrid schemes: study schedules that interleave continuous proposals
-  with lattice projection. 
+  with lattice projection.
 \end{itemize}
+
+\newpage
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
@@ -2443,7 +2655,9 @@ verification of algorithmic correctness while educational materials
 demonstrate practical applications across diverse computational
 environments. See the Resources section for comprehensive details on the
 4dsolutions organization, cross-language implementations, educational
-frameworks, and community platforms. 
+frameworks, and community platforms.
+
+\newpage
 
 \hypertarget{resources}{%
 \section{Resources}\label{resources}}
@@ -2805,10 +3019,9 @@ Platforms}\label{community-discussions-and-collaborative-platforms}}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Math4Wisdom}:
-  \href{https://coda.io/@daniel-ari-friedman/math4wisdom/ivm-xyz-40}{Collaborative
-  platform} with curated IVM↔XYZ conversion resources and
-  cross-reference materials
+  \textbf{Math4Wisdom Knowledge Engineering}:
+  \href{https://coda.io/d/_d0SvdI3KSto/Knowledge-Engineering_suxu39sp}{Collaborative
+  platform} with various art, resources, and cross-reference materials
 \item
   \textbf{synergeo discussion archive}:
   \href{https://groups.io/g/synergeo/topics}{Groups.io platform} with
@@ -2854,42 +3067,6 @@ Engines}\label{tetrahedral-voxel-engines}}
   the Flextegrity Lattice (academia.edu)}
 \end{itemize}
 
-\hypertarget{tooling-and-technical-resources}{%
-\subsection{Tooling and Technical
-Resources}\label{tooling-and-technical-resources}}
-
-\hypertarget{high-precision-arithmetic}{%
-\subsubsection{High-Precision
-Arithmetic}\label{high-precision-arithmetic}}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{GCC libquadmath (binary128)}:
-  \href{https://gcc.gnu.org/onlinedocs/libquadmath/index.html}{Official
-  GCC libquadmath documentation}
-\end{itemize}
-
-\hypertarget{cross-language-and-cross-platform-validation}{%
-\subsection{Cross-Language and Cross-Platform
-Validation}\label{cross-language-and-cross-platform-validation}}
-
-\hypertarget{implementation-consistency}{%
-\subsubsection{Implementation
-Consistency}\label{implementation-consistency}}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Rust (rusty\_rays)} and \textbf{Clojure (synmods)} mirror the
-  Python algorithms for vector ops and tetravolumes, serving as
-  independent checks on correctness and performance comparisons.
-\item
-  \textbf{POV-Ray (quadcraft.py)} and \textbf{VPython (BookCovers)}
-  demonstrate rendering pipelines for CCP/IVM scenes and educational
-  animations.
-\end{itemize}
-
 \hypertarget{context-and-integration}{%
 \subsubsection{Context and Integration}\label{context-and-integration}}
 
@@ -2905,7 +3082,9 @@ practical implementations that complement and extend the methods
 developed in this manuscript. Cross-language implementations serve as
 independent verification of algorithmic correctness while educational
 materials demonstrate practical applications across diverse
-computational environments. 
+computational environments.
+
+\newpage
 
 \hypertarget{equations-and-math-supplement-appendix}{%
 \section{Equations and Math Supplement
@@ -3115,6 +3294,40 @@ exact posterior computation is intractable.}
 
 \begin{figure}
 \centering
+\includegraphics{../output/figures/enhanced_figure_13_4d_trajectory.png}
+\caption{\textbf{Enhanced Figure 13: 4D Natural Gradient Trajectory with
+Active Inference Context}. This comprehensive visualization demonstrates
+natural gradient descent (Eq. \ref{eq:supp_natgrad}) operating within
+the Active Inference framework, showing how information-geometric
+optimization drives perception-action dynamics. The figure integrates
+the three 4D frameworks: Coxeter.4D (Euclidean) for exact measurements,
+Einstein.4D (Minkowski analogy) for information-geometric flows, and
+Fuller.4D (Synergetics) for the tetrahedral structure of the four-fold
+partition. The natural gradient implements geodesic motion on the
+information manifold, analogous to how particles follow geodesics in
+Einstein.4D spacetime.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/enhanced_figure_14_free_energy_landscape.png}
+\caption{\textbf{Enhanced Figure 14: Free Energy Landscape with 4D
+Active Inference Context}. This comprehensive visualization explores the
+variational free energy landscape
+\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
+\ref{eq:supp_free_energy}) within the 4D Active Inference framework. The
+figure demonstrates how the Free Energy Principle operates within the 4D
+framework: Coxeter.4D provides exact Euclidean geometry for
+measurements, Einstein.4D supplies information-geometric flows for
+optimization, and Fuller.4D offers the tetrahedral structure for
+representing the four-fold partition of Active Inference. The landscape
+shows how minimizing free energy balances prediction error with model
+complexity, driving both perception and action through natural gradient
+descent on the information manifold.}
+\end{figure}
+
+\begin{figure}
+\centering
 \includegraphics{../output/figures/discrete_path_final.png}
 \caption{\textbf{Discrete IVM descent optimization path (final converged
 state)}. This static frame shows the final position of a discrete
@@ -3261,8 +3474,10 @@ validation}\label{reproducibility-artifacts-and-external-validation}}
 \item
   Fuller.4D: Quadrays/IVM; tetrahedral lattice with integer tetravolume;
   unit regular tetrahedron has volume 1; synergetics scale relations
-  (e.g., S3). 
+  (e.g., S3).
 \end{itemize}
+
+\newpage
 
 \hypertarget{appendix-the-free-energy-principle-and-active-inference}{%
 \section{Appendix: The Free Energy Principle and Active
@@ -3327,8 +3542,9 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   \end{equation}
 \end{itemize}
 
-Figures: See the Fisher Information Matrix and free energy figures in
-the optimization section above.
+Figures: See the enhanced Figures 13 and 14 in the optimization section
+above, which demonstrate the integration of natural gradient descent
+with Active Inference principles and the 4D framework context.
 
 Discrete variational optimization on the quadray lattice:
 \passthrough{\lstinline!discrete\_ivm\_descent!} greedily descends a
@@ -3565,8 +3781,10 @@ to \passthrough{\lstinline!quadmath/output/!}:
   \textbf{External validation}: Cross-reference with volume calculations
   and tetrahedral modeling tools from the
   \href{https://github.com/4dsolutions}{4dsolutions ecosystem}. See the
-  \href{07_resources.md}{Resources} section for comprehensive details. 
+  \href{07_resources.md}{Resources} section for comprehensive details.
 \end{itemize}
+
+\newpage
 
 \hypertarget{appendix-symbols-and-glossary}{%
 \section{Appendix: Symbols and
@@ -3991,6 +4209,66 @@ cross-references)}\label{notes-usage-and-cross-references}}
   \href{07_resources.md}{Resources} section for comprehensive details.
 \end{itemize}
 
+\hypertarget{polyhedra-and-synergetic-shapes}{%
+\subsection{Polyhedra and Synergetic
+Shapes}\label{polyhedra-and-synergetic-shapes}}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+\begin{minipage}[b]{0.30\columnwidth}\raggedright
+Symbol\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Name\strut
+\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Tetrahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Regular tetrahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Fundamental unit with V=1 in IVM units\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Cube\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Regular hexahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+V=3 in IVM units; orthogonal space-filling\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Octahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Regular octahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+V=4 in IVM units; edge-midpoint construction\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Rhombic Dodecahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+12-faced solid\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+V=6 in IVM units; Voronoi cell of FCC packing\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Cuboctahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Vector equilibrium\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+V=20 in IVM units; shell of 12 IVM neighbors\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.30\columnwidth}\raggedright
+Truncated Octahedron\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+Archimedean solid\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
+V=20 in IVM units; space-filling tiling\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
 \hypertarget{acronyms-and-abbreviations}{%
 \subsection{Acronyms and
 abbreviations}\label{acronyms-and-abbreviations}}
@@ -4273,7 +4551,7 @@ Return the Minkowski interval squared ds\^{}2 (Einstein.4D).\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
 class\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
-\passthrough{\lstinline!|  | | `glossary\_gen` | `build\_api\_index` | function | `(src\_dir)` |  | | `glossary\_gen` | `generate\_markdown\_table` | function | `(entries)` |  | | `glossary\_gen` | `inject\_between\_markers` | function | `(markdown\_text, begin, end, payload)` |  | | `information` | `action\_update` | function | `(action, free\_energy\_fn, step\_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. | | `information` | `finite\_difference\_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. | | `information` | `fisher\_information\_matrix` | function | `(gradients)` | Estimate the Fisher information matrix via sample gradients. | | `information` | `free\_energy` | function | `(log\_p\_o\_given\_s, q, p)` | Variational free energy for discrete latent states. | | `information` | `natural\_gradient\_step` | function | `(gradient, fisher, step\_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. | | `information` | `perception\_update` | function | `(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. | | `linalg\_utils` | `bareiss\_determinant\_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. | | `metrics` | `fim\_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. | | `metrics` | `information\_length` | function | `(path\_gradients)` | Path length in information space via gradient-weighted arc length. | | `metrics` | `shannon\_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. | | `nelder\_mead\_quadray` | `SimplexState` | class |!}\strut
+\passthrough{\lstinline!|  | | `glossary\_gen` | `build\_api\_index` | function | `(src\_dir)` |  | | `glossary\_gen` | `generate\_markdown\_table` | function | `(entries)` |  | | `glossary\_gen` | `inject\_between\_markers` | function | `(markdown\_text, begin, end, payload)` |  | | `information` | `action\_update` | function | `(action, free\_energy\_fn, step\_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. | | `information` | `finite\_difference\_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. | | `information` | `fisher\_information\_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. | | `information` | `fisher\_information\_quadray` | function | `(gradients, embedding\_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. | | `information` | `free\_energy` | function | `(log\_p\_o\_given\_s, q, p)` | Variational free energy for discrete latent states. | | `information` | `natural\_gradient\_step` | function | `(gradient, fisher, step\_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. | | `information` | `perception\_update` | function | `(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. | | `linalg\_utils` | `bareiss\_determinant\_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. | | `metrics` | `fim\_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. | | `metrics` | `fisher\_condition\_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. | | `metrics` | `fisher\_curvature\_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. | | `metrics` | `fisher\_quadray\_comparison` | function | `(F\_cartesian, F\_quadray)` | Compare Fisher information matrices between coordinate systems. | | `metrics` | `information\_length` | function | `(path\_gradients)` | Path length in information space via gradient-weighted arc length. | | `metrics` | `shannon\_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. | | `nelder\_mead\_quadray` | `SimplexState` | class |!}\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
 \strut
 \end{minipage}\tabularnewline
