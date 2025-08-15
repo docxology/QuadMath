@@ -267,92 +267,6 @@ Contributions:
   information-theoretic objectives.
 \end{itemize}
 
-\hypertarget{related-work-and-background}{%
-\subsection{Related work and
-background}\label{related-work-and-background}}
-
-Kirby Urner's expositions and implementations have been influential in
-making Quadray coordinates practical and accessible across multiple
-programming languages and educational contexts. The comprehensive
-\href{https://github.com/4dsolutions}{4dsolutions ecosystem} provides
-extensive computational resources for Quadrays and synergetic geometry:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Foundational materials}:
-  \href{https://www.grunch.net/synergetics/quadintro.html}{Urner --
-  Quadray intro},
-  \href{https://www.grunch.net/synergetics/quadxyz.html}{Quadrays and
-  XYZ}, \href{https://www.grunch.net/synergetics/quadphil.html}{Quadrays
-  and the Philosophy of Mathematics}
-\item
-  \textbf{Python implementations}: Core modules
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
-  (Quadray vectors with SymPy support) and
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}
-  (IVM volumes, BEAST modules, multiple algorithms)
-\item
-  \textbf{Educational framework}:
-  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}
-  with interactive tutorials and algorithm comparisons in
-  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{Qvolume.ipynb}
-  (Tom Ace 5×5) and
-  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{VolumeTalk.ipynb}
-  (bridging vs native)
-\item
-  \textbf{Cross-language validation}: Independent implementations in
-  \href{https://github.com/4dsolutions/rusty_rays}{Rust},
-  \href{https://github.com/4dsolutions/synmods}{Clojure}, POV-Ray
-  pipelines
-  (\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{quadcraft.py}),
-  and \href{https://github.com/4dsolutions/BookCovers}{VPython
-  animations}
-\item
-  \textbf{Historical context}:
-  \href{https://mail.python.org/pipermail/edu-sig/2000-May/000498.html}{Python
-  edu-sig post (May 2000)}
-\item
-  \textbf{Related work}:
-  \href{https://github.com/docxology/quadcraft/}{QuadCraft} is a
-  tetrahedral voxel engine game using Quadray coordinates
-\end{itemize}
-
-The 4dsolutions organization spans 29+ repositories with implementations
-across Python, Rust, Clojure, POV-Ray, and VPython, providing extensive
-cross-language validation and educational resources. Core algorithmic
-modules include vector operations, volume calculations, visualization
-pipelines, and pedagogical frameworks that complement and validate the
-methods developed in this manuscript. See the comprehensive catalog in
-\passthrough{\lstinline!07\_resources.md!}.
-
-More background resources:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Tetrahedron volume formulas}: length-based
-  \href{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Menger_determinant}{Cayley--Menger
-  determinant} and determinant-based expressions on vertex coordinates
-  (see
-  \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron
-  -- volume}).
-\item
-  \textbf{Exact determinants}:
-  \href{https://en.wikipedia.org/wiki/Bareiss_algorithm}{Bareiss
-  algorithm}, used in our integer tetravolume implementations.
-\item
-  \textbf{Information geometry}:
-  \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
-  information} and
-  \href{https://en.wikipedia.org/wiki/Natural_gradient}{natural
-  gradient}.
-\item
-  \textbf{Optimization baseline}: the
-  \href{https://en.wikipedia.org/wiki/Nelder\%E2\%80\%93Mead_method}{Nelder--Mead
-  method}, adapted here to the Quadray lattice.
-\end{itemize}
-
 \hypertarget{companion-code-and-tests}{%
 \subsection{Companion code and tests}\label{companion-code-and-tests}}
 
@@ -388,15 +302,18 @@ paper:
   \passthrough{\lstinline!example\_optimize!}).
 \end{itemize}
 
-Figure 1 (graphical abstract): Panel A shows Quadray axes (A,B,C,D)
-under a symmetric embedding with wireframe context. Panel B shows
-close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve
-around one'').
+For comprehensive background resources, computational implementations,
+and related work, see the \href{07_resources.md}{Resources} section.
+
+Graphical abstract: Panel A shows Quadray axes (A,B,C,D) under a
+symmetric embedding with wireframe context. Panel B shows close-packed
+spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve around
+one'').
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/graphical_abstract_quadray.png}
-\caption{\textbf{Figure 1: Quadray coordinate system overview (graphical
+\caption{\textbf{Quadray coordinate system overview (graphical
 abstract)}. \textbf{Panel A}: Four Quadray axes (A,B,C,D) rendered as
 colored directional arrows from the origin to the vertices of a regular
 tetrahedron under the default symmetric embedding. Each axis is
@@ -416,9 +333,5 @@ context. This visualization demonstrates how Quadray coordinates
 naturally align with dense sphere packing and the ``twelve around one''
 coordination motif central to synergetics and Fuller.4D modeling.}
 \end{figure}
-
-Tests illustrate expected behavior and edge cases (see
-\passthrough{\lstinline!tests/!}), and coverage is enforced at 100\% for
-\passthrough{\lstinline!src/!}.
 
 \end{document}

@@ -9,5 +9,5 @@
 \contentsline {subsection}{\numberline {1.6}Convergence and Robustness}{2}{subsection.1.6}%
 \contentsline {subsection}{\numberline {1.7}Information-Geometric View (Einstein.4D analogy in metric form)}{6}{subsection.1.7}%
 \contentsline {subsection}{\numberline {1.8}Multi-Objective and Higher-Dimensional Notes (Coxeter.4D perspective)}{6}{subsection.1.8}%
-\contentsline {subsection}{\numberline {1.9}4dsolutions optimization context and educational implementations}{10}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.9}External validation and computational context}{10}{subsection.1.9}%
 \contentsline {subsection}{\numberline {1.10}Results}{10}{subsection.1.10}%

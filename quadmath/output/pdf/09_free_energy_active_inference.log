@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 08:38
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 09:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1154,31 +1154,27 @@ LaTeX Warning: Reference `eq:supp_natgrad' on page 2 undefined on input line 24
 
 File: ../output/figures/partition_tetrahedron.png Graphic file (type bmp)
 <../output/figures/partition_tetrahedron.png>
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 292.
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 292.
-
-Underfull \hbox (badness 1199) in paragraph at lines 320--335
+[2]
+Underfull \hbox (badness 1199) in paragraph at lines 319--334
 []\TU/DejaVuSerif(0)/m/n/10 Tetrahedral mapping via Quadrays (Fuller.4D): assig
 n each state to a vertex of a tetrahedron, using
  []
 
 
-Underfull \hbox (badness 2521) in paragraph at lines 320--335
+Underfull \hbox (badness 2521) in paragraph at lines 319--334
 \TU/DejaVuSerif(0)/m/n/10 canonical mapping is [][][][][][][][][][][][][][][][]
 [][][][][][][][], [][][][][][][][][][][][][][][][][][][][][][][][], [][][][][][
 ][][][][][][][][][][][][][][][][][][],
  []
 
-[2] [3]
-Underfull \hbox (badness 2368) in paragraph at lines 475--482
+[3]
+Underfull \hbox (badness 2368) in paragraph at lines 477--484
 []\TU/DejaVuSerif(0)/b/n/10 Visualizations\TU/DejaVuSerif(0)/m/n/10 : [][][][][
 ][][][][][], [][][][][][][][][][], [][][][][][][][][][],
  []
 
 
-Underfull \hbox (badness 2065) in paragraph at lines 482--489
+Underfull \hbox (badness 2065) in paragraph at lines 484--491
 []\TU/DejaVuSerif(0)/b/n/10 Raw data\TU/DejaVuSerif(0)/m/n/10 : [][][][][][][][
 ][][], [][][][][][][][][][] (F, grads, X, y, w_true, w_est),
  []
@@ -1191,13 +1187,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 20519 strings out of 478190
- 376376 string characters out of 5854827
- 1012918 words of memory out of 5000000
- 40810 multiletter control sequences out of 15000+600000
- 476692 words of font info for 104 fonts, out of 8000000 for 9000
+ 20511 strings out of 478190
+ 376126 string characters out of 5854827
+ 1007918 words of memory out of 5000000
+ 40804 multiletter control sequences out of 15000+600000
+ 476562 words of font info for 102 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,10n,122p,1908b,1230s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,6n,122p,1712b,1128s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/09_f
 ree_energy_active_inference.pdf (4 pages).

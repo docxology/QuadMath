@@ -163,11 +163,11 @@ def compare_ace_vs_cm_examples() -> str:
 
     # Define descriptive labels for each example
     example_labels = [
-        "Unit Tetra\n(0,0,0,0)-(2,1,0,1)-(2,1,1,0)-(2,0,1,1)",
-        "Scaled Unit\n(0,0,0,0)-(4,2,0,2)-(4,2,2,0)-(4,0,2,2)", 
-        "Mixed Tetra\n(1,0,0,0)-(0,2,1,1)-(1,1,2,0)-(0,1,0,2)",
-        "Centered\n(0,0,0,0)-(3,1,1,1)-(1,3,1,1)-(1,1,3,1)",
-        "Large Mixed\n(0,0,0,0)-(5,2,1,2)-(2,5,2,1)-(1,2,5,2)"
+        "Unit Tetra",
+        "Scaled Unit", 
+        "Mixed Tetra",
+        "Centered",
+        "Large Mixed"
     ]
 
     ax.bar([i - bar_width / 2 for i in x], ace_vals, width=bar_width, label="Ace 5×5 (IVM)", color=color_ace)
@@ -200,7 +200,9 @@ def compare_ace_vs_cm_examples() -> str:
     ax.set_ylim(0.0, top * 1.12 if top > 0 else 1.0)
 
     fig.subplots_adjust(left=0.1, right=0.98, top=0.9, bottom=0.35)
-    fig.savefig(os.path.join(figure_dir, "bridging_vs_native.png"), dpi=220)
+    figure_path = os.path.join(figure_dir, "bridging_vs_native.png")
+    fig.savefig(figure_path, dpi=220)
+    print(figure_path)
     return csv_path
 
 

@@ -5,6 +5,6 @@
 \contentsline {subsection}{\numberline {1.4}Information Theory and Geometry}{2}{subsection.1.4}%
 \contentsline {subsection}{\numberline {1.5}Embeddings and Distances}{3}{subsection.1.5}%
 \contentsline {subsection}{\numberline {1.6}Greek Letters (usage)}{3}{subsection.1.6}%
-\contentsline {subsection}{\numberline {1.7}Notes (usage and cross-references)}{3}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.7}Notes (usage and cross-references)}{4}{subsection.1.7}%
 \contentsline {subsection}{\numberline {1.8}Acronyms and abbreviations}{4}{subsection.1.8}%
 \contentsline {subsection}{\numberline {1.9}API Index (auto-generated; Methods linkage)}{4}{subsection.1.9}%

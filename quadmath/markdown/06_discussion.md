@@ -12,7 +12,7 @@ In practical analysis and simulation, numerical precision matters. Integer-volum
 
 ## Fisher Information and Curvature
 
-The Fisher Information Matrix (FIM) defines a Riemannian metric on parameter space and quantifies local curvature of the statistical manifold. High curvature directions (large eigenvalues of `F`) indicate parameters to which the model is most sensitive; small eigenvalues indicate sloppy directions. Our eigenspectrum visualization (see Figure 11) highlights these scales. Background: [Fisher information](https://en.wikipedia.org/wiki/Fisher_information).
+The Fisher Information Matrix (FIM) defines a Riemannian metric on parameter space and quantifies local curvature of the statistical manifold. High curvature directions (large eigenvalues of `F`) indicate parameters to which the model is most sensitive; small eigenvalues indicate sloppy directions. Our eigenspectrum visualization (see the Fisher Information Matrix eigenspectrum figure above) highlights these scales. Background: [Fisher information](https://en.wikipedia.org/wiki/Fisher_information).
 
 Implication: curvature-aware steps using Eq. \eqref{eq:supp_natgrad} in the equations appendix adaptively scale updates by the inverse metric, improving conditioning relative to vanilla gradient descent.
 
@@ -43,7 +43,7 @@ Applying the FIM within quadray-parameterized models ties statistical curvature 
 
 ### Symbolic analysis (bridging vs native) (Results linkage)
 
-- Exact (SymPy) comparisons confirm that CM+S3 and Ace 5×5 produce identical IVM tetravolumes on canonical small integer-quadray examples. See Figure 5 and the manifest `sympy_symbolics.txt` alongside `bridging_vs_native.csv` in `quadmath/output/`.
+- Exact (SymPy) comparisons confirm that CM+S3 and Ace 5×5 produce identical IVM tetravolumes on canonical small integer-quadray examples. See the bridging vs native comparison figure above and the manifest `sympy_symbolics.txt` alongside `bridging_vs_native.csv` in `quadmath/output/`.
 
 - Curvature-aware optimizers: Kronecker-factored approximations (K-FAC) leverage structure in `F` to accelerate training and improve stability; see [K-FAC (arXiv:1503.05671)](https://arxiv.org/abs/1503.05671). Similar ideas apply when quadray structure induces separable blocks.
 - Model selection: eigenvalue spread of `F` provides a lens on parameter identifiability; near-zero modes suggest redundancies or over-parameterization.

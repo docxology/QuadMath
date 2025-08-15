@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 08:38
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 09:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1189,25 +1189,25 @@ File: lstlang1.sty 2020/03/24 1.8d listings language file
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 496.
+(Font)              scaled to size 5.0pt on input line 497.
  [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 691--691
+Underfull \hbox (badness 10000) in paragraph at lines 692--692
 []\TU/DejaVuSerif(0)/m/n/10 Table 2: Polyhedra tetravolumes in IVM units
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 691--691
+Underfull \hbox (badness 10000) in paragraph at lines 692--692
 \TU/DejaVuSerif(0)/m/n/10 (edge length equal to the unit tetra edge).
  []
 
 
-Underfull \hbox (badness 1442) in paragraph at lines 744--748
+Underfull \hbox (badness 1442) in paragraph at lines 745--749
 []$[][][][] [][][] [][][]$ \TU/DejaVuSerif(0)/m/n/10 denote Cartesian coordinat
 es of the four vertices; the affine column of ones yields a
  []
 
 [6]
-Overfull \hbox (34.46176pt too wide) detected at line 818
+Overfull \hbox (34.46176pt too wide) detected at line 819
 [][][][][] [][] [] [][][][][][][] [] [][] [][][] [] [][] [] [][][][] [] [][] []
 [][] [] [][] [] [][][][] [] [][] [][][] [] [][] [] [][][][] [] [][][] [] [][] [
 ] [][][][][][] [] [][] [] [][][][][][] [] [][] [] [][][] []
@@ -1220,18 +1220,18 @@ bmp)
 <../output/figures/polyhedra_quadray_constructions.png>
 [7] [8] [9] [10]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
-(Font)              scaled to size 9.49112pt on input line 1077.
- [11] [12] [13]
+(Font)              scaled to size 9.49112pt on input line 1073.
+ [11] [12]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/03_quadray_methods.au
 x) ) 
 Here is how much of TeX's memory you used:
- 21030 strings out of 478190
- 384938 string characters out of 5854827
- 1396475 words of memory out of 5000000
- 41303 multiletter control sequences out of 15000+600000
+ 20997 strings out of 478190
+ 384348 string characters out of 5854827
+ 1395977 words of memory out of 5000000
+ 41270 multiletter control sequences out of 15000+600000
  476643 words of font info for 105 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,10n,122p,1626b,1835s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,10n,122p,1616b,1835s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/03_q
-uadray_methods.pdf (13 pages).
+uadray_methods.pdf (12 pages).

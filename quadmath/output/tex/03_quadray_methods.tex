@@ -294,7 +294,7 @@ The metric tensor is \(g_{\mu\nu}\).
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Einstein field equations (EFE)}: curvature responds to
+  \textbf{Einstein field equations}: curvature responds to
   stress--energy per
 \end{itemize}
 
@@ -416,7 +416,8 @@ box)}\label{integer-coordinate-constructions-compact-derivation-box}}
   rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the
   FCC/CCP packing centered at the origin under the same embedding.
 \item
-  See Figure 6 for a schematic summary of these relationships.
+  See the following figure for a schematic summary of these
+  relationships.
 \end{itemize}
 
 \begin{longtable}[]{@{}lll@{}}
@@ -444,7 +445,7 @@ Vertices \passthrough{\lstinline!o=(0,0,0,0)!},
 Cube (same edge)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame;
-edges tracked by XYZ embedding; compare Figure 6\strut
+edges tracked by XYZ embedding; compare the following figure\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 3\strut
 \end{minipage}\tabularnewline
@@ -490,7 +491,7 @@ Small coordinate examples (subset):
   \passthrough{\lstinline![(0,0,0,0), (2,1,0,1), (2,1,1,0), (2,0,1,1)]!}.
 \end{itemize}
 
-Short scripts (reproducibility):
+Short scripts:
 
 \begin{lstlisting}[language=bash]
 python3 quadmath/scripts/polyhedra_quadray_constructions.py
@@ -861,12 +862,9 @@ reference)}\label{bridging-vs-native-tetravolume-formulas-results-reference}}
   native IVM. All agree numerically with CM+S3 on shared cases.
 \end{itemize}
 
-References and discussion:
-\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/tetravolume.py}{Urner
--- tetravolume.py (School of Tomorrow)},
-\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{Urner
--- VolumeTalk.ipynb}, \href{https://flic.kr/p/2rn22en}{Urner -- Flickr
-diagram}.
+References and discussion: \href{https://flic.kr/p/2rn22en}{Urner --
+Flickr diagram}. For computational implementations and educational
+materials, see the \href{07_resources.md}{Resources} section.
 
 Figure: automated comparison (native Ace 5×5 vs CM+S3) across small
 examples (see script \passthrough{\lstinline!sympy\_formalisms.py!}).
@@ -876,7 +874,7 @@ The figure and source CSV/NPZ are in
 \begin{figure}
 \centering
 \includegraphics{../output/figures/bridging_vs_native.png}
-\caption{\textbf{Figure 5: Validation of bridging vs native tetravolume
+\caption{\textbf{Validation of bridging vs native tetravolume
 formulations across canonical examples}. This bar chart compares IVM
 tetravolumes computed via two independent methods: the ``bridging''
 approach using Cayley--Menger determinants on Euclidean edge lengths
@@ -899,32 +897,30 @@ and further analysis.}
 \begin{figure}
 \centering
 \includegraphics{../output/figures/polyhedra_quadray_constructions.png}
-\caption{\textbf{Figure 6: Synergetic polyhedra volume relationships in
-the Quadray/IVM framework (network diagram)}. This schematic illustrates
-the hierarchical volume relationships among key polyhedra when
-constructed with consistent edge lengths and expressed as
-integer-coordinate linear combinations of Quadray basis vectors.
-\textbf{Nodes (volumes in IVM tetra-units)}: Regular tetrahedron (V=1,
-fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron
-(V=6), and cuboctahedron/vector equilibrium (V=20). \textbf{Directed
-arrows (geometric relationships)}: The cube emerges as approximately 3×
-the tetrahedron volume through orthogonal space-filling; the octahedron
-(V=4) forms from edge-midpoint unions on the tetrahedral frame; the
-rhombic dodecahedron (V=6) serves as the Voronoi cell of the FCC/CCP
-lattice when centered at the origin; the cuboctahedron (V=20) represents
-the shell of twelve nearest IVM neighbors at permutations of
-\((2,1,1,0)\) Quadray coordinates. \textbf{Fuller.4D significance}:
-These integer volume ratios reflect the quantized nature of
-space-filling in synergetics, where the regular tetrahedron provides a
-natural unit container and other polyhedra emerge as integer multiples,
-supporting discrete geometric computation and exact lattice-based
-optimization methods. All constructions respect the IVM unit convention
-where the regular tetrahedron has tetravolume 1.}
+\caption{\textbf{Synergetic polyhedra volume relationships in the
+Quadray/IVM framework (network diagram)}. This schematic illustrates the
+hierarchical volume relationships among key polyhedra when constructed
+with consistent edge lengths and expressed as integer-coordinate linear
+combinations of Quadray basis vectors. \textbf{Nodes (volumes in IVM
+tetra-units)}: Regular tetrahedron (V=1, fundamental unit), cube (V=3),
+octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector
+equilibrium (V=20). \textbf{Directed arrows (geometric relationships)}:
+The cube emerges as approximately 3× the tetrahedron volume through
+orthogonal space-filling; the octahedron (V=4) forms from edge-midpoint
+unions on the tetrahedral frame; the rhombic dodecahedron (V=6) serves
+as the Voronoi cell of the FCC/CCP lattice when centered at the origin;
+the cuboctahedron (V=20) represents the shell of twelve nearest IVM
+neighbors at permutations of \((2,1,1,0)\) Quadray coordinates.
+\textbf{Fuller.4D significance}: These integer volume ratios reflect the
+quantized nature of space-filling in synergetics, where the regular
+tetrahedron provides a natural unit container and other polyhedra emerge
+as integer multiples, supporting discrete geometric computation and
+exact lattice-based optimization methods. All constructions respect the
+IVM unit convention where the regular tetrahedron has tetravolume 1.}
 \end{figure}
 
-\hypertarget{short-python-snippets-paper-reproducibility}{%
-\subsubsection{Short Python snippets (paper
-reproducibility)}\label{short-python-snippets-paper-reproducibility}}
+\hypertarget{short-python-snippets}{%
+\subsubsection{Short Python snippets}\label{short-python-snippets}}
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
@@ -1056,9 +1052,9 @@ conversion}\label{xyz-determinant-and-the-s3-conversion}}
   container.
 \end{itemize}
 
-Reference notebook with worked examples and code:
-\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{Tetravolumes
-with Quadrays (Qvolume.ipynb)}.
+Reference notebook with worked examples and code: See the
+\href{07_resources.md}{Resources} section for comprehensive educational
+materials and computational implementations.
 
 See implementation:
 \passthrough{\lstinline!tetra\_volume\_cayley\_menger!}.
@@ -1203,194 +1199,5 @@ Relevant tests (\passthrough{\lstinline!tests/!}):
   Face/edge analyses: interpret sensitivity along edges; subspace
   searches across faces.
 \end{itemize}
-
-\hypertarget{dsolutions-ecosystem-comprehensive-implementation-catalog}{%
-\subsection{4dsolutions ecosystem: comprehensive implementation
-catalog}\label{dsolutions-ecosystem-comprehensive-implementation-catalog}}
-
-\hypertarget{primary-python-implementations-math-for-wisdom---m4w}{%
-\subsubsection{Primary Python implementations (Math for Wisdom -
-m4w)}\label{primary-python-implementations-math-for-wisdom---m4w}}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Quadray vectors and conversions}:
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
-  --- defines a \passthrough{\lstinline!Qvector!} class with
-  normalization (\passthrough{\lstinline!norm!},
-  \passthrough{\lstinline!norm0!}), vector arithmetic, XYZ bridging,
-  cross products, and SymPy symbolic support. Key features include:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Projective normalization with \passthrough{\lstinline!(k,k,k,k)!}
-    subtraction
-  \item
-    Length calculation: \(\sqrt{\frac{1}{2}(a^2+b^2+c^2+d^2)}\) after
-    \passthrough{\lstinline!norm0!}
-  \item
-    Cross product implementation with \(\sqrt{2}/4\) scaling factor
-  \item
-    Comprehensive XYZ conversion matrices and rotation support
-  \end{itemize}
-\item
-  \textbf{Synergetic tetravolumes and modules}:
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}
-  --- implements multiple volume algorithms (PdF, CM, GdJ), dihedral
-  calculations, and BEAST module system:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \passthrough{\lstinline!Tetrahedron!} class with six edge lengths
-    and multiple volume methods
-  \item
-    BEAST subclasses: A, B (volume 1/24), E (icosahedral), S, T modules
-  \item
-    Volume scaling by synergetics constant \(\sqrt{9/8}\)
-  \item
-    Integration with \passthrough{\lstinline!qrays.py!} for
-    \passthrough{\lstinline!qvolume!} computations
-  \end{itemize}
-\end{itemize}
-
-\hypertarget{educational-framework-school_of_tomorrow}{%
-\subsubsection{Educational framework
-(School\_of\_Tomorrow)}\label{educational-framework-school_of_tomorrow}}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Interactive algorithms}:
-  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}
-  repository with comprehensive notebook tutorials:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{\passthrough{\lstinline!Qvolume.ipynb!}}:
-    Tom Ace 5×5 determinant method with random-walk demonstrations
-  \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{\passthrough{\lstinline!VolumeTalk.ipynb!}}:
-    Comparative analysis of bridging (CM+S3) vs native (Ace/GdJ)
-    tetravolume formulas
-  \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\passthrough{\lstinline!QuadCraft\_Project.ipynb!}}:
-    1,255 lines of interactive CCP navigation and volume calculations
-  \end{itemize}
-\item
-  \textbf{Visualization modules}: Core Python modules for 3D rendering
-  and animation:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\passthrough{\lstinline!quadcraft.py!}}:
-    POV-Ray scene generation with 15 test functions, CCP demonstrations,
-    BRYG coordinate mapping
-  \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/flextegrity.py}{\passthrough{\lstinline!flextegrity.py!}}:
-    Polyhedron framework with 26 named coordinate points, concentric
-    hierarchy, automatic scene generation
-  \end{itemize}
-\end{itemize}
-
-\hypertarget{cross-language-validation-and-extensions}{%
-\subsubsection{Cross-language validation and
-extensions}\label{cross-language-validation-and-extensions}}
-
-\begin{itemize}
-\item
-  \textbf{Rust implementation}:
-  \href{https://github.com/4dsolutions/rusty_rays}{\passthrough{\lstinline!rusty\_rays!}}
-  --- performance-oriented Rust port with complete vector operations for
-  both Vivm (IVM) and Vxyz coordinate systems, providing independent
-  algorithmic validation.
-\item
-  \textbf{Clojure functional approach}:
-  \href{https://github.com/4dsolutions/synmods}{\passthrough{\lstinline!synmods!}}
-  --- functional programming implementation with protocol-based design,
-  including
-  \href{https://github.com/4dsolutions/synmods/blob/master/qrays.clj}{\passthrough{\lstinline!qrays.clj!}}
-  and 26-point coordinate system.
-\item
-  \textbf{VPython animations}:
-  \href{https://github.com/4dsolutions/BookCovers}{\passthrough{\lstinline!BookCovers!}}
-  --- real-time educational animations with
-  \href{https://github.com/4dsolutions/BookCovers/blob/master/bookdemo.py}{\passthrough{\lstinline!bookdemo.py!}},
-  interactive controls, and live tetravolume tracking.
-\item
-  \textbf{Dedicated pedagogy}:
-  \href{https://github.com/4dsolutions/tetravolumes}{\passthrough{\lstinline!tetravolumes!}}
-  repository with
-  \href{https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Computing\%20Volumes.ipynb}{\passthrough{\lstinline!Computing Volumes.ipynb!}}
-  and algorithm-focused materials.
-\end{itemize}
-
-\hypertarget{api-correspondence-and-validation}{%
-\subsubsection{API correspondence and
-validation}\label{api-correspondence-and-validation}}
-
-\textbf{Mapping to this codebase}: The external implementations provide
-extensive validation and pedagogical context for our
-\passthrough{\lstinline!src/!} modules:
-
-\begin{longtable}[]{@{}lll@{}}
-\toprule
-\begin{minipage}[b]{0.30\columnwidth}\raggedright
-4dsolutions module\strut
-\end{minipage} & \begin{minipage}[b]{0.35\columnwidth}\raggedright
-This codebase (\passthrough{\lstinline!src/!})\strut
-\end{minipage} & \begin{minipage}[b]{0.26\columnwidth}\raggedright
-Correspondence\strut
-\end{minipage}\tabularnewline
-\midrule
-\endhead
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-\passthrough{\lstinline!qrays.py::Qvector!}\strut
-\end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\passthrough{\lstinline!quadray.py::Quadray!}\strut
-\end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
-Vector operations, normalization, dot products\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-\passthrough{\lstinline!tetravolume.py::ivm\_volume!}\strut
-\end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\passthrough{\lstinline!ace\_tetravolume\_5x5!}\strut
-\end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
-Tom Ace 5×5 determinant method\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-\passthrough{\lstinline!tetravolume.py!} (PdF/CM)\strut
-\end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\passthrough{\lstinline!cayley\_menger.py!}\strut
-\end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
-Length-based volume formulas with S3 conversion\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-\passthrough{\lstinline!qrays.py::quadray!} (XYZ→IVM)\strut
-\end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\passthrough{\lstinline!conversions.py::urner\_embedding!}\strut
-\end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
-Coordinate system bridging\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-BEAST modules (A,B,E,S,T)\strut
-\end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\passthrough{\lstinline!examples.py!} volume constructions\strut
-\end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
-Synergetic polyhedron relationships\strut
-\end{minipage}\tabularnewline
-\bottomrule
-\end{longtable}
-
-\textbf{Cross-repository validation}: The multi-language implementations
-(Rust, Clojure, POV-Ray, VPython) serve as independent checks on
-algorithmic correctness and provide performance comparisons across
-computational paradigms. Educational notebooks demonstrate consistent
-results across bridging (CM+S3) and native (Ace/GdJ) tetravolume
-formulations.
 
 \end{document}

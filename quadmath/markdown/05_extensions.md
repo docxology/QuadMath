@@ -43,29 +43,7 @@ References: see [Fisher information](https://en.wikipedia.org/wiki/Fisher_inform
 
 ## Pedagogy and Implementations
 
-Kirby Urner's comprehensive [4dsolutions ecosystem](https://github.com/4dsolutions) provides extensive educational resources and cross-platform implementations for Quadray computation and visualization:
-
-### Educational Framework and Curricula
-
-- **Oregon Curriculum Network (OCN)**: [OCN portal](http://www.4dsolutions.net/ocn/) and [Python for Everyone](http://www.4dsolutions.net/ocn/pymath.html) integrate Quadrays with progressive mathematical education
-- **School of Tomorrow**: [Repository](https://github.com/4dsolutions/School_of_Tomorrow) with comprehensive notebooks and modular teaching materials including:
-  - [`QuadCraft_Project.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb): 1,255 lines of interactive CCP navigation with QWERTY keyboard mapping to 12 IVM directions
-  - [`TetraBook.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/TetraBook.ipynb), [`CascadianSynergetics.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/CascadianSynergetics.ipynb): Regional curriculum integration
-  - [`Rendering_IVM.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Rendering_IVM.ipynb): 3D visualization techniques
-
-### Cross-Language Implementation Portfolio
-
-- **Python (primary)**: [`qrays.py`](https://github.com/4dsolutions/m4w/blob/main/qrays.py) with SymPy integration, [`tetravolume.py`](https://github.com/4dsolutions/m4w/blob/main/tetravolume.py) with multiple algorithms
-- **Rust (performance)**: [`rusty_rays`](https://github.com/4dsolutions/rusty_rays) for computational geometry optimization
-- **Clojure (functional)**: [`synmods`](https://github.com/4dsolutions/synmods) with protocol-based design patterns
-- **POV-Ray (rendering)**: [`quadcraft.py`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py) with 15 test functions and automated scene generation
-- **VPython (interactive)**: [`BookCovers`](https://github.com/4dsolutions/BookCovers) for real-time educational animations
-
-### Historical Context and Evolution
-
-- **Early innovations**: [Python edu-sig post (May 2000)](https://mail.python.org/pipermail/edu-sig/2000-May/000498.html) documenting original 4D Turtle implementations
-- **Foundational materials**: [Urner – Quadray intro](https://www.grunch.net/synergetics/quadintro.html) and [Quadrays and XYZ](https://www.grunch.net/synergetics/quadxyz.html) conversion notes
-- **Community development**: Evolution through [Math4Wisdom](https://coda.io/@daniel-ari-friedman/math4wisdom/ivm-xyz-40) collaboration and [synergeo](https://groups.io/g/synergeo/topics) discussions
+Kirby Urner's comprehensive [4dsolutions ecosystem](https://github.com/4dsolutions) provides extensive educational resources and cross-platform implementations for Quadray computation and visualization. For comprehensive details on educational frameworks, cross-language implementations, historical context, and community development, see the [Resources](07_resources.md) section.
 
 ## Higher Dimensions and Decompositions
 

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 08:39
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 09:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1157,46 +1157,47 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 6.02074pt on input line 2.
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 9.
+(Font)              scaled to size 7.0pt on input line 8.
+LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
+(Font)              scaled to size 9.49112pt on input line 36.
 
 [1
 
-]
-LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
-(Font)              scaled to size 9.49112pt on input line 37.
- [2]
-Overfull \hbox (5.6279pt too wide) detected at line 145
+] [2]
+Overfull \hbox (5.6279pt too wide) detected at line 137
 \TU/DejaVuSerif(0)/m/n/10 10.10 
  []
 
-[3])
+)
 \tf@toc=\write4
 \openout4 = `quadmath_review.toc'.
 
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 207.
+ [3]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
 (Font)              scaled to size 8.0pt on input line 258.
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 (Font)              scaled to size 7.5929pt on input line 258.
- [4] [5]
+ [4]
 File: ../output/figures/graphical_abstract_quadray.png Graphic file (type bmp)
 <../output/figures/graphical_abstract_quadray.png>
+ [5]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
-(Font)              scaled to size 8.0pt on input line 553.
- [6] [7]
-File: figures/ivm_neighbors_edges.png Graphic file (type bmp)
-<figures/ivm_neighbors_edges.png>
-File: figures/quadray_clouds.png Graphic file (type bmp)
-<figures/quadray_clouds.png>
- [8] [9]
+(Font)              scaled to size 8.0pt on input line 441.
+ [6]
+File: ../output/figures/ivm_neighbors_edges.png Graphic file (type bmp)
+<../output/figures/ivm_neighbors_edges.png>
+File: ../output/figures/quadray_clouds.png Graphic file (type bmp)
+<../output/figures/quadray_clouds.png>
+ [7] [8]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 757.
+(Font)              scaled to size 10.0pt on input line 685.
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 757.
+(Font)              scaled to size 7.0pt on input line 685.
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 757.
- [10] [11]
+(Font)              scaled to size 5.0pt on input line 685.
+ [9] [10]
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
@@ -1204,53 +1205,54 @@ File: lstlang1.sty 2020/03/24 1.8d listings language file
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 )
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 1012.
- [12] [13]
-Underfull \hbox (badness 10000) in paragraph at lines 1207--1207
+(Font)              scaled to size 5.0pt on input line 941.
+ [11] [12]
+Underfull \hbox (badness 10000) in paragraph at lines 1136--1136
 []\TU/DejaVuSerif(0)/m/n/10 Table 2: Polyhedra tetravolumes in IVM units
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1207--1207
+Underfull \hbox (badness 10000) in paragraph at lines 1136--1136
 \TU/DejaVuSerif(0)/m/n/10 (edge length equal to the unit tetra edge).
  []
 
-[14]
-Underfull \hbox (badness 1442) in paragraph at lines 1260--1264
+[13]
+Underfull \hbox (badness 1442) in paragraph at lines 1189--1193
 []$[][][][] [][][] [][][]$ \TU/DejaVuSerif(0)/m/n/10 denote Cartesian coordinat
 es of the four vertices; the affine column of ones yields a
  []
 
 
-Overfull \hbox (34.46176pt too wide) detected at line 1334
+Overfull \hbox (34.46176pt too wide) detected at line 1263
 [][][][][] [][] [] [][][][][][][] [] [][] [][][] [] [][] [] [][][][] [] [][] []
 [][] [] [][] [] [][][][] [] [][] [][][] [] [][] [] [][][][] [] [][][] [] [][] [
 ] [][][][][][] [] [][] [] [][][][][][] [] [][] [] [][][] []
  []
 
-[15]
+[14]
 File: ../output/figures/bridging_vs_native.png Graphic file (type bmp)
 <../output/figures/bridging_vs_native.png>
 File: ../output/figures/polyhedra_quadray_constructions.png Graphic file (type 
 bmp)
 <../output/figures/polyhedra_quadray_constructions.png>
- [16] [17] [18] [19]
+ [15] [16] [17] [18]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
-(Font)              scaled to size 9.49112pt on input line 1593.
- [20] [21] [22]
+(Font)              scaled to size 9.49112pt on input line 1517.
+ [19] [20]
 File: ../output/figures/simplex_trace.png Graphic file (type bmp)
 <../output/figures/simplex_trace.png>
 File: ../output/figures/volumes_scale_plot.png Graphic file (type bmp)
 <../output/figures/volumes_scale_plot.png>
 File: ../output/figures/simplex_final.png Graphic file (type bmp)
 <../output/figures/simplex_final.png>
- [23] [24] [25] [26]
-Overfull \hbox (19.77498pt too wide) in paragraph at lines 2136--2143
+
+Overfull \hbox (19.77498pt too wide) in paragraph at lines 1879--1886
 []\TU/DejaVuSerif(0)/b/n/10 Fisher Information as metric\TU/DejaVuSerif(0)/m/n/
 10 : use the empirical estimator [][][][][][][][][][][][][][][][][][][][][][][]
 [][][][][][][][][][][][][][][] from [][]
  []
 
+[21] [22] [23] [24]
 File: ../output/figures/fisher_information_matrix.png Graphic file (type bmp)
 <../output/figures/fisher_information_matrix.png>
 File: ../output/figures/fisher_information_eigenspectrum.png Graphic file (type
@@ -1260,16 +1262,22 @@ File: ../output/figures/natural_gradient_path.png Graphic file (type bmp)
 <../output/figures/natural_gradient_path.png>
 File: ../output/figures/free_energy_curve.png Graphic file (type bmp)
 <../output/figures/free_energy_curve.png>
-[27] [28] [29] [30] [31] [32] [33]
-Underfull \hbox (badness 1082) in paragraph at lines 2728--2731
+ [25] [26] [27] [28] [29]
+Underfull \hbox (badness 1648) in paragraph at lines 2208--2215
+\TU/DejaVuSerif(0)/m/n/10 platform implementations for Quadray computation and 
+visualization. For comprehensive details on
+ []
+
+[30] [31]
+Underfull \hbox (badness 1082) in paragraph at lines 2359--2362
 []\TU/DejaVuSerif(0)/m/n/10 Combine integer-lattice projection with natural-gra
 dient steps to balance discrete robustness and
  []
 
-[34] [35]
+[32] [33]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
-(Font)              scaled to size 7.5929pt on input line 2999.
- [36] [37] [38]
+(Font)              scaled to size 7.5929pt on input line 2657.
+ [34] [35] [36]
 File: ../output/figures/natural_gradient_path.png Graphic file (type bmp)
 <../output/figures/natural_gradient_path.png>
 File: ../output/figures/free_energy_curve.png Graphic file (type bmp)
@@ -1278,8 +1286,8 @@ File: ../output/figures/discrete_path_final.png Graphic file (type bmp)
 <../output/figures/discrete_path_final.png>
 File: ../output/figures/bridging_vs_native.png Graphic file (type bmp)
 <../output/figures/bridging_vs_native.png>
- [39] [40] [41] [42] [43] [44]
-Overfull \hbox (19.81534pt too wide) in paragraph at lines 3657--3660
+ [37] [38] [39] [40] [41]
+Overfull \hbox (19.81534pt too wide) in paragraph at lines 3310--3313
 []\TU/DejaVuSerif(0)/m/n/10 Fisher Information Matrix (FIM) as metric — see Eq.
  [] in the equations appendix and [][][][]
  []
@@ -1287,127 +1295,127 @@ Overfull \hbox (19.81534pt too wide) in paragraph at lines 3657--3660
 File: ../output/figures/partition_tetrahedron.png Graphic file (type bmp)
 <../output/figures/partition_tetrahedron.png>
 
-Underfull \hbox (badness 1199) in paragraph at lines 3741--3756
+Underfull \hbox (badness 1199) in paragraph at lines 3393--3408
 []\TU/DejaVuSerif(0)/m/n/10 Tetrahedral mapping via Quadrays (Fuller.4D): assig
 n each state to a vertex of a tetrahedron, using
  []
 
 
-Underfull \hbox (badness 2521) in paragraph at lines 3741--3756
+Underfull \hbox (badness 2521) in paragraph at lines 3393--3408
 \TU/DejaVuSerif(0)/m/n/10 canonical mapping is [][][][][][][][][][][][][][][][]
 [][][][][][][][], [][][][][][][][][][][][][][][][][][][][][][][][], [][][][][][
 ][][][][][][][][][][][][][][][][][][],
  []
 
-[45] [46]
-Underfull \hbox (badness 2368) in paragraph at lines 3896--3903
+[42] [43]
+Underfull \hbox (badness 2368) in paragraph at lines 3551--3558
 []\TU/DejaVuSerif(0)/b/n/10 Visualizations\TU/DejaVuSerif(0)/m/n/10 : [][][][][
 ][][][][][], [][][][][][][][][][], [][][][][][][][][][],
  []
 
 
-Underfull \hbox (badness 2065) in paragraph at lines 3903--3910
+Underfull \hbox (badness 2065) in paragraph at lines 3558--3565
 []\TU/DejaVuSerif(0)/b/n/10 Raw data\TU/DejaVuSerif(0)/m/n/10 : [][][][][][][][
 ][][], [][][][][][][][][][] (F, grads, X, y, w_true, w_est),
  []
 
-[47] [48] [49]
-Underfull \hbox (badness 1275) in paragraph at lines 4328--4334
+[44] [45] [46]
+Underfull \hbox (badness 1275) in paragraph at lines 3982--3988
 []\TU/DejaVuSerif(0)/b/n/10 Namespaces\TU/DejaVuSerif(0)/m/n/10 : We use Coxete
 r.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E$[]$,
  []
 
-[50]
-Overfull \hbox (42.38408pt too wide) in paragraph at lines 4454--4455
+[47]
+Overfull \hbox (42.38408pt too wide) in paragraph at lines 4099--4100
 [][][] 
  []
 
 
-Overfull \hbox (24.09885pt too wide) in paragraph at lines 4465--4466
+Overfull \hbox (24.09885pt too wide) in paragraph at lines 4110--4111
 [][][] 
  []
 
 
-Overfull \hbox (46.95538pt too wide) in paragraph at lines 4546--4547
+Overfull \hbox (46.95538pt too wide) in paragraph at lines 4191--4192
 [][][] 
  []
 
 
-Overfull \hbox (60.66931pt too wide) in paragraph at lines 4557--4558
+Overfull \hbox (60.66931pt too wide) in paragraph at lines 4202--4203
 [][][] 
  []
 
 
-Overfull \hbox (1.2423pt too wide) in paragraph at lines 4568--4569
+Overfull \hbox (1.2423pt too wide) in paragraph at lines 4213--4214
 [][][] 
  []
 
 
-Overfull \hbox (42.38408pt too wide) in paragraph at lines 4592--4593
+Overfull \hbox (42.38408pt too wide) in paragraph at lines 4237--4238
 [][][] 
  []
 
 
-Overfull \hbox (10.38492pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (10.38492pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (5.81361pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (5.81361pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (24.09885pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (24.09885pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (19.52753pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (19.52753pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (1.2423pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (1.2423pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (10.38492pt too wide) in paragraph at lines 4631--4632
+Overfull \hbox (10.38492pt too wide) in paragraph at lines 4276--4277
 [][] 
  []
 
 
-Overfull \hbox (37.81276pt too wide) in paragraph at lines 4814--4815
+Overfull \hbox (37.81276pt too wide) in paragraph at lines 4459--4460
 [][][] 
  []
 
 
-Overfull \hbox (60.66931pt too wide) in paragraph at lines 4826--4827
+Overfull \hbox (60.66931pt too wide) in paragraph at lines 4471--4472
 [][][] 
  []
 
 
-Overfull \hbox (1.2423pt too wide) in paragraph at lines 4837--4838
+Overfull \hbox (1.2423pt too wide) in paragraph at lines 4482--4483
 [][][] 
  []
 
 
-Overfull \hbox (24.09885pt too wide) in paragraph at lines 4870--4871
+Overfull \hbox (24.09885pt too wide) in paragraph at lines 4515--4516
 [][][] 
  []
 
-[51] [52] [53] [54] [55]
+[48] [49] [50] [51] [52]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.aux) 
 ) 
 Here is how much of TeX's memory you used:
- 21604 strings out of 478190
- 397459 string characters out of 5854827
- 1464299 words of memory out of 5000000
- 41861 multiletter control sequences out of 15000+600000
+ 21572 strings out of 478190
+ 396919 string characters out of 5854827
+ 1462228 words of memory out of 5000000
+ 41830 multiletter control sequences out of 15000+600000
  476724 words of font info for 108 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,11n,122p,1895b,1833s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,11n,122p,1894b,1833s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quad
-math_review.pdf (55 pages).
+math_review.pdf (52 pages).

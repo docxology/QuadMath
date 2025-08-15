@@ -92,11 +92,10 @@ Descriptions:
 
 ## Notes (usage and cross-references)
 
-- **Figures referenced**: In-text carry identifiers (e.g., Figure 8).
+- **Figures referenced**: In-text references use LaTeX's automatic figure numbering for consistent cross-referencing.
 - **Equation references**: Use labels defined in the text (e.g., Eq. \eqref{eq:supp_lattice_det} in the equations appendix).
 - **Namespaces**: We use Coxeter.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E⁴, Minkowski spacetime, and Quadray/IVM synergetics, respectively. This avoids conflation of Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and synergetic tetravolume conventions.
-- **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) including [`qrays.py`](https://github.com/4dsolutions/m4w/blob/main/qrays.py), [`tetravolume.py`](https://github.com/4dsolutions/m4w/blob/main/tetravolume.py), and educational notebooks in [School_of_Tomorrow](https://github.com/4dsolutions/School_of_Tomorrow).
-- **Multi-language implementations**: Rust ([rusty_rays](https://github.com/4dsolutions/rusty_rays)), Clojure ([synmods](https://github.com/4dsolutions/synmods)), POV-Ray (quadcraft.py), and VPython ([BookCovers](https://github.com/4dsolutions/BookCovers)) provide algorithmic verification and performance comparison baselines.
+- **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) for algorithmic verification and performance comparison baselines. See the [Resources](07_resources.md) section for comprehensive details.
 
 ## Acronyms and abbreviations
 

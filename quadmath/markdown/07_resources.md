@@ -6,16 +6,22 @@ This section provides comprehensive resources for learning about and working wit
 
 ### Information Geometry and Optimization
 - **Fisher information**: [Fisher information (reference)](https://en.wikipedia.org/wiki/Fisher_information) — see also Eq. \eqref{eq:supp_fim} in the equations appendix
-- **Natural gradient**: [Natural gradient (reference)](https://en.wikipedia.org/wiki/Natural_gradient) — see Eq. \eqref{eq:supp_natgrad} in the equations appendix
+- **Natural gradient**: [Natural gradient (reference)](https://en.wikipedia.org/wiki/Natural_gradient) — see also Eq. \eqref{eq:supp_natgrad} in the equations appendix
 
 ### Active Inference and Free Energy
 - **Active Inference Institute**: [Welcome to Active Inference Institute](https://welcome.activeinference.institute/)
 - **Comprehensive review**: [Active Inference — recent review (UCL Discovery, 2023)](https://discovery.ucl.ac.uk/id/eprint/10176959/1/1-s2.0-S1571064523001094-main.pdf)
 
+### Mathematical Foundations
+- **Tetrahedron volume formulas**: length-based [Cayley–Menger determinant](https://en.wikipedia.org/wiki/Cayley%E2%80%93Menger_determinant) and determinant-based expressions on vertex coordinates (see [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume))
+- **Exact determinants**: [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm), used in our integer tetravolume implementations
+- **Optimization baseline**: the [Nelder–Mead method](https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method), adapted here to the Quadray lattice
+
 ## Quadrays and Synergetics (Core Starting Points)
 
 ### Introductory Materials
 - **Quadray coordinates (intro and conversions)**: [Urner – Quadray intro](https://www.grunch.net/synergetics/quadintro.html), [Urner – Quadrays and XYZ](https://www.grunch.net/synergetics/quadxyz.html)
+- **Quadrays and the Philosophy of Mathematics**: [Urner – Quadrays and the Philosophy of Mathematics](https://www.grunch.net/synergetics/quadphil.html)
 - **Synergetics background and IVM**: [Synergetics (Fuller, overview)](https://en.wikipedia.org/wiki/Synergetics_(Fuller))
 - **Quadray coordinates overview**: [Quadray coordinates (reference)](https://en.wikipedia.org/wiki/Quadray_coordinates)
 

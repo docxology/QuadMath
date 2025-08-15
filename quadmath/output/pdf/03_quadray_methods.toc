@@ -13,7 +13,7 @@
 \contentsline {subsection}{\numberline {1.10}Practical Methods}{7}{subsection.1.10}%
 \contentsline {subsection}{\numberline {1.11}Tetravolumes with Quadrays}{7}{subsection.1.11}%
 \contentsline {subsubsection}{\numberline {1.11.1}Bridging vs native tetravolume formulas (Results reference)}{7}{subsubsection.1.11.1}%
-\contentsline {subsubsection}{\numberline {1.11.2}Short Python snippets (paper reproducibility)}{7}{subsubsection.1.11.2}%
+\contentsline {subsubsection}{\numberline {1.11.2}Short Python snippets}{7}{subsubsection.1.11.2}%
 \contentsline {subsubsection}{\numberline {1.11.3}Random tetrahedra in the IVM (integer volumes)}{10}{subsubsection.1.11.3}%
 \contentsline {subsubsection}{\numberline {1.11.4}Algebraic precision}{11}{subsubsection.1.11.4}%
 \contentsline {subsubsection}{\numberline {1.11.5}XYZ determinant and the S3 conversion}{11}{subsubsection.1.11.5}%
@@ -23,7 +23,7 @@
 \contentsline {subsubsection}{\numberline {1.12.2}\color@box {}{codebg}{\color {codefg}\ttfamily ace\_tetravolume\_5x5}}{11}{subsubsection.1.12.2}%
 \contentsline {subsubsection}{\numberline {1.12.3}\color@box {}{codebg}{\color {codefg}\ttfamily tetra\_volume\_cayley\_menger}}{11}{subsubsection.1.12.3}%
 \contentsline {subsubsection}{\numberline {1.12.4}\color@box {}{codebg}{\color {codefg}\ttfamily ivm\_tetra\_volume\_cayley\_menger}}{11}{subsubsection.1.12.4}%
-\contentsline {subsubsection}{\numberline {1.12.5}\color@box {}{codebg}{\color {codefg}\ttfamily urner\_embedding}}{11}{subsubsection.1.12.5}%
+\contentsline {subsubsection}{\numberline {1.12.5}\color@box {}{codebg}{\color {codefg}\ttfamily urner\_embedding}}{12}{subsubsection.1.12.5}%
 \contentsline {subsubsection}{\numberline {1.12.6}\color@box {}{codebg}{\color {codefg}\ttfamily quadray\_to\_xyz}}{12}{subsubsection.1.12.6}%
 \contentsline {subsubsection}{\numberline {1.12.7}\color@box {}{codebg}{\color {codefg}\ttfamily bareiss\_determinant\_int}}{12}{subsubsection.1.12.7}%
 \contentsline {subsubsection}{\numberline {1.12.8}Information geometry methods (anchors)}{12}{subsubsection.1.12.8}%
@@ -33,8 +33,3 @@
 \contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily discrete\_ivm\_descent}}{12}{section*.5}%
 \contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily animate\_discrete\_path}}{12}{section*.6}%
 \contentsline {subsection}{\numberline {1.13}Reproducibility checklist}{12}{subsection.1.13}%
-\contentsline {subsection}{\numberline {1.14}4dsolutions ecosystem: comprehensive implementation catalog}{12}{subsection.1.14}%
-\contentsline {subsubsection}{\numberline {1.14.1}Primary Python implementations (Math for Wisdom - m4w)}{12}{subsubsection.1.14.1}%
-\contentsline {subsubsection}{\numberline {1.14.2}Educational framework (School\_of\_Tomorrow)}{13}{subsubsection.1.14.2}%
-\contentsline {subsubsection}{\numberline {1.14.3}Cross-language validation and extensions}{13}{subsubsection.1.14.3}%
-\contentsline {subsubsection}{\numberline {1.14.4}API correspondence and validation}{13}{subsubsection.1.14.4}%

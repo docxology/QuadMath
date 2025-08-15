@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 08:37
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 09:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1129,10 +1129,10 @@ LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 ]
 
 LaTeX Warning: Reference `eq:supp_lattice_det' on page 2 undefined on input lin
-e 284.
+e 281.
 
 
-LaTeX Warning: Reference `eq:supp_fim' on page 2 undefined on input line 284.
+LaTeX Warning: Reference `eq:supp_fim' on page 2 undefined on input line 281.
 
 [2]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/00_front_matter.aux)
@@ -1141,10 +1141,10 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 20434 strings out of 478190
- 374148 string characters out of 5854827
+ 20431 strings out of 478190
+ 374115 string characters out of 5854827
  980843 words of memory out of 5000000
- 40733 multiletter control sequences out of 15000+600000
+ 40730 multiletter control sequences out of 15000+600000
  476432 words of font info for 100 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  86i,6n,122p,1069b,1194s stack positions out of 5000i,500n,10000p,200000b,80000s

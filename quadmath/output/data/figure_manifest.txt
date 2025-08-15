@@ -22,4 +22,5 @@
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path_final.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.csv
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.npz
+/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/bridging_vs_native.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/bridging_vs_native.csv

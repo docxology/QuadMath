@@ -53,6 +53,19 @@
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -182,10 +195,9 @@
 Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}}
 
 In this section, we clarify the three internal meanings of ``4D,''
-following a dot-notation that avoids cross-domain confusion. First we
-briefly review the Coxeter.4D and Einstein.4D name spaces, which should
-be familiar to most readers. We then review and highlight the Fuller.4D
-name space, which is the focus of this manuscript.
+following a dot-notation that avoids cross-domain confusion. Each
+namespace represents a distinct mathematical framework with specific
+applications in our quadray-based computational system.
 
 \hypertarget{coxeter.4d-euclidean-eux2074}{%
 \subsection{Coxeter.4D (Euclidean
@@ -194,7 +206,7 @@ E⁴)}\label{coxeter.4d-euclidean-eux2074}}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Definition}: standard E⁴ with orthogonal axes and Euclidean
+  \textbf{Definition}: Standard E⁴ with orthogonal axes and Euclidean
   metric; the proper setting for classical regular polytopes. As Coxeter
   notes (Regular Polytopes, Dover ed., p.~119), this Euclidean 4D is not
   spacetime. Lattice/packing discussions connect to Conway \& Sloane's
@@ -203,11 +215,15 @@ E⁴)}\label{coxeter.4d-euclidean-eux2074}}
   (\href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
   Packings, Lattices and Groups (Springer)}).
 \item
-  \textbf{Usage}: embed Quadray configurations or compare alternative
+  \textbf{Usage}: Embed Quadray configurations or compare alternative
   parameterizations when a strictly Euclidean 4D setting is desired.
 \item
-  \textbf{Simplexes}: simplex structures extend naturally to 4D and
+  \textbf{Simplexes}: Simplex structures extend naturally to 4D and
   beyond (e.g., pentachora).
+\item
+  \textbf{Mathematical context}: This framework is appropriate for
+  standard Euclidean geometry, including the Cayley-Menger determinant
+  for computing volumes from edge lengths.
 \end{itemize}
 
 \hypertarget{einstein.4d-relativistic-spacetime}{%
@@ -226,13 +242,18 @@ spacetime)}\label{einstein.4d-relativistic-spacetime}}
   ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
   \end{equation}
 \item
-  \textbf{Optimization analogy}: metric-aware geodesics generalize to
+  \textbf{Optimization analogy}: Metric-aware geodesics generalize to
   information geometry where the Fisher metric replaces the physical
   metric. See
   \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
   information} and
   \href{https://en.wikipedia.org/wiki/Natural_gradient}{natural
   gradient}.
+\item
+  \textbf{Important note}: This namespace is used ONLY as a
+  metric/geodesic analogy when discussing information geometry. Physical
+  constants G, c, Λ do not appear in Quadray lattice methods and should
+  not be mixed with IVM unit conventions.
 \end{itemize}
 
 \hypertarget{fuller.4d-synergetics-quadrays}{%
@@ -242,28 +263,26 @@ Quadrays)}\label{fuller.4d-synergetics-quadrays}}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Basis}: four non-negative components A,B,C,D with at least one
+  \textbf{Basis}: Four non-negative components A,B,C,D with at least one
   zero post-normalization, treated as a vector (direction and
   magnitude), not merely a point. Overview:
   \href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
   coordinates}.
 \item
-  \textbf{Geometry}: tetrahedral; unit tetrahedron volume = 1; integer
+  \textbf{Geometry}: Tetrahedral; unit tetrahedron volume = 1; integer
   lattice aligns with close-packed spheres (IVM). Background:
   \href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}.
 \item
-  \textbf{Distances}: computed via appropriate projective normalization;
+  \textbf{Distances}: Computed via appropriate projective normalization;
   edges align with tetrahedral axes. The IVM = CCP = FCC shortcut allows
   working in 3D embeddings for visualization while preserving the
   underlying Fuller.4D tetrahedral accounting.
 \item
   \textbf{Implementation heritage}: Extensive computational validation
   through Kirby Urner's
-  \href{https://github.com/4dsolutions}{4dsolutions ecosystem},
-  particularly
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}
-  (vector operations)} and educational materials in
-  \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}.
+  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}. See the
+  \href{07_resources.md}{Resources} section for comprehensive details on
+  computational implementations and educational materials.
 \end{itemize}
 
 \hypertarget{directions-not-dimensions-language-and-models}{%
@@ -291,23 +310,55 @@ models)}\label{directions-not-dimensions-language-and-models}}
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/ivm_neighbors_edges.png}
-\caption{\textbf{IVM neighbors and coordination patterns (2×2 panel layout)}. \textbf{Panel A}: The twelve nearest IVM neighbors plotted as blue points in 3D space under the default embedding, showing the positions corresponding to permutations of the Quadray integer coordinates \{2,1,1,0\}. These points form the vertices of a cuboctahedron (vector equilibrium) centered at the origin with uniform radial distances. \textbf{Panel B}: The same neighbor points with radial edges (light lines) connecting each neighbor to the central origin, emphasizing the spoke-like radial symmetry and equal distances from center to shell. \textbf{Panel C}: Twelve-around-one close-packed spheres configuration where each neighbor position hosts a sphere with radius chosen so neighboring spheres kiss along cuboctahedron edges, illustrating the fundamental CCP/FCC/IVM correspondence. The central gray sphere represents the "one" in Fuller's "twelve around one" motif. \textbf{Panel D}: Adjacency graph showing strut connections (solid lines) between touching neighbor spheres, revealing the cuboctahedron's edge structure, plus light radial cables to the origin representing a stylized tensegrity interpretation of the vector equilibrium geometry.}
-\label{fig:ivm_neighbors_edges}
+\includegraphics{../output/figures/ivm_neighbors_edges.png}
+\caption{\textbf{IVM neighbors and coordination patterns (2×2 panel
+layout)}. \textbf{Panel A}: The twelve nearest IVM neighbors plotted as
+blue points in 3D space under the default embedding, showing the
+positions corresponding to permutations of the Quadray integer
+coordinates \{2,1,1,0\}. These points form the vertices of a
+cuboctahedron (vector equilibrium) centered at the origin with uniform
+radial distances. \textbf{Panel B}: The same neighbor points with radial
+edges (light lines) connecting each neighbor to the central origin,
+emphasizing the spoke-like radial symmetry and equal distances from
+center to shell. \textbf{Panel C}: Twelve-around-one close-packed
+spheres configuration where each neighbor position hosts a sphere with
+radius chosen so neighboring spheres kiss along cuboctahedron edges,
+illustrating the fundamental CCP/FCC/IVM correspondence. The central
+gray sphere represents the ``one'' in Fuller's ``twelve around one''
+motif. \textbf{Panel D}: Adjacency graph showing strut connections
+(solid lines) between touching neighbor spheres, revealing the
+cuboctahedron's edge structure, plus light radial cables to the origin
+representing a stylized tensegrity interpretation of the vector
+equilibrium geometry.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/quadray_clouds.png}
-\caption{\textbf{Random Quadray point clouds under different embeddings (3-panel comparison)}. Each panel shows 200 randomly sampled integer Quadray coordinates with components in \{0,1,2,3,4,5\} projected to 3D space using different embedding matrices. \textbf{Left panel (Default embedding)}: Points (blue) under the default symmetric embedding matrix showing the natural tetrahedral-symmetric distribution of normalized Quadrays in 3D space. \textbf{Center panel (Scaled embedding, 0.75×)}: The same Quadray points (orange) under a uniformly scaled version of the default embedding, demonstrating how the point cloud structure scales proportionally while preserving relative geometries. \textbf{Right panel (Urner embedding)}: The same points (purple) projected through the canonical Urner embedding matrix, illustrating how different linear mappings from Fuller.4D to Coxeter.4D (3D slice) affect the spatial distribution while preserving the underlying discrete lattice relationships. This comparison demonstrates the flexibility in choosing embeddings for visualization and analysis while maintaining the fundamental Quadray coordinate relationships.}
-\label{fig:quadray_clouds}
+\includegraphics{../output/figures/quadray_clouds.png}
+\caption{\textbf{Random Quadray point clouds under different embeddings
+(3-panel comparison)}. Each panel shows 200 randomly sampled integer
+Quadray coordinates with components in \{0,1,2,3,4,5\} projected to 3D
+space using different embedding matrices. \textbf{Left panel (Default
+embedding)}: Points (blue) under the default symmetric embedding matrix
+showing the natural tetrahedral-symmetric distribution of normalized
+Quadrays in 3D space. \textbf{Center panel (Scaled embedding, 0.75×)}:
+The same Quadray points (orange) under a uniformly scaled version of the
+default embedding, demonstrating how the point cloud structure scales
+proportionally while preserving relative geometries. \textbf{Right panel
+(Urner embedding)}: The same points (purple) projected through the
+canonical Urner embedding matrix, illustrating how different linear
+mappings from Fuller.4D to Coxeter.4D (3D slice) affect the spatial
+distribution while preserving the underlying discrete lattice
+relationships. This comparison demonstrates the flexibility in choosing
+embeddings for visualization and analysis while maintaining the
+fundamental Quadray coordinate relationships.}
 \end{figure}
 
-In Figure 1, we show the twelve nearest IVM neighbors with coordination
-patterns and vector equilibrium geometry; Figure 2 illustrates random
-Quadray clouds under several embeddings.
+In the previous figure, we show the twelve nearest IVM neighbors with
+coordination patterns and vector equilibrium geometry; the current
+figure illustrates random Quadray clouds under several embeddings.
 
 Vector equilibrium (cuboctahedron). The shell formed by the 12 nearest
 IVM neighbors is the cuboctahedron, also called the vector equilibrium
@@ -318,9 +369,8 @@ tensegrity discussions as a canonical balanced structure. See
 background:
 \href{https://en.wikipedia.org/wiki/Cuboctahedron}{Cuboctahedron (vector
 equilibrium)} and synergetics references. Computational demonstrations
-include
-\href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\passthrough{\lstinline!ivm\_neighbors.py!}}
-and related visualizations in the 4dsolutions ecosystem.
+include related visualizations in the 4dsolutions ecosystem. See the
+\href{07_resources.md}{Resources} section for comprehensive details.
 
 \hypertarget{clarifying-remarks}{%
 \subsubsection{Clarifying remarks}\label{clarifying-remarks}}
@@ -328,13 +378,15 @@ and related visualizations in the 4dsolutions ecosystem.
 \begin{itemize}
 \tightlist
 \item
-  ``A time machine is not a tesseract.'' The tesseract is a Euclidean 4D
-  object (Coxeter.4D), while Minkowski spacetime (Einstein.4D) is
-  indefinite and not Euclidean; conflating the two leads to category
-  errors. Fuller.4D, in turn, is a tetrahedral, mereological framing of
-  ordinary space emphasizing shape/angle relations and IVM quantization.
-  Each namespace carries distinct assumptions and should be used
-  accordingly in analysis.
+  ``A time machine is not a tesseract.''
+  \href{https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919}{KU
+  on synergeo} The tesseract is a Euclidean 4D object (Coxeter.4D),
+  while Minkowski spacetime (Einstein.4D) is indefinite and not
+  Euclidean; conflating the two leads to category errors. Fuller.4D, in
+  turn, is a tetrahedral, mereological framing of ordinary space
+  emphasizing shape/angle relations and IVM quantization. Each namespace
+  carries distinct assumptions and should be used accordingly in
+  analysis.
 \end{itemize}
 
 \hypertarget{practical-usage-guide}{%

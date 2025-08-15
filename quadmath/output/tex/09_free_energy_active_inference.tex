@@ -253,7 +253,8 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   \end{equation}
 \end{itemize}
 
-Figures: Figure 10, Figure 11, Figure 12, Figure 13.
+Figures: See the Fisher Information Matrix and free energy figures in
+the optimization section above.
 
 Discrete variational optimization on the quadray lattice:
 \passthrough{\lstinline!discrete\_ivm\_descent!} greedily descends a
@@ -265,31 +266,29 @@ trajectories. See the path animation artifact
 \begin{figure}
 \centering
 \includegraphics{../output/figures/partition_tetrahedron.png}
-\caption{\textbf{Figure 18: Active Inference four-fold partition mapped
-to a Quadray tetrahedron in Fuller.4D}. This 3D tetrahedral
-visualization demonstrates the geometric embedding of Active Inference's
-fundamental four-state partition into the Quadray coordinate framework.
-\textbf{Vertices (state types)}: Internal states \(\mu\) (agent's
-beliefs and representations), Sensory states \(s\) (observations),
-Active states \(a\) (actions), and External states \(\psi\) (latent
-environmental causes). Each vertex is positioned using Quadray
-coordinates and projected to 3D space via the default embedding.
-\textbf{Edges (couplings)}: The six tetrahedral edges represent pairwise
-statistical dependencies---\((\mu\text{--}s)\) for perceptual inference
-(belief updating from observations), \((a\text{--}\psi)\) for
-environmental control (actions affecting external states), and
-cross-couplings capturing active perception and sensorimotor
-contingencies. \textbf{Geometric significance}: The tetrahedral
-structure emphasizes the symmetric interdependencies among all four
-state types, with the tetravolume representing the joint capacity or
-``coupled volume'' of feasible state configurations. \textbf{Fuller.4D
-integration}: This mapping leverages the natural four-fold symmetry of
-Quadray coordinates to provide an intuitive geometric scaffold for
-Active Inference, supporting discrete volumetric analysis of
-belief-action spaces and enabling lattice-based optimization of free
-energy functionals. The integer coordinate constraint allows exact
-computation of partition volumes and supports discrete variational
-methods like \passthrough{\lstinline!discrete\_ivm\_descent!}.}
+\caption{\textbf{Active Inference four-fold partition mapped to a
+Quadray tetrahedron in Fuller.4D}. This 3D tetrahedral visualization
+demonstrates the geometric embedding of Active Inference's fundamental
+four-fold partition within the Quadray coordinate system.
+\textbf{Tetrahedral structure}: The four vertices of the regular
+tetrahedron represent the four components of the Active Inference
+framework: perception, action, internal states, and external states.
+\textbf{Partition mapping}: Each face of the tetrahedron corresponds to
+a specific partition of the four-fold system, with the edges
+representing the relationships and interactions between different
+components. \textbf{Fuller.4D significance}: This geometric
+representation leverages the tetrahedral nature of Quadray coordinates
+to provide an intuitive visualization of the Active Inference
+framework's structure. The tetrahedron serves as a natural container for
+the four-fold partition, emphasizing the interconnected nature of
+perception, action, and state representation in active inference.
+\textbf{Optimization context}: The tetrahedral geometry also suggests
+natural optimization strategies that respect the four-fold structure,
+potentially leading to more efficient inference algorithms that leverage
+the geometric relationships between different components. This
+visualization demonstrates how the Fuller.4D framework can provide
+insights into complex systems like Active Inference through geometric
+intuition.}
 \end{figure}
 
 \hypertarget{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}{%
@@ -340,11 +339,14 @@ terms. Our use highlights structural symmetries and discrete volumetric
 quantities available in Fuller.4D, building on the computational
 foundations developed in the
 \href{https://github.com/4dsolutions}{4dsolutions ecosystem} for
-tetrahedral modeling and volume calculations.
+tetrahedral modeling and volume calculations. See the
+\href{07_resources.md}{Resources} section for comprehensive details on
+the computational implementations.
 
 Code linkage (no snippet): see
 \passthrough{\lstinline!example\_partition\_tetra\_volume!} in
-\passthrough{\lstinline!src/examples.py!} and Figure 18.
+\passthrough{\lstinline!src/examples.py!} and the partition tetrahedron
+figure above.
 
 \hypertarget{how-the-4d-namespaces-relate-here}{%
 \subsection{How the 4D namespaces relate
@@ -487,10 +489,9 @@ to \passthrough{\lstinline!quadmath/output/!}:
   \passthrough{\lstinline!fisher\_information\_eigensystem.npz!}.
 \item
   \textbf{External validation}: Cross-reference with volume calculations
-  in
-  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{\passthrough{\lstinline!Qvolume.ipynb!}}
   and tetrahedral modeling tools from the
-  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}.
+  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}. See the
+  \href{07_resources.md}{Resources} section for comprehensive details.
 \end{itemize}
 
 \end{document}

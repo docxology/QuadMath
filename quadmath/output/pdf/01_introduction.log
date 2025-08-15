@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 08:37
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 09:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1126,20 +1126,20 @@ LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 
 ]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 272.
+(Font)              scaled to size 12.0pt on input line 271.
 File: ../output/figures/graphical_abstract_quadray.png Graphic file (type bmp)
 <../output/figures/graphical_abstract_quadray.png>
- [2] [3]
+ [2]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/01_introduction.aux) 
 ) 
 Here is how much of TeX's memory you used:
- 20462 strings out of 478190
- 374864 string characters out of 5854827
- 997870 words of memory out of 5000000
- 40757 multiletter control sequences out of 15000+600000
+ 20456 strings out of 478190
+ 374782 string characters out of 5854827
+ 984870 words of memory out of 5000000
+ 40751 multiletter control sequences out of 15000+600000
  476432 words of font info for 100 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,6n,122p,1512b,1185s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,6n,122p,1502b,1185s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/01_i
-ntroduction.pdf (3 pages).
+ntroduction.pdf (2 pages).

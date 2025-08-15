@@ -39,7 +39,7 @@ ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
 
 The metric tensor is \(g_{\mu\nu}\).
 
-- **Einstein field equations (EFE)**: curvature responds to stress–energy per
+- **Einstein field equations**: curvature responds to stress–energy per
 
 \begin{equation}\label{eq:efe}
 G_{\mu \nu} + \Lambda\, g_{\mu \nu} = \kappa\, T_{\mu \nu},\qquad \kappa = \frac{8\pi G}{c^4}\,.
@@ -73,12 +73,12 @@ G_{\mu \nu} = R_{\mu \nu} - \tfrac{1}{2}\,R\, g_{\mu \nu},\qquad R = g^{\mu\nu} 
 
 - Under the synergetics convention (unit regular tetrahedron has tetravolume 1), many familiar solids admit Quadray integer coordinates. For example, the octahedron at the same edge length has tetravolume 4, and its vertices can be formed as integer linear combinations of the four axes A,B,C,D subject to the Quadray normalization rule.
 - The cuboctahedron (vector equilibrium) arises as the shell of the 12 nearest IVM neighbors given by the permutations of \((2,1,1,0)\). The rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the FCC/CCP packing centered at the origin under the same embedding.
-- See Figure 6 for a schematic summary of these relationships.
+- See the following figure for a schematic summary of these relationships.
 
 | Object | Quadray construction (sketch) | IVM volume |
 | --- | --- | --- |
 | Regular tetrahedron | Vertices `o=(0,0,0,0)`, `p=(2,1,0,1)`, `q=(2,1,1,0)`, `r=(2,0,1,1)` | 1 |
-| Cube (same edge) | Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame; edges tracked by XYZ embedding; compare Figure 6 | 3 |
+| Cube (same edge) | Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame; edges tracked by XYZ embedding; compare the following figure | 3 |
 | Octahedron (same edge) | Convex hull of mid-edges of the tetra frame (pairwise axis sums normalized) | 4 |
 | Rhombic dodecahedron | Voronoi cell of FCC/CCP packing at origin (dual to cuboctahedron) | 6 |
 | Cuboctahedron (vector equilibrium) | Shell of the 12 nearest IVM neighbors: permutations of `(2,1,1,0)` | 20 |
@@ -88,7 +88,7 @@ Small coordinate examples (subset):
 - Cuboctahedron neighbors (representatives): `(2,1,1,0)`, `(2,1,0,1)`, `(2,0,1,1)`, `(1,2,1,0)`; the full shell is all distinct permutations.
 - Tetrahedron: `[(0,0,0,0), (2,1,0,1), (2,1,1,0), (2,0,1,1)]`.
 
-Short scripts (reproducibility):
+Short scripts:
 
 ```bash
 python3 quadmath/scripts/polyhedra_quadray_constructions.py
@@ -304,15 +304,15 @@ Notes.
 - **Lengths (bridging)**: PdF and Cayley–Menger (CM) consume Cartesian lengths (XYZ) and produce Euclidean volumes; convert to IVM units via $S3 = \sqrt{9/8}$.
 - **Quadray-native**: Gerald de Jong (GdJ) returns IVM tetravolumes directly (no XYZ bridge). Tom Ace’s 5×5 coordinate formula is likewise native IVM. All agree numerically with CM+S3 on shared cases.
 
-References and discussion: [Urner – tetravolume.py (School of Tomorrow)](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/tetravolume.py), [Urner – VolumeTalk.ipynb](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb), [Urner – Flickr diagram](https://flic.kr/p/2rn22en).
+References and discussion: [Urner – Flickr diagram](https://flic.kr/p/2rn22en). For computational implementations and educational materials, see the [Resources](07_resources.md) section.
 
 Figure: automated comparison (native Ace 5×5 vs CM+S3) across small examples (see script `sympy_formalisms.py`). The figure and source CSV/NPZ are in `quadmath/output/`.
 
-![**Figure 5: Validation of bridging vs native tetravolume formulations across canonical examples**. This bar chart compares IVM tetravolumes computed via two independent methods: the "bridging" approach using Cayley–Menger determinants on Euclidean edge lengths converted to IVM units via the synergetics factor $S3=\sqrt{9/8}$, versus the "native" approach using Tom Ace's 5×5 determinant formula that operates directly on Quadray coordinates without XYZ intermediates. **Test cases**: Regular tetrahedron (V=1), unit cube decomposition (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20), all using integer Quadray coordinates and common edge lengths. **Results**: The overlapping bars demonstrate numerical agreement at machine precision between the length-based Coxeter.4D approach (Cayley–Menger + S3 conversion) and the coordinate-based Fuller.4D approach (Ace 5×5), confirming the mathematical equivalence of these formulations under synergetics unit conventions. Raw numerical data saved as `bridging_vs_native.csv` for reproducibility and further analysis.](../output/figures/bridging_vs_native.png)
+![**Validation of bridging vs native tetravolume formulations across canonical examples**. This bar chart compares IVM tetravolumes computed via two independent methods: the "bridging" approach using Cayley–Menger determinants on Euclidean edge lengths converted to IVM units via the synergetics factor $S3=\sqrt{9/8}$, versus the "native" approach using Tom Ace's 5×5 determinant formula that operates directly on Quadray coordinates without XYZ intermediates. **Test cases**: Regular tetrahedron (V=1), unit cube decomposition (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20), all using integer Quadray coordinates and common edge lengths. **Results**: The overlapping bars demonstrate numerical agreement at machine precision between the length-based Coxeter.4D approach (Cayley–Menger + S3 conversion) and the coordinate-based Fuller.4D approach (Ace 5×5), confirming the mathematical equivalence of these formulations under synergetics unit conventions. Raw numerical data saved as `bridging_vs_native.csv` for reproducibility and further analysis.](../output/figures/bridging_vs_native.png)
 
-![**Figure 6: Synergetic polyhedra volume relationships in the Quadray/IVM framework (network diagram)**. This schematic illustrates the hierarchical volume relationships among key polyhedra when constructed with consistent edge lengths and expressed as integer-coordinate linear combinations of Quadray basis vectors. **Nodes (volumes in IVM tetra-units)**: Regular tetrahedron (V=1, fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20). **Directed arrows (geometric relationships)**: The cube emerges as approximately 3× the tetrahedron volume through orthogonal space-filling; the octahedron (V=4) forms from edge-midpoint unions on the tetrahedral frame; the rhombic dodecahedron (V=6) serves as the Voronoi cell of the FCC/CCP lattice when centered at the origin; the cuboctahedron (V=20) represents the shell of twelve nearest IVM neighbors at permutations of $(2,1,1,0)$ Quadray coordinates. **Fuller.4D significance**: These integer volume ratios reflect the quantized nature of space-filling in synergetics, where the regular tetrahedron provides a natural unit container and other polyhedra emerge as integer multiples, supporting discrete geometric computation and exact lattice-based optimization methods. All constructions respect the IVM unit convention where the regular tetrahedron has tetravolume 1.](../output/figures/polyhedra_quadray_constructions.png)
+![**Synergetic polyhedra volume relationships in the Quadray/IVM framework (network diagram)**. This schematic illustrates the hierarchical volume relationships among key polyhedra when constructed with consistent edge lengths and expressed as integer-coordinate linear combinations of Quadray basis vectors. **Nodes (volumes in IVM tetra-units)**: Regular tetrahedron (V=1, fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20). **Directed arrows (geometric relationships)**: The cube emerges as approximately 3× the tetrahedron volume through orthogonal space-filling; the octahedron (V=4) forms from edge-midpoint unions on the tetrahedral frame; the rhombic dodecahedron (V=6) serves as the Voronoi cell of the FCC/CCP lattice when centered at the origin; the cuboctahedron (V=20) represents the shell of twelve nearest IVM neighbors at permutations of $(2,1,1,0)$ Quadray coordinates. **Fuller.4D significance**: These integer volume ratios reflect the quantized nature of space-filling in synergetics, where the regular tetrahedron provides a natural unit container and other polyhedra emerge as integer multiples, supporting discrete geometric computation and exact lattice-based optimization methods. All constructions respect the IVM unit convention where the regular tetrahedron has tetravolume 1.](../output/figures/polyhedra_quadray_constructions.png)
 
-### Short Python snippets (paper reproducibility)
+### Short Python snippets
 
 ```python
 from quadray import Quadray, ace_tetravolume_5x5
@@ -397,7 +397,7 @@ V = ace_tetravolume_5x5(A,B,C,D)            # integer
 - **IVM (D^3) heuristic**: From a 60–60–60 corner, three non-negative edge lengths $A,B,C$ along quadray directions enclose a tetrahedron by “closing the lid.” In synergetics, the tetravolume scales as the simple product $ABC$ under IVM conventions (unit regular tetra has volume 1). By contrast, in the orthogonal (R^3) habit, one constructs a full parallelepiped (12 edges); the tetra occupies one-sixth of the triple product of edge vectors. The IVM path is more direct for tetrahedra.
 - **Pedagogical note**: Adopt a vector-first approach. Differences like $(P_i-P_0)$ denote edge vectors; Quadrays and Cartesian can be taught in parallel as vector languages on the same Euclidean container.
 
-Reference notebook with worked examples and code: [Tetravolumes with Quadrays (Qvolume.ipynb)](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb).
+Reference notebook with worked examples and code: See the [Resources](07_resources.md) section for comprehensive educational materials and computational implementations.
 
 See implementation: `tetra_volume_cayley_menger`.
 
@@ -471,54 +471,3 @@ Relevant tests (`tests/`):
 - Random-walk experiments produce integer volumes; Ace 5×5 determinant agrees with length-based methods.
 - Volume tracking: monitor integer simplex volume to detect convergence plateaus.
 - Face/edge analyses: interpret sensitivity along edges; subspace searches across faces.
-
-## 4dsolutions ecosystem: comprehensive implementation catalog
-
-### Primary Python implementations (Math for Wisdom - m4w)
-
-- **Quadray vectors and conversions**: [`qrays.py`](https://github.com/4dsolutions/m4w/blob/main/qrays.py) — defines a `Qvector` class with normalization (`norm`, `norm0`), vector arithmetic, XYZ bridging, cross products, and SymPy symbolic support. Key features include:
-  - Projective normalization with `(k,k,k,k)` subtraction
-  - Length calculation: $\sqrt{\frac{1}{2}(a^2+b^2+c^2+d^2)}$ after `norm0`
-  - Cross product implementation with $\sqrt{2}/4$ scaling factor
-  - Comprehensive XYZ conversion matrices and rotation support
-
-- **Synergetic tetravolumes and modules**: [`tetravolume.py`](https://github.com/4dsolutions/m4w/blob/main/tetravolume.py) — implements multiple volume algorithms (PdF, CM, GdJ), dihedral calculations, and BEAST module system:
-  - `Tetrahedron` class with six edge lengths and multiple volume methods
-  - BEAST subclasses: A, B (volume 1/24), E (icosahedral), S, T modules
-  - Volume scaling by synergetics constant $\sqrt{9/8}$
-  - Integration with `qrays.py` for `qvolume` computations
-
-### Educational framework (School_of_Tomorrow)
-
-- **Interactive algorithms**: [School_of_Tomorrow](https://github.com/4dsolutions/School_of_Tomorrow) repository with comprehensive notebook tutorials:
-  - [`Qvolume.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb): Tom Ace 5×5 determinant method with random-walk demonstrations
-  - [`VolumeTalk.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb): Comparative analysis of bridging (CM+S3) vs native (Ace/GdJ) tetravolume formulas
-  - [`QuadCraft_Project.ipynb`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb): 1,255 lines of interactive CCP navigation and volume calculations
-
-- **Visualization modules**: Core Python modules for 3D rendering and animation:
-  - [`quadcraft.py`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py): POV-Ray scene generation with 15 test functions, CCP demonstrations, BRYG coordinate mapping
-  - [`flextegrity.py`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/flextegrity.py): Polyhedron framework with 26 named coordinate points, concentric hierarchy, automatic scene generation
-
-### Cross-language validation and extensions
-
-- **Rust implementation**: [`rusty_rays`](https://github.com/4dsolutions/rusty_rays) — performance-oriented Rust port with complete vector operations for both Vivm (IVM) and Vxyz coordinate systems, providing independent algorithmic validation.
-
-- **Clojure functional approach**: [`synmods`](https://github.com/4dsolutions/synmods) — functional programming implementation with protocol-based design, including [`qrays.clj`](https://github.com/4dsolutions/synmods/blob/master/qrays.clj) and 26-point coordinate system.
-
-- **VPython animations**: [`BookCovers`](https://github.com/4dsolutions/BookCovers) — real-time educational animations with [`bookdemo.py`](https://github.com/4dsolutions/BookCovers/blob/master/bookdemo.py), interactive controls, and live tetravolume tracking.
-
-- **Dedicated pedagogy**: [`tetravolumes`](https://github.com/4dsolutions/tetravolumes) repository with [`Computing Volumes.ipynb`](https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Computing%20Volumes.ipynb) and algorithm-focused materials.
-
-### API correspondence and validation
-
-**Mapping to this codebase**: The external implementations provide extensive validation and pedagogical context for our `src/` modules:
-
-| 4dsolutions module | This codebase (`src/`) | Correspondence |
-|-------------------|----------------------|----------------|
-| `qrays.py::Qvector` | `quadray.py::Quadray` | Vector operations, normalization, dot products |
-| `tetravolume.py::ivm_volume` | `ace_tetravolume_5x5` | Tom Ace 5×5 determinant method |
-| `tetravolume.py` (PdF/CM) | `cayley_menger.py` | Length-based volume formulas with S3 conversion |
-| `qrays.py::quadray` (XYZ→IVM) | `conversions.py::urner_embedding` | Coordinate system bridging |
-| BEAST modules (A,B,E,S,T) | `examples.py` volume constructions | Synergetic polyhedron relationships |
-
-**Cross-repository validation**: The multi-language implementations (Rust, Clojure, POV-Ray, VPython) serve as independent checks on algorithmic correctness and provide performance comparisons across computational paradigms. Educational notebooks demonstrate consistent results across bridging (CM+S3) and native (Ace/GdJ) tetravolume formulations.
