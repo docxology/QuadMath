@@ -209,3 +209,74 @@ def test_fisher_curvature_analysis_edge_cases():
     assert analysis_id["determinant"] == 1.0
     assert analysis_id["condition_number"] == 1.0
     assert analysis_id["anisotropy_index"] == 0.0
+
+
+def test_fisher_condition_number_edge_cases():
+    """Test condition number with edge cases."""
+    # Matrix with negative eigenvalues (should return inf)
+    F_negative = np.array([[1.0, 0.0], [0.0, -0.1]])
+    kappa_neg = fisher_condition_number(F_negative)
+    assert kappa_neg == np.inf
+    
+    # Matrix with zero eigenvalue (should return inf)
+    F_zero_eval = np.array([[1.0, 0.0], [0.0, 0.0]])
+    kappa_zero = fisher_condition_number(F_zero_eval)
+    assert kappa_zero == np.inf
+
+
+def test_fisher_curvature_analysis_zero_mean_eigenvalues():
+    """Test curvature analysis when mean eigenvalue is zero."""
+    # Matrix with eigenvalues that sum to zero
+    F_zero_mean = np.array([[1.0, 0.0], [0.0, -1.0]])
+    analysis = fisher_curvature_analysis(F_zero_mean)
+    
+    # Anisotropy index should be 0.0 when mean eigenvalue is zero
+    assert analysis["anisotropy_index"] == 0.0
+    assert analysis["trace"] == 0.0
+    assert analysis["condition_number"] == np.inf
+
+
+def test_fisher_quadray_comparison_edge_cases():
+    """Test quadray comparison with edge cases."""
+    # Zero matrices
+    F_zero = np.zeros((2, 2))
+    comparison_zero = fisher_quadray_comparison(F_zero, F_zero)
+    
+    # Should handle zero matrices gracefully
+    assert comparison_zero["cartesian"]["trace"] == 0.0
+    assert comparison_zero["quadray"]["trace"] == 0.0
+    
+    # Ratios should be 0.0 when both matrices are zero (0/0 = 0.0 by safe_ratio)
+    diffs = comparison_zero["coordinate_differences"]
+    assert diffs["trace_ratio"] == 0.0
+    assert diffs["anisotropy_ratio"] == 0.0
+    
+    # Test with one zero matrix and one non-zero matrix
+    F_nonzero = np.array([[1.0, 0.0], [0.0, 1.0]])
+    comparison_mixed = fisher_quadray_comparison(F_zero, F_nonzero)
+    
+    # Trace ratio should be 0.0 (0/2)
+    assert comparison_mixed["coordinate_differences"]["trace_ratio"] == 0.0
+    
+    # Different sized matrices (should raise error)
+    F_2x2 = np.array([[1.0, 0.0], [0.0, 1.0]])
+    F_3x3 = np.eye(3)
+    
+    with pytest.raises(ValueError):
+        fisher_quadray_comparison(F_2x2, F_3x3)
+
+
+def test_non_square_matrix_errors():
+    """Test error handling for non-square matrices."""
+    # Non-square matrix for fim_eigenspectrum
+    F_rect = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    with pytest.raises(ValueError, match="F must be square"):
+        fim_eigenspectrum(F_rect)
+    
+    # Non-square matrix for fisher_condition_number
+    with pytest.raises(ValueError, match="F must be square"):
+        fisher_condition_number(F_rect)
+    
+    # Non-square matrix for fisher_curvature_analysis
+    with pytest.raises(ValueError, match="F must be square"):
+        fisher_curvature_analysis(F_rect)

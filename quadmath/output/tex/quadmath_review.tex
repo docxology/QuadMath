@@ -3278,30 +3278,6 @@ trajectory data and demonstrates the effectiveness of discrete
 optimization on the integer Quadray lattice.}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics{../output/figures/bridging_vs_native.png}
-\caption{\textbf{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes
-across canonical integer-quadray examples}. Bars compare \(V_{ivm}\)
-computed via Cayley--Menger on XYZ edge lengths with \(S3=\sqrt{9/8}\)
-conversion versus Tom Ace's 5×5 determinant formula operating directly
-on Quadray coordinates. \textbf{Test cases}: Unit tetrahedron (V=1), 2×
-edge scaling (V=8), mixed coordinate tetrahedron, centered tetrahedron
-(V=3), and large mixed tetrahedron, all using integer Quadray
-coordinates. \textbf{Results}: The overlapping bars demonstrate
-numerical agreement at machine precision between the length-based
-Coxeter.4D approach (Cayley--Menger + S3 conversion) and the
-coordinate-based Fuller.4D approach (Ace 5×5), confirming the
-mathematical equivalence of these formulations under synergetics unit
-conventions. \textbf{Methodological significance}: This validation
-demonstrates that the bridging approach (converting from Euclidean to
-IVM units) produces identical results to the native IVM approach,
-supporting the use of both methods interchangeably depending on whether
-one has access to edge lengths or direct coordinates. Raw numerical data
-saved as \passthrough{\lstinline!bridging\_vs\_native.csv!} for
-reproducibility and further analysis.}
-\end{figure}
-
 \hypertarget{quadray-normalization-fuller.4d}{%
 \subsection{Quadray Normalization
 (Fuller.4D)}\label{quadray-normalization-fuller.4d}}
@@ -3367,9 +3343,6 @@ validation}\label{reproducibility-artifacts-and-external-validation}}
     \passthrough{\lstinline!natural\_gradient\_path.csv!} /
     \passthrough{\lstinline!.npz!}: projected trajectory and raw
     coordinates
-  \item
-    \passthrough{\lstinline!bridging\_vs\_native.csv!}: Ace 5×5 vs CM+S3
-    tetravolume comparisons
   \item
     \passthrough{\lstinline!ivm\_neighbors\_data.csv!} /
     \passthrough{\lstinline!ivm\_neighbors\_edges\_data.npz!}: neighbor

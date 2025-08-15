@@ -182,18 +182,28 @@ def fisher_quadray_comparison(
     Returns
     - Dict containing comparison metrics and analysis
     """
+    # Check matrix compatibility
+    if F_cartesian.shape != F_quadray.shape:
+        raise ValueError("Matrices must have the same dimensions")
+    
     # Analyze both matrices
     cart_analysis = fisher_curvature_analysis(F_cartesian)
     quad_analysis = fisher_curvature_analysis(F_quadray)
     
-    # Compare key properties
+    # Compare key properties with safe division
+    def safe_ratio(a, b):
+        """Safely compute ratio, handling zero cases."""
+        if b == 0:
+            return np.inf if a > 0 else 0.0 if a == 0 else -np.inf
+        return a / b
+    
     comparison = {
         "cartesian": cart_analysis,
         "quadray": quad_analysis,
         "coordinate_differences": {
-            "condition_ratio": cart_analysis["condition_number"] / quad_analysis["condition_number"],
-            "trace_ratio": cart_analysis["trace"] / quad_analysis["trace"],
-            "anisotropy_ratio": cart_analysis["anisotropy_index"] / quad_analysis["anisotropy_index"]
+            "condition_ratio": safe_ratio(cart_analysis["condition_number"], quad_analysis["condition_number"]),
+            "trace_ratio": safe_ratio(cart_analysis["trace"], quad_analysis["trace"]),
+            "anisotropy_ratio": safe_ratio(cart_analysis["anisotropy_index"], quad_analysis["anisotropy_index"])
         }
     }
     
