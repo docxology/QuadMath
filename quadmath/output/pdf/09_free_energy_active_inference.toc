@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Appendix: The Free Energy Principle and Active Inference}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Overview}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Mathematical Formulation and Equation Callouts (Equations linkage)}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}How the 4D namespaces relate here}{2}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Joint Optimization in the Tetrahedral Framework (Methods linkage)}{2}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Neuroscience and Predictive Coding}{2}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Relation to Reinforcement Learning and Control}{4}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Links to Other Theories}{4}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Implications for AI and Robust Computation}{4}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.10}Code, Reproducibility, and Cross-References}{4}{subsection.1.10}%

@@ -1,10 +1,13 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
 \documentclass[
+  10pt,
 ]{article}
 \usepackage{lmodern}
+\usepackage{setspace}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
@@ -15,6 +18,8 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -36,13 +41,41 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  hidelinks,
+  colorlinks=true,
+  linkcolor=red,
+  filecolor=red,
+  citecolor=red,
+  urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=0.3cm,top=0.5cm,bottom=0.5cm,left=0.3cm,right=0.3cm,includeheadfoot]{geometry}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{3}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
 
 \title{QuadMath: Front Matter and Abstract}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
@@ -51,6 +84,12 @@
 \begin{document}
 \maketitle
 
+{
+\hypersetup{linkcolor=red}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
 \hypertarget{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}{%
 \section{QuadMath: An Analytical Review of 4D and Quadray
 Coordinates}\label{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}}
@@ -151,7 +190,7 @@ availability}\label{reproducibility-and-data-availability}}
   Symbols and Glossary for a consolidated table of variables and
   constants used throughout. Equation labels (e.g., Eq.
   \eqref{eq:lattice_det} and Eq. \eqref{eq:supp_fim}) and figure labels
-  (e.g., Fig. \ref{fig:volumes_scale}) are used consistently.
+  (e.g., Figure \ref{fig:volumes_scale}) are used consistently.
 \end{itemize}
 
 \end{document}

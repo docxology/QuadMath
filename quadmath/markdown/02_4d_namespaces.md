@@ -34,11 +34,28 @@ In this section, we clarify the three internal meanings of “4D,” following a
 
 ### Figures
 
-![IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.](../output/figures/ivm_neighbors_edges.png){#fig:ivm_neighbors_edges}
-![Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).](../output/figures/quadray_clouds.png){#fig:quadray_clouds}
-![Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).](../output/figures/vector_equilibrium_panels.png){#fig:vector_equilibrium}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/ivm_neighbors_edges.png}
+\caption{IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.}
+\label{fig:ivm_neighbors_edges}
+\end{figure}
 
-In Fig. \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM neighbors with radial edges under a standard Urner embedding; Fig. \ref{fig:quadray_clouds} illustrates random Quadray clouds under several embeddings.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/quadray_clouds.png}
+\caption{Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).}
+\label{fig:quadray_clouds}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/vector_equilibrium_panels.png}
+\caption{Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).}
+\label{fig:vector_equilibrium}
+\end{figure}
+
+In Figure \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM neighbors with radial edges under a standard Urner embedding; Figure \ref{fig:quadray_clouds} illustrates random Quadray clouds under several embeddings.
 
 Vector equilibrium (cuboctahedron). The shell formed by the 12 nearest IVM neighbors is the cuboctahedron, also called the vector equilibrium in synergetics. All 12 vertices are equidistant from the origin with equal edge lengths, modeling a balanced local packing. This geometry underlies the "twelve around one" close-packing motif and appears in tensegrity discussions as a canonical balanced structure. See background: [Cuboctahedron (vector equilibrium)](https://en.wikipedia.org/wiki/Cuboctahedron) and synergetics references. Computational demonstrations include [`ivm_neighbors.py`](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py) and related visualizations in the 4dsolutions ecosystem.
 

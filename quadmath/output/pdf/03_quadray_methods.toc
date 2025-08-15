@@ -1,0 +1,39 @@
+\contentsline {section}{\numberline {1}Quadray Analytical Details, Equations, and Methods}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Coxeter.4D (Euclidean E⁴): symmetry groups and polytopes}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Einstein.4D (Minkowski spacetime): metric and field equations}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Fuller.4D Coordinates and Normalization}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Conversions and Vector Operations: Quadray ↔ Cartesian (Fuller.4D ↔ Coxeter.4D/XYZ)}{3}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Integer-coordinate constructions (compact derivation box)}{3}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}Example vertex lists and volume checks (illustrative)}{4}{subsubsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.5}Integer Volume Quantization}{4}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Distances and Metrics}{6}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}XYZ determinant and S3 conversion}{6}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Fisher Geometry in Quadray Space}{6}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Practical Methods}{6}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.10}Tetravolumes with Quadrays}{6}{subsection.1.10}%
+\contentsline {subsubsection}{\numberline {1.10.1}Bridging vs native tetravolume formulas (Results reference)}{7}{subsubsection.1.10.1}%
+\contentsline {subsubsection}{\numberline {1.10.2}Short Python snippets (paper reproducibility)}{9}{subsubsection.1.10.2}%
+\contentsline {subsubsection}{\numberline {1.10.3}Random tetrahedra in the IVM (integer volumes)}{9}{subsubsection.1.10.3}%
+\contentsline {subsubsection}{\numberline {1.10.4}Algebraic precision}{10}{subsubsection.1.10.4}%
+\contentsline {subsubsection}{\numberline {1.10.5}XYZ determinant and the S3 conversion}{10}{subsubsection.1.10.5}%
+\contentsline {subsubsection}{\numberline {1.10.6}D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal ``cubing''}{10}{subsubsection.1.10.6}%
+\contentsline {subsection}{\numberline {1.11}Code methods (anchors)}{10}{subsection.1.11}%
+\contentsline {subsubsection}{\numberline {1.11.1}\texttt {integer\_tetra\_volume}}{10}{subsubsection.1.11.1}%
+\contentsline {subsubsection}{\numberline {1.11.2}\texttt {ace\_tetravolume\_5x5}}{10}{subsubsection.1.11.2}%
+\contentsline {subsubsection}{\numberline {1.11.3}\texttt {tetra\_volume\_cayley\_menger}}{10}{subsubsection.1.11.3}%
+\contentsline {subsubsection}{\numberline {1.11.4}\texttt {ivm\_tetra\_volume\_cayley\_menger}}{10}{subsubsection.1.11.4}%
+\contentsline {subsubsection}{\numberline {1.11.5}\texttt {urner\_embedding}}{10}{subsubsection.1.11.5}%
+\contentsline {subsubsection}{\numberline {1.11.6}\texttt {quadray\_to\_xyz}}{10}{subsubsection.1.11.6}%
+\contentsline {subsubsection}{\numberline {1.11.7}\texttt {bareiss\_determinant\_int}}{10}{subsubsection.1.11.7}%
+\contentsline {subsubsection}{\numberline {1.11.8}Information geometry methods (anchors)}{11}{subsubsection.1.11.8}%
+\contentsline {paragraph}{\texttt {fisher\_information\_matrix}}{11}{section*.2}%
+\contentsline {paragraph}{\texttt {natural\_gradient\_step}}{11}{section*.3}%
+\contentsline {paragraph}{\texttt {free\_energy}}{11}{section*.4}%
+\contentsline {paragraph}{\texttt {discrete\_ivm\_descent}}{11}{section*.5}%
+\contentsline {paragraph}{\texttt {animate\_discrete\_path}}{11}{section*.6}%
+\contentsline {subsection}{\numberline {1.12}Reproducibility checklist}{11}{subsection.1.12}%
+\contentsline {subsection}{\numberline {1.13}4dsolutions ecosystem: comprehensive implementation catalog}{11}{subsection.1.13}%
+\contentsline {subsubsection}{\numberline {1.13.1}Primary Python implementations (Math for Wisdom - m4w)}{11}{subsubsection.1.13.1}%
+\contentsline {subsubsection}{\numberline {1.13.2}Educational framework (School\_of\_Tomorrow)}{11}{subsubsection.1.13.2}%
+\contentsline {subsubsection}{\numberline {1.13.3}Cross-language validation and extensions}{12}{subsubsection.1.13.3}%
+\contentsline {subsubsection}{\numberline {1.13.4}API correspondence and validation}{12}{subsubsection.1.13.4}%

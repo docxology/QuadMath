@@ -68,15 +68,24 @@ COMMON_ARGS=(
   -V monofont="DejaVu Sans Mono"
   -V fontsize=10pt
   -V linestretch=1.0
-  -V geometry:margin=0.4cm
-  -V geometry:top=0.8cm
-  -V geometry:bottom=0.8cm
+  -V geometry:margin=0.3cm
+  -V geometry:top=0.5cm
+  -V geometry:bottom=0.5cm
+  -V geometry:left=0.3cm
+  -V geometry:right=0.3cm
   -V geometry:includeheadfoot
   -V colorlinks=true
   -V linkcolor=red
   -V urlcolor=red
   -V citecolor=red
-  --resource-path="$MARKDOWN_DIR:$OUTPUT_DIR"
+  -V toccolor=red
+  -V filecolor=red
+  -V menucolor=red
+  -V linkbordercolor=red
+  -V urlbordercolor=red
+  -V citebordercolor=red
+
+  --resource-path="$MARKDOWN_DIR:$OUTPUT_DIR:$LATEX_DIR:$REPO_ROOT"
 )
 
 if [ -f "$PREAMBLE_TEX" ]; then
@@ -136,38 +145,38 @@ build_one() {
   local base="${in_md%.md}"
   local pdf_out="$PDF_DIR/${base}.pdf"
   local tex_out="$TEX_DIR/${base}.tex"
-  pandoc "$MARKDOWN_DIR/$in_md" \
-    -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
-    -V title="$title" \
-    -V author="$AUTHOR_TEX" \
-    -V date="$DATE_STR" \
-    --highlight-style=tango \
-    "${COMMON_ARGS[@]}" \
-    -o "$pdf_out"
+  
+  # Generate TeX file first
   pandoc "$MARKDOWN_DIR/$in_md" \
     -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
     -s \
     -V title="$title" \
     -V author="$AUTHOR_TEX" \
     -V date="$DATE_STR" \
+    "${COMMON_ARGS[@]}" \
     -o "$tex_out"
-  echo "Built: $pdf_out and $tex_out"
+  
+  echo "Generated TeX: $tex_out"
 
-  # Resolve cross-references by compiling the generated TeX with multiple passes
-  if command -v latexmk >/dev/null 2>&1; then
-    (
-      cd "$TEX_DIR"
-      latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex"
-      latexmk -c -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
-    )
+  # Compile TeX to PDF with XeLaTeX
+  (
+    cd "$OUTPUT_DIR"
+    if command -v latexmk >/dev/null 2>&1; then
+      latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex"
+      latexmk -c -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+    else
+      # Fallback: run xelatex multiple times to resolve refs
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+    fi
+  )
+  
+  if [ -f "$pdf_out" ]; then
+    echo "✅ Built: $pdf_out"
   else
-    # Fallback: run xelatex multiple times to resolve refs
-    (
-      cd "$TEX_DIR"
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$base.tex" >/dev/null 2>&1 || true
-    )
+    echo "❌ Failed to build: $pdf_out"
+    return 1
   fi
 }
 
@@ -198,14 +207,8 @@ build_one "10_symbols_glossary.md" "Appendix: Symbols and Glossary"
   done
 }
 
-pandoc "$COMBINED_MD" \
-  -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
-  -V title="QuadMath: A Unified Analytical Review of 4D and Quadray Coordinates" \
-  -V author="$AUTHOR_TEX" \
-  -V date="$DATE_STR" \
-  --highlight-style=tango \
-  "${COMMON_ARGS[@]}" \
-  -o "$PDF_DIR/quadmath_review.pdf"
+# Generate TeX file for combined document first
+echo "Generating combined TeX file..."
 
 pandoc "$COMBINED_MD" \
   -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
@@ -213,22 +216,29 @@ pandoc "$COMBINED_MD" \
   -V title="QuadMath: A Unified Analytical Review of 4D and Quadray Coordinates" \
   -V author="$AUTHOR_TEX" \
   -V date="$DATE_STR" \
+  "${COMMON_ARGS[@]}" \
   -o "$TEX_DIR/quadmath_review.tex"
 
-# Post-compile combined TeX to resolve figure/table references
-if command -v latexmk >/dev/null 2>&1; then
-  (
-    cd "$OUTPUT_DIR"
+echo "Generated combined TeX: $TEX_DIR/quadmath_review.tex"
+
+# Compile combined TeX to PDF with XeLaTeX
+echo "Compiling combined PDF..."
+(
+  cd "$OUTPUT_DIR"
+  if command -v latexmk >/dev/null 2>&1; then
     latexmk -xelatex -interaction=nonstopmode -silent -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || latexmk -xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex"
     latexmk -c -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
-  )
+  else
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+  fi
+)
+
+if [ -f "$PDF_DIR/quadmath_review.pdf" ]; then
+  echo "✅ Built combined PDF: $PDF_DIR/quadmath_review.pdf"
 else
-  (
-    cd "$OUTPUT_DIR"
-    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
-    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
-    xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
-  )
+  echo "❌ Failed to build combined PDF"
 fi
 
 echo "All outputs in: $OUTPUT_DIR"

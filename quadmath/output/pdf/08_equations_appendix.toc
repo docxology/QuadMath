@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Equations and Math Supplement (Appendix)}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Volume of a Tetrahedron (Lattice)}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Fisher Information Matrix (FIM)}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Natural Gradient}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Free Energy (Active Inference)}{2}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Figures}{4}{subsubsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.5}Quadray Normalization (Fuller.4D)}{4}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Distance (Embedding Sketch; Coxeter.4D slice)}{4}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Minkowski Line Element (Einstein.4D analogy)}{4}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}High-Precision Arithmetic Note}{4}{subsection.1.8}%
+\contentsline {subsubsection}{\numberline {1.8.1}Reproducibility artifacts and external validation}{4}{subsubsection.1.8.1}%
+\contentsline {subsection}{\numberline {1.9}Namespaces summary (notation)}{6}{subsection.1.9}%

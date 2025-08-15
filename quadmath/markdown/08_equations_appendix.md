@@ -92,12 +92,33 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 ### Figures
 
 
-![Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.](../output/figures/natural_gradient_path.png){#fig:natural_gradient_path}
-![Free energy curve for a 2-state model.](../output/figures/free_energy_curve.png){#fig:free_energy_curve}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
+\caption{Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.}
+\label{fig:natural_gradient_path}
+\end{figure}
 
-![Discrete IVM descent path (final frame).](../output/figures/discrete_path_final.png){#fig:discrete_path}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
+\caption{Free energy curve for a 2-state model.}
+\label{fig:free_energy_curve}
+\end{figure}
 
-![Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png){#fig:bridging_native_eq_appendix}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/discrete_path_final.png}
+\caption{Discrete IVM descent path (final frame).}
+\label{fig:discrete_path}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
+\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: \texttt{bridging\_vs\_native.csv}.}
+\label{fig:bridging_native_eq_appendix}
+\end{figure}
 
 ## Quadray Normalization (Fuller.4D)
 

@@ -1,10 +1,13 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
 \documentclass[
+  10pt,
 ]{article}
 \usepackage{lmodern}
+\usepackage{setspace}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
@@ -15,6 +18,8 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -36,9 +41,14 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  hidelinks,
+  colorlinks=true,
+  linkcolor=red,
+  filecolor=red,
+  citecolor=red,
+  urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=0.3cm,top=0.5cm,bottom=0.5cm,left=0.3cm,right=0.3cm,includeheadfoot]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -102,7 +112,30 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{3}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
 
 \title{QuadMath: A Unified Analytical Review of 4D and Quadray Coordinates}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
@@ -111,6 +144,12 @@
 \begin{document}
 \maketitle
 
+{
+\hypersetup{linkcolor=red}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
 \hypertarget{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}{%
 \section{QuadMath: An Analytical Review of 4D and Quadray
 Coordinates}\label{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}}
@@ -211,7 +250,7 @@ availability}\label{reproducibility-and-data-availability}}
   Symbols and Glossary for a consolidated table of variables and
   constants used throughout. Equation labels (e.g., Eq.
   \eqref{eq:lattice_det} and Eq. \eqref{eq:supp_fim}) and figure labels
-  (e.g., Fig. \ref{fig:volumes_scale}) are used consistently. 
+  (e.g., Figure \ref{fig:volumes_scale}) are used consistently. 
 \end{itemize}
 
 \hypertarget{introduction}{%
@@ -426,19 +465,17 @@ throughout the paper:
   \texttt{example\_optimize}).
 \end{itemize}
 
-Fig. \ref{fig:graphical_abstract} (graphical abstract): Panel A shows
-Quadray axes (A,B,C,D) under a symmetric embedding with wireframe
-context. Panel B shows close-packed spheres at the tetrahedron vertices
-(IVM/CCP/FCC, ``twelve around one'').
+Figure 1 (graphical abstract): Panel A shows Quadray axes (A,B,C,D)
+under a symmetric embedding with wireframe context. Panel B shows
+close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve
+around one'').
 
 \begin{figure}
-\hypertarget{fig:graphical_abstract}{%
 \centering
-\includegraphics{../output/figures/graphical_abstract_quadray.png}
-\caption{Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with
-wireframe. B: close-packed spheres at tetrahedron vertices
-(IVM/CCP/FCC).}\label{fig:graphical_abstract}
-}
+\includegraphics{figures/graphical_abstract_quadray.png}
+\caption{\textbf{Figure 1}: Graphical abstract (2×1 panels). A: Quadray
+axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron
+vertices (IVM/CCP/FCC).}
 \end{figure}
 
 Tests illustrate expected behavior and edge cases (see \texttt{tests/}),
@@ -558,12 +595,29 @@ models)}\label{directions-not-dimensions-language-and-models}}
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
 
-\includegraphics{../output/figures/ivm_neighbors_edges.png}
-\includegraphics{../output/figures/quadray_clouds.png}
-\includegraphics{../output/figures/vector_equilibrium_panels.png}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/ivm_neighbors_edges.png}
+\caption{IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.}
+\label{fig:ivm_neighbors_edges}
+\end{figure}
 
-In Fig. \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM
-neighbors with radial edges under a standard Urner embedding; Fig.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/quadray_clouds.png}
+\caption{Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).}
+\label{fig:quadray_clouds}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/vector_equilibrium_panels.png}
+\caption{Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).}
+\label{fig:vector_equilibrium}
+\end{figure}
+
+In Figure \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM
+neighbors with radial edges under a standard Urner embedding; Figure
 \ref{fig:quadray_clouds} illustrates random Quadray clouds under several
 embeddings.
 
@@ -822,7 +876,7 @@ box)}\label{integer-coordinate-constructions-compact-derivation-box}}
   rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the
   FCC/CCP packing centered at the origin under the same embedding.
 \item
-  See Fig. \ref{fig:polyhedra_quadray_map} for a schematic summary of
+  See Figure \ref{fig:polyhedra_quadray_map} for a schematic summary of
   these relationships.
 \end{itemize}
 
@@ -849,7 +903,7 @@ Vertices \texttt{o=(0,0,0,0)}, \texttt{p=(2,1,0,1)},
 Cube (same edge)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame;
-edges tracked by XYZ embedding; compare Fig.
+edges tracked by XYZ embedding; compare Figure
 \ref{fig:polyhedra_quadray_map}\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 3\strut
@@ -1280,33 +1334,18 @@ Figure: automated comparison (native Ace 5×5 vs CM+S3) across small
 examples (see script \texttt{sympy\_formalisms.py}). The figure and
 source CSV/NPZ are in \texttt{quadmath/output/}.
 
-\begin{figure}
-\hypertarget{fig:bridging_native}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/bridging_vs_native.png}
-\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across
-canonical integer-quadray examples. Bars compare \(V_{ivm}\) computed by
-Cayley--Menger on XYZ edge lengths with \(S3=\sqrt{9/8}\) conversion
-(bridging path) against Tom Ace's native 5×5 determinant (IVM).
-Agreement at machine precision confirms equivalence between length-based
-and Quadray-native formulations under the synergetics unit convention.
-Source CSV:
-\texttt{bridging\_vs\_native.csv}.}\label{fig:bridging_native}
-}
+\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
+\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace's native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: \texttt{bridging\_vs\_native.csv}.}
+\label{fig:bridging_native}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:polyhedra_quadray_map}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/polyhedra_quadray_constructions.png}
-\caption{Polyhedra relationships (schematic). Nodes show synergetics
-tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4),
-rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple
-relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra
-frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron
-as the shell of the 12 nearest IVM neighbors (permutations of
-\((2,1,1,0)\)).}\label{fig:polyhedra_quadray_map}
-}
+\includegraphics[width=0.9\textwidth]{figures/polyhedra_quadray_constructions.png}
+\caption{Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube $\approx 3\times$ tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).}
+\label{fig:polyhedra_quadray_map}
 \end{figure}
 
 \hypertarget{short-python-snippets-paper-reproducibility}{%
@@ -1855,38 +1894,29 @@ while not converged:
 \hypertarget{figures-1}{%
 \subsubsection{Figures}\label{figures-1}}
 
-\begin{figure}
-\hypertarget{fig:simplex_trace}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/simplex_trace.png}
-\caption{Optimization trace for discrete Nelder--Mead in the Quadray
-lattice. Best/worst objective values and spread (left axis) with integer
-tetra-volume (right axis) per iteration. See the MP4 for the full
-simplex trajectory.}\label{fig:simplex_trace}
-}
+\includegraphics[width=0.9\textwidth]{figures/simplex_trace.png}
+\caption{Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.}
+\label{fig:simplex_trace}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:volumes_scale}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/volumes_scale_plot.png}
-\caption{Tetra volume vs edge scale. Two curves: Euclidean volume
-\(V_{xyz}\) and IVM-converted \(V_{ivm}=S3\cdot V_{xyz}\); axes labeled;
-\(S3\) annotated; data saved as CSV/NPZ.}\label{fig:volumes_scale}
-}
+\includegraphics[width=0.9\textwidth]{figures/volumes_scale_plot.png}
+\caption{Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.}
+\label{fig:volumes_scale}
 \end{figure}
 
-As shown in Fig. \ref{fig:simplex_final}, the discrete Nelder--Mead
-converges on plateaus; Fig. \ref{fig:volumes_scale} summarizes the
+As shown in Figure \ref{fig:simplex_final}, the discrete Nelder--Mead
+converges on plateaus; Figure \ref{fig:volumes_scale} summarizes the
 scaling behavior used in volume diagnostics.
 
-\begin{figure}
-\hypertarget{fig:simplex_final}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/simplex_final.png}
-\caption{Final converged simplex
-configuration.}\label{fig:simplex_final}
-}
+\includegraphics[width=0.9\textwidth]{figures/simplex_final.png}
+\caption{Final converged simplex configuration.}
+\label{fig:simplex_final}
 \end{figure}
 
 Raw artifacts: the full trajectory animation
@@ -1967,53 +1997,38 @@ form)}\label{information-geometric-view-einstein.4d-analogy-in-metric-form}}
   \texttt{F} (see \texttt{fim\_eigenspectrum}) reveal stiff and sloppy
   directions; this supports step-size selection and preconditioning.
 \item
-  \textbf{Figures}: empirical FIM heatmap (Fig.
-  \ref{fig:fisher_information_matrix}) and eigenspectrum (Fig.
+  \textbf{Figures}: empirical FIM heatmap (Figure
+  \ref{fig:fisher_information_matrix}) and eigenspectrum (Figure
   \ref{fig:fim_eigenspectrum}). Raw data available as NPZ/CSV in
   \texttt{quadmath/output/}.
 \end{itemize}
 
-\begin{figure}
-\hypertarget{fig:fisher_information_matrix}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/fisher_information_matrix.png}
-\caption{Empirical Fisher information heatmap (entries \(F_{ij}\)
-estimated via outer products of per-sample gradients; model: noisy
-linear regression; evaluated at misspecified parameters \(w_\text{est}\)
-vs ground truth \(w_\text{true}\); colorbar shows curvature
-scale).}\label{fig:fisher_information_matrix}
-}
+\includegraphics[width=0.9\textwidth]{figures/fisher_information_matrix.png}
+\caption{Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).}
+\label{fig:fisher_information_matrix}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:fim_eigenspectrum}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/fisher_information_eigenspectrum.png}
-\caption{Fisher information eigenspectrum (principal curvatures along
-eigenvectors of \(F\); eigenvalues \(\lambda_i\) sorted descending;
-highlights stiff vs.~sloppy directions).}\label{fig:fim_eigenspectrum}
-}
+\includegraphics[width=0.9\textwidth]{figures/fisher_information_eigenspectrum.png}
+\caption{Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).}
+\label{fig:fim_eigenspectrum}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:natural_gradient_path}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/natural_gradient_path.png}
-\caption{Natural gradient trajectory on a quadratic bowl (projection in
-\(w_0\)--\(w_1\) plane);
-\(A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}\),
-step size \(\eta=0.5\), damped inverse Fisher \(F + 10^{-3} I\); raw
-path in CSV/NPZ.}\label{fig:natural_gradient_path}
-}
+\includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
+\caption{Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.}
+\label{fig:natural_gradient_path}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:free_energy_curve}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/free_energy_curve.png}
-\caption{Free energy curve for a 2-state
-model.}\label{fig:free_energy_curve}
-}
+\includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
+\caption{Free energy curve for a 2-state model.}
+\label{fig:free_energy_curve}
 \end{figure}
 
 \begin{itemize}
@@ -2075,12 +2090,12 @@ extensive computational framework in Kirby Urner's
 \tightlist
 \item
   The simplex-based optimizer exhibits discrete volume plateaus and
-  converges to low-spread configurations; see Fig.
+  converges to low-spread configurations; see Figure
   \ref{fig:simplex_final} and the MP4/CSV artifacts in
   \texttt{quadmath/output/}.
 \item
   The greedy IVM descent produces monotone trajectories with
-  integer-valued objectives; see Fig. \ref{fig:discrete_path}. 
+  integer-valued objectives; see Figure \ref{fig:discrete_path}. 
 \end{itemize}
 
 \hypertarget{extensions-of-4d-and-quadrays}{%
@@ -2383,7 +2398,7 @@ parameter space and quantifies local curvature of the statistical
 manifold. High curvature directions (large eigenvalues of \texttt{F})
 indicate parameters to which the model is most sensitive; small
 eigenvalues indicate sloppy directions. Our eigenspectrum visualization
-(see Fig. \ref{fig:fim_eigenspectrum}) highlights these scales.
+(see Figure \ref{fig:fim_eigenspectrum}) highlights these scales.
 Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information}.
@@ -2497,7 +2512,7 @@ linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}}
 \item
   Exact (SymPy) comparisons confirm that CM+S3 and Ace 5×5 produce
   identical IVM tetravolumes on canonical small integer-quadray
-  examples. See Fig. \ref{fig:bridging_native} and the manifest
+  examples. See Figure \ref{fig:bridging_native} and the manifest
   \texttt{sympy\_symbolics.txt} alongside
   \texttt{bridging\_vs\_native.csv} in \texttt{quadmath/output/}.
 \item
@@ -3209,31 +3224,32 @@ energy (\texttt{free\_energy}).
 \hypertarget{figures-2}{%
 \subsubsection{Figures}\label{figures-2}}
 
-\includegraphics{../output/figures/natural_gradient_path.png}
-\includegraphics{../output/figures/free_energy_curve.png}
-
-\begin{figure}
-\hypertarget{fig:discrete_path}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/discrete_path_final.png}
-\caption{Discrete IVM descent path (final
-frame).}\label{fig:discrete_path}
-}
+\includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
+\caption{Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.}
+\label{fig:natural_gradient_path}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:bridging_native_eq_appendix}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/bridging_vs_native.png}
-\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across
-canonical integer-quadray examples. Bars compare \(V_{ivm}\) computed
-via Cayley--Menger on XYZ edge lengths with \(S3=\sqrt{9/8}\) conversion
-(bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid
-bars coincide to numerical precision, illustrating the equivalence of
-length-based and Quadray-native formulations under synergetics units.
-Source CSV:
-\texttt{bridging\_vs\_native.csv}.}\label{fig:bridging_native_eq_appendix}
-}
+\includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
+\caption{Free energy curve for a 2-state model.}
+\label{fig:free_energy_curve}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/discrete_path_final.png}
+\caption{Discrete IVM descent path (final frame).}
+\label{fig:discrete_path}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
+\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: \texttt{bridging\_vs\_native.csv}.}
+\label{fig:bridging_native_eq_appendix}
 \end{figure}
 
 \hypertarget{quadray-normalization-fuller.4d}{%
@@ -3415,9 +3431,9 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   \end{equation}
 \end{itemize}
 
-Figures: Fig. \ref{fig:fisher_information_matrix}, Fig.
-\ref{fig:fim_eigenspectrum}, Fig. \ref{fig:natural_gradient_path}, Fig.
-\ref{fig:free_energy_curve}.
+Figures: Figure \ref{fig:fisher_information_matrix}, Figure
+\ref{fig:fim_eigenspectrum}, Figure \ref{fig:natural_gradient_path},
+Figure \ref{fig:free_energy_curve}.
 
 Discrete variational optimization on the quadray lattice:
 \texttt{discrete\_ivm\_descent} greedily descends a free-energy-like
@@ -3425,16 +3441,11 @@ objective over IVM moves, yielding integer-valued trajectories. See the
 path animation artifact \texttt{discrete\_path.mp4} in
 \texttt{quadmath/output/}.
 
-\begin{figure}
-\hypertarget{fig:partition_tetrahedron}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/partition_tetrahedron.png}
-\caption{Four-fold partition mapped to a Quadray tetrahedron ---
-vertices labeled as Internal (μ), Sensory (s), Active (a), External (ψ).
-Edges depict pairwise couplings: (μ--s) perceptual inference, (a--ψ)
-control, and cross-couplings capturing active perception and
-sensorimotor contingencies.}\label{fig:partition_tetrahedron}
-}
+\includegraphics[width=0.9\textwidth]{figures/partition_tetrahedron.png}
+\caption{Four-fold partition mapped to a Quadray tetrahedron — vertices labeled as Internal ($\mu$), Sensory (s), Active (a), External ($\psi$). Edges depict pairwise couplings: ($\mu$–s) perceptual inference, (a–$\psi$) control, and cross-couplings capturing active perception and sensorimotor contingencies.}
+\label{fig:partition_tetrahedron}
 \end{figure}
 
 \hypertarget{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}{%
@@ -3489,9 +3500,7 @@ tetrahedral modeling and volume calculations.
 
 Code linkage (no snippet): see
 \texttt{example\_partition\_tetra\_volume} in \texttt{src/examples.py}
-and the figure
-\href{../output/figures/partition_tetrahedron.png}{Four-fold partition
-mapped to a Quadray tetrahedron}.
+and Figure \ref{fig:partition_tetrahedron}.
 
 \hypertarget{how-the-4d-namespaces-relate-here}{%
 \subsection{How the 4D namespaces relate
@@ -4036,7 +4045,7 @@ cross-references)}\label{notes-usage-and-cross-references}}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Figures referenced}: In-text carry identifiers (e.g., Fig.
+  \textbf{Figures referenced}: In-text carry identifiers (e.g., Figure
   \ref{fig:volumes_scale}).
 \item
   \textbf{Equation references}: Use labels defined in the text (e.g.,

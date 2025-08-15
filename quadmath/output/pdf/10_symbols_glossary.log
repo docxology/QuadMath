@@ -1,9 +1,12 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 13:02
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**10_symbols_glossary.tex
-(./10_symbols_glossary.tex
+**/home/trim/Documents/GitHub/QuadMath/quadmath/output/tex/10_symbols_glossary.
+tex
+
+(/home/trim/Documents/GitHub/QuadMath/quadmath/output/tex/10_symbols_glossary.t
+ex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-01-21>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -57,6 +60,9 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 (Font)                  OT1/cmr/bx/it --> OT1/lmr/bx/it on input line 37.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
@@ -204,6 +210,199 @@ LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
 \g__um_primekern_muskip=\muskip17
 
 (/usr/share/texlive/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex)))
+
+Package fontspec Info: DejaVu Serif scale = 0.8303715005541494.
+
+
+Package fontspec Info: DejaVu Serif scale = 0.8303715005541494.
+
+
+Package fontspec Info: DejaVu Serif/B scale = 0.8303715005541494.
+
+
+Package fontspec Info: DejaVu Serif/I scale = 0.8303715005541494.
+
+
+Package fontspec Info: DejaVu Serif/BI scale = 0.8303715005541494.
+
+
+Package fontspec Info: Font family 'DejaVuSerif(0)' created for font 'DejaVu
+(fontspec)             Serif' with options
+(fontspec)             [Scale=MatchLowercase,Ligatures=TeX,Scale=1].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->s*[1]"DejaVu
+(fontspec)             Serif/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->s*[1]"DejaVu
+(fontspec)             Serif/B/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->s*[1]"DejaVu
+(fontspec)             Serif/I/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->s*[1]"DejaVu
+(fontspec)             Serif/BI/OT:script=latn;language=dflt;mapping=tex-text;"
+
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 22.
+
+Package fontspec Info: DejaVu Serif scale = 0.9999970602156039.
+
+
+Package fontspec Info: DejaVu Serif scale = 0.9999970602156039.
+
+
+Package fontspec Info: DejaVu Serif/B scale = 0.9999970602156039.
+
+
+Package fontspec Info: DejaVu Serif/I scale = 0.9999970602156039.
+
+
+Package fontspec Info: DejaVu Serif/BI scale = 0.9999970602156039.
+
+
+Package fontspec Info: Font family 'DejaVuSerif(1)' created for font 'DejaVu
+(fontspec)             Serif' with options [Scale=MatchLowercase].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[0.9999970602156039]"DejaVu
+(fontspec)             Serif/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[0.9999970602156039]"DejaVu
+(fontspec)             Serif/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[0.9999970602156039]"DejaVu
+(fontspec)             Serif/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[0.9999970602156039]"DejaVu
+(fontspec)             Serif/BI/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  OT1/lmr/m/n --> TU/DejaVuSerif(1)/m/n on input line 22.
+
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/lmr/m/it --> TU/DejaVuSerif(1)/m/it on input line 2
+2.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/lmr/bx/n --> TU/DejaVuSerif(1)/b/n on input line 22
+.
+
+Package fontspec Info: DejaVu Sans Mono scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/B scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/I scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/BI scale = 0.9491044946861198.
+
+
+Package fontspec Info: Font family 'DejaVuSansMono(0)' created for font
+(fontspec)             'DejaVu Sans Mono' with options
+(fontspec)             [Scale=MatchLowercase,WordSpace={1,0,0},HyphenChar=None,
+PunctuationSpace=WordSpace].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/BI/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+
+Package fontspec Info: DejaVu Sans Mono scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/B scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/I scale = 0.9491044946861198.
+
+
+Package fontspec Info: DejaVu Sans Mono/BI scale = 0.9491044946861198.
+
+
+Package fontspec Info: Font family 'DejaVuSansMono(1)' created for font
+(fontspec)             'DejaVu Sans Mono' with options [Scale=MatchLowercase].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/B/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/I/OT:script=latn;language=dflt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[0.9491044946861198]"DejaVu Sans
+(fontspec)             Mono/BI/OT:script=latn;language=dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/lmtt/m/n --> TU/DejaVuSansMono(1)/m/n on input line
+ 23.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/lmtt/m/n --> TU/DejaVuSansMono(1)/b/n on input line
+ 23.
 (/usr/share/texlive/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
 tim
@@ -272,7 +471,16 @@ Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
 Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/svgnam.def
+File: svgnam.def 2021/10/31 v2.13 Predefined colors according to SVG 1.1 (UK)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/x11nam.def
+File: x11nam.def 2021/10/31 v2.13 Predefined colors according to Unix/X11 (UK)
+))
 (/usr/share/texlive/texmf-dist/tex/latex/xurl/xurl.sty
 Package: xurl 2022/01/09 v 0.10 modify URL breaks
 
@@ -409,97 +617,128 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 File: bkm-dvipdfm.def 2020-11-06 v1.29 bookmark driver for dvipdfm (HO)
 \BKM@id=\count303
 ))
+Package hyperref Info: Option `colorlinks' set `true' on input line 49.
+
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count304
+\Gm@cntv=\count305
+\c@Gm@tempcnt=\count306
+\Gm@bindingoffset=\dimen156
+\Gm@wd@mp=\dimen157
+\Gm@odd@mp=\dimen158
+\Gm@even@mp=\dimen159
+\Gm@layoutwidth=\dimen160
+\Gm@layoutheight=\dimen161
+\Gm@layouthoffset=\dimen162
+\Gm@layoutvoffset=\dimen163
+\Gm@dimlist=\toks24
+)
 (/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
 \LTleft=\skip53
 \LTright=\skip54
 \LTpre=\skip55
 \LTpost=\skip56
-\LTchunksize=\count304
-\LTcapwidth=\dimen156
+\LTchunksize=\count307
+\LTcapwidth=\dimen164
 \LT@head=\box55
 \LT@firsthead=\box56
 \LT@foot=\box57
 \LT@lastfoot=\box58
 \LT@gbox=\box59
-\LT@cols=\count305
-\LT@rows=\count306
-\c@LT@tables=\count307
-\c@LT@chunks=\count308
-\LT@p@ftn=\toks24
+\LT@cols=\count308
+\LT@rows=\count309
+\c@LT@tables=\count310
+\c@LT@chunks=\count311
+\LT@p@ftn=\toks25
 )
 (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen157
-\lightrulewidth=\dimen158
-\cmidrulewidth=\dimen159
-\belowrulesep=\dimen160
-\belowbottomsep=\dimen161
-\aboverulesep=\dimen162
-\abovetopsep=\dimen163
-\cmidrulesep=\dimen164
-\cmidrulekern=\dimen165
-\defaultaddspace=\dimen166
-\@cmidla=\count309
-\@cmidlb=\count310
-\@aboverulesep=\dimen167
-\@belowrulesep=\dimen168
-\@thisruleclass=\count311
-\@lastruleclass=\count312
-\@thisrulewidth=\dimen169
+\heavyrulewidth=\dimen165
+\lightrulewidth=\dimen166
+\cmidrulewidth=\dimen167
+\belowrulesep=\dimen168
+\belowbottomsep=\dimen169
+\aboverulesep=\dimen170
+\abovetopsep=\dimen171
+\cmidrulesep=\dimen172
+\cmidrulekern=\dimen173
+\defaultaddspace=\dimen174
+\@cmidla=\count312
+\@cmidlb=\count313
+\@aboverulesep=\dimen175
+\@belowrulesep=\dimen176
+\@thisruleclass=\count314
+\@lastruleclass=\count315
+\@thisrulewidth=\dimen177
 )
 (/usr/share/texlive/texmf-dist/tex/latex/footnotehyper/footnotehyper.sty
 Package: footnotehyper 2021/08/13 v1.1e hyperref aware footnote.sty (JFB)
 \FNH@notes=\box60
-\FNH@width=\dimen170
-\FNH@toks=\toks25
+\FNH@width=\dimen178
+\FNH@toks=\toks26
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 107.
+)
+\Gin@req@height=\dimen179
+\Gin@req@width=\dimen180
+)
+(/usr/share/texlive/texmf-dist/tex/latex/newunicodechar/newunicodechar.sty
+Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
 )
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/10_symbols_glossary.a
 ux)
 \openout1 = `10_symbols_glossary.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 60.
-LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 60.
-LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 60.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 93.
+LaTeX Font Info:    ... okay on input line 93.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 60.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 93.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 60.
-LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 60.
-LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 60.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/b/n on input line 93.
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
 Package fontspec Info: Font family 'latinmodern-math.otf(0)' created for font
@@ -511,30 +750,30 @@ allCapsFont={},Script=Math,BoldFont={latinmodern-math.otf}].
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->s*[0.9999964596882403]"[latinmodern-math.otf]/OT:scri
-pt=math;language=dflt;"
+(fontspec)             <->s*[1.204272448231791]"[latinmodern-math.otf]/OT:scrip
+t=math;language=dflt;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->s*[0.9999964596882403]"[latinmodern-math.otf]/OT:scri
-pt=math;language=dflt;"
+(fontspec)             <->s*[1.204272448231791]"[latinmodern-math.otf]/OT:scrip
+t=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 60.
+(Font)              scaled to size 12.0427pt on input line 93.
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
-
-
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
+
+
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
 Package fontspec Info: Font family 'latinmodern-math.otf(1)' created for font
@@ -548,57 +787,57 @@ ptScript}},BoldFont={latinmodern-math.otf}].
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <8.5->s*[0.9999964596882403]"[latinmodern-math.otf]/OT:s
-cript=math;language=dflt;"<6-8.5>s*[0.9999964596882403]"[latinmodern-math.otf]/
-OT:script=math;language=dflt;+ssty=0;"<-6>s*[0.9999964596882403]"[latinmodern-m
-ath.otf]/OT:script=math;language=dflt;+ssty=1;"
+(fontspec)             <8.5->s*[1.204272448231791]"[latinmodern-math.otf]/OT:sc
+ript=math;language=dflt;"<6-8.5>s*[1.204272448231791]"[latinmodern-math.otf]/OT
+:script=math;language=dflt;+ssty=0;"<-6>s*[1.204272448231791]"[latinmodern-math
+.otf]/OT:script=math;language=dflt;+ssty=1;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->s*[0.9999964596882403]"[latinmodern-math.otf]/OT:scri
-pt=math;language=dflt;"
+(fontspec)             <->s*[1.204272448231791]"[latinmodern-math.otf]/OT:scrip
+t=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 60.
+(Font)              scaled to size 12.0427pt on input line 93.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 60.
+(Font)              `operators' in the math version `normal' on input line 93.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input
- line 60.
+ line 93.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 60.
+(Font)              `operators' in the math version `bold' on input line 93.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on inpu
-t line 60.
+t line 93.
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
-
-
-Package fontspec Info: latinmodern-math scale = 1.000096459334209.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204392875476614.
 
 
-Package fontspec Info: latinmodern-math scale = 1.000096459334209.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204392875476614.
 
 
-Package fontspec Info: latinmodern-math scale = 1.000096459334209.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204392875476614.
 
 
-Package fontspec Info: latinmodern-math scale = 1.000096459334209.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204392875476614.
 
 
-Package fontspec Info: latinmodern-math scale = 1.000096459334209.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
+
+
+Package fontspec Info: latinmodern-math scale = 1.204392875476614.
 
 
 Package fontspec Info: Font family 'latinmodern-math.otf(2)' created for font
@@ -608,92 +847,92 @@ allCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=latinmode
 rn-math.otf,Style=MathScript},{Size=-6,Font=latinmodern-math.otf,Style=MathScri
 ptScript}},BoldFont={latinmodern-math.otf},ScaleAgain=1.0001,FontAdjustment={\f
 ontdimen
-(fontspec)             8\font =6.77pt\relax \fontdimen 9\font =3.94pt\relax
-(fontspec)             \fontdimen 10\font =4.44pt\relax \fontdimen 11\font
-(fontspec)             =6.86pt\relax \fontdimen 12\font =3.45pt\relax
-(fontspec)             \fontdimen 13\font =3.63pt\relax \fontdimen 14\font
-(fontspec)             =3.63pt\relax \fontdimen 15\font =2.89pt\relax
-(fontspec)             \fontdimen 16\font =2.47pt\relax \fontdimen 17\font
-(fontspec)             =2.47pt\relax \fontdimen 18\font =2.5pt\relax
-(fontspec)             \fontdimen 19\font =2.0pt\relax \fontdimen 22\font
-(fontspec)             =2.5pt\relax \fontdimen 20\font =0pt\relax \fontdimen
-(fontspec)             21\font =0pt\relax }].
+(fontspec)             8\font =8.15291pt\relax \fontdimen 9\font
+(fontspec)             =4.74483pt\relax \fontdimen 10\font =5.34695pt\relax
+(fontspec)             \fontdimen 11\font =8.26129pt\relax \fontdimen 12\font
+(fontspec)             =4.15472pt\relax \fontdimen 13\font =4.3715pt\relax
+(fontspec)             \fontdimen 14\font =4.3715pt\relax \fontdimen 15\font
+(fontspec)             =3.48033pt\relax \fontdimen 16\font =2.97455pt\relax
+(fontspec)             \fontdimen 17\font =2.97455pt\relax \fontdimen 18\font
+(fontspec)             =3.01068pt\relax \fontdimen 19\font =2.40854pt\relax
+(fontspec)             \fontdimen 22\font =3.01068pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax }].
 (fontspec)              
 (fontspec)              This font family consists of the following NFSS
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <8.5->s*[1.000096459334209]"[latinmodern-math.otf]/OT:sc
-ript=math;language=dflt;"<6-8.5>s*[1.000096459334209]"[latinmodern-math.otf]/OT
-:script=math;language=dflt;+ssty=0;"<-6>s*[1.000096459334209]"[latinmodern-math
+(fontspec)             <8.5->s*[1.204392875476614]"[latinmodern-math.otf]/OT:sc
+ript=math;language=dflt;"<6-8.5>s*[1.204392875476614]"[latinmodern-math.otf]/OT
+:script=math;language=dflt;+ssty=0;"<-6>s*[1.204392875476614]"[latinmodern-math
 .otf]/OT:script=math;language=dflt;+ssty=1;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 (fontspec)             and font adjustment code:
-(fontspec)             \fontdimen 8\font =6.77pt\relax \fontdimen 9\font
-(fontspec)             =3.94pt\relax \fontdimen 10\font =4.44pt\relax
-(fontspec)             \fontdimen 11\font =6.86pt\relax \fontdimen 12\font
-(fontspec)             =3.45pt\relax \fontdimen 13\font =3.63pt\relax
-(fontspec)             \fontdimen 14\font =3.63pt\relax \fontdimen 15\font
-(fontspec)             =2.89pt\relax \fontdimen 16\font =2.47pt\relax
-(fontspec)             \fontdimen 17\font =2.47pt\relax \fontdimen 18\font
-(fontspec)             =2.5pt\relax \fontdimen 19\font =2.0pt\relax \fontdimen
-(fontspec)             22\font =2.5pt\relax \fontdimen 20\font =0pt\relax
-(fontspec)             \fontdimen 21\font =0pt\relax 
+(fontspec)             \fontdimen 8\font =8.15291pt\relax \fontdimen 9\font
+(fontspec)             =4.74483pt\relax \fontdimen 10\font =5.34695pt\relax
+(fontspec)             \fontdimen 11\font =8.26129pt\relax \fontdimen 12\font
+(fontspec)             =4.15472pt\relax \fontdimen 13\font =4.3715pt\relax
+(fontspec)             \fontdimen 14\font =4.3715pt\relax \fontdimen 15\font
+(fontspec)             =3.48033pt\relax \fontdimen 16\font =2.97455pt\relax
+(fontspec)             \fontdimen 17\font =2.97455pt\relax \fontdimen 18\font
+(fontspec)             =3.01068pt\relax \fontdimen 19\font =2.40854pt\relax
+(fontspec)             \fontdimen 22\font =3.01068pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->s*[1.000096459334209]"[latinmodern-math.otf]/OT:scrip
+(fontspec)             <->s*[1.204392875476614]"[latinmodern-math.otf]/OT:scrip
 t=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 (fontspec)             and font adjustment code:
-(fontspec)             \fontdimen 8\font =6.77pt\relax \fontdimen 9\font
-(fontspec)             =3.94pt\relax \fontdimen 10\font =4.44pt\relax
-(fontspec)             \fontdimen 11\font =6.86pt\relax \fontdimen 12\font
-(fontspec)             =3.45pt\relax \fontdimen 13\font =3.63pt\relax
-(fontspec)             \fontdimen 14\font =3.63pt\relax \fontdimen 15\font
-(fontspec)             =2.89pt\relax \fontdimen 16\font =2.47pt\relax
-(fontspec)             \fontdimen 17\font =2.47pt\relax \fontdimen 18\font
-(fontspec)             =2.5pt\relax \fontdimen 19\font =2.0pt\relax \fontdimen
-(fontspec)             22\font =2.5pt\relax \fontdimen 20\font =0pt\relax
-(fontspec)             \fontdimen 21\font =0pt\relax 
+(fontspec)             \fontdimen 8\font =8.15291pt\relax \fontdimen 9\font
+(fontspec)             =4.74483pt\relax \fontdimen 10\font =5.34695pt\relax
+(fontspec)             \fontdimen 11\font =8.26129pt\relax \fontdimen 12\font
+(fontspec)             =4.15472pt\relax \fontdimen 13\font =4.3715pt\relax
+(fontspec)             \fontdimen 14\font =4.3715pt\relax \fontdimen 15\font
+(fontspec)             =3.48033pt\relax \fontdimen 16\font =2.97455pt\relax
+(fontspec)             \fontdimen 17\font =2.97455pt\relax \fontdimen 18\font
+(fontspec)             =3.01068pt\relax \fontdimen 19\font =2.40854pt\relax
+(fontspec)             \fontdimen 22\font =3.01068pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 60.
+(Font)              `symbols' in the math version `normal' on input line 93.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
 (Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on inpu
-t line 60.
+t line 93.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 60.
+(Font)              `symbols' in the math version `bold' on input line 93.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
 (Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on inpu
-t line 60.
+t line 93.
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
-
-
-Package fontspec Info: latinmodern-math scale = 0.9998964600422715.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204152020986968.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9998964600422715.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204152020986968.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9998964600422715.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204152020986968.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9998964600422715.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9999964596882403.
+Package fontspec Info: latinmodern-math scale = 1.204152020986968.
 
 
-Package fontspec Info: latinmodern-math scale = 0.9998964600422715.
+Package fontspec Info: latinmodern-math scale = 1.204272448231791.
+
+
+Package fontspec Info: latinmodern-math scale = 1.204152020986968.
 
 
 Package fontspec Info: Font family 'latinmodern-math.otf(3)' created for font
@@ -703,63 +942,63 @@ allCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=latinmode
 rn-math.otf,Style=MathScript},{Size=-6,Font=latinmodern-math.otf,Style=MathScri
 ptScript}},BoldFont={latinmodern-math.otf},ScaleAgain=0.9999,FontAdjustment={\f
 ontdimen
-(fontspec)             8\font =0.4pt\relax \fontdimen 9\font =2.0pt\relax
-(fontspec)             \fontdimen 10\font =1.67pt\relax \fontdimen 11\font
-(fontspec)             =1.11pt\relax \fontdimen 12\font =6.0pt\relax
-(fontspec)             \fontdimen 13\font =0pt\relax }].
+(fontspec)             8\font =0.4817pt\relax \fontdimen 9\font
+(fontspec)             =2.40854pt\relax \fontdimen 10\font =2.01112pt\relax
+(fontspec)             \fontdimen 11\font =1.33675pt\relax \fontdimen 12\font
+(fontspec)             =7.22562pt\relax \fontdimen 13\font =0pt\relax }].
 (fontspec)              
 (fontspec)              This font family consists of the following NFSS
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <8.5->s*[0.9998964600422715]"[latinmodern-math.otf]/OT:s
-cript=math;language=dflt;"<6-8.5>s*[0.9998964600422715]"[latinmodern-math.otf]/
-OT:script=math;language=dflt;+ssty=0;"<-6>s*[0.9998964600422715]"[latinmodern-m
-ath.otf]/OT:script=math;language=dflt;+ssty=1;"
+(fontspec)             <8.5->s*[1.204152020986968]"[latinmodern-math.otf]/OT:sc
+ript=math;language=dflt;"<6-8.5>s*[1.204152020986968]"[latinmodern-math.otf]/OT
+:script=math;language=dflt;+ssty=0;"<-6>s*[1.204152020986968]"[latinmodern-math
+.otf]/OT:script=math;language=dflt;+ssty=1;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 (fontspec)             and font adjustment code:
-(fontspec)             \fontdimen 8\font =0.4pt\relax \fontdimen 9\font
-(fontspec)             =2.0pt\relax \fontdimen 10\font =1.67pt\relax
-(fontspec)             \fontdimen 11\font =1.11pt\relax \fontdimen 12\font
-(fontspec)             =6.0pt\relax \fontdimen 13\font =0pt\relax 
+(fontspec)             \fontdimen 8\font =0.4817pt\relax \fontdimen 9\font
+(fontspec)             =2.40854pt\relax \fontdimen 10\font =2.01112pt\relax
+(fontspec)             \fontdimen 11\font =1.33675pt\relax \fontdimen 12\font
+(fontspec)             =7.22562pt\relax \fontdimen 13\font =0pt\relax 
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->s*[0.9998964600422715]"[latinmodern-math.otf]/OT:scri
-pt=math;language=dflt;"
+(fontspec)             <->s*[1.204152020986968]"[latinmodern-math.otf]/OT:scrip
+t=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 (fontspec)             and font adjustment code:
-(fontspec)             \fontdimen 8\font =0.4pt\relax \fontdimen 9\font
-(fontspec)             =2.0pt\relax \fontdimen 10\font =1.67pt\relax
-(fontspec)             \fontdimen 11\font =1.11pt\relax \fontdimen 12\font
-(fontspec)             =6.0pt\relax \fontdimen 13\font =0pt\relax 
+(fontspec)             \fontdimen 8\font =0.4817pt\relax \fontdimen 9\font
+(fontspec)             =2.40854pt\relax \fontdimen 10\font =2.01112pt\relax
+(fontspec)             \fontdimen 11\font =1.33675pt\relax \fontdimen 12\font
+(fontspec)             =7.22562pt\relax \fontdimen 13\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 6
-0.
+(Font)              `largesymbols' in the math version `normal' on input line 9
+3.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on inpu
-t line 60.
+t line 93.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 60.
+(Font)              `largesymbols' in the math version `bold' on input line 93.
 
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on inpu
-t line 60.
-LaTeX Info: Redefining \microtypecontext on input line 60.
-Package microtype Info: Applying patch `item' on input line 60.
-Package microtype Info: Applying patch `toc' on input line 60.
-Package microtype Info: Applying patch `eqnum' on input line 60.
-Package microtype Info: Applying patch `footnote' on input line 60.
+t line 93.
+LaTeX Info: Redefining \microtypecontext on input line 93.
+Package microtype Info: Applying patch `item' on input line 93.
+Package microtype Info: Applying patch `toc' on input line 93.
+Package microtype Info: Applying patch `eqnum' on input line 93.
+Package microtype Info: Applying patch `footnote' on input line 93.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of spacing.
 Package microtype Info: No adjustment of kerning.
- (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
-File: mt-LatinModernRoman.cfg 2021/02/21 v1.1 microtype config. file: Latin Mod
-ern Roman (RS)
-)
-Package hyperref Info: Link coloring OFF on input line 60.
-(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `DejaVuSerif' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package hyperref Info: Link coloring ON on input line 93.
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
@@ -768,36 +1007,78 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count313
+\c@section@level=\count316
 )
-LaTeX Info: Redefining \ref on input line 60.
-LaTeX Info: Redefining \pageref on input line 60.
-LaTeX Info: Redefining \nameref on input line 60.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 62.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 62.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 62.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 6
-2.
+LaTeX Info: Redefining \ref on input line 93.
+LaTeX Info: Redefining \pageref on input line 93.
+LaTeX Info: Redefining \nameref on input line 93.
 
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includehead includefoot 
+* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
+* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=597.22319pt
+* \textheight=699.51726pt
+* \oddsidemargin=-63.73409pt
+* \evensidemargin=-63.73409pt
+* \topmargin=-58.04362pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+Package hyperref Warning: Option `colorlinks' has already been used,
+(hyperref)                setting the option has no effect on input line 93.
+
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 17.28pt on input line 95.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 95.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 14.45123pt on input line 95.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 9.63416pt on input line 95.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 7.22562pt on input line 95.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 9
+5.
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.0011pt on input line 62.
+(Font)              scaled to size 14.4527pt on input line 95.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.00073pt on input line 62.
+(Font)              scaled to size 9.63513pt on input line 95.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.00055pt on input line 62.
+(Font)              scaled to size 7.22635pt on input line 95.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99872pt on input line 62.
+(Font)              scaled to size 14.44977pt on input line 95.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.99915pt on input line 62.
+(Font)              scaled to size 9.63318pt on input line 95.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.99936pt on input line 62.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 62.
+(Font)              scaled to size 7.22488pt on input line 95.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 95.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -806,7 +1087,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 62.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 95.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -815,526 +1096,276 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 14.4pt on input line 99.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
+(Font)              scaled to size 14.4pt on input line 99.
+
+(/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/10_symbols_glossary.t
+oc
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 1.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 78.
+(Font)              scaled to size 8.42989pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 78.
+(Font)              scaled to size 6.02135pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 78.
+(Font)              scaled to size 12.04391pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 78.
+(Font)              scaled to size 8.43074pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00046pt on input line 78.
+(Font)              scaled to size 6.02196pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 78.
+(Font)              scaled to size 12.04147pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 78.
+(Font)              scaled to size 8.42903pt on input line 2.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 78.
+(Font)              scaled to size 6.02074pt on input line 2.
+)
+\tf@toc=\write3
+\openout3 = `10_symbols_glossary.toc'.
 
-Missing character: There is no ⁴ (U+2074) in font [lmroman10-regular]:mapping=t
-ex-text;!
-Missing character: There is no ⁴ (U+2074) in font [lmroman10-regular]:mapping=t
-ex-text;!
-[1
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
+(Font)              scaled to size 12.0pt on input line 110.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 119.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 179.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 179.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
+(Font)              scaled to size 5.0pt on input line 179.
+ [1
 
-] [2]
+]
 
-LaTeX Warning: Reference `eq:supp_fim' on page 3 undefined on input line 311.
-
-
-LaTeX Warning: Reference `eq:supp_free_energy' on page 3 undefined on input lin
-e 319.
-
-
-LaTeX Warning: Reference `eq:supp_minkowski' on page 3 undefined on input line 
-355.
-
-[3]
-
-LaTeX Warning: Reference `fig:volumes_scale' on page 4 undefined on input line 
-468.
+LaTeX Warning: Reference `eq:supp_fim' on page 2 undefined on input line 350.
 
 
-LaTeX Warning: Reference `eq:lattice_det' on page 4 undefined on input line 471
+LaTeX Warning: Reference `eq:supp_free_energy' on page 2 undefined on input lin
+e 358.
+
+
+LaTeX Warning: Reference `eq:supp_minkowski' on page 2 undefined on input line 
+394.
+
+[2]
+
+LaTeX Warning: Reference `fig:volumes_scale' on page 3 undefined on input line 
+507.
+
+
+LaTeX Warning: Reference `eq:lattice_det' on page 3 undefined on input line 510
 .
 
-Missing character: There is no ⁴ (U+2074) in font [lmroman10-regular]:mapping=t
-ex-text;!
-[4]
-Missing character: There is no ⁴ (U+2074) in font [lmroman10-regular]:mapping=t
-ex-text;!
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 596--597
-[]\TU/lmtt/m/n/10 cayley_menger|  
- []
-
-
-Overfull \hbox (98.85063pt too wide) in paragraph at lines 598--599
-[]\TU/lmtt/m/n/10 ivm_tetra_volume_cayley_menger|  
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 607--608
-[]\TU/lmtt/m/n/10 cayley_menger|  
- []
-
-
-Overfull \hbox (77.85063pt too wide) in paragraph at lines 609--610
-[]\TU/lmtt/m/n/10 tetra_volume_cayley_menger|  
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 621--622
-[]\TU/lmtt/m/n/10 quadray_to_xyz|  
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 633--634
-[]\TU/lmtt/m/n/10 urner_embedding|  
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 643--644
-[]\TU/lmtt/m/n/10 discrete_variational|  
- []
-
-
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 645--646
-[]\TU/lmtt/m/n/10 DiscretePath|  
- []
-
-
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 649--650
-\TU/lmtt/m/n/10 Optimization 
- []
-
-
-Overfull \hbox (56.85063pt too wide) in paragraph at lines 649--650
-[]\TU/lmtt/m/n/10 discrete_variational[] 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 649--650
-[]\TU/lmtt/m/n/10 OptionalMoves[] 
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 654--655
-[]\TU/lmtt/m/n/10 discrete_variational|  
- []
-
-
-Overfull \hbox (5.07063pt too wide) in paragraph at lines 662--664
-\TU/lmr/m/n/10 representative.|  
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 666--667
-[]\TU/lmtt/m/n/10 discrete_variational|  
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 668--669
-[]\TU/lmtt/m/n/10 discrete_ivm_descent|  
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 677--678
-[]\TU/lmtt/m/n/10 discrete_variational|  
- []
-
-
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 679--680
-[]\TU/lmtt/m/n/10 neighbor_moves_ivm|  
- []
-
-
-Overfull \hbox (104.10063pt too wide) in paragraph at lines 690--691
-[]\TU/lmtt/m/n/10 example_cuboctahedron_neighbors|  
- []
-
-
-Overfull \hbox (119.85063pt too wide) in paragraph at lines 701--702
-[]\TU/lmtt/m/n/10 example_cuboctahedron_vertices_xyz|  
- []
-
-
-Overfull \hbox (51.60063pt too wide) in paragraph at lines 712--713
-[]\TU/lmtt/m/n/10 example_ivm_neighbors|  
- []
-
-
-Overfull \hbox (25.35063pt too wide) in paragraph at lines 724--725
-[]\TU/lmtt/m/n/10 example_optimize|  
- []
-
-
-Overfull \hbox (98.85063pt too wide) in paragraph at lines 736--737
-[]\TU/lmtt/m/n/10 example_partition_tetra_volume|  
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 748--749
-[]\TU/lmtt/m/n/10 example_volume|  
- []
-
-
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 760--761
-[]\TU/lmtt/m/n/10 minkowski_interval|  
- []
-
-
-Overfull \hbox (1.92064pt too wide) in paragraph at lines 766--767
-\TU/lmr/m/n/10 (Einstein.4D).|  
- []
-
-
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 769--770
-[]\TU/lmtt/m/n/10 glossary_gen|  
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 glossary_gen[] 
- []
-
-
-Overfull \hbox (30.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 build_api_index[] 
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 glossary_gen[] 
- []
-
-
-Overfull \hbox (72.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 generate_markdown_table[] 
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 glossary_gen[] 
- []
-
-
-Overfull \hbox (67.35063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 inject_between_markers[] 
- []
-
-
-Overfull \hbox (25.35063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 (markdown_text, 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 action_update[] 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 free_energy_fn, 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 Continuous-time 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (88.35063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 finite_difference_gradient[] 
- []
-
-
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 differences. 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (83.10063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 fisher_information_matrix[] 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 (gradients)[] 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 free_energy[] 
- []
-
-
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 (log_p_o_given_s, 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (62.10063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 natural_gradient_step[] 
- []
-
-
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information[] 
- []
-
-
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 perception_update[] 
- []
-
-
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 derivative_operator, 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 free_energy_fn, 
- []
-
-
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 Continuous-time 
- []
-
-
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 linalg_utils[] 
+LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
+(Font)              scaled to size 9.49112pt on input line 520.
+[3]
+Overfull \hbox (69.89723pt too wide) in paragraph at lines 637--638
+[]\TU/DejaVuSansMono(0)/m/n/10 ivm_tetra_volume_cayley_menger|  
  []
 
 
-Overfull \hbox (72.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 bareiss_determinant_int[] 
+Overfull \hbox (47.0407pt too wide) in paragraph at lines 648--649
+[]\TU/DejaVuSansMono(0)/m/n/10 tetra_volume_cayley_menger|  
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 fim_eigenspectrum[] 
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 682--683
+[]\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 Eigen-decomposition 
+Overfull \hbox (1.32762pt too wide) in paragraph at lines 688--689
+\TU/DejaVuSansMono(0)/m/n/10 crete_variational[] 
  []
 
 
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 information_length[] 
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 693--694
+[]\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 (path_gradients)[] 
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 705--706
+[]\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (30.60063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 gradient-weighted 
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 707--708
+[]\TU/DejaVuSansMono(0)/m/n/10 discrete_ivm_descent|  
  []
 
 
-Overfull \hbox (30.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 shannon_entropy[] 
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 716--717
+[]\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 775--776
-\TU/lmtt/m/n/10 distribution. 
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 718--719
+[]\TU/DejaVuSansMono(0)/m/n/10 neighbor_moves_ivm|  
  []
 
 
-Overfull \hbox (51.60063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 nelder_mead_quadray[] 
+Overfull \hbox (75.61137pt too wide) in paragraph at lines 729--730
+[]\TU/DejaVuSansMono(0)/m/n/10 example_cuboctahedron_neighbors|  
  []
 
 
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 775--776
-[]\TU/lmtt/m/n/10 SimplexState[] 
+Overfull \hbox (92.75378pt too wide) in paragraph at lines 740--741
+[]\TU/DejaVuSansMono(0)/m/n/10 example_cuboctahedron_vertices_xyz|  
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 780--781
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (18.47002pt too wide) in paragraph at lines 751--752
+[]\TU/DejaVuSansMono(0)/m/n/10 example_ivm_neighbors|  
  []
 
 
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 782--783
-[]\TU/lmtt/m/n/10 centroid_excluding|  
+Overfull \hbox (69.89723pt too wide) in paragraph at lines 775--776
+[]\TU/DejaVuSansMono(0)/m/n/10 example_partition_tetra_volume|  
  []
 
 
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 786--787
-\TU/lmtt/m/n/10 exclude_idx)|  
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 799--800
+[]\TU/DejaVuSansMono(0)/m/n/10 minkowski_interval|  
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 791--792
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 814--815
+\TU/DejaVuSansMono(0)/m/n/10 ate_markdown_table[] 
  []
 
 
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 793--794
-[]\TU/lmtt/m/n/10 compute_volume|  
+Overfull \hbox (18.47002pt too wide) in paragraph at lines 814--815
+\TU/DejaVuSansMono(0)/m/n/10 ject_between_markers[] 
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 802--803
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (41.32657pt too wide) in paragraph at lines 814--815
+\TU/DejaVuSansMono(0)/m/n/10 nite_difference_gradient[] 
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 804--805
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (52.75484pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 fisher_information_matrix[] 
  []
 
 
-Overfull \hbox (30.60063pt too wide) in paragraph at lines 808--809
-\TU/lmtt/m/n/10 initial_vertices, 
+Overfull \hbox (1.32762pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 (log_p_o_given_s, 
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 813--814
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (1.32762pt too wide) in paragraph at lines 814--815
+\TU/DejaVuSansMono(0)/m/n/10 ral_gradient_step[] 
  []
 
 
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 815--816
-[]\TU/lmtt/m/n/10 order_simplex|  
+Overfull \hbox (41.32657pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 bareiss_determinant_int[] 
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 825--826
-[]\TU/lmtt/m/n/10 nelder_mead_quadray|  
+Overfull \hbox (7.04176pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 fim_eigenspectrum[] 
  []
 
 
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 827--828
-[]\TU/lmtt/m/n/10 project_to_lattice|  
+Overfull \hbox (1.32762pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 (path_gradients)[] 
  []
 
 
-Overfull \hbox (4.35063pt too wide) in paragraph at lines 839--840
-[]\TU/lmtt/m/n/10 get_data_dir|  
+Overfull \hbox (18.47003pt too wide) in paragraph at lines 814--815
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray[] 
  []
 
 
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 845--846
-\TU/lmtt/m/n/10 quadmath/output/data 
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 819--820
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 850--851
-[]\TU/lmtt/m/n/10 get_figure_dir|  
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 821--822
+[]\TU/DejaVuSansMono(0)/m/n/10 centroid_excluding|  
  []
 
 
-Overfull \hbox (62.10063pt too wide) in paragraph at lines 856--857
-\TU/lmtt/m/n/10 quadmath/output/figures 
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 830--831
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (14.85063pt too wide) in paragraph at lines 861--862
-[]\TU/lmtt/m/n/10 get_output_dir|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 841--842
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 867--869
-\TU/lmtt/m/n/10 quadmath/output 
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 843--844
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (9.60063pt too wide) in paragraph at lines 873--874
-[]\TU/lmtt/m/n/10 get_repo_root|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 852--853
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (30.60063pt too wide) in paragraph at lines 885--886
-[]\TU/lmtt/m/n/10 DEFAULT_EMBEDDING|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 864--865
+[]\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (41.10063pt too wide) in paragraph at lines 897--898
-[]\TU/lmtt/m/n/10 ace_tetravolume_5x5|  
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 866--867
+[]\TU/DejaVuSansMono(0)/m/n/10 project_to_lattice|  
  []
 
 
-Overfull \hbox (46.35063pt too wide) in paragraph at lines 920--921
-[]\TU/lmtt/m/n/10 integer_tetra_volume|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 895--896
+\TU/DejaVuSansMono(0)/m/n/10 math/output/figures 
  []
 
 
-Overfull \hbox (93.60063pt too wide) in paragraph at lines 956--957
-[]\TU/lmtt/m/n/10 cayley_menger_volume_symbolic|  
+Overfull \hbox (7.04175pt too wide) in paragraph at lines 936--937
+[]\TU/DejaVuSansMono(0)/m/n/10 ace_tetravolume_5x5|  
  []
 
 
-Overfull \hbox (119.85063pt too wide) in paragraph at lines 968--969
-[]\TU/lmtt/m/n/10 convert_xyz_volume_to_ivm_symbolic|  
+Overfull \hbox (12.75587pt too wide) in paragraph at lines 959--960
+[]\TU/DejaVuSansMono(0)/m/n/10 integer_tetra_volume|  
  []
 
 
-Overfull \hbox (51.60063pt too wide) in paragraph at lines 979--980
-[]\TU/lmtt/m/n/10 animate_discrete_path|  
+Overfull \hbox (64.1831pt too wide) in paragraph at lines 995--996
+[]\TU/DejaVuSansMono(0)/m/n/10 cayley_menger_volume_symbolic|  
  []
 
 
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 990--991
-[]\TU/lmtt/m/n/10 animate_simplex|  
+Overfull \hbox (92.75378pt too wide) in paragraph at lines 1007--1008
+[]\TU/DejaVuSansMono(0)/m/n/10 convert_xyz_volume_to_ivm_symbolic|  
  []
 
 
-Overfull \hbox (20.10063pt too wide) in paragraph at lines 994--995
-[]\TU/lmtt/m/n/10 (vertices_list, 
+Overfull \hbox (18.47002pt too wide) in paragraph at lines 1018--1019
+[]\TU/DejaVuSansMono(0)/m/n/10 animate_discrete_path|  
  []
 
 
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 1001--1002
-[]\TU/lmtt/m/n/10 plot_ivm_neighbors|  
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 1040--1041
+[]\TU/DejaVuSansMono(0)/m/n/10 plot_ivm_neighbors|  
  []
 
 
-Overfull \hbox (77.85063pt too wide) in paragraph at lines 1012--1013
-[]\TU/lmtt/m/n/10 plot_partition_tetrahedron|  
+Overfull \hbox (47.0407pt too wide) in paragraph at lines 1051--1052
+[]\TU/DejaVuSansMono(0)/m/n/10 plot_partition_tetrahedron|  
  []
 
 
-Overfull \hbox (35.85063pt too wide) in paragraph at lines 1023--1024
-[]\TU/lmtt/m/n/10 plot_simplex_trace|  
+Overfull \hbox (1.3276pt too wide) in paragraph at lines 1062--1063
+[]\TU/DejaVuSansMono(0)/m/n/10 plot_simplex_trace|  
  []
 
-[5] [6] [7] [8] [9] [10] [11] [12] [13]
+[4] [5] [6] [7] [8]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/10_symbols_glossary.a
 ux)
 
@@ -1342,13 +1373,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 17988 strings out of 478190
- 335039 string characters out of 5854827
- 845336 words of memory out of 5000000
- 38347 multiletter control sequences out of 15000+600000
- 475686 words of font info for 78 fonts, out of 8000000 for 9000
+ 18982 strings out of 478190
+ 353465 string characters out of 5854827
+ 885683 words of memory out of 5000000
+ 39287 multiletter control sequences out of 15000+600000
+ 476562 words of font info for 102 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,11n,121p,4126b,477s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,11n,122p,4192b,511s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/10_s
-ymbols_glossary.pdf (13 pages).
+ymbols_glossary.pdf (8 pages).

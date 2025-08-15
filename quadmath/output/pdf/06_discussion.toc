@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Discussion}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Fisher Information and Curvature}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Quadray Coordinates and 4D Structure (Fuller.4D vs Coxeter.4D vs Einstein.4D)}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Integrating FIM with Quadray Models}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Implications for Optimization and Estimation}{2}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Clarifications on ``frequency/time'' dimensions}{2}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}On distance-based tetravolume formulas (clarification)}{2}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}Symbolic analysis (bridging vs native) (Results linkage)}{2}{subsubsection.1.4.3}%
+\contentsline {subsection}{\numberline {1.5}Community resources and applications}{3}{subsection.1.5}%
+\contentsline {subsubsection}{\numberline {1.5.1}4dsolutions ecosystem: comprehensive computational framework}{3}{subsubsection.1.5.1}%
+\contentsline {paragraph}{Core computational modules}{3}{section*.2}%
+\contentsline {paragraph}{Educational framework and curricula}{3}{section*.3}%
+\contentsline {paragraph}{Visualization and rendering capabilities}{3}{section*.4}%
+\contentsline {subsubsection}{\numberline {1.5.2}Community discussions and collaborative platforms}{3}{subsubsection.1.5.2}%
+\contentsline {subsubsection}{\numberline {1.5.3}Extended applications and related projects}{3}{subsubsection.1.5.3}%

@@ -53,8 +53,8 @@ The manuscript is accompanied by a fully-tested Python codebase under `src/` wit
 - **XYZ conversion**: `src/conversions.py` (`urner_embedding`, `quadray_to_xyz`).
 - **Examples**: `src/examples.py` (`example_ivm_neighbors`, `example_volume`, `example_optimize`).
 
-Fig. \ref{fig:graphical_abstract} (graphical abstract): Panel A shows Quadray axes (A,B,C,D) under a symmetric embedding with wireframe context. Panel B shows close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, “twelve around one”).
+Figure 1 (graphical abstract): Panel A shows Quadray axes (A,B,C,D) under a symmetric embedding with wireframe context. Panel B shows close-packed spheres at the tetrahedron vertices (IVM/CCP/FCC, "twelve around one").
 
-![Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](../output/figures/graphical_abstract_quadray.png){#fig:graphical_abstract}
+![**Figure 1**: Graphical abstract (2×1 panels). A: Quadray axes (A,B,C,D) with wireframe. B: close-packed spheres at tetrahedron vertices (IVM/CCP/FCC).](figures/graphical_abstract_quadray.png)
 
 Tests illustrate expected behavior and edge cases (see `tests/`), and coverage is enforced at 100% for `src/`.

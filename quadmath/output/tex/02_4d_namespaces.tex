@@ -1,10 +1,13 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
 \documentclass[
+  10pt,
 ]{article}
 \usepackage{lmodern}
+\usepackage{setspace}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
@@ -15,6 +18,8 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -36,26 +41,41 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  hidelinks,
+  colorlinks=true,
+  linkcolor=red,
+  filecolor=red,
+  citecolor=red,
+  urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
+\usepackage[margin=0.3cm,top=0.5cm,bottom=0.5cm,left=0.3cm,right=0.3cm,includeheadfoot]{geometry}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{3}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
 
 \title{4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
@@ -64,6 +84,12 @@
 \begin{document}
 \maketitle
 
+{
+\hypersetup{linkcolor=red}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
 \hypertarget{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}{%
 \section{4D Namespaces: Coxeter.4D, Einstein.4D,
 Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}}
@@ -178,12 +204,29 @@ models)}\label{directions-not-dimensions-language-and-models}}
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
 
-\includegraphics{../output/figures/ivm_neighbors_edges.png}
-\includegraphics{../output/figures/quadray_clouds.png}
-\includegraphics{../output/figures/vector_equilibrium_panels.png}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/ivm_neighbors_edges.png}
+\caption{IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.}
+\label{fig:ivm_neighbors_edges}
+\end{figure}
 
-In Fig. \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM
-neighbors with radial edges under a standard Urner embedding; Fig.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/quadray_clouds.png}
+\caption{Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).}
+\label{fig:quadray_clouds}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/vector_equilibrium_panels.png}
+\caption{Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).}
+\label{fig:vector_equilibrium}
+\end{figure}
+
+In Figure \ref{fig:ivm_neighbors_edges}, we show the twelve nearest IVM
+neighbors with radial edges under a standard Urner embedding; Figure
 \ref{fig:quadray_clouds} illustrates random Quadray clouds under several
 embeddings.
 

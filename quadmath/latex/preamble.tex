@@ -1,0 +1,23 @@
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}

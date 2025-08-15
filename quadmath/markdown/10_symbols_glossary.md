@@ -92,7 +92,7 @@ Descriptions:
 
 ## Notes (usage and cross-references)
 
-- **Figures referenced**: In-text carry identifiers (e.g., Fig. \ref{fig:volumes_scale}).
+- **Figures referenced**: In-text carry identifiers (e.g., Figure \ref{fig:volumes_scale}).
 - **Equation references**: Use labels defined in the text (e.g., Eq. \eqref{eq:lattice_det}).
 - **Namespaces**: We use Coxeter.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E⁴, Minkowski spacetime, and Quadray/IVM synergetics, respectively. This avoids conflation of Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and synergetic tetravolume conventions.
 - **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) including [`qrays.py`](https://github.com/4dsolutions/m4w/blob/main/qrays.py), [`tetravolume.py`](https://github.com/4dsolutions/m4w/blob/main/tetravolume.py), and educational notebooks in [School_of_Tomorrow](https://github.com/4dsolutions/School_of_Tomorrow).

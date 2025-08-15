@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Resources (References and Further Reading)}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Quadrays and Synergetics (core starting points)}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}4dsolutions (Kirby Urner) --- repositories and key artifacts}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Comprehensive index of 4dsolutions artifacts (selected)}{2}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}Primary hub: School\_of\_Tomorrow (Python + notebooks)}{2}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Additional repositories}{2}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}Additional educational resources}{2}{subsubsection.1.3.3}%
+\contentsline {subsubsection}{\numberline {1.3.4}Media and publications}{2}{subsubsection.1.3.4}%
+\contentsline {subsubsection}{\numberline {1.3.5}Background and community materials}{2}{subsubsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.4}Geometry and volumes (Coxeter.4D context)}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Optimization and information geometry}{3}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Active Inference}{3}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Community discussions and context}{3}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Related projects and applications}{3}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Tooling}{3}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.10}Cross-language and cross-platform validation}{3}{subsection.1.10}%

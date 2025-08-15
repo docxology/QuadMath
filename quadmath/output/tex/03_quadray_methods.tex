@@ -1,10 +1,13 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
 \documentclass[
+  10pt,
 ]{article}
 \usepackage{lmodern}
+\usepackage{setspace}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
@@ -15,6 +18,8 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -36,9 +41,14 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  hidelinks,
+  colorlinks=true,
+  linkcolor=red,
+  filecolor=red,
+  citecolor=red,
+  urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=0.3cm,top=0.5cm,bottom=0.5cm,left=0.3cm,right=0.3cm,includeheadfoot]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -86,23 +96,33 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{3}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
 
 \title{Quadray Analytical Details and Methods}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
@@ -111,6 +131,12 @@
 \begin{document}
 \maketitle
 
+{
+\hypersetup{linkcolor=red}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
 \hypertarget{quadray-analytical-details-equations-and-methods}{%
 \section{Quadray Analytical Details, Equations, and
 Methods}\label{quadray-analytical-details-equations-and-methods}}
@@ -321,7 +347,7 @@ box)}\label{integer-coordinate-constructions-compact-derivation-box}}
   rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the
   FCC/CCP packing centered at the origin under the same embedding.
 \item
-  See Fig. \ref{fig:polyhedra_quadray_map} for a schematic summary of
+  See Figure \ref{fig:polyhedra_quadray_map} for a schematic summary of
   these relationships.
 \end{itemize}
 
@@ -348,7 +374,7 @@ Vertices \texttt{o=(0,0,0,0)}, \texttt{p=(2,1,0,1)},
 Cube (same edge)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame;
-edges tracked by XYZ embedding; compare Fig.
+edges tracked by XYZ embedding; compare Figure
 \ref{fig:polyhedra_quadray_map}\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 3\strut
@@ -779,33 +805,18 @@ Figure: automated comparison (native Ace 5×5 vs CM+S3) across small
 examples (see script \texttt{sympy\_formalisms.py}). The figure and
 source CSV/NPZ are in \texttt{quadmath/output/}.
 
-\begin{figure}
-\hypertarget{fig:bridging_native}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/bridging_vs_native.png}
-\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across
-canonical integer-quadray examples. Bars compare \(V_{ivm}\) computed by
-Cayley--Menger on XYZ edge lengths with \(S3=\sqrt{9/8}\) conversion
-(bridging path) against Tom Ace's native 5×5 determinant (IVM).
-Agreement at machine precision confirms equivalence between length-based
-and Quadray-native formulations under the synergetics unit convention.
-Source CSV:
-\texttt{bridging\_vs\_native.csv}.}\label{fig:bridging_native}
-}
+\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
+\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed by Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging path) against Tom Ace's native 5×5 determinant (IVM). Agreement at machine precision confirms equivalence between length-based and Quadray-native formulations under the synergetics unit convention. Source CSV: \texttt{bridging\_vs\_native.csv}.}
+\label{fig:bridging_native}
 \end{figure}
 
-\begin{figure}
-\hypertarget{fig:polyhedra_quadray_map}{%
+\begin{figure}[htbp]
 \centering
-\includegraphics{../output/figures/polyhedra_quadray_constructions.png}
-\caption{Polyhedra relationships (schematic). Nodes show synergetics
-tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4),
-rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple
-relations: cube ≈ 3× tetra; octa from edge-mid unions on the tetra
-frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron
-as the shell of the 12 nearest IVM neighbors (permutations of
-\((2,1,1,0)\)).}\label{fig:polyhedra_quadray_map}
-}
+\includegraphics[width=0.9\textwidth]{figures/polyhedra_quadray_constructions.png}
+\caption{Polyhedra relationships (schematic). Nodes show synergetics tetravolumes in IVM units: tetrahedron (1), cube (3), octahedron (4), rhombic dodecahedron (6), cuboctahedron (20). Arrows indicate simple relations: cube $\approx 3\times$ tetra; octa from edge-mid unions on the tetra frame; rhombic dodecahedron as the FCC/CCP Voronoi cell; cuboctahedron as the shell of the 12 nearest IVM neighbors (permutations of $(2,1,1,0)$).}
+\label{fig:polyhedra_quadray_map}
 \end{figure}
 
 \hypertarget{short-python-snippets-paper-reproducibility}{%
