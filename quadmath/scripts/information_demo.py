@@ -62,7 +62,7 @@ def main() -> None:
     grads = 2.0 * (X.T * residuals).T  # shape (N, 3)
     F = fisher_information_matrix(grads)
 
-    # Enhanced FIM visualization with 4D context
+    # FIM visualization with 4D context
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
     
     # Panel 1: FIM heatmap with professional styling
@@ -141,7 +141,7 @@ def main() -> None:
         y=y,
     )
 
-    # Enhanced eigenspectrum visualization
+    # Eigenspectrum visualization
     from metrics import fim_eigenspectrum  # noqa: WPS433
     evals, evecs = fim_eigenspectrum(F)
     
@@ -150,7 +150,7 @@ def main() -> None:
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
     
-    # Panel 1: Eigenspectrum with enhanced styling
+    # Panel 1: Eigenspectrum with styling
     bars = ax1.bar(np.arange(evals.size), evals, 
                    color=['#1f77b4', '#ff7f0e', '#2ca02c'], alpha=0.8)
     ax1.set_title("Fisher Information Eigenspectrum\n(Principal Curvature Directions)", 

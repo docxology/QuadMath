@@ -14,22 +14,22 @@
 \contentsline {subsection}{\numberline {1.11}Tetravolumes with Quadrays}{7}{subsection.1.11}%
 \contentsline {subsubsection}{\numberline {1.11.1}Bridging vs native tetravolume formulas (Results reference)}{7}{subsubsection.1.11.1}%
 \contentsline {subsubsection}{\numberline {1.11.2}Short Python snippets}{8}{subsubsection.1.11.2}%
-\contentsline {subsubsection}{\numberline {1.11.3}Random tetrahedra in the IVM (integer volumes)}{10}{subsubsection.1.11.3}%
-\contentsline {subsubsection}{\numberline {1.11.4}Algebraic precision}{10}{subsubsection.1.11.4}%
-\contentsline {subsubsection}{\numberline {1.11.5}XYZ determinant and the S3 conversion}{11}{subsubsection.1.11.5}%
-\contentsline {subsubsection}{\numberline {1.11.6}D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal ``cubing''}{11}{subsubsection.1.11.6}%
-\contentsline {subsection}{\numberline {1.12}Code methods (anchors)}{11}{subsection.1.12}%
-\contentsline {subsubsection}{\numberline {1.12.1}\color@box {}{codebg}{\color {codefg}\ttfamily integer\_tetra\_volume}}{11}{subsubsection.1.12.1}%
-\contentsline {subsubsection}{\numberline {1.12.2}\color@box {}{codebg}{\color {codefg}\ttfamily ace\_tetravolume\_5x5}}{11}{subsubsection.1.12.2}%
-\contentsline {subsubsection}{\numberline {1.12.3}\color@box {}{codebg}{\color {codefg}\ttfamily tetra\_volume\_cayley\_menger}}{11}{subsubsection.1.12.3}%
-\contentsline {subsubsection}{\numberline {1.12.4}\color@box {}{codebg}{\color {codefg}\ttfamily ivm\_tetra\_volume\_cayley\_menger}}{11}{subsubsection.1.12.4}%
-\contentsline {subsubsection}{\numberline {1.12.5}\color@box {}{codebg}{\color {codefg}\ttfamily urner\_embedding}}{11}{subsubsection.1.12.5}%
-\contentsline {subsubsection}{\numberline {1.12.6}\color@box {}{codebg}{\color {codefg}\ttfamily quadray\_to\_xyz}}{11}{subsubsection.1.12.6}%
-\contentsline {subsubsection}{\numberline {1.12.7}\color@box {}{codebg}{\color {codefg}\ttfamily bareiss\_determinant\_int}}{11}{subsubsection.1.12.7}%
-\contentsline {subsubsection}{\numberline {1.12.8}Information geometry methods (anchors)}{12}{subsubsection.1.12.8}%
-\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily fisher\_information\_matrix}}{12}{section*.2}%
-\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily natural\_gradient\_step}}{12}{section*.3}%
-\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily free\_energy}}{12}{section*.4}%
-\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily discrete\_ivm\_descent}}{12}{section*.5}%
-\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily animate\_discrete\_path}}{12}{section*.6}%
-\contentsline {subsection}{\numberline {1.13}Reproducibility checklist}{12}{subsection.1.13}%
+\contentsline {subsubsection}{\numberline {1.11.3}Random tetrahedra in the IVM (integer volumes)}{11}{subsubsection.1.11.3}%
+\contentsline {subsubsection}{\numberline {1.11.4}Algebraic precision}{11}{subsubsection.1.11.4}%
+\contentsline {subsubsection}{\numberline {1.11.5}XYZ determinant and the S3 conversion}{12}{subsubsection.1.11.5}%
+\contentsline {subsubsection}{\numberline {1.11.6}D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal ``cubing''}{12}{subsubsection.1.11.6}%
+\contentsline {subsection}{\numberline {1.12}Code methods (anchors)}{12}{subsection.1.12}%
+\contentsline {subsubsection}{\numberline {1.12.1}\color@box {}{codebg}{\color {codefg}\ttfamily integer\_tetra\_volume}}{12}{subsubsection.1.12.1}%
+\contentsline {subsubsection}{\numberline {1.12.2}\color@box {}{codebg}{\color {codefg}\ttfamily ace\_tetravolume\_5x5}}{12}{subsubsection.1.12.2}%
+\contentsline {subsubsection}{\numberline {1.12.3}\color@box {}{codebg}{\color {codefg}\ttfamily tetra\_volume\_cayley\_menger}}{12}{subsubsection.1.12.3}%
+\contentsline {subsubsection}{\numberline {1.12.4}\color@box {}{codebg}{\color {codefg}\ttfamily ivm\_tetra\_volume\_cayley\_menger}}{12}{subsubsection.1.12.4}%
+\contentsline {subsubsection}{\numberline {1.12.5}\color@box {}{codebg}{\color {codefg}\ttfamily urner\_embedding}}{12}{subsubsection.1.12.5}%
+\contentsline {subsubsection}{\numberline {1.12.6}\color@box {}{codebg}{\color {codefg}\ttfamily quadray\_to\_xyz}}{12}{subsubsection.1.12.6}%
+\contentsline {subsubsection}{\numberline {1.12.7}\color@box {}{codebg}{\color {codefg}\ttfamily bareiss\_determinant\_int}}{12}{subsubsection.1.12.7}%
+\contentsline {subsubsection}{\numberline {1.12.8}Information geometry methods (anchors)}{13}{subsubsection.1.12.8}%
+\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily fisher\_information\_matrix}}{13}{section*.2}%
+\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily natural\_gradient\_step}}{13}{section*.3}%
+\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily free\_energy}}{13}{section*.4}%
+\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily discrete\_ivm\_descent}}{13}{section*.5}%
+\contentsline {paragraph}{\color@box {}{codebg}{\color {codefg}\ttfamily animate\_discrete\_path}}{13}{section*.6}%
+\contentsline {subsection}{\numberline {1.13}Reproducibility checklist}{13}{subsection.1.13}%

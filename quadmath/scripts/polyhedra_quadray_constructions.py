@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enhanced polyhedra relationships panel (synergetics volumes and mappings).
+"""Polyhedra relationships panel (synergetics volumes and mappings).
 
 Produces a comprehensive figure showing:
 1. 3D polyhedra visualizations with proper faces and edges
@@ -195,14 +195,14 @@ def main() -> None:
     ax_net.set_facecolor("#ffffff")
     ax_net.axis("off")
     
-    # Enhanced node helper with volume annotations
+    # Node helper with volume annotations
     def node(x: float, y: float, text: str, volume: int, fc: str = "#f5f5f5") -> None:
         rect = plt.Rectangle((x - 1.0, y - 0.4), 2.0, 0.8, fc=fc, ec="#444444", lw=1.5, zorder=2)
         ax_net.add_patch(rect)
         ax_net.text(x, y, text, ha="center", va="center", fontsize=10, zorder=3, fontweight='bold')
         ax_net.text(x, y - 0.25, f"V={volume}", ha="center", va="center", fontsize=9, zorder=3, color='#666666')
     
-    # Enhanced arrow helper
+    # Arrow helper
     def arrow(x0: float, y0: float, x1: float, y1: float, label: str = "", style: str = "->") -> None:
         ax_net.annotate("", xy=(x1, y1), xytext=(x0, y0),
                         arrowprops=dict(arrowstyle=style, lw=1.8, color="#444444"), zorder=1)
@@ -275,7 +275,7 @@ def main() -> None:
     figure_dir = get_figure_dir()
     outpath = os.path.join(figure_dir, "polyhedra_quadray_constructions.png")
     fig.savefig(outpath, dpi=300, bbox_inches='tight')
-    print(f"Enhanced Figure 4 saved to: {outpath}")
+    print(f"Figure 4 saved to: {outpath}")
     
     # Also save a high-resolution version
     outpath_hq = os.path.join(figure_dir, "polyhedra_quadray_constructions_hq.png")

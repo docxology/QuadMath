@@ -124,9 +124,9 @@ run_generation_scripts() {
   if [ -f "$REPO_ROOT/quadmath/scripts/information_demo.py" ]; then
     $runner "$REPO_ROOT/quadmath/scripts/information_demo.py" || exit 1
   fi
-  # Enhanced Active Inference figures (Figures 13 and 14)
-  if [ -f "$REPO_ROOT/quadmath/scripts/enhanced_active_inference_figures.py" ]; then
-    $runner "$REPO_ROOT/quadmath/scripts/enhanced_active_inference_figures.py" || exit 1
+  # Active Inference figures
+if [ -f "$REPO_ROOT/quadmath/scripts/active_inference_figures.py" ]; then
+    $runner "$REPO_ROOT/quadmath/scripts/active_inference_figures.py" || exit 1
   fi
   # Auto-generate glossary API table
   if [ -f "$REPO_ROOT/quadmath/scripts/generate_glossary.py" ]; then

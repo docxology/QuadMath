@@ -7,10 +7,10 @@
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/natural_gradient_path.csv
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/free_energy_curve.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
-Enhanced 4D trajectory figure saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_13_4d_trajectory.png
-Enhanced free energy landscape figure saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_14_free_energy_landscape.png
-4D trajectory figure: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_13_4d_trajectory.png
-Free energy landscape figure: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/enhanced_figure_14_free_energy_landscape.png
+4D trajectory figure saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
+Figure 14 saved to: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
+• Figure 13: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
+• Figure 14: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/volumes_scale_plot.png
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/data/volumes_scale_data.csv
 /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png

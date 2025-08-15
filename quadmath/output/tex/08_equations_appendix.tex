@@ -387,22 +387,21 @@ optimization on the integer Quadray lattice.}
 across canonical integer-quadray examples}. Bars compare \(V_{ivm}\)
 computed via Cayley--Menger on XYZ edge lengths with \(S3=\sqrt{9/8}\)
 conversion versus Tom Ace's 5×5 determinant formula operating directly
-on Quadray coordinates. \textbf{Test cases}: Regular tetrahedron (V=1),
-unit cube decomposition (V=3), octahedron (V=4), rhombic dodecahedron
-(V=6), and cuboctahedron/vector equilibrium (V=20), all using integer
-Quadray coordinates and common edge lengths. \textbf{Results}: The
-overlapping bars demonstrate numerical agreement at machine precision
-between the length-based Coxeter.4D approach (Cayley--Menger + S3
-conversion) and the coordinate-based Fuller.4D approach (Ace 5×5),
-confirming the mathematical equivalence of these formulations under
-synergetics unit conventions. \textbf{Methodological significance}: This
-validation demonstrates that the bridging approach (converting from
-Euclidean to IVM units) produces identical results to the native IVM
-approach, supporting the use of both methods interchangeably depending
-on whether one has access to edge lengths or direct coordinates. Raw
-numerical data saved as
-\passthrough{\lstinline!bridging\_vs\_native.csv!} for reproducibility
-and further analysis.}
+on Quadray coordinates. \textbf{Test cases}: Unit tetrahedron (V=1), 2×
+edge scaling (V=8), mixed coordinate tetrahedron, centered tetrahedron
+(V=3), and large mixed tetrahedron, all using integer Quadray
+coordinates. \textbf{Results}: The overlapping bars demonstrate
+numerical agreement at machine precision between the length-based
+Coxeter.4D approach (Cayley--Menger + S3 conversion) and the
+coordinate-based Fuller.4D approach (Ace 5×5), confirming the
+mathematical equivalence of these formulations under synergetics unit
+conventions. \textbf{Methodological significance}: This validation
+demonstrates that the bridging approach (converting from Euclidean to
+IVM units) produces identical results to the native IVM approach,
+supporting the use of both methods interchangeably depending on whether
+one has access to edge lengths or direct coordinates. Raw numerical data
+saved as \passthrough{\lstinline!bridging\_vs\_native.csv!} for
+reproducibility and further analysis.}
 \end{figure}
 
 \hypertarget{quadray-normalization-fuller.4d}{%
