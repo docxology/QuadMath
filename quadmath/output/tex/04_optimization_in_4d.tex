@@ -48,45 +48,24 @@
   urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.7cm,top=0.7cm,bottom=0.7cm,left=0.7cm,right=0.7cm,includeheadfoot]{geometry}
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -99,6 +78,89 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
 
 % Configure hyperref colors consistently
 \AtBeginDocument{
@@ -117,53 +179,53 @@
 
 \title{Optimization in 4D}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 14, 2025}
+\date{August 15, 2025}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=red}
+\hypersetup{linkcolor=black}
 \setcounter{tocdepth}{3}
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{optimization-in-4d-namespaces-and-quadray-lattice-methods}{%
-\section{Optimization in 4D (Namespaces and Quadray-Lattice
-Methods)}\label{optimization-in-4d-namespaces-and-quadray-lattice-methods}}
+\hypertarget{optimization-in-4d}{%
+\section{Optimization in 4D}\label{optimization-in-4d}}
 
-Here we review the optimization methods used in this manuscript. We
-review the Nelder--Mead method, which is a simple and robust
-optimization method that is well-suited to the Quadray 4D lattice. We
-also review the discrete IVM descent method, which is a more
-sophisticated optimization method that is well-suited to the Quadray
-lattice as well.
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
 
-\hypertarget{quadray-adaptive-neldermead-fuller.4d}{%
-\subsection{Quadray-Adaptive Nelder--Mead
-(Fuller.4D)}\label{quadray-adaptive-neldermead-fuller.4d}}
+This section describes optimization methods adapted to the integer
+Quadray lattice, emphasizing discrete convergence and
+information-geometric approaches. The methods leverage the IVM's natural
+quantization and extend to higher-dimensional spaces via Coxeter.4D
+embeddings.
+
+\hypertarget{neldermead-on-integer-lattice}{%
+\subsection{Nelder--Mead on Integer
+Lattice}\label{neldermead-on-integer-lattice}}
 
 \begin{itemize}
 \tightlist
 \item
-  Initialization: choose 4 integer quadray vertices forming a
-  non-degenerate simplex (e.g., basis + one mixed point such as
-  (1,1,1,0)).
+  \textbf{Adaptation}: standard Nelder--Mead simplex operations with
+  projection to integer Quadray coordinates.
 \item
-  Reflection/Expansion/Contraction: compute candidate; round to nearest
-  integer; renormalize by adding/subtracting (k,k,k,k) to enforce
-  non-negativity and at least one zero.
+  \textbf{Projection}: after each reflection/expansion/contraction, snap
+  to nearest integer lattice point via projective normalization.
 \item
-  Shrink: discrete contraction of all vertices toward the best vertex
-  along tetrahedral axes.
+  \textbf{Volume tracking}: monitor integer tetravolume as convergence
+  diagnostic; discrete steps create stable plateaus.
 \end{itemize}
 
-Standard Nelder--Mead coefficients (typical choices):
+\hypertarget{parameters}{%
+\subsubsection{Parameters}\label{parameters}}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Reflection} \(\alpha = 1\)
+  \textbf{Reflection} \(\alpha \approx 1\)
 \item
   \textbf{Expansion} \(\gamma \approx 2\)
 \item
@@ -196,7 +258,7 @@ method}.
 \hypertarget{pseudocode-sketch}{%
 \subsection{Pseudocode (Sketch)}\label{pseudocode-sketch}}
 
-\begin{verbatim}
+\begin{lstlisting}
 while not converged:
   order vertices by objective
   centroid of best three
@@ -204,41 +266,93 @@ while not converged:
   project to integer quadray; renormalize with (k,k,k,k)
   accept per standard tests; else shrink toward best
   update integer volume and function spread trackers
-\end{verbatim}
+\end{lstlisting}
 
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/simplex_trace.png}
-\caption{**Discrete Nelder–Mead optimization trajectory on the integer Quadray lattice**. This time-series plot tracks key diagnostic quantities across 12 optimization iterations for a simple quadratic objective $f(q) = (q.a - 1)^2 + q.b^2 + q.c^2 + q.d^2$ starting from initial simplex vertices $\{(5,0,0,0), (4,1,0,0), (0,4,1,0), (1,1,1,0)\}$. **Left y-axis (objective values)**: Blue line shows the best (minimum) objective value per iteration, demonstrating monotonic improvement as the simplex converges toward the minimum at $(1,0,0,0)$. Orange line shows the worst (maximum) objective value among the four simplex vertices. **Right y-axis (simplex volume)**: Green line tracks the integer tetravolume of the current simplex computed via Tom Ace's 5×5 determinant, showing characteristic discrete plateaus and step-wise reductions as the simplex contracts on the lattice. **Convergence signature**: The volume decreases in discrete integer steps, creating stable "energy levels" that regularize the optimization process, while the objective spread (difference between best and worst) narrows as vertices cluster near the optimum. The full 3D simplex trajectory animation is available as \texttt{simplex\_animation.mp4} in the output directory.}
-\label{fig:simplex_trace}
+\includegraphics{../output/figures/simplex_trace.png}
+\caption{\textbf{Figure 7: Discrete Nelder--Mead optimization trajectory
+on the integer Quadray lattice}. This time-series plot tracks key
+diagnostic quantities across 12 optimization iterations for a simple
+quadratic objective \(f(q) = (q.a - 1)^2 + q.b^2 + q.c^2 + q.d^2\)
+starting from initial simplex vertices
+\(\{(5,0,0,0), (4,1,0,0), (0,4,1,0), (1,1,1,0)\}\). \textbf{Left y-axis
+(objective values)}: Blue line shows the best (minimum) objective value
+per iteration, demonstrating monotonic improvement as the simplex
+converges toward the minimum at \((1,0,0,0)\). Orange line shows the
+worst (maximum) objective value among the four simplex vertices.
+\textbf{Right y-axis (simplex volume)}: Green line tracks the integer
+tetravolume of the current simplex computed via Tom Ace's 5×5
+determinant, showing characteristic discrete plateaus and step-wise
+reductions as the simplex contracts on the lattice. \textbf{Convergence
+signature}: The volume decreases in discrete integer steps, creating
+stable ``energy levels'' that regularize the optimization process, while
+the objective spread (difference between best and worst) narrows as
+vertices cluster near the optimum. The full 3D simplex trajectory
+animation is available as
+\passthrough{\lstinline!simplex\_animation.mp4!} in the output
+directory.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/volumes_scale_plot.png}
-\caption{**Tetrahedron volume scaling relationships: Euclidean vs IVM unit conventions**. This plot demonstrates the mathematical relationship between edge length scaling and tetravolume under both Euclidean (Coxeter.4D) and synergetics (Fuller.4D) unit conventions. **X-axis**: Edge scale factor ranging from 0.5 to 2.0 applied to a regular tetrahedron. **Y-axis**: Computed tetravolume in respective units. **Blue curve** ($V_{xyz}$): Euclidean tetravolume computed via standard geometric formulas, showing the expected cubic scaling relationship $V \propto \text{edge}^3$. **Orange curve** ($V_{ivm}$): IVM tetravolume obtained by converting the Euclidean volume via the synergetics factor $S3 = \sqrt{9/8} \approx 1.061$, following the relationship $V_{ivm} = S3 \cdot V_{xyz}$. **Scaling verification**: Both curves maintain their proportional relationship across all scales, confirming the consistency of the S3 conversion factor used throughout the manuscript to bridge between Coxeter.4D (Euclidean) and Fuller.4D (IVM) volume measurements. The parallel cubic curves validate the unit conversion methods employed in bridging vs native tetravolume comparisons. Raw numerical data available as \texttt{volumes\_scale\_data.csv} and \texttt{volumes\_scale\_data.npz}.}
-\label{fig:volumes_scale}
+\includegraphics{../output/figures/volumes_scale_plot.png}
+\caption{\textbf{Figure 8: Tetrahedron volume scaling relationships:
+Euclidean vs IVM unit conventions}. This plot demonstrates the
+mathematical relationship between edge length scaling and tetravolume
+under both Euclidean (Coxeter.4D) and synergetics (Fuller.4D) unit
+conventions. \textbf{X-axis}: Edge scale factor ranging from 0.5 to 2.0
+applied to a regular tetrahedron. \textbf{Y-axis}: Computed tetravolume
+in respective units. \textbf{Blue curve} (\(V_{xyz}\)): Euclidean
+tetravolume computed via standard geometric formulas, showing the
+expected cubic scaling relationship \(V \propto \text{edge}^3\).
+\textbf{Orange curve} (\(V_{ivm}\)): IVM tetravolume obtained by
+converting the Euclidean volume via the synergetics factor
+\(S3 = \sqrt{9/8} \approx 1.061\), following the relationship
+\(V_{ivm} = S3 \cdot V_{xyz}\). \textbf{Scaling verification}: Both
+curves maintain their proportional relationship across all scales,
+confirming the consistency of the S3 conversion factor used throughout
+the manuscript to bridge between Coxeter.4D (Euclidean) and Fuller.4D
+(IVM) volume measurements. The parallel cubic curves validate the unit
+conversion methods employed in bridging vs native tetravolume
+comparisons. Raw numerical data available as
+\passthrough{\lstinline!volumes\_scale\_data.csv!} and
+\passthrough{\lstinline!volumes\_scale\_data.npz!}.}
 \end{figure}
 
-As shown in Figure \ref{fig:simplex_final}, the discrete Nelder--Mead
-converges on plateaus; Figure \ref{fig:volumes_scale} summarizes the
-scaling behavior used in volume diagnostics.
+As shown in Figure 9, the discrete Nelder--Mead converges on plateaus;
+Figure 8 summarizes the scaling behavior used in volume diagnostics.
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/simplex_final.png}
-\caption{**Final converged simplex configuration in 3D embedding space**. This 3D scatter plot shows the four vertices of the Nelder–Mead simplex after 12 iterations of discrete optimization on the integer Quadray lattice, projected into Euclidean 3D space via the default embedding matrix. The green points represent the converged simplex vertices clustered near the objective minimum, connected by green lines to emphasize the tetrahedral structure. All vertices are constrained to integer Quadray coordinates and maintain the projective normalization (at least one zero component). The tight clustering demonstrates successful convergence while the discrete lattice constraint ensures numerical stability. This static view complements the dynamic trajectory shown in the full animation (\texttt{simplex\_animation.mp4}) and the diagnostic traces in Figure \ref{fig:simplex_trace}. The final simplex volume is minimal on the integer lattice, representing a stable "energy level" where further discrete moves do not improve the objective function.}
-\label{fig:simplex_final}
+\includegraphics{../output/figures/simplex_final.png}
+\caption{\textbf{Figure 9: Final converged simplex configuration in 3D
+embedding space}. This 3D scatter plot shows the four vertices of the
+Nelder--Mead simplex after 12 iterations of discrete optimization on the
+integer Quadray lattice, projected into Euclidean 3D space via the
+default embedding matrix. The green points represent the converged
+simplex vertices clustered near the objective minimum, connected by
+green lines to emphasize the tetrahedral structure. All vertices are
+constrained to integer Quadray coordinates and maintain the projective
+normalization (at least one zero component). The tight clustering
+demonstrates successful convergence while the discrete lattice
+constraint ensures numerical stability. This static view complements the
+dynamic trajectory shown in the full animation
+(\passthrough{\lstinline!simplex\_animation.mp4!}) and the diagnostic
+traces in Figure 7. The final simplex volume is minimal on the integer
+lattice, representing a stable ``energy level'' where further discrete
+moves do not improve the objective function.}
 \end{figure}
 
 Raw artifacts: the full trajectory animation
-\texttt{simplex\_animation.mp4} and per-frame vertices
-(\texttt{simplex\_animation\_vertices.csv}/\texttt{.npz}) are available
-in \texttt{quadmath/output/}. The full optimization trajectory is
-provided as an animation (MP4) in the repository's output directory.
+\passthrough{\lstinline!simplex\_animation.mp4!} and per-frame vertices
+(\passthrough{\lstinline!simplex\_animation\_vertices.csv!}/\passthrough{\lstinline!.npz!})
+are available in \passthrough{\lstinline!quadmath/output/!}. The full
+optimization trajectory is provided as an animation (MP4) in the
+repository's output directory.
 
 \hypertarget{discrete-lattice-descent-information-theoretic-variant}{%
 \subsection{Discrete Lattice Descent (Information-Theoretic
@@ -255,27 +369,26 @@ Variant)}\label{discrete-lattice-descent-information-theoretic-variant}}
   information-theoretic (e.g., local free-energy proxy); monotone
   decrease is guaranteed by greedy selection.
 \item
-  API: \texttt{discrete\_ivm\_descent} in
-  \texttt{src/discrete\_variational.py}. Animation helper:
-  \texttt{animate\_discrete\_path} in \texttt{src/visualize.py}.
+  API: \passthrough{\lstinline!discrete\_ivm\_descent!} in
+  \passthrough{\lstinline!src/discrete\_variational.py!}. Animation
+  helper: \passthrough{\lstinline!animate\_discrete\_path!} in
+  \passthrough{\lstinline!src/visualize.py!}.
 \end{itemize}
 
 Short snippet (paper reproducibility):
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{from}\NormalTok{ quadray }\ImportTok{import}\NormalTok{ Quadray, DEFAULT\_EMBEDDING, to\_xyz}
-\ImportTok{from}\NormalTok{ discrete\_variational }\ImportTok{import}\NormalTok{ discrete\_ivm\_descent}
-\ImportTok{from}\NormalTok{ visualize }\ImportTok{import}\NormalTok{ animate\_discrete\_path}
+\begin{lstlisting}[language=Python]
+from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz
+from discrete_variational import discrete_ivm_descent
+from visualize import animate_discrete_path
 
-\KeywordTok{def}\NormalTok{ f(q: Quadray) }\OperatorTok{{-}\textgreater{}} \BuiltInTok{float}\NormalTok{:}
-\NormalTok{    x, y, z }\OperatorTok{=}\NormalTok{ to\_xyz(q, DEFAULT\_EMBEDDING)}
-    \ControlFlowTok{return}\NormalTok{ (x }\OperatorTok{{-}} \FloatTok{0.5}\NormalTok{)}\OperatorTok{**}\DecValTok{2} \OperatorTok{+}\NormalTok{ (y }\OperatorTok{+} \FloatTok{0.2}\NormalTok{)}\OperatorTok{**}\DecValTok{2} \OperatorTok{+}\NormalTok{ (z }\OperatorTok{{-}} \FloatTok{0.1}\NormalTok{)}\OperatorTok{**}\DecValTok{2}
+def f(q: Quadray) -> float:
+    x, y, z = to_xyz(q, DEFAULT_EMBEDDING)
+    return (x - 0.5)**2 + (y + 0.2)**2 + (z - 0.1)**2
 
-\NormalTok{path }\OperatorTok{=}\NormalTok{ discrete\_ivm\_descent(f, Quadray(}\DecValTok{6}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{))}
-\NormalTok{animate\_discrete\_path(path)}
-\end{Highlighting}
-\end{Shaded}
+path = discrete_ivm_descent(f, Quadray(6,0,0,0))
+animate_discrete_path(path)
+\end{lstlisting}
 
 \hypertarget{convergence-and-robustness}{%
 \subsection{Convergence and
@@ -302,56 +415,137 @@ form)}\label{information-geometric-view-einstein.4d-analogy-in-metric-form}}
 \tightlist
 \item
   \textbf{Fisher Information as metric}: use the empirical estimator
-  \texttt{F\ =\ (1/N)\ \textbackslash{}sum\ g\ g\^{}\textbackslash{}top}
-  from \texttt{fisher\_information\_matrix} to analyze curvature of the
-  objective with respect to parameters. See
+  \passthrough{\lstinline!F = (1/N) \\sum g g^\\top!} from
+  \passthrough{\lstinline!fisher\_information\_matrix!} to analyze
+  curvature of the objective with respect to parameters. See
   \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
   information}.
 \item
   \textbf{Curvature directions}: leading eigenvalues/eigenvectors of
-  \texttt{F} (see \texttt{fim\_eigenspectrum}) reveal stiff and sloppy
+  \passthrough{\lstinline!F!} (see
+  \passthrough{\lstinline!fim\_eigenspectrum!}) reveal stiff and sloppy
   directions; this supports step-size selection and preconditioning.
 \item
-  \textbf{Figures}: empirical FIM heatmap (Figure
-  \ref{fig:fisher_information_matrix}) and eigenspectrum (Figure
-  \ref{fig:fim_eigenspectrum}). Raw data available as NPZ/CSV in
-  \texttt{quadmath/output/}.
+  \textbf{Figures}: empirical FIM heatmap (Figure 10) and eigenspectrum
+  (Figure 11). Raw data available as NPZ/CSV in
+  \passthrough{\lstinline!quadmath/output/!}.
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fisher_information_matrix.png}
-\caption{**Empirical Fisher Information Matrix (FIM) for noisy linear regression**. This heatmap visualizes the 3×3 Fisher information matrix $F_{ij}$ estimated from per-sample gradients of a misspecified linear regression model. **Setup**: Ground truth parameters $w_{\text{true}} = [1.0, -2.0, 0.5]$, evaluated at estimation point $w_{\text{est}} = [0.3, -1.2, 0.0]$, with 200 samples and Gaussian noise (σ=0.1). **Matrix elements**: Each $F_{ij}$ entry represents the expected outer product $\mathbb{E}[\partial_i \log p \cdot \partial_j \log p]$ where gradients are computed from squared loss with respect to model parameters. **Interpretation**: The colorbar scale shows local curvature magnitudes—brighter entries indicate directions of higher sensitivity/information content. Diagonal dominance suggests the parameters are approximately decoupled at this evaluation point. **Information geometry**: This FIM serves as a Riemannian metric tensor for natural gradient descent (Eq. \ref{eq:supp_natgrad}), enabling curvature-aware optimization steps that adapt to the local geometry of the parameter manifold. Raw matrix data saved as \texttt{fisher\_information\_matrix.csv} and \texttt{fisher\_information\_matrix.npz} for reproducibility.}
-\label{fig:fisher_information_matrix}
+\includegraphics{../output/figures/fisher_information_matrix.png}
+\caption{\textbf{Figure 10: Empirical Fisher Information Matrix (FIM)
+for noisy linear regression}. This heatmap visualizes the 3×3 Fisher
+information matrix \(F_{ij}\) estimated from per-sample gradients of a
+misspecified linear regression model. \textbf{Setup}: Ground truth
+parameters \(w_{\text{true}} = [1.0, -2.0, 0.5]\), evaluated at
+estimation point \(w_{\text{est}} = [0.3, -1.2, 0.0]\), with 200 samples
+and Gaussian noise (σ=0.1). \textbf{Matrix elements}: Each \(F_{ij}\)
+entry represents the expected outer product
+\(\mathbb{E}[\partial_i \log p \cdot \partial_j \log p]\) where
+gradients are computed from squared loss with respect to model
+parameters. \textbf{Interpretation}: The colorbar scale shows local
+curvature magnitudes---brighter entries indicate directions of higher
+sensitivity/information content. Diagonal dominance suggests the
+parameters are approximately decoupled at this evaluation point.
+\textbf{Information geometry}: This FIM serves as a Riemannian metric
+tensor for natural gradient descent (see Eq. \eqref{eq:supp_natgrad} in
+the equations appendix), enabling curvature-aware optimization steps
+that adapt to the local geometry of the parameter manifold. Raw matrix
+data saved as \passthrough{\lstinline!fisher\_information\_matrix.csv!}
+and \passthrough{\lstinline!fisher\_information\_matrix.npz!} for
+reproducibility.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fisher_information_eigenspectrum.png}
-\caption{**Fisher Information Matrix eigenspectrum: principal curvature directions**. This bar chart displays the eigenvalue decomposition of the empirical Fisher information matrix from Figure \ref{fig:fisher_information_matrix}, revealing the principal curvature directions of the parameter manifold. **X-axis**: Eigenvalue indices (0, 1, 2) sorted in descending order of magnitude. **Y-axis**: Eigenvalue magnitudes representing the curvature strength along corresponding eigenvector directions. **Interpretation**: Large eigenvalues indicate "stiff" parameter directions where small changes significantly affect the objective function, while small eigenvalues correspond to "sloppy" directions with minimal impact. **Information geometry insights**: The eigenspectrum reveals the conditioning of the FIM and guides natural gradient preconditioning—directions with high curvature (large λᵢ) require smaller step sizes, while low-curvature directions tolerate larger updates. **Optimization implications**: The eigenvalue spread suggests the degree of parameter coupling and optimal step-size scaling for each principal direction. Well-conditioned problems show uniform eigenvalues, while ill-conditioned problems exhibit large eigenvalue spreads requiring careful preconditioning. Raw eigenvalue data available as \texttt{fisher\_information\_eigenvalues.csv} and \texttt{fisher\_information\_eigensystem.npz}.}
-\label{fig:fim_eigenspectrum}
+\includegraphics{../output/figures/fisher_information_eigenspectrum.png}
+\caption{\textbf{Figure 11: Fisher Information Matrix eigenspectrum:
+principal curvature directions}. This bar chart displays the eigenvalue
+decomposition of the empirical Fisher information matrix from Figure 10,
+revealing the principal curvature directions of the parameter manifold.
+\textbf{X-axis}: Eigenvalue indices (0, 1, 2) sorted in descending order
+of magnitude. \textbf{Y-axis}: Eigenvalue magnitudes representing the
+curvature strength along corresponding eigenvector directions.
+\textbf{Interpretation}: Large eigenvalues indicate ``stiff'' parameter
+directions where small changes significantly affect the objective
+function, while small eigenvalues correspond to ``sloppy'' directions
+with minimal impact. \textbf{Information geometry insights}: The
+eigenspectrum reveals the conditioning of the FIM and guides natural
+gradient preconditioning---directions with high curvature (large λᵢ)
+require smaller step sizes, while low-curvature directions tolerate
+larger updates. \textbf{Optimization implications}: The eigenvalue
+spread suggests the degree of parameter coupling and optimal step-size
+scaling for each principal direction. Well-conditioned problems show
+uniform eigenvalues, while ill-conditioned problems exhibit large
+eigenvalue spreads requiring careful preconditioning. Raw eigenvalue
+data available as
+\passthrough{\lstinline!fisher\_information\_eigenvalues.csv!} and
+\passthrough{\lstinline!fisher\_information\_eigensystem.npz!}.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
-\caption{**Natural gradient descent trajectory on a quadratic objective (2D projection)**. This line plot with markers shows the parameter trajectory of natural gradient descent converging to the optimum of a quadratic bowl-shaped objective function. **Setup**: Starting point $(w_0, w_1) = (2, 2)$ with target $(w_0, w_1) = (1, -2)$; quadratic form defined by matrix $A = \begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$; step size $\eta = 0.5$; regularized Fisher matrix $F + 10^{-3} I$ for numerical stability. **Trajectory analysis**: The curved path demonstrates how natural gradient descent (Eq. \ref{eq:supp_natgrad}) adapts to the local curvature structure, taking larger steps in low-curvature directions and smaller steps in high-curvature directions compared to vanilla gradient descent. **Information geometry**: The trajectory follows approximate geodesics on the parameter manifold equipped with the Fisher metric, resulting in more efficient convergence than Euclidean gradient descent on ill-conditioned problems. **Projection note**: This visualization shows the $(w_0, w_1)$ projection of the full 3D parameter trajectory. Each marker represents one optimization step, with the curvature-aware steps visible as the adaptive stride lengths along the path. Complete trajectory data saved as \texttt{natural\_gradient\_path.csv} and \texttt{natural\_gradient\_path.npz}.}
-\label{fig:natural_gradient_path}
+\includegraphics{../output/figures/natural_gradient_path.png}
+\caption{\textbf{Figure 12: Natural gradient descent trajectory on a
+quadratic objective (2D projection)}. This line plot with markers shows
+the parameter trajectory of natural gradient descent converging to the
+optimum of a quadratic bowl-shaped objective function. \textbf{Setup}:
+Starting point \((w_0, w_1) = (2, 2)\) with target
+\((w_0, w_1) = (1, -2)\); quadratic form defined by matrix
+\(A = \begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}\);
+step size \(\eta = 0.5\); regularized Fisher matrix \(F + 10^{-3} I\)
+for numerical stability. \textbf{Trajectory analysis}: The curved path
+demonstrates how natural gradient descent (see Eq.
+\eqref{eq:supp_natgrad} in the equations appendix) adapts to the local
+curvature structure, taking larger steps in low-curvature directions and
+smaller steps in high-curvature directions compared to vanilla gradient
+descent. \textbf{Information geometry}: The trajectory follows
+approximate geodesics on the parameter manifold equipped with the Fisher
+metric, resulting in more efficient convergence than Euclidean gradient
+descent on ill-conditioned problems. \textbf{Projection note}: This
+visualization shows the \((w_0, w_1)\) projection of the full 3D
+parameter trajectory. Each marker represents one optimization step, with
+the curvature-aware steps visible as the adaptive stride lengths along
+the path. Complete trajectory data saved as
+\passthrough{\lstinline!natural\_gradient\_path.csv!} and
+\passthrough{\lstinline!natural\_gradient\_path.npz!}.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
-\caption{**Variational free energy landscape for a discrete 2-state system**. This curve shows the variational free energy $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ (Eq. \ref{eq:supp_free_energy}) as a function of the variational posterior probability $q(\text{state}=0)$ for a simple binary system. **Setup**: True observation probabilities $\log P(o|s) = \log[0.7, 0.3]$ and uniform prior $P(s) = [0.5, 0.5]$; variational posterior $Q(s) = [q, 1-q]$ parameterized by $q \in [0.001, 0.999]$. **Free energy decomposition**: The curve reflects the balance between likelihood accuracy (how well $Q$ explains observations) and KL complexity penalty (deviation from prior beliefs). **Minimum**: The global minimum occurs where the variational posterior matches the true posterior, achieving optimal trade-off between accuracy and complexity. **Active Inference connection**: In the context of the four-fold partition (Figure \ref{fig:partition_tetrahedron}), this free energy functional drives both perceptual inference (belief updates) and action selection (environmental steering). **Optimization**: The convex shape enables gradient-based minimization for belief updating, with the minimum representing the optimal variational approximation. This toy example illustrates the general principle underlying variational optimization in active inference and the free energy minimization framework.}
-\label{fig:free_energy_curve}
+\includegraphics{../output/figures/free_energy_curve.png}
+\caption{\textbf{Figure 13: Variational free energy landscape for a
+discrete 2-state system}. This curve shows the variational free energy
+\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
+\eqref{eq:supp_free_energy} in the equations appendix) as a function of
+the variational posterior probability \(q(\text{state}=0)\) for a simple
+binary system. \textbf{Setup}: True observation probabilities
+\(\log P(o|s) = \log[0.7, 0.3]\) and uniform prior
+\(P(s) = [0.5, 0.5]\); variational posterior \(Q(s) = [q, 1-q]\)
+parameterized by \(q \in [0.001, 0.999]\). \textbf{Free energy
+decomposition}: The curve reflects the balance between likelihood
+accuracy (how well \(Q\) explains observations) and KL complexity
+penalty (deviation from prior beliefs). \textbf{Minimum}: The global
+minimum occurs where the variational posterior matches the true
+posterior, achieving optimal trade-off between accuracy and complexity.
+\textbf{Active Inference connection}: In the context of the four-fold
+partition (see the Active Inference appendix), this free energy
+functional drives both perceptual inference (belief updates) and action
+selection (environmental steering). \textbf{Optimization}: The convex
+shape enables gradient-based minimization for belief updating, with the
+minimum representing the optimal variational approximation. This toy
+example illustrates the general principle underlying variational
+optimization in active inference and the free energy minimization
+framework.}
 \end{figure}
 
 \begin{itemize}
 \tightlist
 \item
   \textbf{Quadray relevance}: block-structured and symmetric patterns
-  often arise under quadray parameterizations, simplifying \texttt{F}
-  inversion for natural-gradient steps.
+  often arise under quadray parameterizations, simplifying
+  \passthrough{\lstinline!F!} inversion for natural-gradient steps.
 \end{itemize}
 
 \hypertarget{multi-objective-and-higher-dimensional-notes-coxeter.4d-perspective}{%
@@ -378,18 +572,19 @@ extensive computational framework in Kirby Urner's
 
 \begin{itemize}
 \item
-  \textbf{Algorithmic foundations}: Our \texttt{nelder\_mead\_quadray}
-  and \texttt{discrete\_ivm\_descent} methods extend the vector
-  operations and volume calculations implemented in
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
+  \textbf{Algorithmic foundations}: Our
+  \passthrough{\lstinline!nelder\_mead\_quadray!} and
+  \passthrough{\lstinline!discrete\_ivm\_descent!} methods extend the
+  vector operations and volume calculations implemented in
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
   and
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}.
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}.
 \item
   \textbf{Educational precedents}: Interactive optimization
   demonstrations appear in
   \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow
   notebooks}, particularly volume tracking and CCP navigation in
-  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\texttt{QuadCraft\_Project.ipynb}}.
+  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\passthrough{\lstinline!QuadCraft\_Project.ipynb!}}.
 \item
   \textbf{Cross-platform validation}: Independent implementations in
   \href{https://github.com/4dsolutions/rusty_rays}{Rust} and
@@ -405,12 +600,11 @@ extensive computational framework in Kirby Urner's
 \tightlist
 \item
   The simplex-based optimizer exhibits discrete volume plateaus and
-  converges to low-spread configurations; see Figure
-  \ref{fig:simplex_final} and the MP4/CSV artifacts in
-  \texttt{quadmath/output/}.
+  converges to low-spread configurations; see Figure 9 and the MP4/CSV
+  artifacts in \passthrough{\lstinline!quadmath/output/!}.
 \item
   The greedy IVM descent produces monotone trajectories with
-  integer-valued objectives; see Figure \ref{fig:discrete_path}.
+  integer-valued objectives; see Figure 16.
 \end{itemize}
 
 \end{document}

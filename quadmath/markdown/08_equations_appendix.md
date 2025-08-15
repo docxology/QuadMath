@@ -91,33 +91,13 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 
 ### Figures
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
-\caption{**Natural gradient trajectory demonstrating information-geometric optimization**. This trajectory shows natural gradient descent (Eq. \ref{eq:supp_natgrad}) converging on a quadratic objective, projected to the $(w_0, w_1)$ parameter plane. **Mathematical setup**: Quadratic form matrix $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped Fisher inverse $F + 10^{-3} I$ for numerical stability. **Trajectory characteristics**: The curved path demonstrates curvature-adaptive steps—larger strides in low-curvature directions, smaller steps in high-curvature directions—contrasting with uniform Euclidean gradient steps. **Information geometry**: Each step follows approximate geodesics on the parameter manifold equipped with the Fisher metric, achieving more efficient convergence than standard gradient descent on ill-conditioned problems. **Data artifacts**: Complete 3D trajectory data saved as \texttt{natural\_gradient\_path.csv} and \texttt{natural\_gradient\_path.npz} for reproducibility and further analysis.}
-\label{fig:natural_gradient_path}
-\end{figure}
+![**Figure 14: Natural gradient trajectory demonstrating information-geometric optimization**. This trajectory shows natural gradient descent (Eq. \ref{eq:supp_natgrad}) converging on a quadratic objective, projected to the $(w_0, w_1)$ parameter plane. **Mathematical setup**: Quadratic form matrix $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped Fisher inverse $F + 10^{-3} I$ for numerical stability. **Trajectory characteristics**: The curved path demonstrates curvature-adaptive steps—larger strides in low-curvature directions, smaller steps in high-curvature directions—contrasting with uniform Euclidean gradient steps. **Information geometry**: Each step follows approximate geodesics on the parameter manifold equipped with the Fisher metric, achieving more efficient convergence than standard gradient descent on ill-conditioned problems. **Data artifacts**: Complete 3D trajectory data saved as `natural_gradient_path.csv` and `natural_gradient_path.npz` for reproducibility and further analysis.](../output/figures/natural_gradient_path.png)
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
-\caption{**Variational free energy functional for discrete binary states (Eq. \ref{eq:supp_free_energy})**. This curve illustrates the free energy landscape $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ for a 2-state system as a function of variational posterior probability $q(\text{state}=0) \in [0.001, 0.999]$. **Model specification**: True likelihood $\log P(o|s) = \log[0.7, 0.3]$, uniform prior $P(s) = [0.5, 0.5]$, variational posterior $Q(s) = [q, 1-q]$. **Free energy interpretation**: The convex curve shows the trade-off between likelihood accuracy (observation explanation) and complexity penalty (KL divergence from prior). **Optimization**: The global minimum represents the optimal variational approximation where beliefs match the true posterior distribution. **Active Inference**: This functional drives belief updating in the four-fold partition framework, with the minimum achieved through gradient-based inference or discrete lattice descent methods. The convex structure ensures reliable convergence for variational optimization in discrete state spaces.}
-\label{fig:free_energy_curve}
-\end{figure}
+![**Figure 15: Variational free energy functional for discrete binary states (Eq. \ref{eq:supp_free_energy})**. This curve illustrates the free energy landscape $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ for a 2-state system as a function of variational posterior probability $q(\text{state}=0) \in [0.001, 0.999]$. **Model specification**: True likelihood $\log P(o|s) = \log[0.7, 0.3]$, uniform prior $P(s) = [0.5, 0.5]$, variational posterior $Q(s) = [q, 1-q]$. **Free energy interpretation**: The convex curve shows the trade-off between likelihood accuracy (observation explanation) and complexity penalty (KL divergence from prior). **Optimization**: The global minimum represents the optimal variational approximation where beliefs match the true posterior distribution. **Active Inference**: This functional drives belief updating in the four-fold partition framework, with the minimum achieved through gradient-based inference or discrete lattice descent methods. The convex structure ensures reliable convergence for variational optimization in discrete state spaces.](../output/figures/free_energy_curve.png)
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/discrete_path_final.png}
-\caption{**Discrete IVM descent optimization path (final converged state)**. This static frame shows the final position of a discrete variational descent algorithm operating on the integer Quadray lattice. **Algorithm**: \texttt{discrete\_ivm\_descent} performs greedy optimization using the 12 canonical IVM neighbor moves (permutations of \{2,1,1,0\}), ensuring all iterates remain on integer lattice points with proper Quadray normalization. **Objective**: Simple quadratic function $f(q) = (x-0.5)^2 + (y+0.2)^2 + (z-0.1)^2$ where $(x,y,z)$ are the embedded Euclidean coordinates of Quadray $q$. **Convergence**: The final point represents the best lattice approximation to the continuous optimum, demonstrating discrete convergence within the integer-constrained feasible region. **Fuller.4D significance**: This method exemplifies optimization directly on the Quadray integer lattice without continuous relaxation, maintaining exact arithmetic and leveraging the discrete "energy level" structure of integer tetravolumes. **Animation**: The complete optimization trajectory is available as \texttt{discrete\_path.mp4} with corresponding trajectory data in \texttt{discrete\_path.csv} and \texttt{discrete\_path.npz}.}
-\label{fig:discrete_path}
-\end{figure}
+![**Figure 16: Discrete IVM descent optimization path (final converged state)**. This static frame shows the final position of a discrete variational descent algorithm operating on the integer Quadray lattice. **Algorithm**: `discrete_ivm_descent` performs greedy optimization using the 12 canonical IVM neighbor moves (permutations of \{2,1,1,0\}), ensuring all iterates remain on integer lattice points with proper Quadray normalization. **Objective**: Simple quadratic function $f(q) = (x-0.5)^2 + (y+0.2)^2 + (z-0.1)^2$ where $(x,y,z)$ are the embedded Euclidean coordinates of Quadray $q$. **Convergence**: The final point represents the best lattice approximation to the continuous optimum, demonstrating discrete convergence within the integer-constrained feasible region. **Fuller.4D significance**: This method exemplifies optimization directly on the Quadray integer lattice without continuous relaxation, maintaining exact arithmetic and leveraging the discrete "energy level" structure of integer tetravolumes. **Animation**: The complete optimization trajectory is available as `discrete_path.mp4` with corresponding trajectory data in `discrete_path.csv` and `discrete_path.npz`.](../output/figures/discrete_path_final.png)
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
-\caption{Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: \texttt{bridging\_vs\_native.csv}.}
-\label{fig:bridging_native_eq_appendix}
-\end{figure}
+![**Figure 17: Bridging (CM+S3) vs Native (Ace) IVM tetravolumes across canonical integer-quadray examples**. Bars compare $V_{ivm}$ computed via Cayley–Menger on XYZ edge lengths with $S3=\sqrt{9/8}$ conversion (bridging) against Tom Ace's native 5×5 determinant (IVM). The overlaid bars coincide to numerical precision, illustrating the equivalence of length-based and Quadray-native formulations under synergetics units. Source CSV: `bridging_vs_native.csv`.](../output/figures/bridging_vs_native.png)
 
 ## Quadray Normalization (Fuller.4D)
 
@@ -147,7 +127,7 @@ When evaluating determinants, FIMs, or geodesic distances for sensitive problems
   - `natural_gradient_path.png` with `natural_gradient_path.csv` / `.npz`: projected trajectory and raw coordinates
   - `bridging_vs_native.csv`: Ace 5×5 vs CM+S3 tetravolume comparisons
   - `ivm_neighbors_data.csv` / `ivm_neighbors_edges_data.npz`: neighbor coordinates (Quadray and XYZ)
-  - `vector_equilibrium_panels.png`: kissing-spheres and strut/cable panels
+
   - `polyhedra_quadray_constructions.png`: synergetics volume relationships schematic
 
 - **External validation resources**: The [4dsolutions ecosystem](https://github.com/4dsolutions) provides extensive cross-validation:

@@ -48,7 +48,11 @@
   urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.7cm,top=0.7cm,bottom=0.7cm,left=0.7cm,right=0.7cm,includeheadfoot]{geometry}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -61,6 +65,89 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
 
 % Configure hyperref colors consistently
 \AtBeginDocument{
@@ -79,13 +166,13 @@
 
 \title{QuadMath: Front Matter and Abstract}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 14, 2025}
+\date{August 15, 2025}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=red}
+\hypersetup{linkcolor=black}
 \setcounter{tocdepth}{3}
 \tableofcontents
 }
@@ -100,10 +187,10 @@ Coordinates}\label{quadmath-an-analytical-review-of-4d-and-quadray-coordinates}}
 We review a unified analytical framework for four dimensional (4D)
 modeling and Quadray coordinates, synthesizing geometric foundations,
 optimization on tetrahedral lattices, and information geometry. Building
-on R. Buckminster Fuller's synergetics
-\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics
-(Fuller)} and the Quadray coordinate system, with extensive reference to
-Kirby Urner's computational implementations across multiple programming
+on R. Buckminster Fuller's
+\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}
+and the Quadray coordinate system, with extensive reference to Kirby
+Urner's computational implementations across multiple programming
 languages (see the comprehensive
 \href{https://github.com/4dsolutions}{4dsolutions ecosystem} including
 Python, Rust, Clojure, and POV-Ray implementations), we review how
@@ -117,13 +204,16 @@ method}) to the quadray lattice, define
 information} in Quadray parameter space, and analyze optimization as
 geodesic motion on an information manifold via the
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{natural gradient}.
-We also integrate three distinct 4D namespaces---Coxeter.4D (Euclidean
-E⁴), Einstein.4D (Minkowski spacetime), and Fuller.4D
-(synergetics/Quadrays)---develop analytical tools and equations, and
-survey extensions and applications across AI,
+We review three distinct 4D namespaces --- Coxeter.4D (Euclidean E⁴),
+Einstein.4D (Minkowski spacetime), and Fuller.4D (synergetics/Quadrays)
+--- develop analytical tools and equations, and survey extensions and
+applications across AI,
 \href{https://welcome.activeinference.institute/}{active inference},
 cognitive security, and complex systems. The result is a cohesive,
 interpretable approach for robust, geometry-grounded computation in 4D.
+All source code for the manuscript is available at
+\href{https://github.com/docxology/quadmath}{QuadMath}. The future is
+open source and 4D!
 
 Keywords: Quadray coordinates, 4D geometry, tetrahedral lattice, integer
 volume quantization, information geometry, optimization, synergetics,
@@ -143,8 +233,8 @@ active inference.
   discrete IVM descent).
 \item
   Results: empirical comparisons and demonstrations are shown inline and
-  saved under \texttt{quadmath/output/} (PNG/CSV/NPZ/MP4) for
-  reproducibility.
+  saved under \passthrough{\lstinline!quadmath/output/!}
+  (PNG/CSV/NPZ/MP4) for reproducibility.
 \item
   Discussion: interprets results, limitations, and implications;
   outlines future work.
@@ -161,37 +251,38 @@ availability}\label{reproducibility-and-data-availability}}
 \tightlist
 \item
   The manuscript Markdown and code to generate the PDF are available on
-  the project repository (\texttt{QuadMath} on GitHub, @docxology
-  username). See the repository home page for source, figures, and
-  scripts: \href{https://github.com/docxology/quadmath}{QuadMath
-  repository}.
+  the project repository (\passthrough{\lstinline!QuadMath!} on GitHub,
+  @docxology username). See the repository home page for source,
+  figures, and scripts:
+  \href{https://github.com/docxology/quadmath}{QuadMath repository}.
 \item
   The manuscript is licensed under the Apache License 2.0. See the
   \href{../LICENSE}{LICENSE} file for details.
 \item
   The manuscript is accompanied by a fully-tested Python codebase under
-  \texttt{src/} with unit tests under \texttt{tests/}, complemented by
-  extensive cross-validation against Kirby Urner's reference
-  implementations in the
-  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}.
+  \passthrough{\lstinline!src/!} with unit tests under
+  \passthrough{\lstinline!tests/!}, complemented by extensive
+  cross-validation against Kirby Urner's reference implementations in
+  the \href{https://github.com/4dsolutions}{4dsolutions ecosystem}.
 \item
   All figures referenced in the manuscript are generated by scripts
-  under \texttt{quadmath/scripts/} and saved to
-  \texttt{quadmath/output/} with lightweight CSV/NPZ alongside images.
+  under \passthrough{\lstinline!quadmath/scripts/!} and saved to
+  \passthrough{\lstinline!quadmath/output/!} with lightweight CSV/NPZ
+  alongside images.
 \item
-  Tests accompany all methods under \texttt{src/} and enforce 100\%
-  coverage for \texttt{src/}; external validation includes comparisons
-  with
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
+  Tests accompany all methods under \passthrough{\lstinline!src/!} and
+  enforce 100\% coverage for \passthrough{\lstinline!src/!}; external
+  validation includes comparisons with
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
   and
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}
   algorithms.
 \item
   Symbols and notation are standardized across sections; see Appendix:
   Symbols and Glossary for a consolidated table of variables and
   constants used throughout. Equation labels (e.g., Eq.
-  \eqref{eq:lattice_det} and Eq. \eqref{eq:supp_fim}) and figure labels
-  (e.g., Figure \ref{fig:volumes_scale}) are used consistently.
+  \eqref{eq:supp_lattice_det} and Eq. \eqref{eq:supp_fim}) and figure
+  labels (e.g., Figure 8) are used consistently.
 \end{itemize}
 
 \end{document}

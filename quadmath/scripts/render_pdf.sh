@@ -78,12 +78,14 @@ COMMON_ARGS=(
   -V linkcolor=red
   -V urlcolor=red
   -V citecolor=red
-  -V toccolor=red
+  -V toccolor=black
   -V filecolor=red
   -V menucolor=red
   -V linkbordercolor=red
   -V urlbordercolor=red
   -V citebordercolor=red
+  --highlight-style=tango
+  --listings
 
   --resource-path="$MARKDOWN_DIR:$OUTPUT_DIR:$LATEX_DIR:$REPO_ROOT"
 )
@@ -111,9 +113,7 @@ run_generation_scripts() {
   if [ -f "$REPO_ROOT/quadmath/scripts/graphical_abstract_quadray.py" ]; then
     $runner "$REPO_ROOT/quadmath/scripts/graphical_abstract_quadray.py" || exit 1
   fi
-  if [ -f "$REPO_ROOT/quadmath/scripts/vector_equilibrium_panels.py" ]; then
-    $runner "$REPO_ROOT/quadmath/scripts/vector_equilibrium_panels.py" || exit 1
-  fi
+
   if [ -f "$REPO_ROOT/quadmath/scripts/polyhedra_quadray_constructions.py" ]; then
     $runner "$REPO_ROOT/quadmath/scripts/polyhedra_quadray_constructions.py" || exit 1
   fi
@@ -213,7 +213,7 @@ echo "Generating combined TeX file..."
 pandoc "$COMBINED_MD" \
   -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris \
   -s \
-  -V title="QuadMath: A Unified Analytical Review of 4D and Quadray Coordinates" \
+  -V title="QuadMath: An Analytical Review of 4D and Quadray Coordinates" \
   -V author="$AUTHOR_TEX" \
   -V date="$DATE_STR" \
   "${COMMON_ARGS[@]}" \

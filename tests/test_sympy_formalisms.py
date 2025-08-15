@@ -32,12 +32,15 @@ def test_sympy_formalisms_manifest(tmp_path) -> None:
     mag_vec_expr = magnitude_via_vector_module()
     assert mag_vec_expr.startswith("sqrt(") and "x" in mag_vec_expr
 
-    outdir = _get_output_dir()
-    path = os.path.join(outdir, "sympy_symbolics.txt")
     # Write file via main
     from sympy_formalisms import main as run
 
     run()
+    
+    # Check that files were written to data directory
+    outdir = _get_output_dir()
+    data_dir = os.path.join(outdir, "data")
+    path = os.path.join(data_dir, "sympy_symbolics.txt")
     assert os.path.exists(path)
     with open(path) as f:
         content = f.read()

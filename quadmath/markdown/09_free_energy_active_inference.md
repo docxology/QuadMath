@@ -8,7 +8,7 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
 
 ## Mathematical Formulation and Equation Callouts (Equations linkage)
 
-- Variational free energy (discrete states) — see Eq. \eqref{eq:supp_free_energy} in the Equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy):
+- Variational free energy (discrete states) — see Eq. \eqref{eq:supp_free_energy} in the equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy):
 
   \begin{equation}\label{eq:free_energy_appendix_ref}
   \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
@@ -16,28 +16,23 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
 
   where \(Q(s)\) is a variational posterior, \(P(s)\) a prior, and \(P(o\mid s)\) the likelihood. Lower \(\mathcal{F}\) is better.
 
-- Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:supp_fim} and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix):
+- Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:supp_fim} in the equations appendix and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix):
 
   \begin{equation}\label{eq:fim_definition}
   F_{i,j} = \mathbb{E}\left[ \partial_{\theta_i} \log p(x;\theta)\; \partial_{\theta_j} \log p(x;\theta) \right].
   \end{equation}
 
-- Natural gradient descent under information geometry — see Eq. \eqref{eq:supp_natgrad} and [`natural_gradient_step`](08_equations_appendix.md#code:natural_gradient_step); overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient):
+- Natural gradient descent under information geometry — see Eq. \eqref{eq:supp_natgrad} in the equations appendix and [`natural_gradient_step`](08_equations_appendix.md#code:natural_gradient_step); overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient):
 
   \begin{equation}\label{eq:natural_gradient_update}
   \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta).
   \end{equation}
 
-Figures: Figure \ref{fig:fisher_information_matrix}, Figure \ref{fig:fim_eigenspectrum}, Figure \ref{fig:natural_gradient_path}, Figure \ref{fig:free_energy_curve}.
+Figures: Figure 10, Figure 11, Figure 12, Figure 13.
 
 Discrete variational optimization on the quadray lattice: `discrete_ivm_descent` greedily descends a free-energy-like objective over IVM moves, yielding integer-valued trajectories. See the path animation artifact `discrete_path.mp4` in `quadmath/output/`.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/partition_tetrahedron.png}
-\caption{**Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D**. This 3D tetrahedral visualization demonstrates the geometric embedding of Active Inference's fundamental four-state partition into the Quadray coordinate framework. **Vertices (state types)**: Internal states $\mu$ (agent's beliefs and representations), Sensory states $s$ (observations), Active states $a$ (actions), and External states $\psi$ (latent environmental causes). Each vertex is positioned using Quadray coordinates and projected to 3D space via the default embedding. **Edges (couplings)**: The six tetrahedral edges represent pairwise statistical dependencies—$(\mu\text{--}s)$ for perceptual inference (belief updating from observations), $(a\text{--}\psi)$ for environmental control (actions affecting external states), and cross-couplings capturing active perception and sensorimotor contingencies. **Geometric significance**: The tetrahedral structure emphasizes the symmetric interdependencies among all four state types, with the tetravolume representing the joint capacity or "coupled volume" of feasible state configurations. **Fuller.4D integration**: This mapping leverages the natural four-fold symmetry of Quadray coordinates to provide an intuitive geometric scaffold for Active Inference, supporting discrete volumetric analysis of belief-action spaces and enabling lattice-based optimization of free energy functionals. The integer coordinate constraint allows exact computation of partition volumes and supports discrete variational methods like \texttt{discrete\_ivm\_descent}.}
-\label{fig:partition_tetrahedron}
-\end{figure}
+![**Figure 18: Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D**. This 3D tetrahedral visualization demonstrates the geometric embedding of Active Inference's fundamental four-state partition into the Quadray coordinate framework. **Vertices (state types)**: Internal states $\mu$ (agent's beliefs and representations), Sensory states $s$ (observations), Active states $a$ (actions), and External states $\psi$ (latent environmental causes). Each vertex is positioned using Quadray coordinates and projected to 3D space via the default embedding. **Edges (couplings)**: The six tetrahedral edges represent pairwise statistical dependencies—$(\mu\text{--}s)$ for perceptual inference (belief updating from observations), $(a\text{--}\psi)$ for environmental control (actions affecting external states), and cross-couplings capturing active perception and sensorimotor contingencies. **Geometric significance**: The tetrahedral structure emphasizes the symmetric interdependencies among all four state types, with the tetravolume representing the joint capacity or "coupled volume" of feasible state configurations. **Fuller.4D integration**: This mapping leverages the natural four-fold symmetry of Quadray coordinates to provide an intuitive geometric scaffold for Active Inference, supporting discrete volumetric analysis of belief-action spaces and enabling lattice-based optimization of free energy functionals. The integer coordinate constraint allows exact computation of partition volumes and supports discrete variational methods like `discrete_ivm_descent`.](../output/figures/partition_tetrahedron.png)
 
 ## Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)
 
@@ -54,7 +49,7 @@ Tetrahedral mapping via Quadrays (Fuller.4D): assign each state to a vertex of a
 
 Interpretation note: this Quadray-based mapping is a didactic geometric scaffold. It is not standard in the Active Inference literature, which typically develops the four-state partition in probabilistic graphical terms. Our use highlights structural symmetries and discrete volumetric quantities available in Fuller.4D, building on the computational foundations developed in the [4dsolutions ecosystem](https://github.com/4dsolutions) for tetrahedral modeling and volume calculations.
 
-Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and Figure \ref{fig:partition_tetrahedron}.
+Code linkage (no snippet): see `example_partition_tetra_volume` in `src/examples.py` and Figure 18.
 
 ## How the 4D namespaces relate here
 

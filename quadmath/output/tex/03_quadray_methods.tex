@@ -48,45 +48,11 @@
   urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.7cm,top=0.7cm,bottom=0.7cm,left=0.7cm,right=0.7cm,includeheadfoot]{geometry}
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
 \usepackage{longtable,booktabs}
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -96,6 +62,19 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -108,6 +87,89 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
 
 % Configure hyperref colors consistently
 \AtBeginDocument{
@@ -126,42 +188,40 @@
 
 \title{Quadray Analytical Details and Methods}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 14, 2025}
+\date{August 15, 2025}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=red}
+\hypersetup{linkcolor=black}
 \setcounter{tocdepth}{3}
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{quadray-analytical-details-equations-and-methods}{%
-\section{Quadray Analytical Details, Equations, and
-Methods}\label{quadray-analytical-details-equations-and-methods}}
+\hypertarget{quadray-analytical-details-and-methods}{%
+\section{Quadray Analytical Details and
+Methods}\label{quadray-analytical-details-and-methods}}
 
-Here we review the coordinate conventions, conversions, and methods for
-working with Quadray coordinates. We also review some exact tetravolume
-formulas and how to compute them.
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
 
-\hypertarget{coxeter.4d-euclidean-eux2074-symmetry-groups-and-polytopes}{%
-\subsection{Coxeter.4D (Euclidean E⁴): symmetry groups and
-polytopes}\label{coxeter.4d-euclidean-eux2074-symmetry-groups-and-polytopes}}
+This section provides detailed analytical methods for working with
+Quadray coordinates, including coordinate conventions, volume
+calculations, and optimization approaches. We emphasize the distinction
+between different 4D frameworks and provide practical computational
+methods.
+
+\hypertarget{coxeter.4d-euclidean-4d-geometry-and-regular-polytopes}{%
+\subsection{Coxeter.4D: Euclidean 4D Geometry and Regular
+Polytopes}\label{coxeter.4d-euclidean-4d-geometry-and-regular-polytopes}}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Setting}: standard Euclidean four-space E⁴ with orthogonal
-  axes and Euclidean metric. This is the proper home for classical
-  regular polytopes and their reflection symmetries. See background in
-  Coxeter's Regular Polytopes (Dover), especially the clarification that
-  Euclidean 4D is not spacetime (p.~119), and Conway \& Sloane's
-  treatment of higher-dimensional lattices and packings.
-\item
-  \textbf{Coxeter groups}: generated by reflections with relations
-  encoded by the Coxeter matrix \(m_{ij}\). The abstract group is
-  defined by
+  \textbf{Coxeter groups}: finite reflection groups generated by
+  reflections across hyperplanes with dihedral angles \(\pi/m_{ij}\).
+  The Coxeter matrix \(M = (m_{ij})\) defines the group via relations
 \end{itemize}
 
 \begin{equation}\label{eq:coxeter_relations}
@@ -205,7 +265,7 @@ G_{ij} = \begin{cases}
     \href{https://en.wikipedia.org/wiki/Coxeter_group}{Coxeter group};
     lattice context:
     \href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
-    Packings, Lattices and Groups (Conway \& Sloane, Springer)}.
+    Packings, Lattices and Groups}.
   \end{itemize}
 \item
   \textbf{Bridge to our methods}: when we compute Euclidean volumes from
@@ -222,8 +282,17 @@ equations}\label{einstein.4d-minkowski-spacetime-metric-and-field-equations}}
 \tightlist
 \item
   \textbf{Metric}: an indefinite inner product space with line element
-  (mostly-plus convention) given in Eq. \eqref{eq:einstein_line_element}
-  of the 4D namespaces section. The metric tensor is \(g_{\mu\nu}\).
+  (mostly-plus convention) given by
+\end{itemize}
+
+\begin{equation}\label{eq:einstein_line_element_methods}
+ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
+\end{equation}
+
+The metric tensor is \(g_{\mu\nu}\).
+
+\begin{itemize}
+\tightlist
 \item
   \textbf{Einstein field equations (EFE)}: curvature responds to
   stress--energy per
@@ -320,12 +389,12 @@ Coxeter.4D/XYZ)}\label{conversions-and-vector-operations-quadray-cartesian-fulle
   construct a 3×4 matrix M that maps (a,b,c,d) to (x,y,z), respecting
   A,B,C,D directions to tetra vertices. The inverse map can be defined
   up to projective normalization (adding (k,k,k,k)). When comparing
-  volumes, use the \texttt{S3=\textbackslash{}sqrt\{9/8\}} scale to
+  volumes, use the \passthrough{\lstinline!S3=\\sqrt\{9/8\}!} scale to
   convert XYZ (Euclidean) volumes to IVM (Fuller.4D) units.
 \item
-  \textbf{Vector view}: treat \texttt{q} as a vector with magnitude and
-  direction; define dot products and norms by pushing to XYZ via
-  \texttt{M}.
+  \textbf{Vector view}: treat \passthrough{\lstinline!q!} as a vector
+  with magnitude and direction; define dot products and norms by pushing
+  to XYZ via \passthrough{\lstinline!M!}.
 \end{itemize}
 
 \hypertarget{integer-coordinate-constructions-compact-derivation-box}{%
@@ -347,8 +416,7 @@ box)}\label{integer-coordinate-constructions-compact-derivation-box}}
   rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the
   FCC/CCP packing centered at the origin under the same embedding.
 \item
-  See Figure \ref{fig:polyhedra_quadray_map} for a schematic summary of
-  these relationships.
+  See Figure 6 for a schematic summary of these relationships.
 \end{itemize}
 
 \begin{longtable}[]{@{}lll@{}}
@@ -365,8 +433,10 @@ IVM volume\strut
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Regular tetrahedron\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Vertices \texttt{o=(0,0,0,0)}, \texttt{p=(2,1,0,1)},
-\texttt{q=(2,1,1,0)}, \texttt{r=(2,0,1,1)}\strut
+Vertices \passthrough{\lstinline!o=(0,0,0,0)!},
+\passthrough{\lstinline!p=(2,1,0,1)!},
+\passthrough{\lstinline!q=(2,1,1,0)!},
+\passthrough{\lstinline!r=(2,0,1,1)!}\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 1\strut
 \end{minipage}\tabularnewline
@@ -374,8 +444,7 @@ Vertices \texttt{o=(0,0,0,0)}, \texttt{p=(2,1,0,1)},
 Cube (same edge)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame;
-edges tracked by XYZ embedding; compare Figure
-\ref{fig:polyhedra_quadray_map}\strut
+edges tracked by XYZ embedding; compare Figure 6\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 3\strut
 \end{minipage}\tabularnewline
@@ -398,7 +467,7 @@ Voronoi cell of FCC/CCP packing at origin (dual to cuboctahedron)\strut
 Cuboctahedron (vector equilibrium)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Shell of the 12 nearest IVM neighbors: permutations of
-\texttt{(2,1,1,0)}\strut
+\passthrough{\lstinline!(2,1,1,0)!}\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 20\strut
 \end{minipage}\tabularnewline
@@ -410,44 +479,42 @@ Small coordinate examples (subset):
 \begin{itemize}
 \tightlist
 \item
-  Cuboctahedron neighbors (representatives): \texttt{(2,1,1,0)},
-  \texttt{(2,1,0,1)}, \texttt{(2,0,1,1)}, \texttt{(1,2,1,0)}; the full
-  shell is all distinct permutations.
+  Cuboctahedron neighbors (representatives):
+  \passthrough{\lstinline!(2,1,1,0)!},
+  \passthrough{\lstinline!(2,1,0,1)!},
+  \passthrough{\lstinline!(2,0,1,1)!},
+  \passthrough{\lstinline!(1,2,1,0)!}; the full shell is all distinct
+  permutations.
 \item
   Tetrahedron:
-  \texttt{{[}(0,0,0,0),\ (2,1,0,1),\ (2,1,1,0),\ (2,0,1,1){]}}.
+  \passthrough{\lstinline![(0,0,0,0), (2,1,0,1), (2,1,1,0), (2,0,1,1)]!}.
 \end{itemize}
 
 Short scripts (reproducibility):
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{python3}\NormalTok{ quadmath/scripts/vector\_equilibrium\_panels.py}
-\ExtensionTok{python3}\NormalTok{ quadmath/scripts/polyhedra\_quadray\_constructions.py}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=bash]
+python3 quadmath/scripts/polyhedra_quadray_constructions.py
+\end{lstlisting}
 
 Programmatic check (neighbors, equal radii, adjacency):
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
-\ImportTok{from}\NormalTok{ examples }\ImportTok{import}\NormalTok{ example\_cuboctahedron\_vertices\_xyz}
+\begin{lstlisting}[language=Python]
+import numpy as np
+from examples import example_cuboctahedron_vertices_xyz
 
-\NormalTok{xyz }\OperatorTok{=}\NormalTok{ np.array(example\_cuboctahedron\_vertices\_xyz())}
-\NormalTok{r }\OperatorTok{=}\NormalTok{ np.linalg.norm(xyz[}\DecValTok{0}\NormalTok{])}
-\ControlFlowTok{assert}\NormalTok{ np.allclose(np.linalg.norm(xyz, axis}\OperatorTok{=}\DecValTok{1}\NormalTok{), r)}
+xyz = np.array(example_cuboctahedron_vertices_xyz())
+r = np.linalg.norm(xyz[0])
+assert np.allclose(np.linalg.norm(xyz, axis=1), r)
 
-\CommentTok{\# Touching neighbors have separation 2r}
-\NormalTok{touch }\OperatorTok{=}\NormalTok{ []}
-\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\BuiltInTok{len}\NormalTok{(xyz)):}
-    \ControlFlowTok{for}\NormalTok{ j }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(i}\OperatorTok{+}\DecValTok{1}\NormalTok{, }\BuiltInTok{len}\NormalTok{(xyz)):}
-\NormalTok{        d }\OperatorTok{=}\NormalTok{ np.linalg.norm(xyz[i] }\OperatorTok{{-}}\NormalTok{ xyz[j])}
-        \ControlFlowTok{if} \BuiltInTok{abs}\NormalTok{(d }\OperatorTok{{-}} \DecValTok{2}\OperatorTok{*}\NormalTok{r) }\OperatorTok{/}\NormalTok{ (}\DecValTok{2}\OperatorTok{*}\NormalTok{r) }\OperatorTok{\textless{}} \FloatTok{0.05}\NormalTok{:}
-\NormalTok{            touch.append((i, j))}
-\ControlFlowTok{assert} \BuiltInTok{len}\NormalTok{(touch) }\OperatorTok{\textgreater{}} \DecValTok{0}
-\end{Highlighting}
-\end{Shaded}
+# Touching neighbors have separation 2r
+touch = []
+for i in range(len(xyz)):
+    for j in range(i+1, len(xyz)):
+        d = np.linalg.norm(xyz[i] - xyz[j])
+        if abs(d - 2*r) / (2*r) < 0.05:
+            touch.append((i, j))
+assert len(touch) > 0
+\end{lstlisting}
 
 \hypertarget{example-vertex-lists-and-volume-checks-illustrative}{%
 \subsubsection{Example vertex lists and volume checks
@@ -456,40 +523,36 @@ Programmatic check (neighbors, equal radii, adjacency):
 The following snippets use canonical IVM neighbor points (permutations
 of \((2,1,1,0)\)) to illustrate simple decompositions consistent with
 synergetics volumes. Each tetra volume is computed via
-\texttt{ace\_tetravolume\_5x5} and summed.
+\passthrough{\lstinline!ace\_tetravolume\_5x5!} and summed.
 
 Octahedron (V = 4) as four unit IVM tetras around the origin:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{from}\NormalTok{ quadray }\ImportTok{import}\NormalTok{ Quadray, ace\_tetravolume\_5x5}
+\begin{lstlisting}[language=Python]
+from quadray import Quadray, ace_tetravolume_5x5
 
-\NormalTok{o }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
-\NormalTok{T }\OperatorTok{=}\NormalTok{ [}
-\NormalTok{    (Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{    (Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{    (Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{    (Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{)),  }\CommentTok{\# representative variant}
-\NormalTok{]}
-\NormalTok{V\_oct }\OperatorTok{=} \BuiltInTok{sum}\NormalTok{(ace\_tetravolume\_5x5(o, a, b, c) }\ControlFlowTok{for}\NormalTok{ (a,b,c) }\KeywordTok{in}\NormalTok{ T)}
-\end{Highlighting}
-\end{Shaded}
+o = Quadray(0,0,0,0)
+T = [
+    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
+    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
+    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
+    (Quadray(2,0,1,1), Quadray(1,2,0,1), Quadray(0,1,2,1)),  # representative variant
+]
+V_oct = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in T)
+\end{lstlisting}
 
 Cube (V = 3) as three unit IVM tetras (orthant-like around the origin):
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{from}\NormalTok{ quadray }\ImportTok{import}\NormalTok{ Quadray, ace\_tetravolume\_5x5}
+\begin{lstlisting}[language=Python]
+from quadray import Quadray, ace_tetravolume_5x5
 
-\NormalTok{o }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
-\NormalTok{triples }\OperatorTok{=}\NormalTok{ [}
-\NormalTok{    (Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{    (Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{    (Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{), Quadray(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{), Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{)),}
-\NormalTok{]}
-\NormalTok{V\_cube }\OperatorTok{=} \BuiltInTok{sum}\NormalTok{(ace\_tetravolume\_5x5(o, a, b, c) }\ControlFlowTok{for}\NormalTok{ (a,b,c) }\KeywordTok{in}\NormalTok{ triples)}
-\end{Highlighting}
-\end{Shaded}
+o = Quadray(0,0,0,0)
+triples = [
+    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
+    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
+    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
+]
+V_cube = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in triples)
+\end{lstlisting}
 
 Notes.
 
@@ -497,8 +560,9 @@ Notes.
 \tightlist
 \item
   These decompositions are illustrative and use canonical IVM neighbor
-  triples that produce unit tetras under \texttt{ace\_tetravolume\_5x5}.
-  Other equivalent tilings are possible.
+  triples that produce unit tetras under
+  \passthrough{\lstinline!ace\_tetravolume\_5x5!}. Other equivalent
+  tilings are possible.
 \item
   Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a
   tetra (projective normalization), which the 5×5 determinant respects.
@@ -552,7 +616,7 @@ V_{ivm} = \tfrac{1}{4} \left| \det \begin{pmatrix}
 \end{equation}
 
 This returns the same integer volumes for lattice tetrahedra. See the
-implementation \texttt{ace\_tetravolume\_5x5}.
+implementation \passthrough{\lstinline!ace\_tetravolume\_5x5!}.
 
 Notes.
 
@@ -606,8 +670,8 @@ References:
 \href{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Menger_determinant}{Cayley--Menger
 determinant}, lattice tetrahedra discussions in geometry texts; see also
 \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron --
-volume}. Code: \texttt{integer\_tetra\_volume},
-\texttt{ace\_tetravolume\_5x5}.
+volume}. Code: \passthrough{\lstinline!integer\_tetra\_volume!},
+\passthrough{\lstinline!ace\_tetravolume\_5x5!}.
 
 Notes.
 
@@ -722,14 +786,17 @@ Quadrays}\label{sec:tetravolumes_quadrays}}
 \begin{itemize}
 \item
   The tetravolume of a tetrahedron with vertices given as Quadrays
-  \texttt{a,b,c,d} can be computed directly from their 4-tuples via the
-  Tom Ace 5×5 determinant; see Eq. \eqref{eq:ace5x5} for the canonical
-  form.
+  \passthrough{\lstinline!a,b,c,d!} can be computed directly from their
+  4-tuples via the Tom Ace 5×5 determinant; see Eq. \eqref{eq:ace5x5}
+  for the canonical form.
 \item
-  Unit regular tetrahedron from origin: with \texttt{o=(0,0,0,0)},
-  \texttt{p=(2,1,0,1)}, \texttt{q=(2,1,1,0)}, \texttt{r=(2,0,1,1)}, we
-  have \texttt{V\_ivm(o,p,q,r)=1}. Doubling each vector scales volume by
-  8, as expected.
+  Unit regular tetrahedron from origin: with
+  \passthrough{\lstinline!o=(0,0,0,0)!},
+  \passthrough{\lstinline!p=(2,1,0,1)!},
+  \passthrough{\lstinline!q=(2,1,1,0)!},
+  \passthrough{\lstinline!r=(2,0,1,1)!}, we have
+  \passthrough{\lstinline!V\_ivm(o,p,q,r)=1!}. Doubling each vector
+  scales volume by 8, as expected.
 \item
   Equivalent length-based formulas agree with the 5×5 determinant:
 
@@ -802,78 +869,106 @@ References and discussion:
 diagram}.
 
 Figure: automated comparison (native Ace 5×5 vs CM+S3) across small
-examples (see script \texttt{sympy\_formalisms.py}). The figure and
-source CSV/NPZ are in \texttt{quadmath/output/}.
+examples (see script \passthrough{\lstinline!sympy\_formalisms.py!}).
+The figure and source CSV/NPZ are in
+\passthrough{\lstinline!quadmath/output/!}.
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/bridging_vs_native.png}
-\caption{**Validation of bridging vs native tetravolume formulations across canonical examples**. This bar chart compares IVM tetravolumes computed via two independent methods: the "bridging" approach using Cayley–Menger determinants on Euclidean edge lengths converted to IVM units via the synergetics factor $S3=\sqrt{9/8}$, versus the "native" approach using Tom Ace's 5×5 determinant formula that operates directly on Quadray coordinates without XYZ intermediates. **Test cases**: Regular tetrahedron (V=1), unit cube decomposition (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20), all using integer Quadray coordinates and common edge lengths. **Results**: The overlapping bars demonstrate numerical agreement at machine precision between the length-based Coxeter.4D approach (Cayley–Menger + S3 conversion) and the coordinate-based Fuller.4D approach (Ace 5×5), confirming the mathematical equivalence of these formulations under synergetics unit conventions. Raw numerical data saved as \texttt{bridging\_vs\_native.csv} for reproducibility and further analysis.}
-\label{fig:bridging_native}
+\includegraphics{../output/figures/bridging_vs_native.png}
+\caption{\textbf{Figure 5: Validation of bridging vs native tetravolume
+formulations across canonical examples}. This bar chart compares IVM
+tetravolumes computed via two independent methods: the ``bridging''
+approach using Cayley--Menger determinants on Euclidean edge lengths
+converted to IVM units via the synergetics factor \(S3=\sqrt{9/8}\),
+versus the ``native'' approach using Tom Ace's 5×5 determinant formula
+that operates directly on Quadray coordinates without XYZ intermediates.
+\textbf{Test cases}: Regular tetrahedron (V=1), unit cube decomposition
+(V=3), octahedron (V=4), rhombic dodecahedron (V=6), and
+cuboctahedron/vector equilibrium (V=20), all using integer Quadray
+coordinates and common edge lengths. \textbf{Results}: The overlapping
+bars demonstrate numerical agreement at machine precision between the
+length-based Coxeter.4D approach (Cayley--Menger + S3 conversion) and
+the coordinate-based Fuller.4D approach (Ace 5×5), confirming the
+mathematical equivalence of these formulations under synergetics unit
+conventions. Raw numerical data saved as
+\passthrough{\lstinline!bridging\_vs\_native.csv!} for reproducibility
+and further analysis.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{figures/polyhedra_quadray_constructions.png}
-\caption{**Synergetic polyhedra volume relationships in the Quadray/IVM framework (network diagram)**. This schematic illustrates the hierarchical volume relationships among key polyhedra when constructed with consistent edge lengths and expressed as integer-coordinate linear combinations of Quadray basis vectors. **Nodes (volumes in IVM tetra-units)**: Regular tetrahedron (V=1, fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron (V=6), and cuboctahedron/vector equilibrium (V=20). **Directed arrows (geometric relationships)**: The cube emerges as approximately 3× the tetrahedron volume through orthogonal space-filling; the octahedron (V=4) forms from edge-midpoint unions on the tetrahedral frame; the rhombic dodecahedron (V=6) serves as the Voronoi cell of the FCC/CCP lattice when centered at the origin; the cuboctahedron (V=20) represents the shell of twelve nearest IVM neighbors at permutations of $(2,1,1,0)$ Quadray coordinates. **Fuller.4D significance**: These integer volume ratios reflect the quantized nature of space-filling in synergetics, where the regular tetrahedron provides a natural unit container and other polyhedra emerge as integer multiples, supporting discrete geometric computation and exact lattice-based optimization methods. All constructions respect the IVM unit convention where the regular tetrahedron has tetravolume 1.}
-\label{fig:polyhedra_quadray_map}
+\includegraphics{../output/figures/polyhedra_quadray_constructions.png}
+\caption{\textbf{Figure 6: Synergetic polyhedra volume relationships in
+the Quadray/IVM framework (network diagram)}. This schematic illustrates
+the hierarchical volume relationships among key polyhedra when
+constructed with consistent edge lengths and expressed as
+integer-coordinate linear combinations of Quadray basis vectors.
+\textbf{Nodes (volumes in IVM tetra-units)}: Regular tetrahedron (V=1,
+fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron
+(V=6), and cuboctahedron/vector equilibrium (V=20). \textbf{Directed
+arrows (geometric relationships)}: The cube emerges as approximately 3×
+the tetrahedron volume through orthogonal space-filling; the octahedron
+(V=4) forms from edge-midpoint unions on the tetrahedral frame; the
+rhombic dodecahedron (V=6) serves as the Voronoi cell of the FCC/CCP
+lattice when centered at the origin; the cuboctahedron (V=20) represents
+the shell of twelve nearest IVM neighbors at permutations of
+\((2,1,1,0)\) Quadray coordinates. \textbf{Fuller.4D significance}:
+These integer volume ratios reflect the quantized nature of
+space-filling in synergetics, where the regular tetrahedron provides a
+natural unit container and other polyhedra emerge as integer multiples,
+supporting discrete geometric computation and exact lattice-based
+optimization methods. All constructions respect the IVM unit convention
+where the regular tetrahedron has tetravolume 1.}
 \end{figure}
 
 \hypertarget{short-python-snippets-paper-reproducibility}{%
 \subsubsection{Short Python snippets (paper
 reproducibility)}\label{short-python-snippets-paper-reproducibility}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{from}\NormalTok{ quadray }\ImportTok{import}\NormalTok{ Quadray, ace\_tetravolume\_5x5}
+\begin{lstlisting}[language=Python]
+from quadray import Quadray, ace_tetravolume_5x5
 
-\NormalTok{o }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
-\NormalTok{p }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
-\NormalTok{q }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
-\NormalTok{r }\OperatorTok{=}\NormalTok{ Quadray(}\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{)}
-\ControlFlowTok{assert}\NormalTok{ ace\_tetravolume\_5x5(o,p,q,r) }\OperatorTok{==} \DecValTok{1}  \CommentTok{\# unit IVM tetra}
-\end{Highlighting}
-\end{Shaded}
+o = Quadray(0,0,0,0)
+p = Quadray(2,1,0,1)
+q = Quadray(2,1,1,0)
+r = Quadray(2,0,1,1)
+assert ace_tetravolume_5x5(o,p,q,r) == 1  # unit IVM tetra
+\end{lstlisting}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
-\ImportTok{from}\NormalTok{ cayley\_menger }\ImportTok{import}\NormalTok{ ivm\_tetra\_volume\_cayley\_menger}
+\begin{lstlisting}[language=Python]
+import numpy as np
+from cayley_menger import ivm_tetra_volume_cayley_menger
 
-\CommentTok{\# Example: regular tetrahedron with edge length 1 (XYZ units)}
-\NormalTok{d2 }\OperatorTok{=}\NormalTok{ np.ones((}\DecValTok{4}\NormalTok{,}\DecValTok{4}\NormalTok{)) }\OperatorTok{{-}}\NormalTok{ np.eye(}\DecValTok{4}\NormalTok{)  }\CommentTok{\# squared distances}
-\NormalTok{V\_ivm }\OperatorTok{=}\NormalTok{ ivm\_tetra\_volume\_cayley\_menger(d2)   }\CommentTok{\# = 1/8 in IVM tetra{-}units}
-\end{Highlighting}
-\end{Shaded}
+# Example: regular tetrahedron with edge length 1 (XYZ units)
+d2 = np.ones((4,4)) - np.eye(4)  # squared distances
+V_ivm = ivm_tetra_volume_cayley_menger(d2)   # = 1/8 in IVM tetra-units
+\end{lstlisting}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# SymPy implementation of Tom Ace 5×5 (symbolic determinant)}
-\ImportTok{from}\NormalTok{ sympy }\ImportTok{import}\NormalTok{ Matrix}
+\begin{lstlisting}[language=Python]
+# SymPy implementation of Tom Ace 5×5 (symbolic determinant)
+from sympy import Matrix
 
-\KeywordTok{def}\NormalTok{ qvolume(q0, q1, q2, q3):}
-\NormalTok{    M }\OperatorTok{=}\NormalTok{ Matrix([}
-\NormalTok{        q0 }\OperatorTok{+}\NormalTok{ (}\DecValTok{1}\NormalTok{,),}
-\NormalTok{        q1 }\OperatorTok{+}\NormalTok{ (}\DecValTok{1}\NormalTok{,),}
-\NormalTok{        q2 }\OperatorTok{+}\NormalTok{ (}\DecValTok{1}\NormalTok{,),}
-\NormalTok{        q3 }\OperatorTok{+}\NormalTok{ (}\DecValTok{1}\NormalTok{,),}
-\NormalTok{        [}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{],}
-\NormalTok{    ])}
-    \ControlFlowTok{return} \BuiltInTok{abs}\NormalTok{(M.det()) }\OperatorTok{/} \DecValTok{4}
-\end{Highlighting}
-\end{Shaded}
+def qvolume(q0, q1, q2, q3):
+    M = Matrix([
+        q0 + (1,),
+        q1 + (1,),
+        q2 + (1,),
+        q3 + (1,),
+        [1, 1, 1, 1, 0],
+    ])
+    return abs(M.det()) / 4
+\end{lstlisting}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Symbolic variant with SymPy (exact radicals)}
-\ImportTok{from}\NormalTok{ sympy }\ImportTok{import}\NormalTok{ Matrix, sqrt, simplify}
-\ImportTok{from}\NormalTok{ symbolic }\ImportTok{import}\NormalTok{ cayley\_menger\_volume\_symbolic, convert\_xyz\_volume\_to\_ivm\_symbolic}
+\begin{lstlisting}[language=Python]
+# Symbolic variant with SymPy (exact radicals)
+from sympy import Matrix, sqrt, simplify
+from symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
 
-\NormalTok{d2 }\OperatorTok{=}\NormalTok{ Matrix([[}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{],[}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{],[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{],[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{]])}
-\NormalTok{V\_xyz\_sym }\OperatorTok{=}\NormalTok{ cayley\_menger\_volume\_symbolic(d2)      }\CommentTok{\# sqrt(2)/12}
-\NormalTok{V\_ivm\_sym }\OperatorTok{=}\NormalTok{ simplify(convert\_xyz\_volume\_to\_ivm\_symbolic(V\_xyz\_sym))  }\CommentTok{\# 1/8}
-\end{Highlighting}
-\end{Shaded}
+d2 = Matrix([[0,1,1,1],[1,0,1,1],[1,1,0,1],[1,1,1,0]])
+V_xyz_sym = cayley_menger_volume_symbolic(d2)      # sqrt(2)/12
+V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz_sym))  # 1/8
+\end{lstlisting}
 
 \hypertarget{random-tetrahedra-in-the-ivm-integer-volumes}{%
 \subsubsection{Random tetrahedra in the IVM (integer
@@ -887,28 +982,26 @@ volumes)}\label{random-tetrahedra-in-the-ivm-integer-volumes}}
   tetrahedra have integer tetravolumes.
 \end{itemize}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ImportTok{from}\NormalTok{ itertools }\ImportTok{import}\NormalTok{ permutations}
-\ImportTok{from}\NormalTok{ random }\ImportTok{import}\NormalTok{ choice}
-\ImportTok{from}\NormalTok{ quadray }\ImportTok{import}\NormalTok{ Quadray, ace\_tetravolume\_5x5}
+\begin{lstlisting}[language=Python]
+from itertools import permutations
+from random import choice
+from quadray import Quadray, ace_tetravolume_5x5
 
-\NormalTok{moves }\OperatorTok{=}\NormalTok{ [Quadray(}\OperatorTok{*}\NormalTok{p) }\ControlFlowTok{for}\NormalTok{ p }\KeywordTok{in} \BuiltInTok{set}\NormalTok{(permutations((}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))]}
+moves = [Quadray(*p) for p in set(permutations((2,1,1,0)))]
 
-\KeywordTok{def}\NormalTok{ random\_walk(start: Quadray, steps: }\BuiltInTok{int}\NormalTok{) }\OperatorTok{{-}\textgreater{}}\NormalTok{ Quadray:}
-\NormalTok{    cur }\OperatorTok{=}\NormalTok{ start}
-    \ControlFlowTok{for}\NormalTok{ \_ }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(steps):}
-\NormalTok{        m }\OperatorTok{=}\NormalTok{ choice(moves)}
-\NormalTok{        cur }\OperatorTok{=}\NormalTok{ Quadray(cur.a}\OperatorTok{+}\NormalTok{m.a, cur.b}\OperatorTok{+}\NormalTok{m.b, cur.c}\OperatorTok{+}\NormalTok{m.c, cur.d}\OperatorTok{+}\NormalTok{m.d)}
-    \ControlFlowTok{return}\NormalTok{ cur}
+def random_walk(start: Quadray, steps: int) -> Quadray:
+    cur = start
+    for _ in range(steps):
+        m = choice(moves)
+        cur = Quadray(cur.a+m.a, cur.b+m.b, cur.c+m.c, cur.d+m.d)
+    return cur
 
-\NormalTok{A }\OperatorTok{=}\NormalTok{ random\_walk(Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\DecValTok{1000}\NormalTok{)}
-\NormalTok{B }\OperatorTok{=}\NormalTok{ random\_walk(Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\DecValTok{1000}\NormalTok{)}
-\NormalTok{C }\OperatorTok{=}\NormalTok{ random\_walk(Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\DecValTok{1000}\NormalTok{)}
-\NormalTok{D }\OperatorTok{=}\NormalTok{ random\_walk(Quadray(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\DecValTok{1000}\NormalTok{)}
-\NormalTok{V }\OperatorTok{=}\NormalTok{ ace\_tetravolume\_5x5(A,B,C,D)            }\CommentTok{\# integer}
-\end{Highlighting}
-\end{Shaded}
+A = random_walk(Quadray(0,0,0,0), 1000)
+B = random_walk(Quadray(0,0,0,0), 1000)
+C = random_walk(Quadray(0,0,0,0), 1000)
+D = random_walk(Quadray(0,0,0,0), 1000)
+V = ace_tetravolume_5x5(A,B,C,D)            # integer
+\end{lstlisting}
 
 \hypertarget{algebraic-precision}{%
 \subsubsection{Algebraic precision}\label{algebraic-precision}}
@@ -919,13 +1012,15 @@ volumes)}\label{random-tetrahedra-in-the-ivm-integer-volumes}}
   Determinants via floating-point introduce rounding noise. For exact
   arithmetic, use the
   \href{https://en.wikipedia.org/wiki/Bareiss_algorithm}{Bareiss
-  algorithm} (already used by \texttt{ace\_tetravolume\_5x5}) or
-  symbolic engines (e.g., \texttt{sympy}). For large random-walk
+  algorithm} (already used by
+  \passthrough{\lstinline!ace\_tetravolume\_5x5!}) or symbolic engines
+  (e.g., \passthrough{\lstinline!sympy!}). For large random-walk
   examples with integer inputs, volumes are exact integers.
 \item
   When computing via XYZ determinants, high-precision floats (e.g.,
-  \texttt{gmpy2.mpfr}) or symbolic matrices avoid vestigial errors;
-  round at the end if the underlying result is known to be integral.
+  \passthrough{\lstinline!gmpy2.mpfr!}) or symbolic matrices avoid
+  vestigial errors; round at the end if the underlying result is known
+  to be integral.
 \end{itemize}
 
 \hypertarget{xyz-determinant-and-the-s3-conversion}{%
@@ -965,7 +1060,8 @@ Reference notebook with worked examples and code:
 \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{Tetravolumes
 with Quadrays (Qvolume.ipynb)}.
 
-See implementation: \texttt{tetra\_volume\_cayley\_menger}.
+See implementation:
+\passthrough{\lstinline!tetra\_volume\_cayley\_menger!}.
 
 \begin{itemize}
 \tightlist
@@ -980,43 +1076,44 @@ See implementation: \texttt{tetra\_volume\_cayley\_menger}.
 \hypertarget{code:integer_tetra_volume}{%
 \subsubsection{\texorpdfstring{\texttt{integer\_tetra\_volume}}{integer\_tetra\_volume}}\label{code:integer_tetra_volume}}
 
-Source: \texttt{src/quadray.py} --- integer 3×3 determinant for lattice
-tetravolume.
+Source: \passthrough{\lstinline!src/quadray.py!} --- integer 3×3
+determinant for lattice tetravolume.
 
 \hypertarget{code:ace_tetravolume_5x5}{%
 \subsubsection{\texorpdfstring{\texttt{ace\_tetravolume\_5x5}}{ace\_tetravolume\_5x5}}\label{code:ace_tetravolume_5x5}}
 
-Source: \texttt{src/quadray.py} --- Tom Ace 5×5 determinant in IVM
-units.
+Source: \passthrough{\lstinline!src/quadray.py!} --- Tom Ace 5×5
+determinant in IVM units.
 
 \hypertarget{code:tetra_volume_cayley_menger}{%
 \subsubsection{\texorpdfstring{\texttt{tetra\_volume\_cayley\_menger}}{tetra\_volume\_cayley\_menger}}\label{code:tetra_volume_cayley_menger}}
 
-Source: \texttt{src/cayley\_menger.py} --- length-based formula (XYZ
-units).
+Source: \passthrough{\lstinline!src/cayley\_menger.py!} --- length-based
+formula (XYZ units).
 
 \hypertarget{code:ivm_tetra_volume_cayley_menger}{%
 \subsubsection{\texorpdfstring{\texttt{ivm\_tetra\_volume\_cayley\_menger}}{ivm\_tetra\_volume\_cayley\_menger}}\label{code:ivm_tetra_volume_cayley_menger}}
 
-Source: \texttt{src/cayley\_menger.py} --- Cayley--Menger volume
-converted to IVM units.
+Source: \passthrough{\lstinline!src/cayley\_menger.py!} ---
+Cayley--Menger volume converted to IVM units.
 
 \hypertarget{code:urner_embedding}{%
 \subsubsection{\texorpdfstring{\texttt{urner\_embedding}}{urner\_embedding}}\label{code:urner_embedding}}
 
-Source: \texttt{src/conversions.py} --- canonical XYZ embedding.
+Source: \passthrough{\lstinline!src/conversions.py!} --- canonical XYZ
+embedding.
 
 \hypertarget{code:quadray_to_xyz}{%
 \subsubsection{\texorpdfstring{\texttt{quadray\_to\_xyz}}{quadray\_to\_xyz}}\label{code:quadray_to_xyz}}
 
-Source: \texttt{src/conversions.py} --- apply embedding matrix to map
-Quadray to XYZ.
+Source: \passthrough{\lstinline!src/conversions.py!} --- apply embedding
+matrix to map Quadray to XYZ.
 
 \hypertarget{code:bareiss_determinant_int}{%
 \subsubsection{\texorpdfstring{\texttt{bareiss\_determinant\_int}}{bareiss\_determinant\_int}}\label{code:bareiss_determinant_int}}
 
-Source: \texttt{src/linalg\_utils.py} --- exact integer Bareiss
-determinant.
+Source: \passthrough{\lstinline!src/linalg\_utils.py!} --- exact integer
+Bareiss determinant.
 
 \hypertarget{information-geometry-methods-anchors}{%
 \subsubsection{Information geometry methods
@@ -1025,54 +1122,62 @@ determinant.
 \hypertarget{code:fisher_information_matrix}{%
 \paragraph{\texorpdfstring{\texttt{fisher\_information\_matrix}}{fisher\_information\_matrix}}\label{code:fisher_information_matrix}}
 
-Source: \texttt{src/information.py} --- empirical outer-product
-estimator.
+Source: \passthrough{\lstinline!src/information.py!} --- empirical
+outer-product estimator.
 
 \hypertarget{code:natural_gradient_step}{%
 \paragraph{\texorpdfstring{\texttt{natural\_gradient\_step}}{natural\_gradient\_step}}\label{code:natural_gradient_step}}
 
-Source: \texttt{src/information.py} --- damped inverse-Fisher step.
+Source: \passthrough{\lstinline!src/information.py!} --- damped
+inverse-Fisher step.
 
 \hypertarget{code:free_energy}{%
 \paragraph{\texorpdfstring{\texttt{free\_energy}}{free\_energy}}\label{code:free_energy}}
 
-Source: \texttt{src/information.py} --- discrete-state variational free
-energy.
+Source: \passthrough{\lstinline!src/information.py!} --- discrete-state
+variational free energy.
 
 \hypertarget{code:discrete_ivm_descent}{%
 \paragraph{\texorpdfstring{\texttt{discrete\_ivm\_descent}}{discrete\_ivm\_descent}}\label{code:discrete_ivm_descent}}
 
-Source: \texttt{src/discrete\_variational.py} --- greedy integer-valued
-descent over the IVM using canonical neighbor moves; returns a
-\texttt{DiscretePath} with visited Quadrays and objective values. Pairs
-with \texttt{animate\_discrete\_path}.
+Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
+greedy integer-valued descent over the IVM using canonical neighbor
+moves; returns a \passthrough{\lstinline!DiscretePath!} with visited
+Quadrays and objective values. Pairs with
+\passthrough{\lstinline!animate\_discrete\_path!}.
 
 \hypertarget{code:animate_discrete_path}{%
 \paragraph{\texorpdfstring{\texttt{animate\_discrete\_path}}{animate\_discrete\_path}}\label{code:animate_discrete_path}}
 
-Source: \texttt{src/visualize.py} --- animate a \texttt{DiscretePath} to
-MP4; saves CSV/NPZ trajectory to \texttt{quadmath/output/}.
+Source: \passthrough{\lstinline!src/visualize.py!} --- animate a
+\passthrough{\lstinline!DiscretePath!} to MP4; saves CSV/NPZ trajectory
+to \passthrough{\lstinline!quadmath/output/!}.
 
-Relevant tests (\texttt{tests/}):
+Relevant tests (\passthrough{\lstinline!tests/!}):
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{test\_quadray.py} (unit IVM tetra, divisibility-by-4 scaling,
-  Ace vs.~integer method)
+  \passthrough{\lstinline!test\_quadray.py!} (unit IVM tetra,
+  divisibility-by-4 scaling, Ace vs.~integer method)
 \item
-  \texttt{test\_quadray\_cov.py} (Ace determinant basic check)
+  \passthrough{\lstinline!test\_quadray\_cov.py!} (Ace determinant basic
+  check)
 \item
-  \texttt{test\_cayley\_menger.py} (regular tetra volume in XYZ units)
+  \passthrough{\lstinline!test\_cayley\_menger.py!} (regular tetra
+  volume in XYZ units)
 \item
-  \texttt{test\_linalg\_utils.py} (Bareiss determinant behavior)
+  \passthrough{\lstinline!test\_linalg\_utils.py!} (Bareiss determinant
+  behavior)
 \item
-  \texttt{test\_examples.py}, \texttt{test\_examples\_cov.py}
-  (neighbors, examples)
+  \passthrough{\lstinline!test\_examples.py!},
+  \passthrough{\lstinline!test\_examples\_cov.py!} (neighbors, examples)
 \item
-  \texttt{test\_metrics.py}, \texttt{test\_metrics\_cov.py},
-  \texttt{test\_information.py}, \texttt{test\_paths.py},
-  \texttt{test\_paths\_cov.py}
+  \passthrough{\lstinline!test\_metrics.py!},
+  \passthrough{\lstinline!test\_metrics\_cov.py!},
+  \passthrough{\lstinline!test\_information.py!},
+  \passthrough{\lstinline!test\_paths.py!},
+  \passthrough{\lstinline!test\_paths\_cov.py!}
 \end{itemize}
 
 \hypertarget{reproducibility-checklist}{%
@@ -1081,8 +1186,9 @@ Relevant tests (\texttt{tests/}):
 \begin{itemize}
 \tightlist
 \item
-  All formulas used in the paper are implemented in \texttt{src/} and
-  verified by \texttt{tests/}.
+  All formulas used in the paper are implemented in
+  \passthrough{\lstinline!src/!} and verified by
+  \passthrough{\lstinline!tests/!}.
 \item
   Determinants are computed with exact arithmetic for integer inputs;
   floating-point paths are used only where appropriate and results are
@@ -1110,18 +1216,20 @@ m4w)}\label{primary-python-implementations-math-for-wisdom---m4w}}
 \tightlist
 \item
   \textbf{Quadray vectors and conversions}:
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
-  --- defines a \texttt{Qvector} class with normalization
-  (\texttt{norm}, \texttt{norm0}), vector arithmetic, XYZ bridging,
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
+  --- defines a \passthrough{\lstinline!Qvector!} class with
+  normalization (\passthrough{\lstinline!norm!},
+  \passthrough{\lstinline!norm0!}), vector arithmetic, XYZ bridging,
   cross products, and SymPy symbolic support. Key features include:
 
   \begin{itemize}
   \tightlist
   \item
-    Projective normalization with \texttt{(k,k,k,k)} subtraction
+    Projective normalization with \passthrough{\lstinline!(k,k,k,k)!}
+    subtraction
   \item
     Length calculation: \(\sqrt{\frac{1}{2}(a^2+b^2+c^2+d^2)}\) after
-    \texttt{norm0}
+    \passthrough{\lstinline!norm0!}
   \item
     Cross product implementation with \(\sqrt{2}/4\) scaling factor
   \item
@@ -1129,21 +1237,22 @@ m4w)}\label{primary-python-implementations-math-for-wisdom---m4w}}
   \end{itemize}
 \item
   \textbf{Synergetic tetravolumes and modules}:
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}
   --- implements multiple volume algorithms (PdF, CM, GdJ), dihedral
   calculations, and BEAST module system:
 
   \begin{itemize}
   \tightlist
   \item
-    \texttt{Tetrahedron} class with six edge lengths and multiple volume
-    methods
+    \passthrough{\lstinline!Tetrahedron!} class with six edge lengths
+    and multiple volume methods
   \item
     BEAST subclasses: A, B (volume 1/24), E (icosahedral), S, T modules
   \item
     Volume scaling by synergetics constant \(\sqrt{9/8}\)
   \item
-    Integration with \texttt{qrays.py} for \texttt{qvolume} computations
+    Integration with \passthrough{\lstinline!qrays.py!} for
+    \passthrough{\lstinline!qvolume!} computations
   \end{itemize}
 \end{itemize}
 
@@ -1161,14 +1270,14 @@ m4w)}\label{primary-python-implementations-math-for-wisdom---m4w}}
   \begin{itemize}
   \tightlist
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{\texttt{Qvolume.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb}{\passthrough{\lstinline!Qvolume.ipynb!}}:
     Tom Ace 5×5 determinant method with random-walk demonstrations
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{\texttt{VolumeTalk.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb}{\passthrough{\lstinline!VolumeTalk.ipynb!}}:
     Comparative analysis of bridging (CM+S3) vs native (Ace/GdJ)
     tetravolume formulas
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\texttt{QuadCraft\_Project.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\passthrough{\lstinline!QuadCraft\_Project.ipynb!}}:
     1,255 lines of interactive CCP navigation and volume calculations
   \end{itemize}
 \item
@@ -1178,11 +1287,11 @@ m4w)}\label{primary-python-implementations-math-for-wisdom---m4w}}
   \begin{itemize}
   \tightlist
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\texttt{quadcraft.py}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\passthrough{\lstinline!quadcraft.py!}}:
     POV-Ray scene generation with 15 test functions, CCP demonstrations,
     BRYG coordinate mapping
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/flextegrity.py}{\texttt{flextegrity.py}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/flextegrity.py}{\passthrough{\lstinline!flextegrity.py!}}:
     Polyhedron framework with 26 named coordinate points, concentric
     hierarchy, automatic scene generation
   \end{itemize}
@@ -1195,28 +1304,28 @@ extensions}\label{cross-language-validation-and-extensions}}
 \begin{itemize}
 \item
   \textbf{Rust implementation}:
-  \href{https://github.com/4dsolutions/rusty_rays}{\texttt{rusty\_rays}}
+  \href{https://github.com/4dsolutions/rusty_rays}{\passthrough{\lstinline!rusty\_rays!}}
   --- performance-oriented Rust port with complete vector operations for
   both Vivm (IVM) and Vxyz coordinate systems, providing independent
   algorithmic validation.
 \item
   \textbf{Clojure functional approach}:
-  \href{https://github.com/4dsolutions/synmods}{\texttt{synmods}} ---
-  functional programming implementation with protocol-based design,
+  \href{https://github.com/4dsolutions/synmods}{\passthrough{\lstinline!synmods!}}
+  --- functional programming implementation with protocol-based design,
   including
-  \href{https://github.com/4dsolutions/synmods/blob/master/qrays.clj}{\texttt{qrays.clj}}
+  \href{https://github.com/4dsolutions/synmods/blob/master/qrays.clj}{\passthrough{\lstinline!qrays.clj!}}
   and 26-point coordinate system.
 \item
   \textbf{VPython animations}:
-  \href{https://github.com/4dsolutions/BookCovers}{\texttt{BookCovers}}
+  \href{https://github.com/4dsolutions/BookCovers}{\passthrough{\lstinline!BookCovers!}}
   --- real-time educational animations with
-  \href{https://github.com/4dsolutions/BookCovers/blob/master/bookdemo.py}{\texttt{bookdemo.py}},
+  \href{https://github.com/4dsolutions/BookCovers/blob/master/bookdemo.py}{\passthrough{\lstinline!bookdemo.py!}},
   interactive controls, and live tetravolume tracking.
 \item
   \textbf{Dedicated pedagogy}:
-  \href{https://github.com/4dsolutions/tetravolumes}{\texttt{tetravolumes}}
+  \href{https://github.com/4dsolutions/tetravolumes}{\passthrough{\lstinline!tetravolumes!}}
   repository with
-  \href{https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Computing\%20Volumes.ipynb}{\texttt{Computing\ Volumes.ipynb}}
+  \href{https://raw.githubusercontent.com/4dsolutions/tetravolumes/refs/heads/master/Computing\%20Volumes.ipynb}{\passthrough{\lstinline!Computing Volumes.ipynb!}}
   and algorithm-focused materials.
 \end{itemize}
 
@@ -1225,52 +1334,52 @@ extensions}\label{cross-language-validation-and-extensions}}
 validation}\label{api-correspondence-and-validation}}
 
 \textbf{Mapping to this codebase}: The external implementations provide
-extensive validation and pedagogical context for our \texttt{src/}
-modules:
+extensive validation and pedagogical context for our
+\passthrough{\lstinline!src/!} modules:
 
 \begin{longtable}[]{@{}lll@{}}
 \toprule
 \begin{minipage}[b]{0.30\columnwidth}\raggedright
 4dsolutions module\strut
 \end{minipage} & \begin{minipage}[b]{0.35\columnwidth}\raggedright
-This codebase (\texttt{src/})\strut
+This codebase (\passthrough{\lstinline!src/!})\strut
 \end{minipage} & \begin{minipage}[b]{0.26\columnwidth}\raggedright
 Correspondence\strut
 \end{minipage}\tabularnewline
 \midrule
 \endhead
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\texttt{qrays.py::Qvector}\strut
+\passthrough{\lstinline!qrays.py::Qvector!}\strut
 \end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\texttt{quadray.py::Quadray}\strut
+\passthrough{\lstinline!quadray.py::Quadray!}\strut
 \end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
 Vector operations, normalization, dot products\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\texttt{tetravolume.py::ivm\_volume}\strut
+\passthrough{\lstinline!tetravolume.py::ivm\_volume!}\strut
 \end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\texttt{ace\_tetravolume\_5x5}\strut
+\passthrough{\lstinline!ace\_tetravolume\_5x5!}\strut
 \end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
 Tom Ace 5×5 determinant method\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\texttt{tetravolume.py} (PdF/CM)\strut
+\passthrough{\lstinline!tetravolume.py!} (PdF/CM)\strut
 \end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\texttt{cayley\_menger.py}\strut
+\passthrough{\lstinline!cayley\_menger.py!}\strut
 \end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
 Length-based volume formulas with S3 conversion\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\texttt{qrays.py::quadray} (XYZ→IVM)\strut
+\passthrough{\lstinline!qrays.py::quadray!} (XYZ→IVM)\strut
 \end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\texttt{conversions.py::urner\_embedding}\strut
+\passthrough{\lstinline!conversions.py::urner\_embedding!}\strut
 \end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
 Coordinate system bridging\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 BEAST modules (A,B,E,S,T)\strut
 \end{minipage} & \begin{minipage}[t]{0.35\columnwidth}\raggedright
-\texttt{examples.py} volume constructions\strut
+\passthrough{\lstinline!examples.py!} volume constructions\strut
 \end{minipage} & \begin{minipage}[t]{0.26\columnwidth}\raggedright
 Synergetic polyhedron relationships\strut
 \end{minipage}\tabularnewline

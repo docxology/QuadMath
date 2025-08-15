@@ -48,7 +48,11 @@
   urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.7cm,top=0.7cm,bottom=0.7cm,left=0.7cm,right=0.7cm,includeheadfoot]{geometry}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -61,6 +65,89 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
 
 % Configure hyperref colors consistently
 \AtBeginDocument{
@@ -79,13 +166,13 @@
 
 \title{Extensions of 4D and Quadrays}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 14, 2025}
+\date{August 15, 2025}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=red}
+\hypersetup{linkcolor=black}
 \setcounter{tocdepth}{3}
 \tableofcontents
 }
@@ -145,13 +232,14 @@ Energy}\label{active-inference-and-free-energy}}
 \item
   Free energy
   \(\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]\) (see
-  Eq. \eqref{eq:supp_free_energy}); background:
+  Eq. \eqref{eq:supp_free_energy} in the equations appendix);
+  background:
   \href{https://en.wikipedia.org/wiki/Free_energy_principle}{Free energy
   principle} and overviews connecting to predictive coding and control.
 \item
   Belief updates follow steepest descent in Fisher geometry using the
-  natural gradient (see Eq. \eqref{eq:supp_natgrad}); quadray
-  constraints improve stability/interpretability.
+  natural gradient (see Eq. \eqref{eq:supp_natgrad} in the equations
+  appendix); quadray constraints improve stability/interpretability.
 \item
   Links to metabolic efficiency and biologically plausible computation.
 \end{itemize}
@@ -175,6 +263,41 @@ Intelligence}\label{complex-systems-and-collective-intelligence}}
   cognitive security measures can protect the integrity of belief
   updates and decision-making processes, ensuring that actions are based
   on accurate and unmanipulated information.
+\end{itemize}
+
+\hypertarget{geospatial-intelligence-and-the-world-game}{%
+\subsection{Geospatial Intelligence and the World
+Game}\label{geospatial-intelligence-and-the-world-game}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Spatial data integration}: Quadray tetrahedral frameworks
+  provide natural tessellations for geospatial data analysis, where the
+  Dymaxion projection's minimal distortion aligns with Fuller's World
+  Game objectives of holistic global perspective. The tetrahedral
+  lattice supports efficient spatial indexing and neighbor queries for
+  distributed geospatial intelligence operations.
+\item
+  \textbf{Resource allocation optimization}: The World Game's goal of
+  ``making the world work for 100\% of humanity'' translates to
+  multi-objective optimization problems where tetrahedral simplex faces
+  encode trade-offs between population centers, resource distribution,
+  and ecological constraints. Integer volume quantization ensures
+  discrete, interpretable solutions for global resource allocation.
+\item
+  \textbf{Cognitive security in distributed sensing}: Geospatial
+  intelligence networks benefit from tetrahedral consensus mechanisms
+  that resist manipulation of spatial data streams. The geometric
+  constraints of Fuller.4D provide natural validation frameworks for
+  detecting anomalous spatial patterns and maintaining data integrity
+  across distributed sensor networks.
+\item
+  \textbf{Tetrahedral tessellations for global modeling}: The World
+  Game's emphasis on interconnected global systems maps naturally to
+  tetrahedral decompositions of the Dymaxion projection, where each
+  tetrahedron represents a coherent region for local optimization while
+  maintaining global connectivity through shared faces and edges.
 \end{itemize}
 
 \hypertarget{quadrays-synergetics-fuller.4d-and-william-blake}{%
@@ -243,15 +366,15 @@ Curricula}\label{educational-framework-and-curricula}}
   \begin{itemize}
   \tightlist
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\texttt{QuadCraft\_Project.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb}{\passthrough{\lstinline!QuadCraft\_Project.ipynb!}}:
     1,255 lines of interactive CCP navigation with QWERTY keyboard
     mapping to 12 IVM directions
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/TetraBook.ipynb}{\texttt{TetraBook.ipynb}},
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/CascadianSynergetics.ipynb}{\texttt{CascadianSynergetics.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/TetraBook.ipynb}{\passthrough{\lstinline!TetraBook.ipynb!}},
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/CascadianSynergetics.ipynb}{\passthrough{\lstinline!CascadianSynergetics.ipynb!}}:
     Regional curriculum integration
   \item
-    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Rendering_IVM.ipynb}{\texttt{Rendering\_IVM.ipynb}}:
+    \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Rendering_IVM.ipynb}{\passthrough{\lstinline!Rendering\_IVM.ipynb!}}:
     3D visualization techniques
   \end{itemize}
 \end{itemize}
@@ -264,25 +387,25 @@ Portfolio}\label{cross-language-implementation-portfolio}}
 \tightlist
 \item
   \textbf{Python (primary)}:
-  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\texttt{qrays.py}}
+  \href{https://github.com/4dsolutions/m4w/blob/main/qrays.py}{\passthrough{\lstinline!qrays.py!}}
   with SymPy integration,
-  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\texttt{tetravolume.py}}
+  \href{https://github.com/4dsolutions/m4w/blob/main/tetravolume.py}{\passthrough{\lstinline!tetravolume.py!}}
   with multiple algorithms
 \item
   \textbf{Rust (performance)}:
-  \href{https://github.com/4dsolutions/rusty_rays}{\texttt{rusty\_rays}}
+  \href{https://github.com/4dsolutions/rusty_rays}{\passthrough{\lstinline!rusty\_rays!}}
   for computational geometry optimization
 \item
   \textbf{Clojure (functional)}:
-  \href{https://github.com/4dsolutions/synmods}{\texttt{synmods}} with
-  protocol-based design patterns
+  \href{https://github.com/4dsolutions/synmods}{\passthrough{\lstinline!synmods!}}
+  with protocol-based design patterns
 \item
   \textbf{POV-Ray (rendering)}:
-  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\texttt{quadcraft.py}}
+  \href{https://github.com/4dsolutions/School_of_Tomorrow/blob/master/quadcraft.py}{\passthrough{\lstinline!quadcraft.py!}}
   with 15 test functions and automated scene generation
 \item
   \textbf{VPython (interactive)}:
-  \href{https://github.com/4dsolutions/BookCovers}{\texttt{BookCovers}}
+  \href{https://github.com/4dsolutions/BookCovers}{\passthrough{\lstinline!BookCovers!}}
   for real-time educational animations
 \end{itemize}
 

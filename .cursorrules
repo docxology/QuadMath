@@ -1,47 +1,151 @@
-# Enforce testing & coverage
-- Always run tests with coverage: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q`
-- Enforce 100% coverage for `src/` via `.coveragerc` (`fail_under = 100`)
-- Prefer headless plotting (`MPLBACKEND=Agg`) and save outputs to `quadmath/output/`
+# QuadMath Repository: Complete Test-Driven Development with Markdown Coherence
+# This file enforces the unified paradigm where source code, tests, and documentation
+# are developed together in complete coherence through the render_pdf.sh workflow.
 
-# Python project structure
-- Use `uv` to manage the environment and dependencies; keep `pyproject.toml` authoritative
-- Organize modular code under `src/`, tests under `tests/`
-- All figures and data artifacts from scripts go to `quadmath/output/` and include lightweight CSV/NPZ alongside PNG/MP4 when feasible
+# =============================================================================
+# CORE ARCHITECTURE: How Everything Works Together
+# =============================================================================
+# The repository implements a unified workflow where:
+# 1. Source code in src/ implements mathematical functionality
+# 2. Tests in tests/ validate all functionality with 100% coverage
+# 3. Scripts in quadmath/scripts/ generate figures and data from src/ modules
+# 4. Markdown in quadmath/markdown/ documents the mathematical concepts
+# 5. render_pdf.sh orchestrates the entire pipeline:
+#    - Runs all generation scripts (ensuring src/ code works)
+#    - Validates markdown references and images
+#    - Generates auto-updated glossary from src/ API
+#    - Builds individual and combined PDFs
+#    - Exports LaTeX for further processing
 
-# Code style and conventions
-- Write explicit type hints for public APIs; keep local variables unannotated when trivially inferred
-- Use descriptive names (no 1–2 character names); follow clean-code naming (functions as verbs, variables as nouns)
-- Prefer guard clauses and shallow nesting; handle error/edge cases first
-- Keep code comments concise; explain "why" for non-obvious logic; avoid inline explanatory comments inside code blocks
-- Maintain consistent formatting; avoid unrelated reformatting in edits
-- Use exact integer linear algebra for determinants over integer inputs (Bareiss algorithm) and cite algorithms when referenced in docs
+# =============================================================================
+# HOW render_pdf.sh TREATS MARKDOWN AND CODE
+# =============================================================================
+# render_pdf.sh ensures complete coherence by:
+# 1. Running all generation scripts first - this validates that src/ code works
+# 2. Validating markdown integrity - ensures all images, references, equations exist
+# 3. Auto-generating glossary from src/ API - keeps documentation in sync with code
+# 4. Building PDFs only after all validation passes - ensures quality output
+# 5. Creating a manifest of all generated artifacts - enables reproducibility
 
-# Imports and paths
-- Source code imports assume `src/` on `PYTHONPATH`; prefer absolute imports like `from quadray import Quadray`
-- Avoid circular imports; factor shared utilities into modules under `src/`
+# The markdown files reference generated figures from quadmath/output/, and render_pdf.sh
+# ensures these references are valid before building any PDFs. This creates a tight
+# coupling between source code, generated outputs, and documentation.
 
-# Plotting and reproducibility
-- Use headless Matplotlib (`Agg`) in scripts/tests; never display interactive windows in CI
-- Save figures with tight layout, include axis labels/titles, and deterministic RNG seeds for reproducibility
-- Where applicable, save raw data used to produce figures to `quadmath/output/` (CSV and/or NPZ)
+# =============================================================================
+# TEST SUITE AND CODE CONNECTIONS
+# =============================================================================
+# Tests ensure 100% coverage of src/ modules and validate:
+# - All mathematical functions work correctly
+# - Figure generation scripts can import and use source modules
+# - Generated outputs are deterministic and reproducible
+# - Markdown documentation accurately reflects implemented functionality
 
-# Documentation and references
-- Place manuscript content in `quadmath/markdown/`; keep section files cohesive and moderately scoped
-- Use descriptive Markdown links for all scientific and code claims (no bare URLs). Prefer canonical references:
-  - Geometry: Cayley–Menger, tetrahedron volume
-  - Optimization: Nelder–Mead
-  - Information geometry: Fisher information, natural gradient
-  - Active Inference: free energy principle, recent reviews
-  - Tooling: GCC libquadmath
-- When referencing code, point to function names and modules under `src/` using inline code formatting (e.g., `integer_tetra_volume` in `quadray.py`)
-- Figures in docs should refer to files under `quadmath/output/` and be generated by scripts in `quadmath/scripts/`
+# ALWAYS follow TDD workflow:
+# 1. Write/adjust tests under tests/ BEFORE or ALONGSIDE code changes
+# 2. Ensure 100% coverage for src/ via .coveragerc (fail_under = 100)
+# 3. Run tests with coverage: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q
+# 4. All tests must pass before any commit
+# 5. Tests use real numerical examples with deterministic RNG seeds (no mocks)
+# 6. Tests are fast and hermetic; no network or file-system writes outside quadmath/output/
 
-# Testing methodology
-- Follow TDD: write/adjust tests under `tests/` before or alongside code changes
-- Avoid mocks; prefer small, real numerical examples and deterministic RNG seeds
-- Keep tests fast and hermetic; no network or file-system writes outside `quadmath/output/`
+# =============================================================================
+# SOURCE CODE STRUCTURE AND STANDARDS
+# =============================================================================
+# - Use uv to manage environment and dependencies; pyproject.toml is authoritative
+# - Organize modular code under src/ with clear separation of concerns
+# - All public APIs must have explicit type hints
+# - Use descriptive names (no 1-2 character names); follow clean-code naming
+# - Prefer guard clauses and shallow nesting; handle error/edge cases first
+# - Keep code comments concise; explain "why" for non-obvious logic
+# - Maintain consistent formatting; avoid unrelated reformatting
+# - Use exact integer linear algebra for determinants over integer inputs (Bareiss algorithm)
+# - Source code imports assume src/ on PYTHONPATH; prefer absolute imports like from quadray import Quadray
+# - Avoid circular imports; factor shared utilities into modules under src/
 
-# Commit and PR hygiene
-- One logical change per commit; summarize intent and impact in the commit message subject line
-- Include brief notes about tests added/updated and any figures regenerated
+# =============================================================================
+# FIGURE AND DATA GENERATION WORKFLOW
+# =============================================================================
+# - Scripts in quadmath/scripts/ MUST import from src/ modules (not duplicate code)
+# - All figures and data artifacts go to quadmath/output/ with consistent structure:
+#   * quadmath/output/figures/ for PNG/MP4/SVG files
+#   * quadmath/output/data/ for CSV/NPZ files and manifests
+#   * quadmath/output/pdf/ for individual and combined PDFs
+#   * quadmath/output/tex/ for exported LaTeX files
+# - Use headless Matplotlib (MPLBACKEND=Agg) in scripts/tests; never display interactive windows
+# - Save figures with tight layout, axis labels/titles, and deterministic RNG seeds
+# - Include lightweight CSV/NPZ alongside PNG/MP4 when feasible for reproducibility
+# - Scripts must print output paths to stdout for manifest collection
+
+# =============================================================================
+# MARKDOWN-DOCUMENTATION COHERENCE
+# =============================================================================
+# - Manuscript content in quadmath/markdown/ with cohesive, moderately-scoped sections
+# - When referencing code, point to function names and modules under src/ using inline code formatting
+# - Figures in docs must refer to files under quadmath/output/ and be generated by scripts
+# - Use descriptive Markdown links for all scientific and code claims (no bare URLs)
+# - Prefer canonical references for mathematical concepts
+# - All markdown must pass validation via validate_markdown.py:
+#   * Images must exist and be properly referenced
+#   * Internal links must have valid anchors
+#   * Equations must have unique labels
+#   * No bare URLs (use informative link text)
+
+# =============================================================================
+# AUTO-GENERATION AND VALIDATION
+# =============================================================================
+# - generate_glossary.py automatically updates API table from src/ code
+# - validate_markdown.py ensures all references and images are valid
+# - make_all_figures.py runs all generation scripts and creates manifest
+# - render_pdf.sh orchestrates the complete pipeline:
+#   * Runs figure generation scripts (validates src/ code works)
+#   * Validates markdown integrity
+#   * Generates updated glossary
+#   * Builds PDFs from validated markdown
+#   * Exports LaTeX for further processing
+
+# =============================================================================
+# DEVELOPMENT WORKFLOW ENFORCEMENT
+# =============================================================================
+# 1. ALWAYS run tests before committing: coverage run -m pytest -q
+# 2. ALWAYS run render_pdf.sh after significant changes to validate coherence
+# 3. Source code changes must be reflected in tests AND documentation
+# 4. Documentation changes must be validated and generate working PDFs
+# 5. Figure generation scripts must work with current src/ code
+# 6. All outputs must be deterministic and reproducible
+
+# =============================================================================
+# COMMIT AND PR HYGIENE
+# =============================================================================
+# - One logical change per commit; summarize intent and impact in commit message
+# - Include brief notes about tests added/updated and any figures regenerated
+# - Ensure render_pdf.sh completes successfully before merging
+# - All markdown validation must pass
+# - All tests must pass with 100% coverage
+
+# =============================================================================
+# REPRODUCIBILITY AND CI COMPATIBILITY
+# =============================================================================
+# - Use deterministic RNG seeds in all scripts and tests
+# - Headless plotting (MPLBACKEND=Agg) for CI compatibility
+# - All dependencies managed through uv and pyproject.toml
+# - No hardcoded paths; use paths.py utilities for output directories
+# - Scripts must work from any directory with proper path resolution
+
+# =============================================================================
+# MATHEMATICAL RIGOR AND CITATIONS
+# =============================================================================
+# - Cite algorithms when referenced in docs (e.g., Bareiss algorithm for determinants)
+# - Use exact arithmetic where appropriate (integer inputs)
+# - Maintain mathematical consistency across all modules
+# - Document mathematical assumptions and limitations clearly
+# - Ensure numerical stability in all implementations
+
+# =============================================================================
+# KEY CONNECTIONS TO REMEMBER
+# =============================================================================
+# 1. src/ modules → tests/ validation → scripts/ generation → markdown/ documentation
+# 2. render_pdf.sh ensures all connections are valid before building outputs
+# 3. Changes in any component must be reflected in all connected components
+# 4. The test suite validates the entire pipeline, not just individual modules
+# 5. Documentation is auto-generated where possible to maintain code-doc sync
 
