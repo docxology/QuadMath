@@ -11,6 +11,8 @@ In this section, we clarify the three internal meanings of "4D," following a dot
 
 ## Einstein.4D (Relativistic spacetime)
 
+**Definition**: Minkowski spacetime with indefinite metric signature, representing the geometric framework for special relativity. This namespace provides the mathematical foundation for understanding space-time relationships and relativistic phenomena.
+
 - **Spacetime**: Minkowski metric signature.
 - **Line element** (mostly-plus convention; see [Minkowski space](https://en.wikipedia.org/wiki/Minkowski_space)):
 
@@ -22,6 +24,8 @@ In this section, we clarify the three internal meanings of "4D," following a dot
 - **Important note**: This namespace is used ONLY as a metric/geodesic analogy when discussing information geometry. Physical constants G, c, Λ do not appear in Quadray lattice methods and should not be mixed with IVM unit conventions.
 
 ## Fuller.4D (Synergetics / Quadrays)
+
+**Definition**: Tetrahedral coordinate system based on four non-negative components representing directions to the vertices of a regular tetrahedron from its center. This namespace embodies the synergetic approach to geometry, emphasizing shape relationships and integer tetravolumes within the IVM framework.
 
 - **Basis**: Four non-negative components A,B,C,D with at least one zero post-normalization, treated as a vector (direction and magnitude), not merely a point. Overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
 - **Geometry**: Tetrahedral; unit tetrahedron volume = 1; integer lattice aligns with close-packed spheres (IVM). Background: [Synergetics](https://en.wikipedia.org/wiki/Synergetics_(Fuller)).

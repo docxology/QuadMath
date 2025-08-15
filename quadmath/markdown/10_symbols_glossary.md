@@ -153,10 +153,13 @@ The table below enumerates public symbols from `src/` modules.
 | `glossary_gen` | `generate_markdown_table` | function | `(entries)` |  |
 | `glossary_gen` | `inject_between_markers` | function | `(markdown_text, begin, end, payload)` |  |
 | `information` | `action_update` | function | `(action, free_energy_fn, step_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. |
+| `information` | `active_inference_step` | function | `(mu, action, free_energy_fn, derivative_operator, step_size, epsilon)` | Joint perception-action update step in Active Inference. |
+| `information` | `expected_free_energy` | function | `(log_p_o_given_s, q, p, log_p_o)` | Expected free energy for Active Inference with prior preferences. |
 | `information` | `finite_difference_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. |
 | `information` | `fisher_information_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. |
 | `information` | `fisher_information_quadray` | function | `(gradients, embedding_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. |
 | `information` | `free_energy` | function | `(log_p_o_given_s, q, p)` | Variational free energy for discrete latent states. |
+| `information` | `information_geometric_distance` | function | `(F, x1, x2)` | Compute information-geometric distance between two points. |
 | `information` | `natural_gradient_step` | function | `(gradient, fisher, step_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. |
 | `information` | `perception_update` | function | `(mu, derivative_operator, free_energy_fn, step_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. |
 | `linalg_utils` | `bareiss_determinant_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. |

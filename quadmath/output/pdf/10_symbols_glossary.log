@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 10:52
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 13:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1244,6 +1244,11 @@ Overfull \hbox (5.81361pt too wide) in paragraph at lines 957--958
  []
 
 
+Overfull \hbox (1.2423pt too wide) in paragraph at lines 957--958
+[][] 
+ []
+
+
 Overfull \hbox (24.09885pt too wide) in paragraph at lines 957--958
 [][] 
  []
@@ -1255,6 +1260,11 @@ Overfull \hbox (19.52753pt too wide) in paragraph at lines 957--958
 
 
 Overfull \hbox (24.09885pt too wide) in paragraph at lines 957--958
+[][] 
+ []
+
+
+Overfull \hbox (42.38408pt too wide) in paragraph at lines 957--958
 [][] 
  []
 
@@ -1311,13 +1321,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 20951 strings out of 478190
- 383002 string characters out of 5854827
- 1457178 words of memory out of 5000000
- 41235 multiletter control sequences out of 15000+600000
+ 20968 strings out of 478190
+ 383243 string characters out of 5854827
+ 1519178 words of memory out of 5000000
+ 41252 multiletter control sequences out of 15000+600000
  476627 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,11n,122p,2497b,1220s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,11n,122p,3001b,1220s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/10_s
 ymbols_glossary.pdf (9 pages).

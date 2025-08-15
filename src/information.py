@@ -232,3 +232,132 @@ def action_update(
         raise ValueError("action must be 1D")
     grad_F = finite_difference_gradient(free_energy_fn, action, epsilon)
     return -step_size * grad_F
+
+
+def expected_free_energy(
+    log_p_o_given_s: np.ndarray,
+    q: np.ndarray,
+    p: np.ndarray,
+    log_p_o: float = 0.0
+) -> float:
+    """Expected free energy for Active Inference with prior preferences.
+    
+    Computes the expected free energy G = E_q[log p(o|s) - log q(s)] + log p(o),
+    which is minimized during action selection in Active Inference.
+    
+    This function connects to the expected free energy principle where agents
+    select actions that minimize expected surprise, analogous to how geodesics
+    minimize proper time in Einstein.4D spacetime.
+
+    Parameters
+    - log_p_o_given_s: Log-likelihoods for each latent state.
+    - q: Unnormalized variational posterior over states.
+    - p: Unnormalized prior over states.
+    - log_p_o: Log of prior preference over outcomes (default: 0.0 for uniform).
+
+    Returns
+    - float: Expected free energy (lower is better for action selection).
+    """
+    if not (log_p_o_given_s.shape == q.shape == p.shape):
+        raise ValueError("shapes of inputs must match")
+    
+    # Normalize distributions
+    qn = q / np.sum(q)
+    pn = p / np.sum(p)
+    
+    # Expected log-likelihood
+    expected_ll = float(np.sum(qn * log_p_o_given_s))
+    
+    # Entropy of variational posterior
+    eps = 1e-15
+    entropy = -float(np.sum(qn * np.log(qn + eps)))
+    
+    return -expected_ll + entropy + log_p_o
+
+
+def active_inference_step(
+    mu: np.ndarray,
+    action: np.ndarray,
+    free_energy_fn: callable,
+    derivative_operator: callable,
+    step_size: float = 1.0,
+    epsilon: float = 1e-6,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Joint perception-action update step in Active Inference.
+    
+    This function implements a single step of the Active Inference cycle,
+    updating both internal states (perception) and actions simultaneously.
+    The updates follow the continuous-time flows that minimize free energy,
+    connecting to the four-fold partition structure in Fuller.4D.
+
+    Parameters
+    - mu: Current internal state (D,)
+    - action: Current action vector (K,)
+    - free_energy_fn: Callable F(mu, a) -> float (joint free energy)
+    - derivative_operator: Callable D(mu) -> (D,) for perception dynamics
+    - step_size: Scaling factor for Euler integration
+    - epsilon: Finite-difference epsilon for gradients
+
+    Returns
+    - Tuple[np.ndarray, np.ndarray]: (dmu, da) time derivatives for integration
+    """
+    mu = np.asarray(mu, dtype=float)
+    action = np.asarray(action, dtype=float)
+    
+    if mu.ndim != 1:
+        raise ValueError("mu must be 1D")
+    if action.ndim != 1:
+        raise ValueError("action must be 1D")
+    
+    # Create wrapper functions for partial derivatives
+    def F_mu(mu_val: np.ndarray) -> float:
+        return free_energy_fn(mu_val, action)
+    
+    def F_a(a_val: np.ndarray) -> float:
+        return free_energy_fn(mu, a_val)
+    
+    # Compute updates
+    dmu = perception_update(mu, derivative_operator, F_mu, step_size, epsilon)
+    da = action_update(action, F_a, step_size, epsilon)
+    
+    return dmu, da
+
+
+def information_geometric_distance(
+    F: np.ndarray,
+    x1: np.ndarray,
+    x2: np.ndarray
+) -> float:
+    """Compute information-geometric distance between two points.
+    
+    Computes the geodesic distance d(x1, x2) = sqrt((x2-x1)^T F (x2-x1))
+    on the information manifold defined by Fisher metric F.
+    
+    This function connects to Einstein.4D concepts where the Fisher metric
+    replaces the spacetime metric, and geodesics follow information-geometric
+    flows rather than physical trajectories.
+
+    Parameters
+    - F: Fisher information matrix (positive definite)
+    - x1: First point (D,)
+    - x2: Second point (D,)
+
+    Returns
+    - float: Information-geometric distance
+    """
+    F = np.asarray(F, dtype=float)
+    x1 = np.asarray(x1, dtype=float)
+    x2 = np.asarray(x2, dtype=float)
+    
+    if F.shape[0] != F.shape[1]:
+        raise ValueError("F must be square")
+    if x1.shape[0] != F.shape[0] or x2.shape[0] != F.shape[0]:
+        raise ValueError("dimension mismatch")
+    
+    # Compute displacement vector
+    dx = x2 - x1
+    
+    # Compute quadratic form dx^T F dx
+    distance_squared = float(dx.T @ F @ dx)
+    
+    return np.sqrt(max(0.0, distance_squared))  # Ensure non-negative

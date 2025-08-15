@@ -1,7 +1,15 @@
 import numpy as np
 import pytest
 
-from information import fisher_information_matrix, natural_gradient_step, free_energy, fisher_information_quadray
+from information import (
+    fisher_information_matrix, 
+    natural_gradient_step, 
+    free_energy, 
+    fisher_information_quadray,
+    expected_free_energy,
+    active_inference_step,
+    information_geometric_distance
+)
 
 
 def test_fisher_information_matrix_shapes():
@@ -162,3 +170,164 @@ def test_fisher_information_matrix_orthogonal_gradients():
     assert np.allclose(F[1, 0], 0.0, atol=1e-10)
     assert F[0, 0] > 0
     assert F[1, 1] > 0
+
+
+def test_expected_free_energy_basic():
+    """Test basic expected free energy computation."""
+    logp = np.log(np.array([0.6, 0.4]))
+    q = np.array([0.5, 0.5])
+    p = np.array([0.5, 0.5])
+    G = expected_free_energy(logp, q, p)
+    assert np.isfinite(G)
+    assert G > 0  # Expected free energy should be positive
+
+
+def test_expected_free_energy_shape_mismatch():
+    """Test expected free energy with mismatched shapes."""
+    try:
+        expected_free_energy(
+            np.array([0.0, 0.0]), 
+            np.array([1.0]), 
+            np.array([1.0])
+        )
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_expected_free_energy_normalization():
+    """Test that expected free energy is invariant to scaling of inputs."""
+    logp = np.log(np.array([0.6, 0.4]))
+    q = np.array([0.5, 0.5])
+    p = np.array([0.5, 0.5])
+    
+    G1 = expected_free_energy(logp, q, p)
+    G2 = expected_free_energy(logp, 2.0 * q, 3.0 * p)
+    
+    assert np.allclose(G1, G2, rtol=1e-10)
+
+
+def test_expected_free_energy_with_preferences():
+    """Test expected free energy with prior preferences."""
+    logp = np.log(np.array([0.6, 0.4]))
+    q = np.array([0.5, 0.5])
+    p = np.array([0.5, 0.5])
+    
+    G_no_pref = expected_free_energy(logp, q, p)
+    G_with_pref = expected_free_energy(logp, q, p, log_p_o=-1.0)
+    
+    # Should differ by the preference term
+    assert np.allclose(G_with_pref - G_no_pref, -1.0, rtol=1e-10)
+
+
+def test_active_inference_step_basic():
+    """Test basic active inference step functionality."""
+    def joint_free_energy(mu, a):
+        return float(np.sum(mu * mu) + np.sum(a * a))
+    
+    def derivative_op(mu):
+        return np.zeros_like(mu)
+    
+    mu = np.array([1.0, -2.0])
+    action = np.array([0.5, -0.25, 1.5])
+    
+    dmu, da = active_inference_step(mu, action, joint_free_energy, derivative_op)
+    
+    assert dmu.shape == mu.shape
+    assert da.shape == action.shape
+    assert np.allclose(dmu, -2.0 * mu)  # grad of mu^2 is 2*mu
+    assert np.allclose(da, -2.0 * action)  # grad of a^2 is 2*a
+
+
+def test_active_inference_step_shape_checks():
+    """Test active inference step with invalid shapes."""
+    def joint_free_energy(mu, a):
+        return float(np.sum(mu * mu) + np.sum(a * a))
+    
+    def derivative_op(mu):
+        return np.zeros_like(mu)
+    
+    try:
+        active_inference_step(
+            np.zeros((1, 2)),  # 2D mu
+            np.array([1.0, 2.0]), 
+            joint_free_energy, 
+            derivative_op
+        )
+        assert False
+    except ValueError:
+        assert True
+    
+    try:
+        active_inference_step(
+            np.array([1.0, 2.0]), 
+            np.zeros((1, 2)),  # 2D action
+            joint_free_energy, 
+            derivative_op
+        )
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_information_geometric_distance_basic():
+    """Test basic information-geometric distance computation."""
+    F = np.eye(2)  # Identity metric
+    x1 = np.array([0.0, 0.0])
+    x2 = np.array([3.0, 4.0])
+    
+    distance = information_geometric_distance(F, x1, x2)
+    expected = np.sqrt(3*3 + 4*4)  # Euclidean distance for identity metric
+    
+    assert np.allclose(distance, expected, rtol=1e-10)
+
+
+def test_information_geometric_distance_non_identity():
+    """Test information-geometric distance with non-identity metric."""
+    F = np.array([[2.0, 0.5], [0.5, 1.0]])  # Non-identity positive definite
+    x1 = np.array([0.0, 0.0])
+    x2 = np.array([1.0, 1.0])
+    
+    distance = information_geometric_distance(F, x1, x2)
+    
+    # Manual calculation: sqrt([1,1]^T [[2,0.5],[0.5,1]] [1,1])
+    # = sqrt(1*2*1 + 1*0.5*1 + 1*0.5*1 + 1*1*1) = sqrt(4)
+    expected = 2.0
+    
+    assert np.allclose(distance, expected, rtol=1e-10)
+
+
+def test_information_geometric_distance_shape_checks():
+    """Test information-geometric distance with invalid shapes."""
+    F = np.eye(2)
+    x1 = np.array([1.0, 2.0])
+    x2 = np.array([3.0, 4.0])
+    
+    # Test non-square F
+    try:
+        information_geometric_distance(np.array([[1.0, 2.0]]), x1, x2)
+        assert False
+    except ValueError:
+        assert True
+    
+    # Test dimension mismatch
+    try:
+        information_geometric_distance(F, np.array([1.0]), x2)
+        assert False
+    except ValueError:
+        assert True
+    
+    try:
+        information_geometric_distance(F, x1, np.array([1.0]))
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_information_geometric_distance_zero_distance():
+    """Test information-geometric distance for identical points."""
+    F = np.array([[2.0, 0.5], [0.5, 1.0]])
+    x = np.array([1.0, -2.0])
+    
+    distance = information_geometric_distance(F, x, x)
+    assert np.allclose(distance, 0.0, rtol=1e-10)

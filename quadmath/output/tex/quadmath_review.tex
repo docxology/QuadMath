@@ -3241,90 +3241,14 @@ See code:
 See \passthrough{\lstinline!src/information.py!} --- discrete-state
 variational free energy (\passthrough{\lstinline!free\_energy!}).
 
+\textbf{Note}: The main figures demonstrating natural gradient
+trajectories and free energy landscapes are shown in
+\href{04_optimization_in_4d.md}{Section 4: Optimization in 4D}. The
+appendix focuses on unique figures specific to mathematical formulations
+and validation.
+
 \hypertarget{figures-2}{%
 \subsubsection{Figures}\label{figures-2}}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/natural_gradient_path.png}
-\caption{\textbf{Natural gradient trajectory demonstrating
-information-geometric optimization}. This trajectory shows natural
-gradient descent (Eq. \ref{eq:supp_natgrad}) converging on a quadratic
-objective function. \textbf{Trajectory}: The blue line with markers
-traces the parameter evolution from initial guess to final optimum,
-showing the path taken through the 2D parameter space. \textbf{Markers}:
-Each marker represents one optimization step, with spacing indicating
-the step size and convergence rate. \textbf{Convergence behavior}: The
-trajectory shows smooth, direct convergence to the optimum,
-characteristic of natural gradient descent on well-conditioned
-objectives. \textbf{Comparison with standard gradient descent}: Natural
-gradient descent typically produces more direct trajectories than
-standard gradient descent, especially on ill-conditioned problems where
-the parameter space has strong anisotropy. This efficiency comes from
-the FIM-based scaling that adapts step sizes to local curvature. The
-trajectory demonstrates how information-geometric optimization leverages
-the intrinsic geometry of the parameter space to achieve faster, more
-stable convergence than naive gradient methods.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/free_energy_curve.png}
-\caption{\textbf{Variational free energy functional for discrete binary
-states (Eq. \ref{eq:supp_free_energy})}. This curve illustrates the free
-energy landscape \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\)
-as a function of the variational distribution parameter.
-\textbf{X-axis}: Variational parameter controlling the distribution over
-the two discrete states. \textbf{Y-axis}: Free energy value in natural
-units. \textbf{Curve shape}: The free energy exhibits a clear minimum at
-the optimal variational distribution, representing the best
-approximation to the true posterior given the constraints of the
-variational family. \textbf{KL divergence component}: The free energy
-balances data fit (first term) with regularization (KL divergence from
-prior), preventing overfitting while maintaining good predictive
-performance. \textbf{Optimization interpretation}: Minimizing this free
-energy corresponds to finding the best variational approximation to the
-true posterior, a fundamental task in Bayesian inference and active
-inference. The smooth, convex shape of the free energy landscape makes
-optimization straightforward using standard methods like gradient
-descent or natural gradient descent. This variational framework provides
-a principled approach to approximate inference in complex models where
-exact posterior computation is intractable.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/enhanced_figure_13_4d_trajectory.png}
-\caption{\textbf{Enhanced Figure 13: 4D Natural Gradient Trajectory with
-Active Inference Context}. This comprehensive visualization demonstrates
-natural gradient descent (Eq. \ref{eq:supp_natgrad}) operating within
-the Active Inference framework, showing how information-geometric
-optimization drives perception-action dynamics. The figure integrates
-the three 4D frameworks: Coxeter.4D (Euclidean) for exact measurements,
-Einstein.4D (Minkowski analogy) for information-geometric flows, and
-Fuller.4D (Synergetics) for the tetrahedral structure of the four-fold
-partition. The natural gradient implements geodesic motion on the
-information manifold, analogous to how particles follow geodesics in
-Einstein.4D spacetime.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/enhanced_figure_14_free_energy_landscape.png}
-\caption{\textbf{Enhanced Figure 14: Free Energy Landscape with 4D
-Active Inference Context}. This comprehensive visualization explores the
-variational free energy landscape
-\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
-\ref{eq:supp_free_energy}) within the 4D Active Inference framework. The
-figure demonstrates how the Free Energy Principle operates within the 4D
-framework: Coxeter.4D provides exact Euclidean geometry for
-measurements, Einstein.4D supplies information-geometric flows for
-optimization, and Fuller.4D offers the tetrahedral structure for
-representing the four-fold partition of Active Inference. The landscape
-shows how minimizing free energy balances prediction error with model
-complexity, driving both perception and action through natural gradient
-descent on the information manifold.}
-\end{figure}
 
 \begin{figure}
 \centering
@@ -3542,9 +3466,9 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   \end{equation}
 \end{itemize}
 
-Figures: See the enhanced Figures 13 and 14 in the optimization section
-above, which demonstrate the integration of natural gradient descent
-with Active Inference principles and the 4D framework context.
+Figures: See the enhanced Active Inference figures in the optimization
+section above, which demonstrate the integration of natural gradient
+descent with Active Inference principles and the 4D framework context.
 
 Discrete variational optimization on the quadray lattice:
 \passthrough{\lstinline!discrete\_ivm\_descent!} greedily descends a
@@ -3579,6 +3503,56 @@ the geometric relationships between different components. This
 visualization demonstrates how the Fuller.4D framework can provide
 insights into complex systems like Active Inference through geometric
 intuition.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/enhanced_figure_13_4d_trajectory.png}
+\caption{\textbf{4D Natural Gradient Trajectory in Active Inference
+Dynamics}. This comprehensive visualization demonstrates the evolution
+of Active Inference parameters through natural gradient descent on an
+information manifold. \textbf{Trajectory visualization}: The 3D plot
+shows the optimization path through perception weight (μ), action weight
+(a), and internal state (s) dimensions, with color coding indicating
+progression over time. \textbf{Free energy minimization}: The log-scale
+plot shows the systematic reduction of free energy, demonstrating the
+Active Inference principle of surprise minimization. \textbf{Four-fold
+partition evolution}: Parameter trajectories show how perception,
+action, internal, and external components evolve toward optimal values,
+with horizontal lines indicating true optimal states.
+\textbf{Information geometry context}: The Fisher Information Matrix
+provides the Riemannian metric for geodesic motion, connecting to
+Einstein.4D concepts where the Fisher metric replaces spacetime
+geometry. \textbf{4D framework integration}: The visualization
+demonstrates how Coxeter.4D (Euclidean), Einstein.4D (Minkowski), and
+Fuller.4D (Synergetics) frameworks work together in Active Inference
+optimization.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{../output/figures/enhanced_figure_14_free_energy_landscape.png}
+\caption{\textbf{Enhanced Free Energy Landscape in 4D Active Inference
+Framework}. This comprehensive visualization explores the variational
+free energy surface over perception and action parameters. \textbf{3D
+landscape}: The surface plot shows the free energy as a function of two
+variational parameters, revealing the complex topology that Active
+Inference optimization must navigate. \textbf{Contour analysis}: 2D
+contours provide detailed information about parameter sensitivity and
+optimization paths. \textbf{Cross-sectional analysis}: Multiple
+cross-sections at different parameter values demonstrate how free energy
+varies with respect to individual parameters, revealing the landscape's
+structure. \textbf{Four-fold partition visualization}: The text panel
+explains how Active Inference maps to tetrahedral structures in
+Fuller.4D, with the four components (μ, s, a, ψ) representing internal
+states, sensory observations, actions, and external causes.
+\textbf{Information geometry metrics}: Local curvature analysis reveals
+the Fisher information structure, showing how the information manifold's
+geometry influences optimization dynamics. \textbf{Mathematical
+foundation}: The visualization demonstrates the mathematical structure
+of variational inference, including variational posteriors Q(s), priors
+P(s), and likelihoods P(o\textbar s) that connect observations to latent
+states.}
 \end{figure}
 
 \hypertarget{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}{%
@@ -3758,25 +3732,33 @@ Cross-References}\label{code-reproducibility-and-cross-references}}
 \passthrough{\lstinline!src/discrete\_variational.py!}.
 
 Demo and figures generated by
-\passthrough{\lstinline!quadmath/scripts/information\_demo.py!} output
-to \passthrough{\lstinline!quadmath/output/!}:
+\passthrough{\lstinline!quadmath/scripts/information\_demo.py!} and
+\passthrough{\lstinline!quadmath/scripts/enhanced\_active\_inference\_figures.py!}
+output to \passthrough{\lstinline!quadmath/output/!}:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Visualizations}:
+  \textbf{Active Inference Visualizations}:
+  \passthrough{\lstinline!enhanced\_figure\_13\_4d\_trajectory.png!},
+  \passthrough{\lstinline!enhanced\_figure\_14\_free\_energy\_landscape.png!}
+  demonstrating 4D framework integration
+\item
+  \textbf{Information Geometry Visualizations}:
   \passthrough{\lstinline!fisher\_information\_matrix.png!},
   \passthrough{\lstinline!fisher\_information\_eigenspectrum.png!},
   \passthrough{\lstinline!natural\_gradient\_path.png!},
   \passthrough{\lstinline!free\_energy\_curve.png!},
-  \passthrough{\lstinline!partition\_tetrahedron.png!}.
+  \passthrough{\lstinline!partition\_tetrahedron.png!}
 \item
   \textbf{Raw data}:
+  \passthrough{\lstinline!enhanced\_figure\_13\_data.npz!},
+  \passthrough{\lstinline!enhanced\_figure\_14\_data.npz!},
   \passthrough{\lstinline!fisher\_information\_matrix.csv!},
   \passthrough{\lstinline!fisher\_information\_matrix.npz!} (F, grads,
   X, y, w\_true, w\_est),
   \passthrough{\lstinline!fisher\_information\_eigenvalues.csv!},
-  \passthrough{\lstinline!fisher\_information\_eigensystem.npz!}.
+  \passthrough{\lstinline!fisher\_information\_eigensystem.npz!}
 \item
   \textbf{External validation}: Cross-reference with volume calculations
   and tetrahedral modeling tools from the
@@ -4551,7 +4533,7 @@ Return the Minkowski interval squared ds\^{}2 (Einstein.4D).\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
 class\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
-\passthrough{\lstinline!|  | | `glossary\_gen` | `build\_api\_index` | function | `(src\_dir)` |  | | `glossary\_gen` | `generate\_markdown\_table` | function | `(entries)` |  | | `glossary\_gen` | `inject\_between\_markers` | function | `(markdown\_text, begin, end, payload)` |  | | `information` | `action\_update` | function | `(action, free\_energy\_fn, step\_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. | | `information` | `finite\_difference\_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. | | `information` | `fisher\_information\_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. | | `information` | `fisher\_information\_quadray` | function | `(gradients, embedding\_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. | | `information` | `free\_energy` | function | `(log\_p\_o\_given\_s, q, p)` | Variational free energy for discrete latent states. | | `information` | `natural\_gradient\_step` | function | `(gradient, fisher, step\_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. | | `information` | `perception\_update` | function | `(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. | | `linalg\_utils` | `bareiss\_determinant\_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. | | `metrics` | `fim\_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. | | `metrics` | `fisher\_condition\_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. | | `metrics` | `fisher\_curvature\_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. | | `metrics` | `fisher\_quadray\_comparison` | function | `(F\_cartesian, F\_quadray)` | Compare Fisher information matrices between coordinate systems. | | `metrics` | `information\_length` | function | `(path\_gradients)` | Path length in information space via gradient-weighted arc length. | | `metrics` | `shannon\_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. | | `nelder\_mead\_quadray` | `SimplexState` | class |!}\strut
+\passthrough{\lstinline!|  | | `glossary\_gen` | `build\_api\_index` | function | `(src\_dir)` |  | | `glossary\_gen` | `generate\_markdown\_table` | function | `(entries)` |  | | `glossary\_gen` | `inject\_between\_markers` | function | `(markdown\_text, begin, end, payload)` |  | | `information` | `action\_update` | function | `(action, free\_energy\_fn, step\_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. | | `information` | `active\_inference\_step` | function | `(mu, action, free\_energy\_fn, derivative\_operator, step\_size, epsilon)` | Joint perception-action update step in Active Inference. | | `information` | `expected\_free\_energy` | function | `(log\_p\_o\_given\_s, q, p, log\_p\_o)` | Expected free energy for Active Inference with prior preferences. | | `information` | `finite\_difference\_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. | | `information` | `fisher\_information\_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. | | `information` | `fisher\_information\_quadray` | function | `(gradients, embedding\_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. | | `information` | `free\_energy` | function | `(log\_p\_o\_given\_s, q, p)` | Variational free energy for discrete latent states. | | `information` | `information\_geometric\_distance` | function | `(F, x1, x2)` | Compute information-geometric distance between two points. | | `information` | `natural\_gradient\_step` | function | `(gradient, fisher, step\_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. | | `information` | `perception\_update` | function | `(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. | | `linalg\_utils` | `bareiss\_determinant\_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. | | `metrics` | `fim\_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. | | `metrics` | `fisher\_condition\_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. | | `metrics` | `fisher\_curvature\_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. | | `metrics` | `fisher\_quadray\_comparison` | function | `(F\_cartesian, F\_quadray)` | Compare Fisher information matrices between coordinate systems. | | `metrics` | `information\_length` | function | `(path\_gradients)` | Path length in information space via gradient-weighted arc length. | | `metrics` | `shannon\_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. | | `nelder\_mead\_quadray` | `SimplexState` | class |!}\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
 \strut
 \end{minipage}\tabularnewline

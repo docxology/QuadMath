@@ -348,90 +348,14 @@ See code:
 See \passthrough{\lstinline!src/information.py!} --- discrete-state
 variational free energy (\passthrough{\lstinline!free\_energy!}).
 
+\textbf{Note}: The main figures demonstrating natural gradient
+trajectories and free energy landscapes are shown in
+\href{04_optimization_in_4d.md}{Section 4: Optimization in 4D}. The
+appendix focuses on unique figures specific to mathematical formulations
+and validation.
+
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/natural_gradient_path.png}
-\caption{\textbf{Natural gradient trajectory demonstrating
-information-geometric optimization}. This trajectory shows natural
-gradient descent (Eq. \ref{eq:supp_natgrad}) converging on a quadratic
-objective function. \textbf{Trajectory}: The blue line with markers
-traces the parameter evolution from initial guess to final optimum,
-showing the path taken through the 2D parameter space. \textbf{Markers}:
-Each marker represents one optimization step, with spacing indicating
-the step size and convergence rate. \textbf{Convergence behavior}: The
-trajectory shows smooth, direct convergence to the optimum,
-characteristic of natural gradient descent on well-conditioned
-objectives. \textbf{Comparison with standard gradient descent}: Natural
-gradient descent typically produces more direct trajectories than
-standard gradient descent, especially on ill-conditioned problems where
-the parameter space has strong anisotropy. This efficiency comes from
-the FIM-based scaling that adapts step sizes to local curvature. The
-trajectory demonstrates how information-geometric optimization leverages
-the intrinsic geometry of the parameter space to achieve faster, more
-stable convergence than naive gradient methods.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/free_energy_curve.png}
-\caption{\textbf{Variational free energy functional for discrete binary
-states (Eq. \ref{eq:supp_free_energy})}. This curve illustrates the free
-energy landscape \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\)
-as a function of the variational distribution parameter.
-\textbf{X-axis}: Variational parameter controlling the distribution over
-the two discrete states. \textbf{Y-axis}: Free energy value in natural
-units. \textbf{Curve shape}: The free energy exhibits a clear minimum at
-the optimal variational distribution, representing the best
-approximation to the true posterior given the constraints of the
-variational family. \textbf{KL divergence component}: The free energy
-balances data fit (first term) with regularization (KL divergence from
-prior), preventing overfitting while maintaining good predictive
-performance. \textbf{Optimization interpretation}: Minimizing this free
-energy corresponds to finding the best variational approximation to the
-true posterior, a fundamental task in Bayesian inference and active
-inference. The smooth, convex shape of the free energy landscape makes
-optimization straightforward using standard methods like gradient
-descent or natural gradient descent. This variational framework provides
-a principled approach to approximate inference in complex models where
-exact posterior computation is intractable.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/enhanced_figure_13_4d_trajectory.png}
-\caption{\textbf{Enhanced Figure 13: 4D Natural Gradient Trajectory with
-Active Inference Context}. This comprehensive visualization demonstrates
-natural gradient descent (Eq. \ref{eq:supp_natgrad}) operating within
-the Active Inference framework, showing how information-geometric
-optimization drives perception-action dynamics. The figure integrates
-the three 4D frameworks: Coxeter.4D (Euclidean) for exact measurements,
-Einstein.4D (Minkowski analogy) for information-geometric flows, and
-Fuller.4D (Synergetics) for the tetrahedral structure of the four-fold
-partition. The natural gradient implements geodesic motion on the
-information manifold, analogous to how particles follow geodesics in
-Einstein.4D spacetime.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/enhanced_figure_14_free_energy_landscape.png}
-\caption{\textbf{Enhanced Figure 14: Free Energy Landscape with 4D
-Active Inference Context}. This comprehensive visualization explores the
-variational free energy landscape
-\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
-\ref{eq:supp_free_energy}) within the 4D Active Inference framework. The
-figure demonstrates how the Free Energy Principle operates within the 4D
-framework: Coxeter.4D provides exact Euclidean geometry for
-measurements, Einstein.4D supplies information-geometric flows for
-optimization, and Fuller.4D offers the tetrahedral structure for
-representing the four-fold partition of Active Inference. The landscape
-shows how minimizing free energy balances prediction error with model
-complexity, driving both perception and action through natural gradient
-descent on the information manifold.}
-\end{figure}
 
 \begin{figure}
 \centering

@@ -164,20 +164,20 @@ def compare_ace_vs_cm_examples() -> str:
     # Define descriptive labels for each example
     example_labels = [
         "Unit Tetra",
-        "Scaled Unit", 
-        "Mixed Tetra",
-        "Centered",
+        "2× Edge (V=8)", 
+        "Mixed Coords",
+        "Centered (V=3)",
         "Large Mixed"
     ]
 
     ax.bar([i - bar_width / 2 for i in x], ace_vals, width=bar_width, label="Ace 5×5 (IVM)", color=color_ace)
     ax.bar([i + bar_width / 2 for i in x], cm_vals, width=bar_width, label="CM + S3 (IVM)", color=color_cm)
 
-    ax.set_xlabel("Tetrahedron Examples")
+    ax.set_xlabel("Test Cases (Integer Quadray Coordinates)")
     ax.set_xticks(x)
     ax.set_xticklabels(example_labels, rotation=0, ha='center')
     ax.set_ylabel("Tetravolume (IVM units)")
-    ax.set_title("Bridging (CM+S3) vs Native (Ace) IVM tetravolumes")
+    ax.set_title("Validation: Bridging vs Native Tetravolume Formulations", fontsize=14, fontweight='bold')
     ax.legend(frameon=False)
     ax.grid(axis="y", alpha=0.35, linewidth=0.6)
 
@@ -191,8 +191,8 @@ def compare_ace_vs_cm_examples() -> str:
 
     # Footnote explaining equivalence and data artifact
     ax.text(0.01, -0.22,
-            "Lengths→IVM via S3 (CM+S3) agree with native Ace 5×5 on canonical integer-quadray examples.\n"
-            "CSV with exact values: quadmath/output/bridging_vs_native.csv",
+            "Test cases: Unit tetra (V=1), 2× edge scaling (V=8), mixed coordinates, centered (V=3), large mixed.\n"
+            "Both methods agree at machine precision, validating the S3 conversion factor. Data: quadmath/output/bridging_vs_native.csv",
             transform=ax.transAxes, ha="left", va="top", fontsize=9)
 
     # Start y-axis at 0 and add a small headroom

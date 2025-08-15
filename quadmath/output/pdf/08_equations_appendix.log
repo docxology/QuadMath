@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 10:51
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  15 AUG 2025 13:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1134,36 +1134,25 @@ LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
 (Font)              scaled to size 8.0pt on input line 260.
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 (Font)              scaled to size 7.5929pt on input line 260.
-File: ../output/figures/natural_gradient_path.png Graphic file (type bmp)
-<../output/figures/natural_gradient_path.png>
  [2]
-File: ../output/figures/free_energy_curve.png Graphic file (type bmp)
-<../output/figures/free_energy_curve.png>
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 399.
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 399.
-File: ../output/figures/enhanced_figure_13_4d_trajectory.png Graphic file (type
- bmp)
-<../output/figures/enhanced_figure_13_4d_trajectory.png>
-File: ../output/figures/enhanced_figure_14_free_energy_landscape.png Graphic fi
-le (type bmp)
-<../output/figures/enhanced_figure_14_free_energy_landscape.png>
 File: ../output/figures/discrete_path_final.png Graphic file (type bmp)
 <../output/figures/discrete_path_final.png>
 File: ../output/figures/bridging_vs_native.png Graphic file (type bmp)
 <../output/figures/bridging_vs_native.png>
- [3] [4] [5] [6] [7] [8] [9]
+ [3] [4]
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 499.
+ [5]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/08_equations_appendix
 .aux) ) 
 Here is how much of TeX's memory you used:
- 20538 strings out of 478190
- 377759 string characters out of 5854827
- 985888 words of memory out of 5000000
- 40824 multiletter control sequences out of 15000+600000
- 476692 words of font info for 104 fonts, out of 8000000 for 9000
+ 20503 strings out of 478190
+ 375993 string characters out of 5854827
+ 984888 words of memory out of 5000000
+ 40794 multiletter control sequences out of 15000+600000
+ 476627 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,10n,122p,1600b,1232s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,10n,122p,1499b,1232s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/08_e
-quations_appendix.pdf (9 pages).
+quations_appendix.pdf (5 pages).

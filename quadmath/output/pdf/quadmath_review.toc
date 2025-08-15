@@ -119,27 +119,27 @@
 \contentsline {subsection}{\numberline {9.6}Distance (Embedding Sketch; Coxeter.4D slice)}{44}{subsection.9.6}%
 \contentsline {subsection}{\numberline {9.7}Minkowski Line Element (Einstein.4D analogy)}{44}{subsection.9.7}%
 \contentsline {subsection}{\numberline {9.8}High-Precision Arithmetic Note}{44}{subsection.9.8}%
-\contentsline {subsubsection}{\numberline {9.8.1}Reproducibility artifacts and external validation}{44}{subsubsection.9.8.1}%
-\contentsline {subsection}{\numberline {9.9}Namespaces summary (notation)}{51}{subsection.9.9}%
-\contentsline {section}{\numberline {10}Appendix: The Free Energy Principle and Active Inference}{52}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Overview}{52}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Mathematical Formulation and Equation Callouts (Equations linkage)}{52}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)}{52}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}How the 4D namespaces relate here}{54}{subsection.10.4}%
-\contentsline {subsection}{\numberline {10.5}Joint Optimization in the Tetrahedral Framework (Methods linkage)}{54}{subsection.10.5}%
-\contentsline {subsection}{\numberline {10.6}Neuroscience and Predictive Coding}{54}{subsection.10.6}%
-\contentsline {subsection}{\numberline {10.7}Relation to Reinforcement Learning and Control}{54}{subsection.10.7}%
-\contentsline {subsection}{\numberline {10.8}Links to Other Theories}{54}{subsection.10.8}%
-\contentsline {subsection}{\numberline {10.9}Implications for AI and Robust Computation}{55}{subsection.10.9}%
-\contentsline {subsection}{\numberline {10.10}Code, Reproducibility, and Cross-References}{55}{subsection.10.10}%
-\contentsline {section}{\numberline {11}Appendix: Symbols and Glossary}{56}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Sets and Spaces}{56}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Quadray Coordinates and Geometry}{56}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Optimization and Algorithms}{57}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Information Theory and Geometry}{57}{subsection.11.4}%
-\contentsline {subsection}{\numberline {11.5}Embeddings and Distances}{58}{subsection.11.5}%
-\contentsline {subsection}{\numberline {11.6}Greek Letters (usage)}{58}{subsection.11.6}%
-\contentsline {subsection}{\numberline {11.7}Notes (usage and cross-references)}{58}{subsection.11.7}%
-\contentsline {subsection}{\numberline {11.8}Polyhedra and Synergetic Shapes}{58}{subsection.11.8}%
-\contentsline {subsection}{\numberline {11.9}Acronyms and abbreviations}{59}{subsection.11.9}%
-\contentsline {subsection}{\numberline {11.10}API Index (auto-generated; Methods linkage)}{59}{subsection.11.10}%
+\contentsline {subsubsection}{\numberline {9.8.1}Reproducibility artifacts and external validation}{47}{subsubsection.9.8.1}%
+\contentsline {subsection}{\numberline {9.9}Namespaces summary (notation)}{47}{subsection.9.9}%
+\contentsline {section}{\numberline {10}Appendix: The Free Energy Principle and Active Inference}{48}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Overview}{48}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Mathematical Formulation and Equation Callouts (Equations linkage)}{48}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)}{48}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}How the 4D namespaces relate here}{52}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Joint Optimization in the Tetrahedral Framework (Methods linkage)}{52}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Neuroscience and Predictive Coding}{52}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Relation to Reinforcement Learning and Control}{52}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Links to Other Theories}{52}{subsection.10.8}%
+\contentsline {subsection}{\numberline {10.9}Implications for AI and Robust Computation}{53}{subsection.10.9}%
+\contentsline {subsection}{\numberline {10.10}Code, Reproducibility, and Cross-References}{53}{subsection.10.10}%
+\contentsline {section}{\numberline {11}Appendix: Symbols and Glossary}{54}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Sets and Spaces}{54}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Quadray Coordinates and Geometry}{54}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Optimization and Algorithms}{55}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Information Theory and Geometry}{55}{subsection.11.4}%
+\contentsline {subsection}{\numberline {11.5}Embeddings and Distances}{56}{subsection.11.5}%
+\contentsline {subsection}{\numberline {11.6}Greek Letters (usage)}{56}{subsection.11.6}%
+\contentsline {subsection}{\numberline {11.7}Notes (usage and cross-references)}{56}{subsection.11.7}%
+\contentsline {subsection}{\numberline {11.8}Polyhedra and Synergetic Shapes}{56}{subsection.11.8}%
+\contentsline {subsection}{\numberline {11.9}Acronyms and abbreviations}{57}{subsection.11.9}%
+\contentsline {subsection}{\numberline {11.10}API Index (auto-generated; Methods linkage)}{57}{subsection.11.10}%
