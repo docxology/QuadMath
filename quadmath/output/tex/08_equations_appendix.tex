@@ -48,7 +48,7 @@
   urlcolor=red,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=0.3cm,top=0.5cm,bottom=0.5cm,left=0.3cm,right=0.3cm,includeheadfoot]{geometry}
+\usepackage[margin=0.7cm,top=0.7cm,bottom=0.7cm,left=0.7cm,right=0.7cm,includeheadfoot]{geometry}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -251,21 +251,21 @@ energy (\texttt{free\_energy}).
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
-\caption{Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.}
+\caption{**Natural gradient trajectory demonstrating information-geometric optimization**. This trajectory shows natural gradient descent (Eq. \ref{eq:supp_natgrad}) converging on a quadratic objective, projected to the $(w_0, w_1)$ parameter plane. **Mathematical setup**: Quadratic form matrix $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped Fisher inverse $F + 10^{-3} I$ for numerical stability. **Trajectory characteristics**: The curved path demonstrates curvature-adaptive steps—larger strides in low-curvature directions, smaller steps in high-curvature directions—contrasting with uniform Euclidean gradient steps. **Information geometry**: Each step follows approximate geodesics on the parameter manifold equipped with the Fisher metric, achieving more efficient convergence than standard gradient descent on ill-conditioned problems. **Data artifacts**: Complete 3D trajectory data saved as \texttt{natural\_gradient\_path.csv} and \texttt{natural\_gradient\_path.npz} for reproducibility and further analysis.}
 \label{fig:natural_gradient_path}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
-\caption{Free energy curve for a 2-state model.}
+\caption{**Variational free energy functional for discrete binary states (Eq. \ref{eq:supp_free_energy})**. This curve illustrates the free energy landscape $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ for a 2-state system as a function of variational posterior probability $q(\text{state}=0) \in [0.001, 0.999]$. **Model specification**: True likelihood $\log P(o|s) = \log[0.7, 0.3]$, uniform prior $P(s) = [0.5, 0.5]$, variational posterior $Q(s) = [q, 1-q]$. **Free energy interpretation**: The convex curve shows the trade-off between likelihood accuracy (observation explanation) and complexity penalty (KL divergence from prior). **Optimization**: The global minimum represents the optimal variational approximation where beliefs match the true posterior distribution. **Active Inference**: This functional drives belief updating in the four-fold partition framework, with the minimum achieved through gradient-based inference or discrete lattice descent methods. The convex structure ensures reliable convergence for variational optimization in discrete state spaces.}
 \label{fig:free_energy_curve}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/discrete_path_final.png}
-\caption{Discrete IVM descent path (final frame).}
+\caption{**Discrete IVM descent optimization path (final converged state)**. This static frame shows the final position of a discrete variational descent algorithm operating on the integer Quadray lattice. **Algorithm**: \texttt{discrete\_ivm\_descent} performs greedy optimization using the 12 canonical IVM neighbor moves (permutations of \{2,1,1,0\}), ensuring all iterates remain on integer lattice points with proper Quadray normalization. **Objective**: Simple quadratic function $f(q) = (x-0.5)^2 + (y+0.2)^2 + (z-0.1)^2$ where $(x,y,z)$ are the embedded Euclidean coordinates of Quadray $q$. **Convergence**: The final point represents the best lattice approximation to the continuous optimum, demonstrating discrete convergence within the integer-constrained feasible region. **Fuller.4D significance**: This method exemplifies optimization directly on the Quadray integer lattice without continuous relaxation, maintaining exact arithmetic and leveraging the discrete "energy level" structure of integer tetravolumes. **Animation**: The complete optimization trajectory is available as \texttt{discrete\_path.mp4} with corresponding trajectory data in \texttt{discrete\_path.csv} and \texttt{discrete\_path.npz}.}
 \label{fig:discrete_path}
 \end{figure}
 

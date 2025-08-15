@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,15 +973,15 @@ LaTeX Info: Redefining \nameref on input line 84.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1084,17 +1084,23 @@ LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 [1
 
 ]
-Overfull \hbox (5.85681pt too wide) in paragraph at lines 214--219
+Overfull \hbox (9.0498pt too wide) in paragraph at lines 209--214
+[]\TU/DejaVuSansMono(0)/m/n/10 QuadCraft_Project.ipynb\TU/DejaVuSerif(0)/m/n/10
+ : Interactive tutorials; CCP navigation and tetra demos ([][]QuadCraft_Project
+.ipynb
+ []
+
+
+Overfull \hbox (28.61868pt too wide) in paragraph at lines 214--219
 []\TU/DejaVuSansMono(0)/m/n/10 Qvolume.ipynb\TU/DejaVuSerif(0)/m/n/10 : Tom Ace
  5×5 determinant; random-walk IVM volumes ([][]Qvolume.ipynb — School_of_Tomorr
 ow[][]) 
  []
 
 
-Overfull \hbox (27.52779pt too wide) in paragraph at lines 219--224
+Underfull \hbox (badness 5345) in paragraph at lines 219--224
 []\TU/DejaVuSansMono(0)/m/n/10 VolumeTalk.ipynb\TU/DejaVuSerif(0)/m/n/10 : Brid
-ging (CM/PdF) vs native (Ace/GdJ) tetravolumes ([][]VolumeTalk.ipynb — School_o
-f_Tomorrow[][]) 
+ging (CM/PdF) vs native (Ace/GdJ) tetravolumes ([][]VolumeTalk.ipynb —
  []
 
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
@@ -1115,7 +1121,7 @@ LaTeX Warning: There were undefined references.
 Here is how much of TeX's memory you used:
  18690 strings out of 478190
  348104 string characters out of 5854827
- 843997 words of memory out of 5000000
+ 844000 words of memory out of 5000000
  39010 multiletter control sequences out of 15000+600000
  476310 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191

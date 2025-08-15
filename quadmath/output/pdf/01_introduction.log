@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:23
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,15 +973,15 @@ LaTeX Info: Redefining \nameref on input line 97.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1084,22 +1084,10 @@ LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 [1
 
 ]
-Underfull \hbox (badness 2237) in paragraph at lines 204--208
-[]\TU/DejaVuSerif(0)/b/n/10 Namespaces mapping\TU/DejaVuSerif(0)/m/n/10 : Coxet
-er.4D (Euclidean E$[]$), Einstein.4D (Minkowski spacetime), and Fuller.4D
- []
-
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 221.
 
-Underfull \hbox (badness 1024) in paragraph at lines 255--261
-[]\TU/DejaVuSerif(0)/b/n/10 Primary Python modules\TU/DejaVuSerif(0)/m/n/10 : [
-][]\TU/DejaVuSansMono(0)/m/n/10 qrays.py[][] \TU/DejaVuSerif(0)/m/n/10 (Quadray
- vector operations, normalization, XYZ bridging) and
- []
-
-
-Overfull \hbox (4.4756pt too wide) in paragraph at lines 306--310
+Overfull \hbox (27.23747pt too wide) in paragraph at lines 306--310
 []\TU/DejaVuSerif(0)/b/n/10 Length-based volume\TU/DejaVuSerif(0)/m/n/10 : \TU/
 DejaVuSansMono(0)/m/n/10 src/cayley_menger.py \TU/DejaVuSerif(0)/m/n/10 (\TU/De
 jaVuSansMono(0)/m/n/10 tetra_volume_cayley_menger\TU/DejaVuSerif(0)/m/n/10 , \T
@@ -1115,11 +1103,11 @@ File: figures/graphical_abstract_quadray.png Graphic file (type bmp)
 Here is how much of TeX's memory you used:
  18676 strings out of 478190
  347895 string characters out of 5854827
- 842115 words of memory out of 5000000
+ 841118 words of memory out of 5000000
  38992 multiletter control sequences out of 15000+600000
  476367 words of font info for 99 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,6n,122p,1069b,395s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,6n,122p,1512b,393s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/01_i
 ntroduction.pdf (3 pages).

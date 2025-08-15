@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,14 +709,7 @@ Package graphics Info: Driver file: xetex.def on input line 107.
 (/usr/share/texlive/texmf-dist/tex/latex/newunicodechar/newunicodechar.sty
 Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
 )
-(/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.aux
-
-LaTeX Warning: Label `fig:natural_gradient_path' multiply defined.
-
-
-LaTeX Warning: Label `fig:free_energy_curve' multiply defined.
-
-)
+(/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.aux)
 \openout1 = `quadmath_review.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 144.
@@ -1011,7 +1004,8 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 Package hyperref Info: Link coloring ON on input line 144.
- (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
@@ -1034,15 +1028,15 @@ LaTeX Info: Redefining \nameref on input line 144.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1114,58 +1108,52 @@ LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
 (Font)              scaled to size 14.4pt on input line 150.
 
-(/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.toc
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
-(Font)              scaled to size 10.0pt on input line 1.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.42989pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.02135pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.04391pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.43074pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.02196pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 12.04147pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.42903pt on input line 2.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.02074pt on input line 2.
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 9.
-LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
-(Font)              scaled to size 9.49112pt on input line 36.
-
-[1
-
-] [2]
-Overfull \hbox (5.6279pt too wide) detected at line 131
-\TU/DejaVuSerif(0)/m/n/10 10.10 
- []
-
-)
+(/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.toc)
 \tf@toc=\write4
 \openout4 = `quadmath_review.toc'.
 
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 158.
- [3] [4]
-Underfull \hbox (badness 2237) in paragraph at lines 354--358
-[]\TU/DejaVuSerif(0)/b/n/10 Namespaces mapping\TU/DejaVuSerif(0)/m/n/10 : Coxet
-er.4D (Euclidean E$[]$), Einstein.4D (Minkowski spacetime), and Fuller.4D
- []
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 8.42989pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 6.02135pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 12.04391pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.43074pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 6.02196pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 12.04147pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.42903pt on input line 181.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.02074pt on input line 181.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 181.
+LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
+(Font)              scaled to size 9.49112pt on input line 206.
+
+[1
+
+]
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 253.
 
 
-Underfull \hbox (badness 1024) in paragraph at lines 405--411
-[]\TU/DejaVuSerif(0)/b/n/10 Primary Python modules\TU/DejaVuSerif(0)/m/n/10 : [
-][]\TU/DejaVuSansMono(0)/m/n/10 qrays.py[][] \TU/DejaVuSerif(0)/m/n/10 (Quadray
- vector operations, normalization, XYZ bridging) and
- []
+LaTeX Warning: Reference `eq:lattice_det' on page 2 undefined on input line 253
+.
 
-[5]
-Overfull \hbox (4.4756pt too wide) in paragraph at lines 456--460
+
+LaTeX Warning: Reference `eq:supp_fim' on page 2 undefined on input line 253.
+
+
+LaTeX Warning: Reference `fig:volumes_scale' on page 2 undefined on input line 
+254.
+
+[2]
+Overfull \hbox (27.23747pt too wide) in paragraph at lines 457--461
 []\TU/DejaVuSerif(0)/b/n/10 Length-based volume\TU/DejaVuSerif(0)/m/n/10 : \TU/
 DejaVuSansMono(0)/m/n/10 src/cayley_menger.py \TU/DejaVuSerif(0)/m/n/10 (\TU/De
 jaVuSansMono(0)/m/n/10 tetra_volume_cayley_menger\TU/DejaVuSerif(0)/m/n/10 , \T
@@ -1176,61 +1164,113 @@ U/DejaVuSansMono(0)/m/n/10 ivm_tetra_volume_cayley_menger\TU/DejaVuSerif(0)/m/n
 File: figures/graphical_abstract_quadray.png Graphic file (type bmp)
 <figures/graphical_abstract_quadray.png>
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
-(Font)              scaled to size 8.0pt on input line 496.
-[6]
+(Font)              scaled to size 8.0pt on input line 513.
+[3] [4]
 File: figures/ivm_neighbors_edges.png Graphic file (type bmp)
 <figures/ivm_neighbors_edges.png>
 File: figures/quadray_clouds.png Graphic file (type bmp)
 <figures/quadray_clouds.png>
 File: figures/vector_equilibrium_panels.png Graphic file (type bmp)
 <figures/vector_equilibrium_panels.png>
- [7] [8] [9]
+ [5] [6]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 710.
+(Font)              scaled to size 10.0pt on input line 727.
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 710.
+(Font)              scaled to size 7.0pt on input line 727.
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 710.
- [10]
-Underfull \hbox (badness 2205) in paragraph at lines 824--824
-[]\TU/DejaVuSerif(0)/b/n/12 Conversions and Vector Operations: Quadray ↔ Cartes
-ian (Fuller.4D ↔ Cox-
- []
+(Font)              scaled to size 5.0pt on input line 727.
+ [7] [8]
 
-[11]
+LaTeX Warning: Reference `eq:cayley_menger' on page 9 undefined on input line 7
+58.
+
+[9]
+
+LaTeX Warning: Reference `fig:polyhedra_quadray_map' on page 10 undefined on in
+put line 896.
+
+
+LaTeX Warning: Reference `fig:polyhedra_quadray_map' on page 10 undefined on in
+put line 924.
+
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
-(Font)              scaled to size 9.49112pt on input line 968.
+(Font)              scaled to size 9.49112pt on input line 985.
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/it' will be
-(Font)              scaled to size 9.49112pt on input line 970.
- [12]
-Underfull \hbox (badness 10000) in paragraph at lines 1156--1156
+(Font)              scaled to size 9.49112pt on input line 987.
+[10] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 1173--1173
 []\TU/DejaVuSerif(0)/m/n/10 Table 2: Polyhedra tetravolumes in IVM units
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1156--1156
+Underfull \hbox (badness 10000) in paragraph at lines 1173--1173
 \TU/DejaVuSerif(0)/m/n/10 (edge length equal to the unit tetra edge).
  []
 
-[13] [14]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 2 on input line 1188.
+
+[12]
+
+LaTeX Warning: Reference `eq:ace5x5' on page 13 undefined on input line 1272.
+
+
+Overfull \hbox (17.38995pt too wide) detected at line 1297
+[][][][][] [][] [] [][][][][][][] [] [][] [][][] [] [][] [] [][][][] [] [][] []
+[][] [] [][] [] [][][][] [] [][] [][][] [] [][] [] [][][][] [] [][][] [] [][] [
+] [][][][][][] [] [][] [] [][][][][][] [] [][] [] [][][] []
+ []
+
+[13]
+Overfull \hbox (4.75081pt too wide) in paragraph at lines 1350--1353
+[]\TU/DejaVuSerif(0)/m/n/10 Figure: automated comparison (native Ace 5×5 vs CM+
+S3) across small examples (see script \TU/DejaVuSansMono(0)/m/n/10 sympy_formal
+isms.py\TU/DejaVuSerif(0)/m/n/10 ).
+ []
+
 File: figures/bridging_vs_native.png Graphic file (type bmp)
 <figures/bridging_vs_native.png>
 File: figures/polyhedra_quadray_constructions.png Graphic file (type bmp)
 <figures/polyhedra_quadray_constructions.png>
- [15] [16] [17] [18] [19] [20]
-Overfull \hbox (8.32451pt too wide) in paragraph at lines 1838--1842
+[14] [15] [16]
+
+LaTeX Warning: Reference `eq:xyz_det' on page 17 undefined on input line 1484.
+
+[17] [18] [19]
+Overfull \hbox (31.08638pt too wide) in paragraph at lines 1855--1859
 []\TU/DejaVuSerif(0)/m/n/10 Reflection/Expansion/Contraction: compute candidate
 ; round to nearest integer; renormalize by adding/subtracting
  []
 
+[20]
 File: figures/simplex_trace.png Graphic file (type bmp)
 <figures/simplex_trace.png>
 File: figures/volumes_scale_plot.png Graphic file (type bmp)
 <figures/volumes_scale_plot.png>
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 5.0pt on input line 1924.
+
+
+LaTeX Warning: Reference `fig:simplex_final' on page 21 undefined on input line
+ 1928.
+
+
+LaTeX Warning: Reference `fig:volumes_scale' on page 21 undefined on input line
+ 1929.
+
 File: figures/simplex_final.png Graphic file (type bmp)
 <figures/simplex_final.png>
 
-Overfull \hbox (61.07652pt too wide) in paragraph at lines 1922--1927
+LaTeX Warning: Reference `fig:simplex_trace' on page 21 undefined on input line
+ 1935.
+
+
+LaTeX Warning: Reference `fig:simplex_trace' on page 21 undefined on input line
+ 1935.
+
+
+Overfull \hbox (83.8384pt too wide) in paragraph at lines 1939--1944
 []\TU/DejaVuSerif(0)/m/n/10 Raw artifacts: the full trajectory animation \TU/De
 jaVuSansMono(0)/m/n/10 simplex_animation.mp4 \TU/DejaVuSerif(0)/m/n/10 and per-
 frame vertices (\TU/DejaVuSansMono(0)/m/n/10 simplex_animation_vertices.csv\TU/
@@ -1238,64 +1278,228 @@ DejaVuSerif(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 .npz\TU/DejaVuSerif(0)/m/n/
 10 )
  []
 
-[21] [22] [23] [24]
-Overfull \hbox (25.27354pt too wide) in paragraph at lines 1989--1996
+
+Overfull \hbox (48.03542pt too wide) in paragraph at lines 2006--2013
 []\TU/DejaVuSerif(0)/b/n/10 Fisher Information as metric\TU/DejaVuSerif(0)/m/n/
 10 : use the empirical estimator \TU/DejaVuSansMono(0)/m/n/10 F = (1/N) \sum g 
 g^\top \TU/DejaVuSerif(0)/m/n/10 from \TU/DejaVuSansMono(0)/m/n/10 fisher_infor
 mation_matrix
  []
 
+[21] [22] [23] [24]
+
+LaTeX Warning: Reference `fig:fisher_information_matrix' on page 25 undefined o
+n input line 2018.
+
+
+LaTeX Warning: Reference `fig:fim_eigenspectrum' on page 25 undefined on input 
+line 2019.
+
 File: figures/fisher_information_matrix.png Graphic file (type bmp)
 <figures/fisher_information_matrix.png>
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 2009.
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 25 undefined on input line 2
+026.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 25 undefined on input line 2
+026.
+
 File: figures/fisher_information_eigenspectrum.png Graphic file (type bmp)
 <figures/fisher_information_eigenspectrum.png>
+
+LaTeX Warning: Reference `fig:fisher_information_matrix' on page 25 undefined o
+n input line 2033.
+
+
+LaTeX Warning: Reference `fig:fisher_information_matrix' on page 25 undefined o
+n input line 2033.
+
 File: figures/natural_gradient_path.png Graphic file (type bmp)
 <figures/natural_gradient_path.png>
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 25 undefined on input line 2
+040.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 25 undefined on input line 2
+040.
+
 File: figures/free_energy_curve.png Graphic file (type bmp)
 <figures/free_energy_curve.png>
-[25] [26] [27] [28] [29] [30] [31]
-Overfull \hbox (5.85681pt too wide) in paragraph at lines 2795--2800
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 25 undefined on input li
+ne 2047.
+
+
+LaTeX Warning: Reference `fig:partition_tetrahedron' on page 25 undefined on in
+put line 2047.
+
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 25 undefined on input li
+ne 2047.
+
+
+LaTeX Warning: Reference `fig:partition_tetrahedron' on page 25 undefined on in
+put line 2047.
+
+[25] [26] [27] [28]
+
+LaTeX Warning: Reference `fig:simplex_final' on page 29 undefined on input line
+ 2111.
+
+
+LaTeX Warning: Reference `fig:discrete_path' on page 29 undefined on input line
+ 2115.
+
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 29 undefined on input li
+ne 2173.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 29 undefined on input line 2
+178.
+
+[29]
+
+LaTeX Warning: Reference `eq:supp_fim' on page 30 undefined on input line 2379.
+
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 30 undefined on input line 2
+379.
+
+[30]
+
+LaTeX Warning: Reference `fig:fim_eigenspectrum' on page 31 undefined on input 
+line 2418.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 31 undefined on input line 2
+423.
+
+
+LaTeX Warning: Reference `eq:supp_fim' on page 31 undefined on input line 2433.
+
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 31 undefined on input line 2
+433.
+
+[31]
+
+LaTeX Warning: Reference `fig:bridging_native' on page 32 undefined on input li
+ne 2532.
+
+[32] [33]
+Overfull \hbox (9.0498pt too wide) in paragraph at lines 2807--2812
+[]\TU/DejaVuSansMono(0)/m/n/10 QuadCraft_Project.ipynb\TU/DejaVuSerif(0)/m/n/10
+ : Interactive tutorials; CCP navigation and tetra demos ([][]QuadCraft_Project
+.ipynb
+ []
+
+
+Overfull \hbox (28.61868pt too wide) in paragraph at lines 2812--2817
 []\TU/DejaVuSansMono(0)/m/n/10 Qvolume.ipynb\TU/DejaVuSerif(0)/m/n/10 : Tom Ace
  5×5 determinant; random-walk IVM volumes ([][]Qvolume.ipynb — School_of_Tomorr
 ow[][]) 
  []
 
 
-Overfull \hbox (27.52779pt too wide) in paragraph at lines 2800--2805
+Underfull \hbox (badness 5345) in paragraph at lines 2817--2822
 []\TU/DejaVuSansMono(0)/m/n/10 VolumeTalk.ipynb\TU/DejaVuSerif(0)/m/n/10 : Brid
-ging (CM/PdF) vs native (Ace/GdJ) tetravolumes ([][]VolumeTalk.ipynb — School_o
-f_Tomorrow[][]) 
+ging (CM/PdF) vs native (Ace/GdJ) tetravolumes ([][]VolumeTalk.ipynb —
  []
 
-[32]
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
-(Font)              scaled to size 7.0pt on input line 2950.
- [33] [34]
+(Font)              scaled to size 7.0pt on input line 2967.
+[34]
+
+LaTeX Warning: Reference `eq:supp_fim' on page 35 undefined on input line 3001.
+
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 35 undefined on input line 3
+005.
+
+[35] [36]
 File: figures/natural_gradient_path.png Graphic file (type bmp)
 <figures/natural_gradient_path.png>
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 37 undefined on input line 3
+247.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 37 undefined on input line 3
+247.
+
 File: figures/free_energy_curve.png Graphic file (type bmp)
 <figures/free_energy_curve.png>
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 37 undefined on input li
+ne 3254.
+
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 37 undefined on input li
+ne 3254.
+
 File: figures/discrete_path_final.png Graphic file (type bmp)
 <figures/discrete_path_final.png>
 File: figures/bridging_vs_native.png Graphic file (type bmp)
 <figures/bridging_vs_native.png>
- [35] [36] [37] [38]
-File: figures/partition_tetrahedron.png Graphic file (type bmp)
-<figures/partition_tetrahedron.png>
- [39]
-Underfull \hbox (badness 1831) in paragraph at lines 3607--3619
-\TU/DejaVuSansMono(0)/m/n/10 ral_gradient_step[][]\TU/DejaVuSerif(0)/m/n/10 , \
-TU/DejaVuSansMono(0)/m/n/10 perception_update\TU/DejaVuSerif(0)/m/n/10 , \TU/De
-jaVuSansMono(0)/m/n/10 action_update\TU/DejaVuSerif(0)/m/n/10 , and \TU/DejaVuS
-ansMono(0)/m/n/10 discrete_ivm_descent \TU/DejaVuSerif(0)/m/n/10 in \TU/DejaVuS
-ansMono(0)/m/n/10 src/information.py \TU/DejaVuSerif(0)/m/n/10 and
+[37] [38] [39]
+Underfull \hbox (badness 2726) in paragraph at lines 3327--3331
+[]\TU/DejaVuSansMono(0)/m/n/10 fisher_information_eigenvalues.csv \TU/DejaVuSer
+if(0)/m/n/10 / \TU/DejaVuSansMono(0)/m/n/10 fisher_information_eigensystem.npz\
+TU/DejaVuSerif(0)/m/n/10 : eigenspectrum and
  []
 
+[40]
 
-Overfull \hbox (40.24078pt too wide) in paragraph at lines 3627--3632
+LaTeX Warning: Reference `eq:supp_free_energy' on page 41 undefined on input li
+ne 3421.
+
+
+LaTeX Warning: Reference `eq:supp_fim' on page 41 undefined on input line 3432.
+
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 41 undefined on input line 3
+440.
+
+
+LaTeX Warning: Reference `fig:fisher_information_matrix' on page 41 undefined o
+n input line 3451.
+
+
+LaTeX Warning: Reference `fig:fim_eigenspectrum' on page 41 undefined on input 
+line 3452.
+
+
+LaTeX Warning: Reference `fig:natural_gradient_path' on page 41 undefined on in
+put line 3452.
+
+
+LaTeX Warning: Reference `fig:free_energy_curve' on page 41 undefined on input 
+line 3453.
+
+
+Underfull \hbox (badness 1052) in paragraph at lines 3455--3460
+[]\TU/DejaVuSerif(0)/m/n/10 Discrete variational optimization on the quadray la
+ttice: \TU/DejaVuSansMono(0)/m/n/10 discrete_ivm_descent \TU/DejaVuSerif(0)/m/n
+/10 greedily descends a free-
+ []
+
+File: figures/partition_tetrahedron.png Graphic file (type bmp)
+<figures/partition_tetrahedron.png>
+[41] [42]
+
+LaTeX Warning: Reference `fig:partition_tetrahedron' on page 43 undefined on in
+put line 3520.
+
+[43]
+Overfull \hbox (63.00266pt too wide) in paragraph at lines 3644--3649
 []\TU/DejaVuSerif(0)/b/n/10 Visualizations\TU/DejaVuSerif(0)/m/n/10 : \TU/DejaV
 uSansMono(0)/m/n/10 fisher_information_matrix.png\TU/DejaVuSerif(0)/m/n/10 , \T
 U/DejaVuSansMono(0)/m/n/10 fisher_information_eigenspectrum.png\TU/DejaVuSerif(
@@ -1303,225 +1507,262 @@ U/DejaVuSansMono(0)/m/n/10 fisher_information_eigenspectrum.png\TU/DejaVuSerif(
 if(0)/m/n/10 ,
  []
 
-[40] [41] [42] [43]
-Overfull \hbox (69.89723pt too wide) in paragraph at lines 4179--4180
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 4 on input line 3682.
+
+[44]
+
+Package longtable Warning: Column widths have changed
+(longtable)                in table 6 on input line 3860.
+
+
+LaTeX Warning: Reference `eq:supp_fim' on page 45 undefined on input line 3909.
+
+
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 45 undefined on input li
+ne 3917.
+
+
+LaTeX Warning: Reference `eq:supp_minkowski' on page 45 undefined on input line
+ 3953.
+
+[45]
+
+LaTeX Warning: Reference `fig:volumes_scale' on page 46 undefined on input line
+ 4066.
+
+
+LaTeX Warning: Reference `eq:lattice_det' on page 46 undefined on input line 40
+69.
+
+[46]
+Overfull \hbox (73.76671pt too wide) in paragraph at lines 4196--4197
 []\TU/DejaVuSansMono(0)/m/n/10 ivm_tetra_volume_cayley_menger|  
  []
 
 
-Overfull \hbox (47.0407pt too wide) in paragraph at lines 4190--4191
+Overfull \hbox (50.91017pt too wide) in paragraph at lines 4207--4208
 []\TU/DejaVuSansMono(0)/m/n/10 tetra_volume_cayley_menger|  
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4224--4225
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4241--4242
 []\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (1.32762pt too wide) in paragraph at lines 4230--4231
+Overfull \hbox (5.1971pt too wide) in paragraph at lines 4247--4248
 \TU/DejaVuSansMono(0)/m/n/10 crete_variational[] 
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4235--4236
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4252--4253
 []\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4247--4248
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4264--4265
 []\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4249--4250
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4266--4267
 []\TU/DejaVuSansMono(0)/m/n/10 discrete_ivm_descent|  
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4258--4259
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4275--4276
 []\TU/DejaVuSansMono(0)/m/n/10 discrete_variational|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4260--4261
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4277--4278
 []\TU/DejaVuSansMono(0)/m/n/10 neighbor_moves_ivm|  
  []
 
 
-Overfull \hbox (75.61137pt too wide) in paragraph at lines 4271--4272
+Overfull \hbox (79.48085pt too wide) in paragraph at lines 4288--4289
 []\TU/DejaVuSansMono(0)/m/n/10 example_cuboctahedron_neighbors|  
  []
 
 
-Overfull \hbox (92.75378pt too wide) in paragraph at lines 4282--4283
+Overfull \hbox (96.62326pt too wide) in paragraph at lines 4299--4300
 []\TU/DejaVuSansMono(0)/m/n/10 example_cuboctahedron_vertices_xyz|  
  []
 
 
-Overfull \hbox (18.47002pt too wide) in paragraph at lines 4293--4294
+Overfull \hbox (22.3395pt too wide) in paragraph at lines 4310--4311
 []\TU/DejaVuSansMono(0)/m/n/10 example_ivm_neighbors|  
  []
 
 
-Overfull \hbox (69.89723pt too wide) in paragraph at lines 4317--4318
+Overfull \hbox (73.76671pt too wide) in paragraph at lines 4334--4335
 []\TU/DejaVuSansMono(0)/m/n/10 example_partition_tetra_volume|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4341--4342
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4358--4359
 []\TU/DejaVuSansMono(0)/m/n/10 minkowski_interval|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4373--4374
 \TU/DejaVuSansMono(0)/m/n/10 ate_markdown_table[] 
  []
 
 
-Overfull \hbox (18.47002pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (22.3395pt too wide) in paragraph at lines 4373--4374
 \TU/DejaVuSansMono(0)/m/n/10 ject_between_markers[] 
  []
 
 
-Overfull \hbox (41.32657pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (45.19604pt too wide) in paragraph at lines 4373--4374
 \TU/DejaVuSansMono(0)/m/n/10 nite_difference_gradient[] 
  []
 
 
-Overfull \hbox (52.75484pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (56.62431pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 fisher_information_matrix[] 
  []
 
 
-Overfull \hbox (1.32762pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (5.1971pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 (log_p_o_given_s, 
  []
 
 
-Overfull \hbox (1.32762pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (5.1971pt too wide) in paragraph at lines 4373--4374
 \TU/DejaVuSansMono(0)/m/n/10 ral_gradient_step[] 
  []
 
 
-Overfull \hbox (41.32657pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (45.19604pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 bareiss_determinant_int[] 
  []
 
 
-Overfull \hbox (7.04176pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (10.91124pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 fim_eigenspectrum[] 
  []
 
 
-Overfull \hbox (1.32762pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (5.1971pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 (path_gradients)[] 
  []
 
 
-Overfull \hbox (18.47003pt too wide) in paragraph at lines 4356--4357
+Overfull \hbox (22.33951pt too wide) in paragraph at lines 4373--4374
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray[] 
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4361--4362
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4378--4379
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4363--4364
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4380--4381
 []\TU/DejaVuSansMono(0)/m/n/10 centroid_excluding|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4372--4373
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4389--4390
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4383--4384
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4400--4401
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4385--4386
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4402--4403
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4394--4395
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4411--4412
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4406--4407
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4423--4424
 []\TU/DejaVuSansMono(0)/m/n/10 nelder_mead_quadray|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4408--4409
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4425--4426
 []\TU/DejaVuSansMono(0)/m/n/10 project_to_lattice|  
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4437--4438
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4454--4455
 \TU/DejaVuSansMono(0)/m/n/10 math/output/figures 
  []
 
 
-Overfull \hbox (7.04175pt too wide) in paragraph at lines 4478--4479
+Overfull \hbox (10.91122pt too wide) in paragraph at lines 4495--4496
 []\TU/DejaVuSansMono(0)/m/n/10 ace_tetravolume_5x5|  
  []
 
 
-Overfull \hbox (12.75587pt too wide) in paragraph at lines 4501--4502
+Overfull \hbox (16.62535pt too wide) in paragraph at lines 4518--4519
 []\TU/DejaVuSansMono(0)/m/n/10 integer_tetra_volume|  
  []
 
 
-Overfull \hbox (64.1831pt too wide) in paragraph at lines 4537--4538
+Overfull \hbox (68.05258pt too wide) in paragraph at lines 4554--4555
 []\TU/DejaVuSansMono(0)/m/n/10 cayley_menger_volume_symbolic|  
  []
 
 
-Overfull \hbox (92.75378pt too wide) in paragraph at lines 4549--4550
+Overfull \hbox (96.62326pt too wide) in paragraph at lines 4566--4567
 []\TU/DejaVuSansMono(0)/m/n/10 convert_xyz_volume_to_ivm_symbolic|  
  []
 
 
-Overfull \hbox (18.47002pt too wide) in paragraph at lines 4560--4561
+Overfull \hbox (22.3395pt too wide) in paragraph at lines 4577--4578
 []\TU/DejaVuSansMono(0)/m/n/10 animate_discrete_path|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4582--4583
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4599--4600
 []\TU/DejaVuSansMono(0)/m/n/10 plot_ivm_neighbors|  
  []
 
 
-Overfull \hbox (47.0407pt too wide) in paragraph at lines 4593--4594
+Overfull \hbox (50.91017pt too wide) in paragraph at lines 4610--4611
 []\TU/DejaVuSansMono(0)/m/n/10 plot_partition_tetrahedron|  
  []
 
 
-Overfull \hbox (1.3276pt too wide) in paragraph at lines 4604--4605
+Overfull \hbox (5.19708pt too wide) in paragraph at lines 4621--4622
 []\TU/DejaVuSansMono(0)/m/n/10 plot_simplex_trace|  
  []
 
-[44] [45] [46] [47] [48]
+[47] [48] [49] [50] [51]
+
+Package longtable Warning: Table widths have changed. Rerun LaTeX.
+
+[52]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quadmath_review.aux)
 
-LaTeX Warning: There were multiply-defined labels.
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
  19844 strings out of 478190
  371512 string characters out of 5854827
- 908948 words of memory out of 5000000
+ 900735 words of memory out of 5000000
  40122 multiletter control sequences out of 15000+600000
  476659 words of font info for 107 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,11n,122p,4188b,509s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,11n,122p,4188b,505s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/quad
-math_review.pdf (48 pages).
+math_review.pdf (52 pages).

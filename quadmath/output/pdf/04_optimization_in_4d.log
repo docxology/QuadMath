@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -986,15 +986,15 @@ LaTeX Info: Redefining \nameref on input line 122.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1093,24 +1093,28 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 144.
 
-Overfull \hbox (8.32451pt too wide) in paragraph at lines 153--157
+Overfull \hbox (31.08638pt too wide) in paragraph at lines 153--157
 []\TU/DejaVuSerif(0)/m/n/10 Reflection/Expansion/Contraction: compute candidate
 ; round to nearest integer; renormalize by adding/subtracting
  []
 
-LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
-(Font)              scaled to size 9.49112pt on input line 199.
 [1
 
 ]
+LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
+(Font)              scaled to size 9.49112pt on input line 199.
 File: figures/simplex_trace.png Graphic file (type bmp)
 <figures/simplex_trace.png>
 File: figures/volumes_scale_plot.png Graphic file (type bmp)
 <figures/volumes_scale_plot.png>
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 222.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 5.0pt on input line 222.
 File: figures/simplex_final.png Graphic file (type bmp)
 <figures/simplex_final.png>
 
-Overfull \hbox (61.07652pt too wide) in paragraph at lines 237--242
+Overfull \hbox (83.8384pt too wide) in paragraph at lines 237--242
 []\TU/DejaVuSerif(0)/m/n/10 Raw artifacts: the full trajectory animation \TU/De
 jaVuSansMono(0)/m/n/10 simplex_animation.mp4 \TU/DejaVuSerif(0)/m/n/10 and per-
 frame vertices (\TU/DejaVuSansMono(0)/m/n/10 simplex_animation_vertices.csv\TU/
@@ -1118,49 +1122,86 @@ DejaVuSerif(0)/m/n/10 /\TU/DejaVuSansMono(0)/m/n/10 .npz\TU/DejaVuSerif(0)/m/n/
 10 )
  []
 
-[2] [3] [4]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
 (Font)              scaled to size 9.49112pt on input line 271.
 
-Overfull \hbox (25.27354pt too wide) in paragraph at lines 304--311
+Overfull \hbox (48.03542pt too wide) in paragraph at lines 304--311
 []\TU/DejaVuSerif(0)/b/n/10 Fisher Information as metric\TU/DejaVuSerif(0)/m/n/
 10 : use the empirical estimator \TU/DejaVuSansMono(0)/m/n/10 F = (1/N) \sum g 
 g^\top \TU/DejaVuSerif(0)/m/n/10 from \TU/DejaVuSansMono(0)/m/n/10 fisher_infor
 mation_matrix
  []
 
+[2] [3] [4] [5]
 File: figures/fisher_information_matrix.png Graphic file (type bmp)
 <figures/fisher_information_matrix.png>
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 324.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
 (Font)              scaled to size 7.0pt on input line 324.
-LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
 (Font)              scaled to size 5.0pt on input line 324.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 6 undefined on input line 32
+4.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 6 undefined on input line 32
+4.
+
 File: figures/fisher_information_eigenspectrum.png Graphic file (type bmp)
 <figures/fisher_information_eigenspectrum.png>
 File: figures/natural_gradient_path.png Graphic file (type bmp)
 <figures/natural_gradient_path.png>
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 6 undefined on input line 33
+8.
+
+
+LaTeX Warning: Reference `eq:supp_natgrad' on page 6 undefined on input line 33
+8.
+
 File: figures/free_energy_curve.png Graphic file (type bmp)
 <figures/free_energy_curve.png>
-[5] [6] [7] [8]
 
-LaTeX Warning: Reference `fig:discrete_path' on page 9 undefined on input line 
+LaTeX Warning: Reference `eq:supp_free_energy' on page 6 undefined on input lin
+e 345.
+
+
+LaTeX Warning: Reference `fig:partition_tetrahedron' on page 6 undefined on inp
+ut line 345.
+
+
+LaTeX Warning: Reference `eq:supp_free_energy' on page 6 undefined on input lin
+e 345.
+
+
+LaTeX Warning: Reference `fig:partition_tetrahedron' on page 6 undefined on inp
+ut line 345.
+
+
+LaTeX Warning: Reference `fig:discrete_path' on page 6 undefined on input line 
 413.
 
-[9]
+[6] [7] [8] [9] [10]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/04_optimization_in_4d
 .aux)
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  ) 
 Here is how much of TeX's memory you used:
- 19184 strings out of 478190
- 357264 string characters out of 5854827
- 851410 words of memory out of 5000000
- 39488 multiletter control sequences out of 15000+600000
- 476440 words of font info for 101 fonts, out of 8000000 for 9000
+ 19196 strings out of 478190
+ 357622 string characters out of 5854827
+ 861093 words of memory out of 5000000
+ 39497 multiletter control sequences out of 15000+600000
+ 476635 words of font info for 104 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,10n,122p,1075b,478s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,10n,122p,1674b,512s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/04_o
-ptimization_in_4d.pdf (9 pages).
+ptimization_in_4d.pdf (10 pages).

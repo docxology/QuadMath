@@ -1,141 +1,141 @@
-\contentsline {section}{\numberline {1}QuadMath: An Analytical Review of 4D and Quadray Coordinates}{3}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Abstract}{3}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Manuscript structure}{4}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Reproducibility and data availability}{4}{subsection.1.3}%
-\contentsline {section}{\numberline {2}Introduction}{4}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Related work and background}{5}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Companion code and tests}{5}{subsection.2.2}%
-\contentsline {section}{\numberline {3}4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Coxeter.4D (Euclidean E⁴)}{6}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Einstein.4D (Relativistic spacetime)}{6}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Fuller.4D (Synergetics / Quadrays)}{7}{subsection.3.3}%
-\contentsline {subsubsection}{\numberline {3.3.1}Directions, not dimensions (language and models)}{7}{subsubsection.3.3.1}%
-\contentsline {subsubsection}{\numberline {3.3.2}Figures}{7}{subsubsection.3.3.2}%
-\contentsline {subsubsection}{\numberline {3.3.3}Clarifying remarks}{7}{subsubsection.3.3.3}%
+\contentsline {section}{\numberline {1}QuadMath: An Analytical Review of 4D and Quadray Coordinates}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Abstract}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Manuscript structure}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Reproducibility and data availability}{1}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Introduction}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Related work and background}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Companion code and tests}{3}{subsection.2.2}%
+\contentsline {section}{\numberline {3}4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Coxeter.4D (Euclidean E⁴)}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Einstein.4D (Relativistic spacetime)}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Fuller.4D (Synergetics / Quadrays)}{5}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Directions, not dimensions (language and models)}{5}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Figures}{5}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}Clarifying remarks}{5}{subsubsection.3.3.3}%
 \contentsline {subsection}{\numberline {3.4}Practical usage guide}{7}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Quadray Analytical Details, Equations, and Methods}{10}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Coxeter.4D (Euclidean E⁴): symmetry groups and polytopes}{10}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Einstein.4D (Minkowski spacetime): metric and field equations}{10}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Fuller.4D Coordinates and Normalization}{10}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Conversions and Vector Operations: Quadray ↔ Cartesian (Fuller.4D ↔ Coxeter.4D/XYZ)}{11}{subsection.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.1}Integer-coordinate constructions (compact derivation box)}{11}{subsubsection.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.2}Example vertex lists and volume checks (illustrative)}{12}{subsubsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.5}Integer Volume Quantization}{12}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Distances and Metrics}{14}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}XYZ determinant and S3 conversion}{14}{subsection.4.7}%
-\contentsline {subsection}{\numberline {4.8}Fisher Geometry in Quadray Space}{14}{subsection.4.8}%
-\contentsline {subsection}{\numberline {4.9}Practical Methods}{14}{subsection.4.9}%
-\contentsline {subsection}{\numberline {4.10}Tetravolumes with Quadrays}{14}{subsection.4.10}%
-\contentsline {subsubsection}{\numberline {4.10.1}Bridging vs native tetravolume formulas (Results reference)}{15}{subsubsection.4.10.1}%
-\contentsline {subsubsection}{\numberline {4.10.2}Short Python snippets (paper reproducibility)}{15}{subsubsection.4.10.2}%
-\contentsline {subsubsection}{\numberline {4.10.3}Random tetrahedra in the IVM (integer volumes)}{16}{subsubsection.4.10.3}%
-\contentsline {subsubsection}{\numberline {4.10.4}Algebraic precision}{18}{subsubsection.4.10.4}%
-\contentsline {subsubsection}{\numberline {4.10.5}XYZ determinant and the S3 conversion}{18}{subsubsection.4.10.5}%
-\contentsline {subsubsection}{\numberline {4.10.6}D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal ``cubing''}{18}{subsubsection.4.10.6}%
+\contentsline {section}{\numberline {4}Quadray Analytical Details, Equations, and Methods}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Coxeter.4D (Euclidean E⁴): symmetry groups and polytopes}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Einstein.4D (Minkowski spacetime): metric and field equations}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Fuller.4D Coordinates and Normalization}{9}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Conversions and Vector Operations: Quadray ↔ Cartesian (Fuller.4D ↔ Coxeter.4D/XYZ)}{9}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Integer-coordinate constructions (compact derivation box)}{10}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Example vertex lists and volume checks (illustrative)}{11}{subsubsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.5}Integer Volume Quantization}{11}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Distances and Metrics}{13}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}XYZ determinant and S3 conversion}{13}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Fisher Geometry in Quadray Space}{13}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Practical Methods}{13}{subsection.4.9}%
+\contentsline {subsection}{\numberline {4.10}Tetravolumes with Quadrays}{13}{subsection.4.10}%
+\contentsline {subsubsection}{\numberline {4.10.1}Bridging vs native tetravolume formulas (Results reference)}{14}{subsubsection.4.10.1}%
+\contentsline {subsubsection}{\numberline {4.10.2}Short Python snippets (paper reproducibility)}{14}{subsubsection.4.10.2}%
+\contentsline {subsubsection}{\numberline {4.10.3}Random tetrahedra in the IVM (integer volumes)}{17}{subsubsection.4.10.3}%
+\contentsline {subsubsection}{\numberline {4.10.4}Algebraic precision}{17}{subsubsection.4.10.4}%
+\contentsline {subsubsection}{\numberline {4.10.5}XYZ determinant and the S3 conversion}{17}{subsubsection.4.10.5}%
+\contentsline {subsubsection}{\numberline {4.10.6}D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal ``cubing''}{17}{subsubsection.4.10.6}%
 \contentsline {subsection}{\numberline {4.11}Code methods (anchors)}{18}{subsection.4.11}%
 \contentsline {subsubsection}{\numberline {4.11.1}\texttt {integer\_tetra\_volume}}{18}{subsubsection.4.11.1}%
 \contentsline {subsubsection}{\numberline {4.11.2}\texttt {ace\_tetravolume\_5x5}}{18}{subsubsection.4.11.2}%
 \contentsline {subsubsection}{\numberline {4.11.3}\texttt {tetra\_volume\_cayley\_menger}}{18}{subsubsection.4.11.3}%
-\contentsline {subsubsection}{\numberline {4.11.4}\texttt {ivm\_tetra\_volume\_cayley\_menger}}{19}{subsubsection.4.11.4}%
-\contentsline {subsubsection}{\numberline {4.11.5}\texttt {urner\_embedding}}{19}{subsubsection.4.11.5}%
-\contentsline {subsubsection}{\numberline {4.11.6}\texttt {quadray\_to\_xyz}}{19}{subsubsection.4.11.6}%
-\contentsline {subsubsection}{\numberline {4.11.7}\texttt {bareiss\_determinant\_int}}{19}{subsubsection.4.11.7}%
-\contentsline {subsubsection}{\numberline {4.11.8}Information geometry methods (anchors)}{19}{subsubsection.4.11.8}%
-\contentsline {paragraph}{\texttt {fisher\_information\_matrix}}{19}{section*.2}%
-\contentsline {paragraph}{\texttt {natural\_gradient\_step}}{19}{section*.3}%
-\contentsline {paragraph}{\texttt {free\_energy}}{19}{section*.4}%
-\contentsline {paragraph}{\texttt {discrete\_ivm\_descent}}{19}{section*.5}%
+\contentsline {subsubsection}{\numberline {4.11.4}\texttt {ivm\_tetra\_volume\_cayley\_menger}}{18}{subsubsection.4.11.4}%
+\contentsline {subsubsection}{\numberline {4.11.5}\texttt {urner\_embedding}}{18}{subsubsection.4.11.5}%
+\contentsline {subsubsection}{\numberline {4.11.6}\texttt {quadray\_to\_xyz}}{18}{subsubsection.4.11.6}%
+\contentsline {subsubsection}{\numberline {4.11.7}\texttt {bareiss\_determinant\_int}}{18}{subsubsection.4.11.7}%
+\contentsline {subsubsection}{\numberline {4.11.8}Information geometry methods (anchors)}{18}{subsubsection.4.11.8}%
+\contentsline {paragraph}{\texttt {fisher\_information\_matrix}}{18}{section*.2}%
+\contentsline {paragraph}{\texttt {natural\_gradient\_step}}{18}{section*.3}%
+\contentsline {paragraph}{\texttt {free\_energy}}{18}{section*.4}%
+\contentsline {paragraph}{\texttt {discrete\_ivm\_descent}}{18}{section*.5}%
 \contentsline {paragraph}{\texttt {animate\_discrete\_path}}{19}{section*.6}%
 \contentsline {subsection}{\numberline {4.12}Reproducibility checklist}{19}{subsection.4.12}%
 \contentsline {subsection}{\numberline {4.13}4dsolutions ecosystem: comprehensive implementation catalog}{19}{subsection.4.13}%
 \contentsline {subsubsection}{\numberline {4.13.1}Primary Python implementations (Math for Wisdom - m4w)}{19}{subsubsection.4.13.1}%
-\contentsline {subsubsection}{\numberline {4.13.2}Educational framework (School\_of\_Tomorrow)}{20}{subsubsection.4.13.2}%
-\contentsline {subsubsection}{\numberline {4.13.3}Cross-language validation and extensions}{20}{subsubsection.4.13.3}%
+\contentsline {subsubsection}{\numberline {4.13.2}Educational framework (School\_of\_Tomorrow)}{19}{subsubsection.4.13.2}%
+\contentsline {subsubsection}{\numberline {4.13.3}Cross-language validation and extensions}{19}{subsubsection.4.13.3}%
 \contentsline {subsubsection}{\numberline {4.13.4}API correspondence and validation}{20}{subsubsection.4.13.4}%
-\contentsline {section}{\numberline {5}Optimization in 4D (Namespaces and Quadray-Lattice Methods)}{21}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Quadray-Adaptive Nelder--Mead (Fuller.4D)}{21}{subsection.5.1}%
+\contentsline {section}{\numberline {5}Optimization in 4D (Namespaces and Quadray-Lattice Methods)}{20}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Quadray-Adaptive Nelder--Mead (Fuller.4D)}{20}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Volume-Level Dynamics}{21}{subsection.5.2}%
 \contentsline {subsection}{\numberline {5.3}Pseudocode (Sketch)}{21}{subsection.5.3}%
 \contentsline {subsubsection}{\numberline {5.3.1}Figures}{21}{subsubsection.5.3.1}%
 \contentsline {subsection}{\numberline {5.4}Discrete Lattice Descent (Information-Theoretic Variant)}{21}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Convergence and Robustness}{25}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.5}Convergence and Robustness}{21}{subsection.5.5}%
 \contentsline {subsection}{\numberline {5.6}Information-Geometric View (Einstein.4D analogy in metric form)}{25}{subsection.5.6}%
-\contentsline {subsection}{\numberline {5.7}Multi-Objective and Higher-Dimensional Notes (Coxeter.4D perspective)}{27}{subsection.5.7}%
-\contentsline {subsection}{\numberline {5.8}4dsolutions optimization context and educational implementations}{27}{subsection.5.8}%
-\contentsline {subsection}{\numberline {5.9}Results}{27}{subsection.5.9}%
-\contentsline {section}{\numberline {6}Extensions of 4D and Quadrays}{27}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Multi-Objective Optimization}{27}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Machine Learning and Robustness}{28}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Active Inference and Free Energy}{28}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Complex Systems and Collective Intelligence}{28}{subsection.6.4}%
-\contentsline {subsection}{\numberline {6.5}Quadrays, Synergetics (Fuller.4D), and William Blake}{28}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Pedagogy and Implementations}{28}{subsection.6.6}%
-\contentsline {subsubsection}{\numberline {6.6.1}Educational Framework and Curricula}{28}{subsubsection.6.6.1}%
-\contentsline {subsubsection}{\numberline {6.6.2}Cross-Language Implementation Portfolio}{29}{subsubsection.6.6.2}%
-\contentsline {subsubsection}{\numberline {6.6.3}Historical Context and Evolution}{29}{subsubsection.6.6.3}%
-\contentsline {subsection}{\numberline {6.7}Higher Dimensions and Decompositions}{29}{subsection.6.7}%
-\contentsline {subsection}{\numberline {6.8}Limitations and Future Work}{29}{subsection.6.8}%
-\contentsline {section}{\numberline {7}Discussion}{29}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Fisher Information and Curvature}{29}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Quadray Coordinates and 4D Structure (Fuller.4D vs Coxeter.4D vs Einstein.4D)}{30}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Integrating FIM with Quadray Models}{30}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Implications for Optimization and Estimation}{30}{subsection.7.4}%
-\contentsline {subsubsection}{\numberline {7.4.1}Clarifications on ``frequency/time'' dimensions}{30}{subsubsection.7.4.1}%
-\contentsline {subsubsection}{\numberline {7.4.2}On distance-based tetravolume formulas (clarification)}{30}{subsubsection.7.4.2}%
-\contentsline {subsubsection}{\numberline {7.4.3}Symbolic analysis (bridging vs native) (Results linkage)}{30}{subsubsection.7.4.3}%
-\contentsline {subsection}{\numberline {7.5}Community resources and applications}{31}{subsection.7.5}%
-\contentsline {subsubsection}{\numberline {7.5.1}4dsolutions ecosystem: comprehensive computational framework}{31}{subsubsection.7.5.1}%
-\contentsline {paragraph}{Core computational modules}{31}{section*.7}%
-\contentsline {paragraph}{Educational framework and curricula}{31}{section*.8}%
-\contentsline {paragraph}{Visualization and rendering capabilities}{31}{section*.9}%
-\contentsline {subsubsection}{\numberline {7.5.2}Community discussions and collaborative platforms}{31}{subsubsection.7.5.2}%
-\contentsline {subsubsection}{\numberline {7.5.3}Extended applications and related projects}{31}{subsubsection.7.5.3}%
-\contentsline {section}{\numberline {8}Resources (References and Further Reading)}{32}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Quadrays and Synergetics (core starting points)}{32}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}4dsolutions (Kirby Urner) --- repositories and key artifacts}{32}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}Comprehensive index of 4dsolutions artifacts (selected)}{32}{subsection.8.3}%
-\contentsline {subsubsection}{\numberline {8.3.1}Primary hub: School\_of\_Tomorrow (Python + notebooks)}{32}{subsubsection.8.3.1}%
-\contentsline {subsubsection}{\numberline {8.3.2}Additional repositories}{32}{subsubsection.8.3.2}%
-\contentsline {subsubsection}{\numberline {8.3.3}Additional educational resources}{33}{subsubsection.8.3.3}%
-\contentsline {subsubsection}{\numberline {8.3.4}Media and publications}{33}{subsubsection.8.3.4}%
-\contentsline {subsubsection}{\numberline {8.3.5}Background and community materials}{33}{subsubsection.8.3.5}%
-\contentsline {subsection}{\numberline {8.4}Geometry and volumes (Coxeter.4D context)}{33}{subsection.8.4}%
-\contentsline {subsection}{\numberline {8.5}Optimization and information geometry}{33}{subsection.8.5}%
-\contentsline {subsection}{\numberline {8.6}Active Inference}{33}{subsection.8.6}%
-\contentsline {subsection}{\numberline {8.7}Community discussions and context}{33}{subsection.8.7}%
-\contentsline {subsection}{\numberline {8.8}Related projects and applications}{33}{subsection.8.8}%
-\contentsline {subsection}{\numberline {8.9}Tooling}{33}{subsection.8.9}%
-\contentsline {subsection}{\numberline {8.10}Cross-language and cross-platform validation}{34}{subsection.8.10}%
-\contentsline {section}{\numberline {9}Equations and Math Supplement (Appendix)}{34}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Volume of a Tetrahedron (Lattice)}{34}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Fisher Information Matrix (FIM)}{34}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Natural Gradient}{35}{subsection.9.3}%
-\contentsline {subsection}{\numberline {9.4}Free Energy (Active Inference)}{35}{subsection.9.4}%
-\contentsline {subsubsection}{\numberline {9.4.1}Figures}{35}{subsubsection.9.4.1}%
-\contentsline {subsection}{\numberline {9.5}Quadray Normalization (Fuller.4D)}{35}{subsection.9.5}%
-\contentsline {subsection}{\numberline {9.6}Distance (Embedding Sketch; Coxeter.4D slice)}{35}{subsection.9.6}%
-\contentsline {subsection}{\numberline {9.7}Minkowski Line Element (Einstein.4D analogy)}{35}{subsection.9.7}%
-\contentsline {subsection}{\numberline {9.8}High-Precision Arithmetic Note}{35}{subsection.9.8}%
-\contentsline {subsubsection}{\numberline {9.8.1}Reproducibility artifacts and external validation}{38}{subsubsection.9.8.1}%
-\contentsline {subsection}{\numberline {9.9}Namespaces summary (notation)}{38}{subsection.9.9}%
-\contentsline {section}{\numberline {10}Appendix: The Free Energy Principle and Active Inference}{38}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Overview}{38}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Mathematical Formulation and Equation Callouts (Equations linkage)}{38}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)}{39}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}How the 4D namespaces relate here}{40}{subsection.10.4}%
-\contentsline {subsection}{\numberline {10.5}Joint Optimization in the Tetrahedral Framework (Methods linkage)}{40}{subsection.10.5}%
-\contentsline {subsection}{\numberline {10.6}Neuroscience and Predictive Coding}{40}{subsection.10.6}%
-\contentsline {subsection}{\numberline {10.7}Relation to Reinforcement Learning and Control}{40}{subsection.10.7}%
-\contentsline {subsection}{\numberline {10.8}Links to Other Theories}{40}{subsection.10.8}%
-\contentsline {subsection}{\numberline {10.9}Implications for AI and Robust Computation}{40}{subsection.10.9}%
-\contentsline {subsection}{\numberline {10.10}Code, Reproducibility, and Cross-References}{40}{subsection.10.10}%
-\contentsline {section}{\numberline {11}Appendix: Symbols and Glossary}{41}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Sets and Spaces}{41}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Quadray Coordinates and Geometry}{41}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Optimization and Algorithms}{42}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Information Theory and Geometry}{42}{subsection.11.4}%
-\contentsline {subsection}{\numberline {11.5}Embeddings and Distances}{42}{subsection.11.5}%
-\contentsline {subsection}{\numberline {11.6}Greek Letters (usage)}{43}{subsection.11.6}%
-\contentsline {subsection}{\numberline {11.7}Notes (usage and cross-references)}{43}{subsection.11.7}%
-\contentsline {subsection}{\numberline {11.8}Acronyms and abbreviations}{43}{subsection.11.8}%
-\contentsline {subsection}{\numberline {11.9}API Index (auto-generated; Methods linkage)}{44}{subsection.11.9}%
+\contentsline {subsection}{\numberline {5.7}Multi-Objective and Higher-Dimensional Notes (Coxeter.4D perspective)}{25}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}4dsolutions optimization context and educational implementations}{29}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Results}{29}{subsection.5.9}%
+\contentsline {section}{\numberline {6}Extensions of 4D and Quadrays}{29}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Multi-Objective Optimization}{29}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Machine Learning and Robustness}{29}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Active Inference and Free Energy}{29}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Complex Systems and Collective Intelligence}{29}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Quadrays, Synergetics (Fuller.4D), and William Blake}{30}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Pedagogy and Implementations}{30}{subsection.6.6}%
+\contentsline {subsubsection}{\numberline {6.6.1}Educational Framework and Curricula}{30}{subsubsection.6.6.1}%
+\contentsline {subsubsection}{\numberline {6.6.2}Cross-Language Implementation Portfolio}{30}{subsubsection.6.6.2}%
+\contentsline {subsubsection}{\numberline {6.6.3}Historical Context and Evolution}{30}{subsubsection.6.6.3}%
+\contentsline {subsection}{\numberline {6.7}Higher Dimensions and Decompositions}{30}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Limitations and Future Work}{30}{subsection.6.8}%
+\contentsline {section}{\numberline {7}Discussion}{31}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Fisher Information and Curvature}{31}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Quadray Coordinates and 4D Structure (Fuller.4D vs Coxeter.4D vs Einstein.4D)}{31}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Integrating FIM with Quadray Models}{31}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Implications for Optimization and Estimation}{32}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}Clarifications on ``frequency/time'' dimensions}{32}{subsubsection.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}On distance-based tetravolume formulas (clarification)}{32}{subsubsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}Symbolic analysis (bridging vs native) (Results linkage)}{32}{subsubsection.7.4.3}%
+\contentsline {subsection}{\numberline {7.5}Community resources and applications}{32}{subsection.7.5}%
+\contentsline {subsubsection}{\numberline {7.5.1}4dsolutions ecosystem: comprehensive computational framework}{32}{subsubsection.7.5.1}%
+\contentsline {paragraph}{Core computational modules}{32}{section*.7}%
+\contentsline {paragraph}{Educational framework and curricula}{32}{section*.8}%
+\contentsline {paragraph}{Visualization and rendering capabilities}{33}{section*.9}%
+\contentsline {subsubsection}{\numberline {7.5.2}Community discussions and collaborative platforms}{33}{subsubsection.7.5.2}%
+\contentsline {subsubsection}{\numberline {7.5.3}Extended applications and related projects}{33}{subsubsection.7.5.3}%
+\contentsline {section}{\numberline {8}Resources (References and Further Reading)}{33}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Quadrays and Synergetics (core starting points)}{33}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}4dsolutions (Kirby Urner) --- repositories and key artifacts}{33}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Comprehensive index of 4dsolutions artifacts (selected)}{34}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}Primary hub: School\_of\_Tomorrow (Python + notebooks)}{34}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}Additional repositories}{34}{subsubsection.8.3.2}%
+\contentsline {subsubsection}{\numberline {8.3.3}Additional educational resources}{34}{subsubsection.8.3.3}%
+\contentsline {subsubsection}{\numberline {8.3.4}Media and publications}{34}{subsubsection.8.3.4}%
+\contentsline {subsubsection}{\numberline {8.3.5}Background and community materials}{34}{subsubsection.8.3.5}%
+\contentsline {subsection}{\numberline {8.4}Geometry and volumes (Coxeter.4D context)}{35}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Optimization and information geometry}{35}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Active Inference}{35}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}Community discussions and context}{35}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}Related projects and applications}{35}{subsection.8.8}%
+\contentsline {subsection}{\numberline {8.9}Tooling}{35}{subsection.8.9}%
+\contentsline {subsection}{\numberline {8.10}Cross-language and cross-platform validation}{35}{subsection.8.10}%
+\contentsline {section}{\numberline {9}Equations and Math Supplement (Appendix)}{35}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Volume of a Tetrahedron (Lattice)}{35}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Fisher Information Matrix (FIM)}{36}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Natural Gradient}{36}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Free Energy (Active Inference)}{37}{subsection.9.4}%
+\contentsline {subsubsection}{\numberline {9.4.1}Figures}{37}{subsubsection.9.4.1}%
+\contentsline {subsection}{\numberline {9.5}Quadray Normalization (Fuller.4D)}{37}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Distance (Embedding Sketch; Coxeter.4D slice)}{40}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}Minkowski Line Element (Einstein.4D analogy)}{40}{subsection.9.7}%
+\contentsline {subsection}{\numberline {9.8}High-Precision Arithmetic Note}{40}{subsection.9.8}%
+\contentsline {subsubsection}{\numberline {9.8.1}Reproducibility artifacts and external validation}{40}{subsubsection.9.8.1}%
+\contentsline {subsection}{\numberline {9.9}Namespaces summary (notation)}{41}{subsection.9.9}%
+\contentsline {section}{\numberline {10}Appendix: The Free Energy Principle and Active Inference}{41}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Overview}{41}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Mathematical Formulation and Equation Callouts (Equations linkage)}{41}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)}{43}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}How the 4D namespaces relate here}{43}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Joint Optimization in the Tetrahedral Framework (Methods linkage)}{43}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Neuroscience and Predictive Coding}{43}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Relation to Reinforcement Learning and Control}{43}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Links to Other Theories}{44}{subsection.10.8}%
+\contentsline {subsection}{\numberline {10.9}Implications for AI and Robust Computation}{44}{subsection.10.9}%
+\contentsline {subsection}{\numberline {10.10}Code, Reproducibility, and Cross-References}{44}{subsection.10.10}%
+\contentsline {section}{\numberline {11}Appendix: Symbols and Glossary}{44}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Sets and Spaces}{44}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Quadray Coordinates and Geometry}{44}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Optimization and Algorithms}{45}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Information Theory and Geometry}{45}{subsection.11.4}%
+\contentsline {subsection}{\numberline {11.5}Embeddings and Distances}{46}{subsection.11.5}%
+\contentsline {subsection}{\numberline {11.6}Greek Letters (usage)}{46}{subsection.11.6}%
+\contentsline {subsection}{\numberline {11.7}Notes (usage and cross-references)}{46}{subsection.11.7}%
+\contentsline {subsection}{\numberline {11.8}Acronyms and abbreviations}{47}{subsection.11.8}%
+\contentsline {subsection}{\numberline {11.9}API Index (auto-generated; Methods linkage)}{47}{subsection.11.9}%

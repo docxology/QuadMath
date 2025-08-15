@@ -5,11 +5,11 @@
 \contentsline {subsection}{\numberline {1.4}Implications for Optimization and Estimation}{2}{subsection.1.4}%
 \contentsline {subsubsection}{\numberline {1.4.1}Clarifications on ``frequency/time'' dimensions}{2}{subsubsection.1.4.1}%
 \contentsline {subsubsection}{\numberline {1.4.2}On distance-based tetravolume formulas (clarification)}{2}{subsubsection.1.4.2}%
-\contentsline {subsubsection}{\numberline {1.4.3}Symbolic analysis (bridging vs native) (Results linkage)}{2}{subsubsection.1.4.3}%
+\contentsline {subsubsection}{\numberline {1.4.3}Symbolic analysis (bridging vs native) (Results linkage)}{3}{subsubsection.1.4.3}%
 \contentsline {subsection}{\numberline {1.5}Community resources and applications}{3}{subsection.1.5}%
 \contentsline {subsubsection}{\numberline {1.5.1}4dsolutions ecosystem: comprehensive computational framework}{3}{subsubsection.1.5.1}%
 \contentsline {paragraph}{Core computational modules}{3}{section*.2}%
 \contentsline {paragraph}{Educational framework and curricula}{3}{section*.3}%
 \contentsline {paragraph}{Visualization and rendering capabilities}{3}{section*.4}%
 \contentsline {subsubsection}{\numberline {1.5.2}Community discussions and collaborative platforms}{3}{subsubsection.1.5.2}%
-\contentsline {subsubsection}{\numberline {1.5.3}Extended applications and related projects}{3}{subsubsection.1.5.3}%
+\contentsline {subsubsection}{\numberline {1.5.3}Extended applications and related projects}{4}{subsubsection.1.5.3}%

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -976,15 +976,15 @@ LaTeX Info: Redefining \nameref on input line 84.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1121,19 +1121,21 @@ ut line 156.
 LaTeX Warning: Reference `fig:free_energy_curve' on page 2 undefined on input l
 ine 157.
 
-File: figures/partition_tetrahedron.png Graphic file (type bmp)
-<figures/partition_tetrahedron.png>
-[2] [3]
-Underfull \hbox (badness 1831) in paragraph at lines 328--340
-\TU/DejaVuSansMono(0)/m/n/10 ral_gradient_step[][]\TU/DejaVuSerif(0)/m/n/10 , \
-TU/DejaVuSansMono(0)/m/n/10 perception_update\TU/DejaVuSerif(0)/m/n/10 , \TU/De
-jaVuSansMono(0)/m/n/10 action_update\TU/DejaVuSerif(0)/m/n/10 , and \TU/DejaVuS
-ansMono(0)/m/n/10 discrete_ivm_descent \TU/DejaVuSerif(0)/m/n/10 in \TU/DejaVuS
-ansMono(0)/m/n/10 src/information.py \TU/DejaVuSerif(0)/m/n/10 and
+
+Underfull \hbox (badness 1052) in paragraph at lines 159--164
+[]\TU/DejaVuSerif(0)/m/n/10 Discrete variational optimization on the quadray la
+ttice: \TU/DejaVuSansMono(0)/m/n/10 discrete_ivm_descent \TU/DejaVuSerif(0)/m/n
+/10 greedily descends a free-
  []
 
-
-Overfull \hbox (40.24078pt too wide) in paragraph at lines 348--353
+File: figures/partition_tetrahedron.png Graphic file (type bmp)
+<figures/partition_tetrahedron.png>
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 168.
+LaTeX Font Info:    Font shape `TU/DejaVuSerif(0)/m/n' will be
+(Font)              scaled to size 5.0pt on input line 168.
+[2] [3]
+Overfull \hbox (63.00266pt too wide) in paragraph at lines 348--353
 []\TU/DejaVuSerif(0)/b/n/10 Visualizations\TU/DejaVuSerif(0)/m/n/10 : \TU/DejaV
 uSansMono(0)/m/n/10 fisher_information_matrix.png\TU/DejaVuSerif(0)/m/n/10 , \T
 U/DejaVuSansMono(0)/m/n/10 fisher_information_eigenspectrum.png\TU/DejaVuSerif(
@@ -1149,13 +1151,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 18707 strings out of 478190
- 348981 string characters out of 5854827
- 844411 words of memory out of 5000000
- 39021 multiletter control sequences out of 15000+600000
- 476497 words of font info for 101 fonts, out of 8000000 for 9000
+ 18713 strings out of 478190
+ 349209 string characters out of 5854827
+ 844693 words of memory out of 5000000
+ 39025 multiletter control sequences out of 15000+600000
+ 476627 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,6n,122p,1085b,438s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,6n,122p,1844b,438s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/09_f
 ree_energy_active_inference.pdf (4 pages).

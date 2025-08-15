@@ -8,5 +8,5 @@
 \contentsline {subsubsection}{\numberline {1.6.1}Educational Framework and Curricula}{2}{subsubsection.1.6.1}%
 \contentsline {subsubsection}{\numberline {1.6.2}Cross-Language Implementation Portfolio}{2}{subsubsection.1.6.2}%
 \contentsline {subsubsection}{\numberline {1.6.3}Historical Context and Evolution}{2}{subsubsection.1.6.3}%
-\contentsline {subsection}{\numberline {1.7}Higher Dimensions and Decompositions}{2}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.7}Higher Dimensions and Decompositions}{3}{subsection.1.7}%
 \contentsline {subsection}{\numberline {1.8}Limitations and Future Work}{3}{subsection.1.8}%

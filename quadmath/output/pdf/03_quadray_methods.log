@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 16:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2025.8.13)  14 AUG 2025 18:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1031,15 +1031,15 @@ LaTeX Info: Redefining \nameref on input line 131.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: includehead includefoot 
-* h-part:(L,W,R)=(8.5359pt, 597.22319pt, 8.5359pt)
-* v-part:(T,H,B)=(14.22636pt, 766.51726pt, 14.22636pt)
+* h-part:(L,W,R)=(19.91684pt, 574.46132pt, 19.91684pt)
+* v-part:(T,H,B)=(19.91684pt, 755.1363pt, 19.91684pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
-* \textwidth=597.22319pt
-* \textheight=699.51726pt
-* \oddsidemargin=-63.73409pt
-* \evensidemargin=-63.73409pt
-* \topmargin=-58.04362pt
+* \textwidth=574.46132pt
+* \textheight=688.1363pt
+* \oddsidemargin=-52.35315pt
+* \evensidemargin=-52.35315pt
+* \topmargin=-52.35315pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -1157,16 +1157,9 @@ LaTeX Font Info:    Font shape `TU/DejaVuSerif(1)/m/n' will be
 LaTeX Warning: Reference `eq:einstein_line_element' on page 2 undefined on inpu
 t line 225.
 
-
-Underfull \hbox (badness 2205) in paragraph at lines 295--295
-[]\TU/DejaVuSerif(0)/b/n/12 Conversions and Vector Operations: Quadray ↔ Cartes
-ian (Fuller.4D ↔ Cox-
- []
-
-[2]
+[2] [3]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/b/n' will be
 (Font)              scaled to size 9.49112pt on input line 439.
- [3]
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/it' will be
 (Font)              scaled to size 9.49112pt on input line 441.
  [4]
@@ -1180,11 +1173,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 627--627
  []
 
 [5] [6]
+Overfull \hbox (17.38995pt too wide) detected at line 751
+[][][][][] [][] [] [][][][][][][] [] [][] [][][] [] [][] [] [][][][] [] [][] []
+[][] [] [][] [] [][][][] [] [][] [][][] [] [][] [] [][][][] [] [][][] [] [][] [
+] [][][][][][] [] [][] [] [][][][][][] [] [][] [] [][][] []
+ []
+
+
+Overfull \hbox (4.75081pt too wide) in paragraph at lines 804--807
+[]\TU/DejaVuSerif(0)/m/n/10 Figure: automated comparison (native Ace 5×5 vs CM+
+S3) across small examples (see script \TU/DejaVuSansMono(0)/m/n/10 sympy_formal
+isms.py\TU/DejaVuSerif(0)/m/n/10 ).
+ []
+
 File: figures/bridging_vs_native.png Graphic file (type bmp)
 <figures/bridging_vs_native.png>
 File: figures/polyhedra_quadray_constructions.png Graphic file (type bmp)
 <figures/polyhedra_quadray_constructions.png>
- [7] [8] [9] [10] [11] [12]
+[7] [8] [9] [10] [11] [12] [13]
 (/home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/03_quadray_methods.au
 x)
 
@@ -1194,11 +1200,11 @@ LaTeX Warning: There were undefined references.
 Here is how much of TeX's memory you used:
  19500 strings out of 478190
  362717 string characters out of 5854827
- 866018 words of memory out of 5000000
+ 869644 words of memory out of 5000000
  39793 multiletter control sequences out of 15000+600000
  476586 words of font info for 105 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,10n,122p,1072b,507s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,10n,122p,1586b,505s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on /home/trim/Documents/GitHub/QuadMath/quadmath/output/pdf/03_q
-uadray_methods.pdf (12 pages).
+uadray_methods.pdf (13 pages).

@@ -40,14 +40,14 @@ while not converged:
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/simplex_trace.png}
-\caption{Optimization trace for discrete Nelder–Mead in the Quadray lattice. Best/worst objective values and spread (left axis) with integer tetra-volume (right axis) per iteration. See the MP4 for the full simplex trajectory.}
+\caption{**Discrete Nelder–Mead optimization trajectory on the integer Quadray lattice**. This time-series plot tracks key diagnostic quantities across 12 optimization iterations for a simple quadratic objective $f(q) = (q.a - 1)^2 + q.b^2 + q.c^2 + q.d^2$ starting from initial simplex vertices $\{(5,0,0,0), (4,1,0,0), (0,4,1,0), (1,1,1,0)\}$. **Left y-axis (objective values)**: Blue line shows the best (minimum) objective value per iteration, demonstrating monotonic improvement as the simplex converges toward the minimum at $(1,0,0,0)$. Orange line shows the worst (maximum) objective value among the four simplex vertices. **Right y-axis (simplex volume)**: Green line tracks the integer tetravolume of the current simplex computed via Tom Ace's 5×5 determinant, showing characteristic discrete plateaus and step-wise reductions as the simplex contracts on the lattice. **Convergence signature**: The volume decreases in discrete integer steps, creating stable "energy levels" that regularize the optimization process, while the objective spread (difference between best and worst) narrows as vertices cluster near the optimum. The full 3D simplex trajectory animation is available as \texttt{simplex\_animation.mp4} in the output directory.}
 \label{fig:simplex_trace}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/volumes_scale_plot.png}
-\caption{Tetra volume vs edge scale. Two curves: Euclidean volume $V_{xyz}$ and IVM-converted $V_{ivm}=S3\cdot V_{xyz}$; axes labeled; $S3$ annotated; data saved as CSV/NPZ.}
+\caption{**Tetrahedron volume scaling relationships: Euclidean vs IVM unit conventions**. This plot demonstrates the mathematical relationship between edge length scaling and tetravolume under both Euclidean (Coxeter.4D) and synergetics (Fuller.4D) unit conventions. **X-axis**: Edge scale factor ranging from 0.5 to 2.0 applied to a regular tetrahedron. **Y-axis**: Computed tetravolume in respective units. **Blue curve** ($V_{xyz}$): Euclidean tetravolume computed via standard geometric formulas, showing the expected cubic scaling relationship $V \propto \text{edge}^3$. **Orange curve** ($V_{ivm}$): IVM tetravolume obtained by converting the Euclidean volume via the synergetics factor $S3 = \sqrt{9/8} \approx 1.061$, following the relationship $V_{ivm} = S3 \cdot V_{xyz}$. **Scaling verification**: Both curves maintain their proportional relationship across all scales, confirming the consistency of the S3 conversion factor used throughout the manuscript to bridge between Coxeter.4D (Euclidean) and Fuller.4D (IVM) volume measurements. The parallel cubic curves validate the unit conversion methods employed in bridging vs native tetravolume comparisons. Raw numerical data available as \texttt{volumes\_scale\_data.csv} and \texttt{volumes\_scale\_data.npz}.}
 \label{fig:volumes_scale}
 \end{figure}
 
@@ -56,7 +56,7 @@ As shown in Figure \ref{fig:simplex_final}, the discrete Nelder–Mead converges
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/simplex_final.png}
-\caption{Final converged simplex configuration.}
+\caption{**Final converged simplex configuration in 3D embedding space**. This 3D scatter plot shows the four vertices of the Nelder–Mead simplex after 12 iterations of discrete optimization on the integer Quadray lattice, projected into Euclidean 3D space via the default embedding matrix. The green points represent the converged simplex vertices clustered near the objective minimum, connected by green lines to emphasize the tetrahedral structure. All vertices are constrained to integer Quadray coordinates and maintain the projective normalization (at least one zero component). The tight clustering demonstrates successful convergence while the discrete lattice constraint ensures numerical stability. This static view complements the dynamic trajectory shown in the full animation (\texttt{simplex\_animation.mp4}) and the diagnostic traces in Figure \ref{fig:simplex_trace}. The final simplex volume is minimal on the integer lattice, representing a stable "energy level" where further discrete moves do not improve the objective function.}
 \label{fig:simplex_final}
 \end{figure}
 
@@ -99,28 +99,28 @@ animate_discrete_path(path)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/fisher_information_matrix.png}
-\caption{Empirical Fisher information heatmap (entries $F_{ij}$ estimated via outer products of per-sample gradients; model: noisy linear regression; evaluated at misspecified parameters $w_\text{est}$ vs ground truth $w_\text{true}$; colorbar shows curvature scale).}
+\caption{**Empirical Fisher Information Matrix (FIM) for noisy linear regression**. This heatmap visualizes the 3×3 Fisher information matrix $F_{ij}$ estimated from per-sample gradients of a misspecified linear regression model. **Setup**: Ground truth parameters $w_{\text{true}} = [1.0, -2.0, 0.5]$, evaluated at estimation point $w_{\text{est}} = [0.3, -1.2, 0.0]$, with 200 samples and Gaussian noise (σ=0.1). **Matrix elements**: Each $F_{ij}$ entry represents the expected outer product $\mathbb{E}[\partial_i \log p \cdot \partial_j \log p]$ where gradients are computed from squared loss with respect to model parameters. **Interpretation**: The colorbar scale shows local curvature magnitudes—brighter entries indicate directions of higher sensitivity/information content. Diagonal dominance suggests the parameters are approximately decoupled at this evaluation point. **Information geometry**: This FIM serves as a Riemannian metric tensor for natural gradient descent (Eq. \ref{eq:supp_natgrad}), enabling curvature-aware optimization steps that adapt to the local geometry of the parameter manifold. Raw matrix data saved as \texttt{fisher\_information\_matrix.csv} and \texttt{fisher\_information\_matrix.npz} for reproducibility.}
 \label{fig:fisher_information_matrix}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/fisher_information_eigenspectrum.png}
-\caption{Fisher information eigenspectrum (principal curvatures along eigenvectors of $F$; eigenvalues $\lambda_i$ sorted descending; highlights stiff vs. sloppy directions).}
+\caption{**Fisher Information Matrix eigenspectrum: principal curvature directions**. This bar chart displays the eigenvalue decomposition of the empirical Fisher information matrix from Figure \ref{fig:fisher_information_matrix}, revealing the principal curvature directions of the parameter manifold. **X-axis**: Eigenvalue indices (0, 1, 2) sorted in descending order of magnitude. **Y-axis**: Eigenvalue magnitudes representing the curvature strength along corresponding eigenvector directions. **Interpretation**: Large eigenvalues indicate "stiff" parameter directions where small changes significantly affect the objective function, while small eigenvalues correspond to "sloppy" directions with minimal impact. **Information geometry insights**: The eigenspectrum reveals the conditioning of the FIM and guides natural gradient preconditioning—directions with high curvature (large λᵢ) require smaller step sizes, while low-curvature directions tolerate larger updates. **Optimization implications**: The eigenvalue spread suggests the degree of parameter coupling and optimal step-size scaling for each principal direction. Well-conditioned problems show uniform eigenvalues, while ill-conditioned problems exhibit large eigenvalue spreads requiring careful preconditioning. Raw eigenvalue data available as \texttt{fisher\_information\_eigenvalues.csv} and \texttt{fisher\_information\_eigensystem.npz}.}
 \label{fig:fim_eigenspectrum}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/natural_gradient_path.png}
-\caption{Natural gradient trajectory on a quadratic bowl (projection in $w_0$–$w_1$ plane); $A=\begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$, step size $\eta=0.5$, damped inverse Fisher $F + 10^{-3} I$; raw path in CSV/NPZ.}
+\caption{**Natural gradient descent trajectory on a quadratic objective (2D projection)**. This line plot with markers shows the parameter trajectory of natural gradient descent converging to the optimum of a quadratic bowl-shaped objective function. **Setup**: Starting point $(w_0, w_1) = (2, 2)$ with target $(w_0, w_1) = (1, -2)$; quadratic form defined by matrix $A = \begin{bmatrix}3 & 0.5 & 0\\ 0.5 & 2 & 0\\ 0 & 0 & 1\end{bmatrix}$; step size $\eta = 0.5$; regularized Fisher matrix $F + 10^{-3} I$ for numerical stability. **Trajectory analysis**: The curved path demonstrates how natural gradient descent (Eq. \ref{eq:supp_natgrad}) adapts to the local curvature structure, taking larger steps in low-curvature directions and smaller steps in high-curvature directions compared to vanilla gradient descent. **Information geometry**: The trajectory follows approximate geodesics on the parameter manifold equipped with the Fisher metric, resulting in more efficient convergence than Euclidean gradient descent on ill-conditioned problems. **Projection note**: This visualization shows the $(w_0, w_1)$ projection of the full 3D parameter trajectory. Each marker represents one optimization step, with the curvature-aware steps visible as the adaptive stride lengths along the path. Complete trajectory data saved as \texttt{natural\_gradient\_path.csv} and \texttt{natural\_gradient\_path.npz}.}
 \label{fig:natural_gradient_path}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/free_energy_curve.png}
-\caption{Free energy curve for a 2-state model.}
+\caption{**Variational free energy landscape for a discrete 2-state system**. This curve shows the variational free energy $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ (Eq. \ref{eq:supp_free_energy}) as a function of the variational posterior probability $q(\text{state}=0)$ for a simple binary system. **Setup**: True observation probabilities $\log P(o|s) = \log[0.7, 0.3]$ and uniform prior $P(s) = [0.5, 0.5]$; variational posterior $Q(s) = [q, 1-q]$ parameterized by $q \in [0.001, 0.999]$. **Free energy decomposition**: The curve reflects the balance between likelihood accuracy (how well $Q$ explains observations) and KL complexity penalty (deviation from prior beliefs). **Minimum**: The global minimum occurs where the variational posterior matches the true posterior, achieving optimal trade-off between accuracy and complexity. **Active Inference connection**: In the context of the four-fold partition (Figure \ref{fig:partition_tetrahedron}), this free energy functional drives both perceptual inference (belief updates) and action selection (environmental steering). **Optimization**: The convex shape enables gradient-based minimization for belief updating, with the minimum representing the optimal variational approximation. This toy example illustrates the general principle underlying variational optimization in active inference and the free energy minimization framework.}
 \label{fig:free_energy_curve}
 \end{figure}
 

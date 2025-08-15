@@ -37,21 +37,21 @@ In this section, we clarify the three internal meanings of “4D,” following a
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/ivm_neighbors_edges.png}
-\caption{IVM neighbors and radial edges (2×2 panels). A: neighbor points; B: points with radial edges from origin; C: twelve-around-one close-packed spheres (vector equilibrium); D: adjacency graph among touching neighbors.}
+\caption{**IVM neighbors and coordination patterns (2×2 panel layout)**. **Panel A**: The twelve nearest IVM neighbors plotted as blue points in 3D space under the default embedding, showing the positions corresponding to permutations of the Quadray integer coordinates \{2,1,1,0\}. These points form the vertices of a cuboctahedron (vector equilibrium) centered at the origin with uniform radial distances. **Panel B**: The same neighbor points with radial edges (light lines) connecting each neighbor to the central origin, emphasizing the spoke-like radial symmetry and equal distances from center to shell. **Panel C**: Twelve-around-one close-packed spheres configuration where each neighbor position hosts a sphere with radius chosen so neighboring spheres kiss along cuboctahedron edges, illustrating the fundamental CCP/FCC/IVM correspondence. The central gray sphere represents the "one" in Fuller's "twelve around one" motif. **Panel D**: Adjacency graph showing strut connections (solid lines) between touching neighbor spheres, revealing the cuboctahedron's edge structure, plus light radial cables to the origin representing a stylized tensegrity interpretation of the vector equilibrium geometry.}
 \label{fig:ivm_neighbors_edges}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/quadray_clouds.png}
-\caption{Random Quadray clouds under embeddings (projections of uniformly sampled integer Quadrays through canonical maps).}
+\caption{**Random Quadray point clouds under different embeddings (3-panel comparison)**. Each panel shows 200 randomly sampled integer Quadray coordinates with components in \{0,1,2,3,4,5\} projected to 3D space using different embedding matrices. **Left panel (Default embedding)**: Points (blue) under the default symmetric embedding matrix showing the natural tetrahedral-symmetric distribution of normalized Quadrays in 3D space. **Center panel (Scaled embedding, 0.75×)**: The same Quadray points (orange) under a uniformly scaled version of the default embedding, demonstrating how the point cloud structure scales proportionally while preserving relative geometries. **Right panel (Urner embedding)**: The same points (purple) projected through the canonical Urner embedding matrix, illustrating how different linear mappings from Fuller.4D to Coxeter.4D (3D slice) affect the spatial distribution while preserving the underlying discrete lattice relationships. This comparison demonstrates the flexibility in choosing embeddings for visualization and analysis while maintaining the fundamental Quadray coordinate relationships.}
 \label{fig:quadray_clouds}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/vector_equilibrium_panels.png}
-\caption{Vector equilibrium panels. A: twelve-around-one close-packed spheres at IVM neighbor positions plus central sphere (kissing spheres). B: adjacency (struts) among touching neighbors with light radial cables to origin (stylized tensegrity).}
+\caption{**Vector equilibrium (cuboctahedron) rendered in two complementary styles (2-panel comparison)**. Both panels show the same underlying geometry: the twelve IVM neighbors at permutations of Quadray coordinates \{2,1,1,0\} forming a cuboctahedron shell around the central origin. **Panel A (Close-packed spheres)**: Thirteen spheres total—one central gray sphere plus twelve blue spheres positioned at the neighbor coordinates. The sphere radius is chosen as half the minimum neighbor-to-neighbor distance so that touching spheres kiss along cuboctahedron edges, demonstrating the "twelve around one" close-packing motif fundamental to FCC/CCP arrangements and Fuller's synergetic geometry. This visualization emphasizes the volume-filling and coordination aspects of the IVM lattice. **Panel B (Tensegrity-style network)**: The same twelve neighbor positions shown as blue points connected by structural elements—solid dark struts represent edges between touching neighbors (cuboctahedron edges), while light radial cables connect each neighbor to the central origin. This stylized tensegrity interpretation emphasizes the balance between continuous tension (radial cables) and discontinuous compression (neighbor-to-neighbor struts), illustrating principles central to Fuller's tensegrity and the structural mechanics of the vector equilibrium.}
 \label{fig:vector_equilibrium}
 \end{figure}
 

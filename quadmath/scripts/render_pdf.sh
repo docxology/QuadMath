@@ -68,11 +68,11 @@ COMMON_ARGS=(
   -V monofont="DejaVu Sans Mono"
   -V fontsize=10pt
   -V linestretch=1.0
-  -V geometry:margin=0.3cm
-  -V geometry:top=0.5cm
-  -V geometry:bottom=0.5cm
-  -V geometry:left=0.3cm
-  -V geometry:right=0.3cm
+  -V geometry:margin=1cm
+  -V geometry:top=1cm
+  -V geometry:bottom=1cm
+  -V geometry:left=1cm
+  -V geometry:right=1cm
   -V geometry:includeheadfoot
   -V colorlinks=true
   -V linkcolor=red
