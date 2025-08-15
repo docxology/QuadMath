@@ -1,8 +1,0 @@
-\contentsline {section}{\numberline {1}4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}{1}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Coxeter.4D (Euclidean E⁴)}{1}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Einstein.4D (Relativistic spacetime)}{1}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Fuller.4D (Synergetics / Quadrays)}{2}{subsection.1.3}%
-\contentsline {subsubsection}{\numberline {1.3.1}Directions, not dimensions (language and models)}{2}{subsubsection.1.3.1}%
-\contentsline {subsubsection}{\numberline {1.3.2}Figures}{2}{subsubsection.1.3.2}%
-\contentsline {subsubsection}{\numberline {1.3.3}Clarifying remarks}{2}{subsubsection.1.3.3}%
-\contentsline {subsection}{\numberline {1.4}Practical usage guide}{4}{subsection.1.4}%
