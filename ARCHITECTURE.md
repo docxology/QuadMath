@@ -205,6 +205,25 @@ quadmath/output/
 - **Headless plotting** - `MPLBACKEND=Agg` for CI compatibility
 - **Path management** - Consistent output directory structure
 
+### 5. Automatic Numbering and Cross-Referencing
+- **Figure numbering**: Automatically managed by LaTeX/pandoc for consistent cross-referencing
+- **Equation numbering**: LaTeX equation environments provide automatic numbering with `\label{}` and `\eqref{}`
+- **Section numbering**: Automatic section numbering with `--number-sections` pandoc flag
+- **Table of contents**: Auto-generated TOC with `--toc` and `--toc-depth=3`
+- **Cross-references**: Use `\ref{}` for figures and `\eqref{}` for equations in markdown
+
+**Example markdown usage**:
+```markdown
+![**Figure caption**](../output/figures/figure.png)
+
+\begin{equation}
+\label{eq:example}
+E = mc^2
+\end{equation}
+
+See Figure \ref{fig:example} and Equation \eqref{eq:example}.
+```
+
 ## Development Workflow
 
 ### 1. Code Changes

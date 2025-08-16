@@ -91,6 +91,20 @@
 #   * No bare URLs (use informative link text)
 
 # =============================================================================
+# AUTOMATIC NUMBERING AND CROSS-REFERENCING
+# =============================================================================
+# - Figure numbering: Automatically managed by LaTeX/pandoc for consistent cross-referencing
+# - Equation numbering: LaTeX equation environments provide automatic numbering with \label{} and \eqref{}
+# - Section numbering: Automatic section numbering with --number-sections pandoc flag
+# - Table of contents: Auto-generated TOC with --toc and --toc-depth=3
+# - Cross-references: Use \ref{} for figures and \eqref{} for equations in markdown
+# - Never hard-code figure or equation numbers - they are automatically managed
+# - Example markdown usage:
+#   ![**Figure caption**](../output/figures/figure.png)
+#   \begin{equation}\label{eq:example}E = mc^2\end{equation}
+#   See Figure \ref{fig:example} and Equation \eqref{eq:example}
+
+# =============================================================================
 # AUTO-GENERATION AND VALIDATION
 # =============================================================================
 # - generate_glossary.py automatically updates API table from src/ code

@@ -181,7 +181,7 @@
 
 \title{Introduction}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 15, 2025}
+\date{August 16, 2025}
 
 \begin{document}
 \maketitle
@@ -195,6 +195,46 @@
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+We review a unified analytical framework for four dimensional (4D)
+modeling and Quadray coordinates, synthesizing geometric foundations,
+optimization on tetrahedral lattices, and information geometry. Building
+on R. Buckminster Fuller's
+\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}
+and the Quadray coordinate system, with extensive reference to Kirby
+Urner's computational implementations across multiple programming
+languages (see the comprehensive
+\href{https://github.com/4dsolutions}{4dsolutions ecosystem} including
+Python, Rust, Clojure, and POV-Ray implementations), we review how
+integer lattice constraints yield integer volume quantization of
+tetrahedral simplexes, creating discrete ``energy levels'' that
+regularize optimization and enable integer-based optimization. We adapt
+standard methods (e.g.,
+\href{https://en.wikipedia.org/wiki/Nelder\%E2\%80\%93Mead_method}{Nelder--Mead
+method}) to the quadray lattice, define
+\href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
+information} in Quadray parameter space, and analyze optimization as
+geodesic motion on an information manifold via the
+\href{https://en.wikipedia.org/wiki/Natural_gradient}{natural gradient}.
+We review three distinct 4D namespaces --- Coxeter.4D (Euclidean E⁴),
+Einstein.4D (Minkowski spacetime), and Fuller.4D (synergetics/Quadrays)
+--- develop analytical tools and equations, and survey extensions and
+applications across AI,
+\href{https://welcome.activeinference.institute/}{active inference},
+cognitive security, and complex systems. The result is a cohesive,
+interpretable approach for robust, geometry-grounded computation in 4D.
+All source code for the manuscript is available at
+\href{https://github.com/docxology/quadmath}{QuadMath}.
+
+\textbf{Keywords}: Quadray coordinates, 4D geometry, tetrahedral
+lattice, integer volume quantization, information geometry,
+optimization, synergetics, active inference.
+
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
 Quadray coordinates provide a tetrahedral basis for modeling space and
 computation, standing in contrast to Cartesian cubic frameworks.
 Originating in Buckminster Fuller's Synergetics, quadray coordinates
@@ -204,8 +244,30 @@ reframing yields striking integer relationships among common polyhedra
 and provides a natural account of space via close-packed spheres and the
 isotropic vector matrix (IVM).
 
+This paper unifies three threads:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Foundations}: Quadray coordinates and their relation to 4D
+  modeling more generally, with explicit namespace usage (Coxeter.4D,
+  Einstein.4D, Fuller.4D) to maintain clarity.
+\item
+  \textbf{Optimization framework}: Leverages integer volume quantization
+  on tetrahedral lattices to achieve robust, discrete convergence.
+\item
+  \textbf{Information geometry}: Tools (e.g., Fisher Information,
+  free-energy minimization) for interpreting optimization as geodesic
+  motion on statistical manifolds.
+\end{itemize}
+
+\hypertarget{d-namespace-framework}{%
+\subsection{4D Namespace Framework}\label{d-namespace-framework}}
+
 In this synthetic review, we distinguish three internal meanings of
-``4D,'' following a dot-notation that avoids cross-domain confusion:
+``4D,'' following a dot-notation that avoids cross-domain confusion. For
+comprehensive details, see \href{02_4d_namespaces.md}{Section 2: 4D
+Namespaces}.
 
 \begin{itemize}
 \tightlist
@@ -230,24 +292,10 @@ In this synthetic review, we distinguish three internal meanings of
   emphasizes angle/shape relations independent of time/energy.
 \end{itemize}
 
-This paper unifies three threads:
+\hypertarget{contributions}{%
+\subsection{Contributions}\label{contributions}}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Foundations}: Quadray coordinates and their relation to 4D
-  modeling more generally, with explicit namespace usage (Coxeter.4D,
-  Einstein.4D, Fuller.4D) to maintain clarity.
-\item
-  \textbf{Optimization framework}: leverages integer volume quantization
-  on tetrahedral lattices to achieve robust, discrete convergence.
-\item
-  \textbf{Information geometry}: tools (e.g., Fisher Information,
-  free-energy minimization) for interpreting optimization as geodesic
-  motion on statistical manifolds.
-\end{itemize}
-
-Contributions:
+The paper makes the following key contributions:
 
 \begin{itemize}
 \tightlist
@@ -256,21 +304,45 @@ Contributions:
   (Minkowski spacetime), and Fuller.4D (Quadrays/IVM) → analytical tools
   and examples.
 \item
-  \textbf{Quadray-adapted Nelder--Mead}: integer-lattice normalization
+  \textbf{Quadray-adapted Nelder--Mead}: Integer-lattice normalization
   and volume-level tracking.
 \item
-  \textbf{Equations and methods}: comprehensive supplement with guidance
+  \textbf{Equations and methods}: Comprehensive supplement with guidance
   for high-precision computation using
   \passthrough{\lstinline!libquadmath!}.
 \item
-  \textbf{Discrete optimizer}: integer-valued variational descent over
+  \textbf{Discrete optimizer}: Integer-valued variational descent over
   the IVM (\passthrough{\lstinline!discrete\_ivm\_descent!}) with
   animation tooling, connecting lattice geometry to
   information-theoretic objectives.
 \end{itemize}
 
+\hypertarget{manuscript-structure}{%
+\subsection{Manuscript Structure}\label{manuscript-structure}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Introduction}: motivates Quadrays, clarifies 4D namespaces,
+  and summarizes contributions.
+\item
+  \textbf{Methods}: details coordinate conventions, exact tetravolumes,
+  conversions, and lattice-aware optimization methods (Nelder--Mead and
+  discrete IVM descent).
+\item
+  \textbf{Results}: empirical comparisons and demonstrations are shown
+  inline and saved under \passthrough{\lstinline!quadmath/output/!}
+  (PNG/CSV/NPZ/MP4) for reproducibility.
+\item
+  \textbf{Discussion}: interprets results, limitations, and
+  implications; outlines future work.
+\item
+  \textbf{Appendices}: equations, free-energy background, and a
+  consolidated symbols/glossary with an auto-generated API index.
+\end{itemize}
+
 \hypertarget{companion-code-and-tests}{%
-\subsection{Companion code and tests}\label{companion-code-and-tests}}
+\subsection{Companion Code and Tests}\label{companion-code-and-tests}}
 
 The manuscript is accompanied by a fully-tested Python codebase under
 \passthrough{\lstinline!src/!} with unit tests under
@@ -307,8 +379,51 @@ paper:
 For comprehensive background resources, computational implementations,
 and related work, see the \href{07_resources.md}{Resources} section.
 
-Graphical abstract: Panel A shows Quadray axes (A,B,C,D) under a
-symmetric embedding with wireframe context. Panel B shows close-packed
+\hypertarget{reproducibility-and-data-availability}{%
+\subsection{Reproducibility and Data
+Availability}\label{reproducibility-and-data-availability}}
+
+\begin{itemize}
+\tightlist
+\item
+  The manuscript Markdown and code to generate the PDF are available on
+  the project repository (\passthrough{\lstinline!QuadMath!} on GitHub,
+  @docxology username). See the repository home page for source,
+  figures, and scripts:
+  \href{https://github.com/docxology/quadmath}{QuadMath repository}.
+\item
+  The manuscript is licensed under the Apache License 2.0. See the
+  \href{../LICENSE}{LICENSE} file for details.
+\item
+  The manuscript is accompanied by a fully-tested Python codebase under
+  \passthrough{\lstinline!src/!} with unit tests under
+  \passthrough{\lstinline!tests/!}, complemented by extensive
+  cross-validation against Kirby Urner's reference implementations in
+  the \href{https://github.com/4dsolutions}{4dsolutions ecosystem}. See
+  the \href{07_resources.md}{Resources} section for comprehensive
+  details on computational implementations and validation.
+\item
+  All figures referenced in the manuscript are generated by scripts
+  under \passthrough{\lstinline!quadmath/scripts/!} and saved to
+  \passthrough{\lstinline!quadmath/output/!} with lightweight CSV/NPZ
+  alongside images.
+\item
+  Tests accompany all methods under \passthrough{\lstinline!src/!} and
+  enforce 100\% coverage for \passthrough{\lstinline!src/!}.
+\item
+  Symbols and notation are standardized across sections; see
+  \href{10_symbols_glossary.md}{Appendix: Symbols and Glossary} for a
+  consolidated table of variables and constants used throughout.
+  Equation labels (e.g., Eq. \eqref{eq:supp_lattice_det} and Eq.
+  \eqref{eq:supp_fim}) and figure labels are automatically numbered by
+  LaTeX for consistent cross-referencing.
+\end{itemize}
+
+\hypertarget{graphical-abstract}{%
+\subsection{Graphical Abstract}\label{graphical-abstract}}
+
+\textbf{Panel A} shows Quadray axes (A,B,C,D) under a symmetric
+embedding with wireframe context. \textbf{Panel B} shows close-packed
 spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve around
 one'').
 

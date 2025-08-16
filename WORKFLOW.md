@@ -214,9 +214,43 @@ uv run python quadmath/scripts/validate_markdown.py
 # Build complete PDF pipeline
 quadmath/scripts/render_pdf.sh
 
+# Clean all generated outputs (regeneratable)
+quadmath/scripts/clean_output.sh
+
 # Check specific coverage
 coverage report -m
 ```
+
+## Output Management
+
+### Clean Output Script
+
+The `clean_output.sh` script safely removes all generated outputs since everything is regenerated from markdown sources:
+
+```bash
+# Clean all generated outputs
+bash quadmath/scripts/clean_output.sh
+```
+
+This script:
+- Removes `quadmath/output/` directory (all disposable)
+- Removes `quadmath/latex/` directory (all disposable)
+- Preserves source code, tests, markdown, and scripts
+- Provides clear instructions for regeneration
+
+**Note**: All outputs are regeneratable from source, so cleaning is safe and often useful for troubleshooting or ensuring fresh builds.
+
+### Output Directory Structure
+
+```
+quadmath/output/
+├── figures/          # PNG/MP4/SVG files from scripts
+├── data/             # CSV/NPZ files and manifests
+├── pdf/              # Individual and combined PDFs
+└── tex/              # Exported LaTeX files
+```
+
+All directories under `quadmath/output/` are disposable and can be safely cleaned.
 
 ## Benefits of This Paradigm
 

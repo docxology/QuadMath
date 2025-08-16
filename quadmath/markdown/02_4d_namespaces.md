@@ -1,42 +1,52 @@
 # 4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D
 
-In this section, we clarify the three internal meanings of "4D," following a dot-notation that avoids cross-domain confusion. Each namespace represents a distinct mathematical framework with specific applications in our quadray-based computational system.
+This section provides the definitive reference for the three 4D frameworks used throughout this manuscript. Each namespace represents a distinct mathematical framework with specific applications in our quadray-based computational system.
 
 ## Coxeter.4D (Euclidean E⁴)
 
-- **Definition**: Standard E⁴ with orthogonal axes and Euclidean metric; the proper setting for classical regular polytopes. As Coxeter notes (Regular Polytopes, Dover ed., p. 119), this Euclidean 4D is not spacetime. Lattice/packing discussions connect to Conway & Sloane's systematic treatment of higher-dimensional sphere packings and lattices ([Sphere Packings, Lattices and Groups (Springer)](https://link.springer.com/book/10.1007/978-1-4757-6568-7)).
-- **Usage**: Embed Quadray configurations or compare alternative parameterizations when a strictly Euclidean 4D setting is desired.
-- **Simplexes**: Simplex structures extend naturally to 4D and beyond (e.g., pentachora).
-- **Mathematical context**: This framework is appropriate for standard Euclidean geometry, including the Cayley-Menger determinant for computing volumes from edge lengths.
+**Definition**: Standard E⁴ with orthogonal axes and Euclidean metric; the proper setting for classical regular polytopes. As Coxeter notes (Regular Polytopes, Dover ed., p. 119), this Euclidean 4D is not spacetime. Lattice/packing discussions connect to Conway & Sloane's systematic treatment of higher-dimensional sphere packings and lattices ([Sphere Packings, Lattices and Groups (Springer)](https://link.springer.com/book/10.1007/978-1-4757-6568-7)).
+
+**Usage**: Embed Quadray configurations or compare alternative parameterizations when a strictly Euclidean 4D setting is desired.
+
+**Simplexes**: Simplex structures extend naturally to 4D and beyond (e.g., pentachora).
+
+**Mathematical context**: This framework is appropriate for standard Euclidean geometry, including the Cayley-Menger determinant for computing volumes from edge lengths.
 
 ## Einstein.4D (Relativistic spacetime)
 
 **Definition**: Minkowski spacetime with indefinite metric signature, representing the geometric framework for special relativity. This namespace provides the mathematical foundation for understanding space-time relationships and relativistic phenomena.
 
-- **Spacetime**: Minkowski metric signature.
-- **Line element** (mostly-plus convention; see [Minkowski space](https://en.wikipedia.org/wiki/Minkowski_space)):
+**Spacetime**: Minkowski metric signature.
 
-  \begin{equation}\label{eq:einstein_line_element}
-  ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
-  \end{equation}
+**Line element** (mostly-plus convention; see [Minkowski space](https://en.wikipedia.org/wiki/Minkowski_space)):
 
-- **Optimization analogy**: Metric-aware geodesics generalize to information geometry where the Fisher metric replaces the physical metric. See [Fisher information](https://en.wikipedia.org/wiki/Fisher_information) and [natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
-- **Important note**: This namespace is used ONLY as a metric/geodesic analogy when discussing information geometry. Physical constants G, c, Λ do not appear in Quadray lattice methods and should not be mixed with IVM unit conventions.
+\begin{equation}\label{eq:einstein_line_element}
+ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
+\end{equation}
+
+**Optimization analogy**: Metric-aware geodesics generalize to information geometry where the Fisher metric replaces the physical metric. See [Fisher information](https://en.wikipedia.org/wiki/Fisher_information) and [natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
+
+**Important note**: This namespace is used ONLY as a metric/geodesic analogy when discussing information geometry. Physical constants G, c, Λ do not appear in Quadray lattice methods and should not be mixed with IVM unit conventions.
 
 ## Fuller.4D (Synergetics / Quadrays)
 
 **Definition**: Tetrahedral coordinate system based on four non-negative components representing directions to the vertices of a regular tetrahedron from its center. This namespace embodies the synergetic approach to geometry, emphasizing shape relationships and integer tetravolumes within the IVM framework.
 
-- **Basis**: Four non-negative components A,B,C,D with at least one zero post-normalization, treated as a vector (direction and magnitude), not merely a point. Overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
-- **Geometry**: Tetrahedral; unit tetrahedron volume = 1; integer lattice aligns with close-packed spheres (IVM). Background: [Synergetics](https://en.wikipedia.org/wiki/Synergetics_(Fuller)).
-- **Distances**: Computed via appropriate projective normalization; edges align with tetrahedral axes. The IVM = CCP = FCC shortcut allows working in 3D embeddings for visualization while preserving the underlying Fuller.4D tetrahedral accounting.
-- **Implementation heritage**: Extensive computational validation through Kirby Urner's [4dsolutions ecosystem](https://github.com/4dsolutions). See the [Resources](07_resources.md) section for comprehensive details on computational implementations and educational materials.
+**Basis**: Four non-negative components A,B,C,D with at least one zero post-normalization, treated as a vector (direction and magnitude), not merely a point. Overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
+
+**Geometry**: Tetrahedral; unit tetrahedron volume = 1; integer lattice aligns with close-packed spheres (IVM). Background: [Synergetics](https://en.wikipedia.org/wiki/Synergetics_(Fuller)).
+
+**Distances**: Computed via appropriate projective normalization; edges align with tetrahedral axes. The IVM = CCP = FCC shortcut allows working in 3D embeddings for visualization while preserving the underlying Fuller.4D tetrahedral accounting.
+
+**Implementation heritage**: Extensive computational validation through Kirby Urner's [4dsolutions ecosystem](https://github.com/4dsolutions). See the [Resources](07_resources.md) section for comprehensive details on computational implementations and educational materials.
 
 ### Directions, not dimensions (language and models)
 
-- **Vector-first framing**: Treat Quadrays as four canonical directions ("spokes" to the vertices of a regular tetrahedron from its center), not as four orthogonal dimensions. The methane molecule (CH₄) and caltrop shape are helpful mental models.
-- **Origins outside Synergetics**: Quadrays did not originate with Fuller; we adopt the coordinate system within the IVM context. See [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
-- **Language games**: Quadrays and Cartesian are parallel vector languages on the same Euclidean container; teaching them together avoids oscillating between "points now, vectors later."
+**Vector-first framing**: Treat Quadrays as four canonical directions ("spokes" to the vertices of a regular tetrahedron from its center), not as four orthogonal dimensions. The methane molecule (CH₄) and caltrop shape are helpful mental models.
+
+**Origins outside Synergetics**: Quadrays did not originate with Fuller; we adopt the coordinate system within the IVM context. See [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
+
+**Language games**: Quadrays and Cartesian are parallel vector languages on the same Euclidean container; teaching them together avoids oscillating between "points now, vectors later."
 
 ### Figures
 
@@ -46,11 +56,11 @@ In this section, we clarify the three internal meanings of "4D," following a dot
 
 In the previous figure, we show the twelve nearest IVM neighbors with coordination patterns and vector equilibrium geometry; the current figure illustrates random Quadray clouds under several embeddings.
 
-Vector equilibrium (cuboctahedron). The shell formed by the 12 nearest IVM neighbors is the cuboctahedron, also called the vector equilibrium in synergetics. All 12 vertices are equidistant from the origin with equal edge lengths, modeling a balanced local packing. This geometry underlies the "twelve around one" close-packing motif and appears in tensegrity discussions as a canonical balanced structure. See background: [Cuboctahedron (vector equilibrium)](https://en.wikipedia.org/wiki/Cuboctahedron) and synergetics references. Computational demonstrations include related visualizations in the 4dsolutions ecosystem. See the [Resources](07_resources.md) section for comprehensive details.
+**Vector equilibrium (cuboctahedron)**: The shell formed by the 12 nearest IVM neighbors is the cuboctahedron, also called the vector equilibrium in synergetics. All 12 vertices are equidistant from the origin with equal edge lengths, modeling a balanced local packing. This geometry underlies the "twelve around one" close-packing motif and appears in tensegrity discussions as a canonical balanced structure. See background: [Cuboctahedron (vector equilibrium)](https://en.wikipedia.org/wiki/Cuboctahedron) and synergetics references. Computational demonstrations include related visualizations in the 4dsolutions ecosystem. See the [Resources](07_resources.md) section for comprehensive details.
 
 ### Clarifying remarks
 
-- "A time machine is not a tesseract." [KU on synergeo](https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919) The tesseract is a Euclidean 4D object (Coxeter.4D), while Minkowski spacetime (Einstein.4D) is indefinite and not Euclidean; conflating the two leads to category errors. Fuller.4D, in turn, is a tetrahedral, mereological framing of ordinary space emphasizing shape/angle relations and IVM quantization. Each namespace carries distinct assumptions and should be used accordingly in analysis.
+"A time machine is not a tesseract." [KU on synergeo](https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919) The tesseract is a Euclidean 4D object (Coxeter.4D), while Minkowski spacetime (Einstein.4D) is indefinite and not Euclidean; conflating the two leads to category errors. Fuller.4D, in turn, is a tetrahedral, mereological framing of ordinary space emphasizing shape/angle relations and IVM quantization. Each namespace carries distinct assumptions and should be used accordingly in analysis.
 
 ## Practical usage guide
 

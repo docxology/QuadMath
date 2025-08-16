@@ -58,24 +58,20 @@ def create_4d_trajectory_visualization():
         # This represents the four-fold partition of Active Inference
         
         # Create a synthetic dataset that mimics sensory observations
-        X = rng.normal(size=(200, 4))
-        noise = 0.12 * rng.normal(size=X.shape[0])
+        # Use smaller scale for more stable optimization
+        X = 0.1 * rng.normal(size=(100, 4))  # Reduced scale
+        noise = 0.01 * rng.normal(size=X.shape[0])  # Reduced noise
         
         # True parameters representing optimal Active Inference configuration
-        w_true = np.array([1.2, -0.8, 0.6, -0.4])
+        w_true = np.array([0.8, -0.6, 0.4, -0.3])  # Smaller scale
         y = X @ w_true + noise
         
         # Evaluate at a suboptimal estimate
-        w_est = np.array([0.5, -0.3, 0.1, -0.1])
-        residuals = X @ w_est - y
+        w_est = np.array([0.2, -0.1, 0.05, -0.05])  # Closer to true values
         
-        # Gradients of squared loss with respect to parameters
-        grads = 2.0 * (X.T * residuals).T
-        F = fisher_information_matrix(grads)
-        
-        return F, w_est, w_true, X, y
+        return w_est, w_true, X, y
     
-    F, w_est, w_true, X, y = create_active_inference_objective()
+    w_est, w_true, X, y = create_active_inference_objective()
     
     # Natural gradient descent with Active Inference interpretation
     w = w_est.copy()
@@ -88,20 +84,23 @@ def create_4d_trajectory_visualization():
     internal_trace = []
     external_trace = []
     
-    # Optimization loop with adaptive step sizes
-    for step in range(30):
+    # Track step sizes and convergence metrics
+    step_sizes = []
+    gradient_norms = []
+    parameter_changes = []
+    
+    # Optimization loop with adaptive step sizes and better stability
+    max_steps = 50
+    min_step_size = 1e-6
+    max_step_size = 0.1
+    
+    for step in range(max_steps):
         # Compute gradient (prediction error in Active Inference)
-        g = X.T @ (X @ w - y)
+        residuals = X @ w - y
+        g = X.T @ residuals
         
-        # Natural gradient step (geodesic motion on information manifold)
-        step_update = natural_gradient_step(g, F + 1e-3 * np.eye(4), step_size=0.25)
-        w = w + step_update
-        
-        # Store trajectory
-        path.append(w.copy())
-        
-        # Compute free energy proxy (squared loss)
-        free_energy_val = float(np.mean((X @ w - y) ** 2))
+        # Compute current free energy (squared loss)
+        free_energy_val = float(np.mean(residuals ** 2))
         free_energy_trace.append(free_energy_val)
         
         # Store individual component evolution
@@ -109,8 +108,87 @@ def create_4d_trajectory_visualization():
         action_trace.append(w[1])
         internal_trace.append(w[2])
         external_trace.append(w[3])
+        
+        # Compute gradient norm for diagnostics
+        grad_norm = np.linalg.norm(g)
+        gradient_norms.append(grad_norm)
+        
+        # Early stopping if gradient is very small
+        if grad_norm < 1e-6:
+            print(f"Converged at step {step} with gradient norm {grad_norm:.2e}")
+            break
+        
+        # Compute Fisher Information Matrix for this step
+        # Use gradients of log-likelihood (residuals)
+        grads = (X.T * residuals).T
+        F = fisher_information_matrix(grads)
+        
+        # Ensure positive definiteness with larger ridge
+        ridge = 1e-3
+        
+        # Adaptive step size based on gradient magnitude and curvature
+        if step == 0:
+            # Initial step size based on gradient magnitude
+            step_size = min(0.01, max_step_size)
+        else:
+            # Adaptive step size based on previous step success
+            if len(parameter_changes) > 0:
+                prev_change = parameter_changes[-1]
+                if prev_change < 1e-4:  # Very small change
+                    step_size = min(step_size * 1.1, max_step_size)
+                elif prev_change > 0.1:  # Large change
+                    step_size = max(step_size * 0.9, min_step_size)
+        
+        # Natural gradient step (geodesic motion on information manifold)
+        try:
+            step_update = natural_gradient_step(g, F + ridge * np.eye(4), step_size=step_size)
+            
+            # Check for numerical instability
+            if np.any(np.isnan(step_update)) or np.any(np.isinf(step_update)):
+                print(f"Numerical instability detected at step {step}, reducing step size")
+                step_size *= 0.5
+                step_update = natural_gradient_step(g, F + ridge * np.eye(4), step_size=step_size)
+            
+            # Apply update
+            w_new = w + step_update
+            
+            # Check if update is reasonable
+            param_change = np.linalg.norm(step_update)
+            parameter_changes.append(param_change)
+            
+            if param_change > 1.0:  # Unreasonably large step
+                print(f"Large step detected at step {step}, reducing step size")
+                step_size *= 0.5
+                step_update = natural_gradient_step(g, F + ridge * np.eye(4), step_size=step_size)
+                w_new = w + step_update
+                param_change = np.linalg.norm(step_update)
+                parameter_changes[-1] = param_change
+            
+            w = w_new
+            step_sizes.append(step_size)
+            
+        except np.linalg.LinAlgError:
+            print(f"Linear algebra error at step {step}, using gradient descent fallback")
+            # Fallback to standard gradient descent
+            w = w - 0.001 * g
+            step_sizes.append(0.001)
+            parameter_changes.append(0.001 * grad_norm)
+        
+        # Store trajectory
+        path.append(w.copy())
+        
+        # Check for convergence
+        if len(free_energy_trace) > 1:
+            energy_change = abs(free_energy_trace[-1] - free_energy_trace[-2])
+            if energy_change < 1e-8:
+                print(f"Energy converged at step {step}")
+                break
     
     path = np.array(path)
+    
+    print(f"Optimization completed in {len(path)-1} steps")
+    print(f"Final free energy: {free_energy_trace[-1]:.2e}")
+    print(f"Parameter change from initial: {np.linalg.norm(path[-1] - path[0]):.2e}")
     
     # Create comprehensive 4D visualization with improved layout
     fig = plt.figure(figsize=(16, 12))
@@ -179,42 +257,42 @@ def create_4d_trajectory_visualization():
     ax3.legend(fontsize=9, ncol=2)
     ax3.grid(True, alpha=0.3)
     
-    # Panel 4: Information geometry context with explanation
+    # Panel 4: Optimization diagnostics with step sizes and gradients
     ax4 = fig.add_subplot(2, 3, 5)
-    ax4.axis('off')
     
-    # Create a comprehensive explanation box with better formatting
-    explanation_text = """4D Framework Integration:
-
-• Coxeter.4D (Euclidean): 3D parameter space with 
-  exact Euclidean metric for precise measurements
+    # Plot step sizes and gradient norms
+    if len(step_sizes) > 0:
+        ax4_twin = ax4.twinx()
+        
+        # Step sizes
+        ax4.plot(range(len(step_sizes)), step_sizes, 'b-', linewidth=2, label='Step Size', marker='o', markersize=3)
+        ax4.set_ylabel('Step Size', color='b', fontsize=11, fontweight='bold')
+        ax4.tick_params(axis='y', labelcolor='b')
+        
+        # Gradient norms
+        ax4_twin.plot(range(len(gradient_norms)), gradient_norms, 'r-', linewidth=2, label='Gradient Norm', marker='s', markersize=3)
+        ax4_twin.set_ylabel('Gradient Norm', color='r', fontsize=11, fontweight='bold')
+        ax4_twin.tick_params(axis='y', labelcolor='r')
+        ax4_twin.set_yscale('log')
+        
+        # Add legends
+        lines1, labels1 = ax4.get_legend_handles_labels()
+        lines2, labels2 = ax4_twin.get_legend_handles_labels()
+        ax4.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=9)
     
-• Einstein.4D (Minkowski): Fisher metric replaces 
-  spacetime metric; geodesics follow F⁻¹∇L
-    
-• Fuller.4D (Synergetics): Tetrahedral coordinate 
-  system with IVM quantization
-
-Active Inference Context:
-• Natural gradient descent minimizes free energy
-• Four-fold partition: μ, s, a, ψ
-• Information-geometric flows drive perception-action
-• Biological plausibility through geodesic motion
-
-Mathematical Foundation:
-• FIM provides Riemannian metric on parameter space
-• Natural gradient follows geodesics on information manifold
-• Convergence rate depends on local curvature structure"""
-    
-    ax4.text(0.05, 0.95, explanation_text, transform=ax4.transAxes, 
-             fontsize=10, verticalalignment='top', 
-             bbox=dict(boxstyle="round,pad=0.8", facecolor="lightsteelblue", alpha=0.9, edgecolor='navy'))
+    ax4.set_xlabel('Optimization Step', fontsize=12, fontweight='bold')
+    ax4.set_title('Optimization Diagnostics\n(Step Size & Gradient Evolution)', 
+                  fontsize=12, fontweight='bold')
+    ax4.grid(True, alpha=0.3)
     
     # Panel 5: Fisher Information Matrix heatmap with visualization
     ax5 = fig.add_subplot(2, 3, 6)
     
+    # Use the final Fisher Information Matrix
+    F_final = fisher_information_matrix((X.T * (X @ w - y)).T)
+    
     # Use a better colormap for the heatmap
-    im = ax5.imshow(F, cmap="viridis", aspect='equal', interpolation='nearest')
+    im = ax5.imshow(F_final, cmap="viridis", aspect='equal', interpolation='nearest')
     ax5.set_title('Fisher Information Matrix\n(Information Geometry Metric)', 
                   fontsize=12, fontweight='bold')
     ax5.set_xlabel('Parameter Index', fontsize=12, fontweight='bold')
@@ -227,7 +305,7 @@ Mathematical Foundation:
     # Add value annotations with better formatting
     for i in range(4):
         for j in range(4):
-            text = ax5.text(j, i, f'{F[i, j]:.2f}', 
+            text = ax5.text(j, i, f'{F_final[i, j]:.2f}', 
                            ha="center", va="center", color="white", fontweight='bold', fontsize=9)
     
     cbar = fig.colorbar(im, ax=ax5, fraction=0.046, pad=0.04)
@@ -253,14 +331,18 @@ Mathematical Foundation:
         action_trace=action_trace,
         internal_trace=internal_trace,
         external_trace=external_trace,
-        F=F,
+        step_sizes=step_sizes,
+        gradient_norms=gradient_norms,
+        parameter_changes=parameter_changes,
+        F_final=F_final,
         w_true=w_true,
         w_est=w_est,
         metadata={
             'description': '4D Natural Gradient Trajectory for Active Inference',
             'parameters': ['perception_weight', 'action_weight', 'internal_state', 'external_state'],
             'framework': ['Coxeter.4D', 'Einstein.4D', 'Fuller.4D'],
-            'optimization_steps': len(free_energy_trace)
+            'optimization_steps': len(free_energy_trace),
+            'convergence_achieved': len(free_energy_trace) < max_steps
         }
     )
     
@@ -287,8 +369,8 @@ def create_free_energy_landscape():
     
     # Create a 2D free energy landscape over two variational parameters
     # representing the balance between perception and action
-    q1_vals = np.linspace(0.01, 0.99, 120)
-    q2_vals = np.linspace(0.01, 0.99, 120)
+    q1_vals = np.linspace(0.01, 0.99, 100)
+    q2_vals = np.linspace(0.01, 0.99, 100)
     Q1, Q2 = np.meshgrid(q1_vals, q2_vals)
     
     # Create synthetic log-likelihoods that mimic Active Inference dynamics
@@ -312,6 +394,11 @@ def create_free_energy_landscape():
             # Compute free energy
             F_landscape[i, j] = free_energy(log_p_o_given_s, q, p)
     
+    # Find the minimum
+    min_idx = np.unravel_index(np.argmin(F_landscape), F_landscape.shape)
+    min_q1, min_q2 = q1_vals[min_idx[1]], q2_vals[min_idx[0]]
+    min_F = F_landscape[min_idx]
+    
     # Create comprehensive visualization with improved layout
     fig = plt.figure(figsize=(16, 12))
     
@@ -321,11 +408,6 @@ def create_free_energy_landscape():
     # Use a better colormap for the surface
     surf = ax1.plot_surface(Q1, Q2, F_landscape, cmap='viridis', 
                            alpha=0.85, linewidth=0.5, antialiased=True)
-    
-    # Find the minimum
-    min_idx = np.unravel_index(np.argmin(F_landscape), F_landscape.shape)
-    min_q1, min_q2 = q1_vals[min_idx[1]], q2_vals[min_idx[0]]
-    min_F = F_landscape[min_idx]
     
     # Mark the minimum with better visibility
     ax1.scatter([min_q1], [min_q2], [min_F], 

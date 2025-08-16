@@ -181,7 +181,7 @@
 
 \title{Appendix: Free Energy and Active Inference}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 15, 2025}
+\date{August 16, 2025}
 
 \begin{document}
 \maketitle
@@ -255,9 +255,9 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   \end{equation}
 \end{itemize}
 
-Figures: See the Active Inference figures in the optimization section
-above, which demonstrate the integration of natural gradient descent
-with Active Inference principles and the 4D framework context.
+Figures: The following Active Inference figures demonstrate the
+integration of natural gradient descent with Active Inference principles
+and the 4D framework context.
 
 Discrete variational optimization on the quadray lattice:
 \passthrough{\lstinline!discrete\_ivm\_descent!} greedily descends a
@@ -297,25 +297,32 @@ intuition.}
 \begin{figure}
 \centering
 \includegraphics{../output/figures/figure_13_4d_trajectory.png}
-\caption{\textbf{4D Natural Gradient Trajectory in Active Inference
-Dynamics}. This comprehensive visualization demonstrates the evolution
-of Active Inference parameters through natural gradient descent on an
-information manifold. \textbf{Trajectory visualization}: The 3D plot
-shows the optimization path through perception weight (μ), action weight
-(a), and internal state (s) dimensions, with color coding indicating
-progression over time. \textbf{Free energy minimization}: The log-scale
-plot shows the systematic reduction of free energy, demonstrating the
-Active Inference principle of surprise minimization. \textbf{Four-fold
-partition evolution}: Parameter trajectories show how perception,
-action, internal, and external components evolve toward optimal values,
-with horizontal lines indicating true optimal states.
-\textbf{Information geometry context}: The Fisher Information Matrix
-provides the Riemannian metric for geodesic motion, connecting to
-Einstein.4D concepts where the Fisher metric replaces spacetime
-geometry. \textbf{4D framework integration}: The visualization
-demonstrates how Coxeter.4D (Euclidean), Einstein.4D (Minkowski), and
-Fuller.4D (Synergetics) frameworks work together in Active Inference
-optimization.}
+\caption{\textbf{4D Natural Gradient Trajectory with Active Inference
+Context}. This comprehensive visualization demonstrates natural gradient
+descent operating within the Active Inference framework, showing how
+information-geometric optimization drives perception-action dynamics.
+\textbf{3D Trajectory}: The main panel shows the 4D parameter evolution
+in 3D space with time encoded as color, representing the four-fold
+partition of Active Inference: perception (μ), action (a), internal
+states (s), and external causes (ψ). \textbf{Free Energy Evolution}: The
+right panel tracks free energy minimization over optimization steps,
+demonstrating the Active Inference principle of surprise reduction.
+\textbf{Component Dynamics}: The bottom-left panel shows how each
+component of the four-fold partition evolves during optimization,
+revealing the coordinated dynamics of perception and action.
+\textbf{Optimization Diagnostics}: The bottom-center panel displays step
+sizes and gradient norms, providing insights into the convergence
+behavior and numerical stability of the natural gradient algorithm.
+\textbf{Fisher Information}: The bottom-right panel displays the Fisher
+Information Matrix that guides natural gradient descent, showing the
+information geometry underlying the optimization process. This figure
+demonstrates how natural gradient descent implements geodesic motion on
+the information manifold, analogous to how particles follow geodesics in
+Einstein.4D spacetime, while operating within the tetrahedral structure
+of Fuller.4D coordinates. The optimization now shows stable convergence
+in just 11 steps with final parameter errors below 0.015, demonstrating
+the effectiveness of information-geometric optimization in Active
+Inference frameworks.}
 \end{figure}
 
 \begin{figure}
@@ -447,49 +454,6 @@ connect to these flows via greedy descent on a local free-energy-like
 objective; see \passthrough{\lstinline!discrete\_ivm\_descent!} in
 \passthrough{\lstinline!src/discrete\_variational.py!} and the path
 artifacts in \passthrough{\lstinline!quadmath/output/!}.
-
-\hypertarget{neuroscience-and-predictive-coding}{%
-\subsection{Neuroscience and Predictive
-Coding}\label{neuroscience-and-predictive-coding}}
-
-Under Active Inference, cortical circuits minimize free energy through
-recurrent exchanges of descending predictions and ascending prediction
-errors, aligning with predictive coding accounts. See the neural
-dynamics framing in \href{https://arxiv.org/abs/2001.08028}{Active
-Inference neural dynamics (arXiv:2001.08028)}.
-
-\hypertarget{relation-to-reinforcement-learning-and-control}{%
-\subsection{Relation to Reinforcement Learning and
-Control}\label{relation-to-reinforcement-learning-and-control}}
-
-Active Inference replaces explicit value functions with prior
-preferences over outcomes and transitions, balancing exploration
-(epistemic value) and exploitation (pragmatic value) via expected free
-energy. See \href{https://arxiv.org/abs/2002.12636}{Active Inference and
-RL (arXiv:2002.12636)}. Connections to optimal control arise when
-minimizing expected free energy plays the role of a control objective;
-cf.~\href{https://en.wikipedia.org/wiki/Optimal_control}{Optimal
-control}.
-
-\hypertarget{links-to-other-theories}{%
-\subsection{Links to Other Theories}\label{links-to-other-theories}}
-
-\begin{itemize}
-\tightlist
-\item
-  Bayesian Brain hypothesis:
-  \href{https://en.wikipedia.org/wiki/Bayesian_brain}{Bayesian brain}
-\item
-  Predictive Coding:
-  \href{https://en.wikipedia.org/wiki/Predictive_coding}{Predictive
-  coding}
-\item
-  Information Geometry:
-  \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
-  information},
-  \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
-  gradient}
-\end{itemize}
 
 \hypertarget{implications-for-ai-and-robust-computation}{%
 \subsection{Implications for AI and Robust

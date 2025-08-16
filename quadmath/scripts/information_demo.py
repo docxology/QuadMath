@@ -34,6 +34,7 @@ def main() -> None:
     from metrics import fisher_curvature_analysis  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import matplotlib.patches as patches  # noqa: WPS433
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: WPS433
 
     # Set style for professional appearance
     plt.style.use('default')
@@ -62,76 +63,93 @@ def main() -> None:
     grads = 2.0 * (X.T * residuals).T  # shape (N, 3)
     F = fisher_information_matrix(grads)
 
-    # Fisher Information Matrix (FIM) with 4D Framework Context
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    # Enhanced Figure 10: Fisher Information Matrix (FIM) with 4D Framework Context
+    # Now with 3 panels including linear regression model visualization
+    fig = plt.figure(figsize=(18, 6))
     
-    # Panel 1: FIM heatmap with professional styling
-    im1 = ax1.imshow(F, cmap="viridis", aspect='equal', interpolation='nearest')
-    ax1.set_title("Fisher Information Matrix $F_{ij}$\n(Information Content Heatmap)", 
+    # Panel 1: Linear Regression Model with Diagnostics
+    ax1 = fig.add_subplot(1, 3, 1)
+    
+    # Plot data points and fitted line
+    x_range = np.linspace(X.min(), X.max(), 100)
+    y_true_line = w_true[0] + w_true[1] * x_range + w_true[2] * x_range**2
+    y_est_line = w_est[0] + w_est[1] * x_range + w_est[2] * x_range**2
+    
+    # Scatter plot of actual data (using first feature for visualization)
+    ax1.scatter(X[:, 0], y, alpha=0.6, color='blue', s=20, label='Data points')
+    ax1.plot(x_range, y_true_line, 'g-', linewidth=2, label=f'True: y = {w_true[0]:.1f} + {w_true[1]:.1f}x + {w_true[2]:.1f}x²')
+    ax1.plot(x_range, y_est_line, 'r--', linewidth=2, label=f'Estimate: y = {w_est[0]:.1f} + {w_est[1]:.1f}x + {w_est[2]:.1f}x²')
+    
+    ax1.set_xlabel("Feature $x_1$", fontsize=11)
+    ax1.set_ylabel("Target $y$", fontsize=11)
+    ax1.set_title("Linear Regression Model\n(Misspecified Quadratic)", fontsize=12, fontweight='bold', pad=15)
+    ax1.legend(fontsize=9)
+    ax1.grid(True, alpha=0.3)
+    
+    # Add diagnostic text
+    ax1.text(0.02, 0.98, f"True params: {w_true}\nEst. params: {w_est}\nMSE: {np.mean(residuals**2):.3f}", 
+             transform=ax1.transAxes, verticalalignment='top', fontsize=9,
+             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+    
+    # Panel 2: FIM heatmap with professional styling
+    ax2 = fig.add_subplot(1, 3, 2)
+    im2 = ax2.imshow(F, cmap="viridis", aspect='equal', interpolation='nearest')
+    ax2.set_title("Fisher Information Matrix $F_{ij}$\n(Information Content Heatmap)", 
                   fontsize=12, fontweight='bold', pad=15)
-    ax1.set_xlabel("Parameter index $j$", fontsize=11)
-    ax1.set_ylabel("Parameter index $i$", fontsize=11)
-    ax1.set_xticks(range(3))
-    ax1.set_yticks(range(3))
-    ax1.set_xticklabels(['$w_0$', '$w_1$', '$w_2$'])
-    ax1.set_yticklabels(['$w_0$', '$w_1$', '$w_2$'])
+    ax2.set_xlabel("Parameter index $j$", fontsize=11)
+    ax2.set_ylabel("Parameter index $i$", fontsize=11)
+    ax2.set_xticks(range(3))
+    ax2.set_yticks(range(3))
+    ax2.set_xticklabels(['$w_0$', '$w_1$', '$w_2$'])
+    ax2.set_yticklabels(['$w_0$', '$w_1$', '$w_2$'])
     
     # Add value annotations with better contrast
     for i in range(3):
         for j in range(3):
             color = "white" if F[i, j] > 0.5 else "black"
-            text = ax1.text(j, i, f'{F[i, j]:.3f}', 
+            text = ax2.text(j, i, f'{F[i, j]:.3f}', 
                            ha="center", va="center", color=color, fontweight='bold', fontsize=9)
     
-    cbar1 = fig.colorbar(im1, ax=ax1, fraction=0.046, pad=0.04)
-    cbar1.set_label("$F_{ij}$ (information content)", fontsize=11)
+    cbar2 = fig.colorbar(im2, ax=ax2, fraction=0.046, pad=0.04)
+    cbar2.set_label("$F_{ij}$ (information content)", fontsize=11)
     
-    # Panel 2: 4D framework explanation with improved layout
-    ax2.axis('off')
-    ax2.text(0.05, 0.95, "4D Framework Integration", fontsize=14, fontweight='bold', 
-             transform=ax2.transAxes)
+    # Panel 3: 4D framework explanation with tetrahedral visualization
+    ax3 = fig.add_subplot(1, 3, 3, projection='3d')
     
-    # Mathematical foundation
-    ax2.text(0.05, 0.88, "Mathematical Foundation:", fontsize=11, fontweight='bold',
-             transform=ax2.transAxes)
-    ax2.text(0.05, 0.82, "$F_{ij} = \\frac{1}{N}\\sum_{n=1}^N \\frac{\\partial L_n}{\\partial w_i} \\frac{\\partial L_n}{\\partial w_j}$", 
-             fontsize=10, transform=ax2.transAxes, style='italic')
-    ax2.text(0.05, 0.76, "where $L_n$ is the loss for sample $n$", fontsize=9,
-             transform=ax2.transAxes)
+    # Create tetrahedral visualization
+    tetra_vertices = np.array([
+        [0, 0, 0],      # Origin (Coxeter.4D)
+        [1, 0, 0],      # Coxeter.4D (Euclidean)
+        [0.5, 0.866, 0], # Einstein.4D (Minkowski)
+        [0.5, 0.289, 0.816]  # Fuller.4D (Synergetics)
+    ])
     
-    # Coxeter.4D explanation
-    ax2.text(0.05, 0.68, "• Coxeter.4D (Euclidean):", fontsize=11, fontweight='bold',
-             transform=ax2.transAxes, color='#1f77b4')
-    ax2.text(0.08, 0.63, "  Standard 3D parameter space", fontsize=9,
-             transform=ax2.transAxes)
-    ax2.text(0.08, 0.58, "  with Euclidean metric $\\delta_{ij}$", fontsize=9,
-             transform=ax2.transAxes)
+    # Define tetrahedron faces
+    faces = [
+        [0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]
+    ]
     
-    # Einstein.4D explanation  
-    ax2.text(0.05, 0.5, "• Einstein.4D (Minkowski):", fontsize=11, fontweight='bold',
-             transform=ax2.transAxes, color='#ff7f0e')
-    ax2.text(0.08, 0.45, "  Fisher metric $F_{ij}$ replaces", fontsize=9,
-             transform=ax2.transAxes)
-    ax2.text(0.08, 0.4, "  spacetime metric; geodesics follow", fontsize=9,
-             transform=ax2.transAxes)
-    ax2.text(0.08, 0.35, "  $\\Delta w = F^{-1}\\nabla L$", fontsize=9,
-             transform=ax2.transAxes)
+    # Plot tetrahedron edges
+    for face in faces:
+        for i in range(3):
+            start = tetra_vertices[face[i]]
+            end = tetra_vertices[face[(i+1)%3]]
+            ax3.plot([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], 
+                    'k-', linewidth=1, alpha=0.6)
     
-    # Fuller.4D explanation
-    ax2.text(0.05, 0.27, "• Fuller.4D (Synergetics):", fontsize=11, fontweight='bold',
-             transform=ax2.transAxes, color='#2ca02c')
-    ax2.text(0.08, 0.22, "  Tetrahedral coordinate system", fontsize=9,
-             transform=ax2.transAxes)
-    ax2.text(0.08, 0.17, "  with IVM quantization", fontsize=9,
-             transform=ax2.transAxes)
+    # Plot vertices with labels
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
+    labels = ['Origin', 'Coxeter.4D\n(Euclidean)', 'Einstein.4D\n(Minkowski)', 'Fuller.4D\n(Synergetics)']
     
-    # Information-theoretic interpretation
-    ax2.text(0.05, 0.09, "Information Content:", fontsize=11, fontweight='bold',
-             transform=ax2.transAxes)
-    ax2.text(0.08, 0.04, "Diagonal elements: parameter sensitivity", fontsize=9,
-             transform=ax2.transAxes)
-    ax2.text(0.08, -0.01, "Off-diagonal: parameter interactions", fontsize=9,
-             transform=ax2.transAxes)
+    for i, (vertex, color, label) in enumerate(zip(tetra_vertices, colors, labels)):
+        ax3.scatter(vertex[0], vertex[1], vertex[2], c=color, s=100, alpha=0.8)
+        ax3.text(vertex[0], vertex[1], vertex[2], label, fontsize=9, ha='center')
+    
+    ax3.set_title("4D Framework Integration\n(Tetrahedral Structure)", fontsize=12, fontweight='bold', pad=15)
+    ax3.set_xlabel("X (Euclidean)", fontsize=10)
+    ax3.set_ylabel("Y (Minkowski)", fontsize=10)
+    ax3.set_zlabel("Z (Synergetics)", fontsize=10)
+    ax3.view_init(elev=20, azim=45)
     
     plt.tight_layout()
     
@@ -154,16 +172,18 @@ def main() -> None:
         y=y,
     )
 
-    # Comprehensive Fisher Information Eigenspectrum with Curvature Analysis
+    # Enhanced Figure 11: Comprehensive Fisher Information Eigenspectrum with Curvature Analysis
+    # Now with 3 panels including tetrahedral parameter space visualization
     from metrics import fim_eigenspectrum  # noqa: WPS433
     evals, evecs = fim_eigenspectrum(F)
     
     # Comprehensive curvature analysis
     curvature_analysis = fisher_curvature_analysis(F)
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    fig = plt.figure(figsize=(18, 6))
     
     # Panel 1: Eigenspectrum with improved styling
+    ax1 = fig.add_subplot(1, 3, 1)
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
     bars = ax1.bar(np.arange(evals.size), evals, 
                    color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
@@ -185,6 +205,7 @@ def main() -> None:
     ax1.set_ylim(0, max(evals) * 1.15)  # Add some headroom for annotations
     
     # Panel 2: Comprehensive curvature analysis with better organization
+    ax2 = fig.add_subplot(1, 3, 2)
     ax2.axis('off')
     ax2.text(0.05, 0.95, "Curvature Analysis & 4D Framework", fontsize=14, fontweight='bold', 
              transform=ax2.transAxes)
@@ -235,6 +256,52 @@ def main() -> None:
              transform=ax2.transAxes)
     ax2.text(0.08, 0.03, "• Anisotropic scaling improves convergence", fontsize=9,
              transform=ax2.transAxes)
+    
+    # Panel 3: Tetrahedral parameter space visualization
+    ax3 = fig.add_subplot(1, 3, 3, projection='3d')
+    
+    # Create parameter space tetrahedron based on eigenvectors
+    # Scale eigenvectors by eigenvalues to show curvature structure
+    scaled_evecs = evecs * np.sqrt(evals[:, None])
+    
+    # Create tetrahedron vertices in parameter space
+    param_vertices = np.array([
+        [0, 0, 0],  # Origin
+        scaled_evecs[0],  # Primary direction
+        scaled_evecs[1],  # Secondary direction  
+        scaled_evecs[2]   # Tertiary direction
+    ])
+    
+    # Define tetrahedron faces
+    faces = [
+        [0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]
+    ]
+    
+    # Plot tetrahedron edges with curvature-based coloring
+    for face in faces:
+        for i in range(3):
+            start = param_vertices[face[i]]
+            end = param_vertices[face[(i+1)%3]]
+            # Color based on curvature magnitude
+            if face[i] == 0 or face[(i+1)%3] == 0:
+                color = 'k'  # Black for edges to origin
+            else:
+                color = colors[face[i]-1]  # Color based on eigenvalue
+            ax3.plot([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], 
+                    color=color, linewidth=2, alpha=0.8)
+    
+    # Plot vertices with labels
+    vertex_labels = ['Origin', f'λ₀={evals[0]:.3f}', f'λ₁={evals[1]:.3f}', f'λ₂={evals[2]:.3f}']
+    
+    for i, (vertex, color, label) in enumerate(zip(param_vertices, ['black'] + colors, vertex_labels)):
+        ax3.scatter(vertex[0], vertex[1], vertex[2], c=color, s=100, alpha=0.8)
+        ax3.text(vertex[0], vertex[1], vertex[2], label, fontsize=9, ha='center')
+    
+    ax3.set_title("Parameter Space Tetrahedron\n(Curvature Structure)", fontsize=12, fontweight='bold', pad=15)
+    ax3.set_xlabel("$w_0$ parameter", fontsize=10)
+    ax3.set_ylabel("$w_1$ parameter", fontsize=10)
+    ax3.set_zlabel("$w_2$ parameter", fontsize=10)
+    ax3.view_init(elev=20, azim=45)
     
     plt.tight_layout()
     

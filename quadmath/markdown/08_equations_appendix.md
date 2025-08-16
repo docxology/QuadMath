@@ -91,10 +91,6 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 
 **Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
-### Figures
-
-![**Discrete IVM descent optimization path (final converged state)**. This static frame shows the final position of a discrete variational descent algorithm operating on the integer Quadray lattice. **Points**: Colored spheres representing the final optimization state, each positioned at integer Quadray coordinates projected to 3D space via the default embedding matrix. **Colors**: Each point has a distinct color for easy identification of different optimization components. **Optimization context**: These points represent the final state of the discrete IVM descent algorithm after converging to a local optimum on the integer lattice. The tight clustering of points indicates successful convergence, with the algorithm having found a stable configuration. **Lattice constraints**: All point positions correspond to integer Quadray coordinates, demonstrating the discrete nature of the optimization. The final configuration represents a stable "energy level" where further discrete moves do not improve the objective function. This visualization complements the time-series trajectory data and demonstrates the effectiveness of discrete optimization on the integer Quadray lattice.](../output/figures/discrete_path_final.png)
-
 ## Quadray Normalization (Fuller.4D)
 
 Given $q=(a,b,c,d)$, choose $k=\min(a,b,c,d)$ and set $q' = q - (k,k,k,k)$ to enforce at least one zero with non-negative entries.

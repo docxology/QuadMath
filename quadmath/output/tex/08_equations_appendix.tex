@@ -53,19 +53,6 @@
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -181,7 +168,7 @@
 
 \title{Equations and Math Supplement}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 15, 2025}
+\date{August 16, 2025}
 
 \begin{document}
 \maketitle
@@ -352,32 +339,6 @@ trajectories and free energy landscapes are shown in
 \href{04_optimization_in_4d.md}{Section 4: Optimization in 4D}. The
 appendix focuses on unique figures specific to mathematical formulations
 and validation.
-
-\hypertarget{figures}{%
-\subsubsection{Figures}\label{figures}}
-
-\begin{figure}
-\centering
-\includegraphics{../output/figures/discrete_path_final.png}
-\caption{\textbf{Discrete IVM descent optimization path (final converged
-state)}. This static frame shows the final position of a discrete
-variational descent algorithm operating on the integer Quadray lattice.
-\textbf{Points}: Colored spheres representing the final optimization
-state, each positioned at integer Quadray coordinates projected to 3D
-space via the default embedding matrix. \textbf{Colors}: Each point has
-a distinct color for easy identification of different optimization
-components. \textbf{Optimization context}: These points represent the
-final state of the discrete IVM descent algorithm after converging to a
-local optimum on the integer lattice. The tight clustering of points
-indicates successful convergence, with the algorithm having found a
-stable configuration. \textbf{Lattice constraints}: All point positions
-correspond to integer Quadray coordinates, demonstrating the discrete
-nature of the optimization. The final configuration represents a stable
-``energy level'' where further discrete moves do not improve the
-objective function. This visualization complements the time-series
-trajectory data and demonstrates the effectiveness of discrete
-optimization on the integer Quadray lattice.}
-\end{figure}
 
 \hypertarget{quadray-normalization-fuller.4d}{%
 \subsection{Quadray Normalization

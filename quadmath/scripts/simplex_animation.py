@@ -125,7 +125,7 @@ def main() -> None:
         except Exception:
             pass
     
-    fig.suptitle("Nelder-Mead Simplex Evolution on Integer Quadray Lattice", fontsize=14, y=0.95)
+    fig.suptitle("Nelder-Mead Simplex Evolution on Integer Quadray Lattice", fontsize=16, y=0.98)
     fig.tight_layout()
     
     figure_dir = get_figure_dir()

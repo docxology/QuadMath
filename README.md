@@ -2,6 +2,24 @@
 
 This repository organizes a comprehensive review of Quadray coordinates, integer volume quantization, optimization on tetrahedral lattices, and information geometry. It contains modular Markdown sources, LaTeX outputs, and build scripts to produce individual and combined PDFs.
 
+## Quick Start
+
+```bash
+# Clone and setup
+git clone <repository-url>
+cd QuadMath
+uv sync
+
+# Run tests to ensure everything works
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q
+
+# Generate all outputs (figures, PDFs, LaTeX)
+bash quadmath/scripts/render_pdf.sh
+
+# Clean all generated outputs (regeneratable)
+bash quadmath/scripts/clean_output.sh
+```
+
 ## Repository Architecture: The render_pdf.sh Paradigm
 
 This repository follows a **unified test-driven development workflow** where source code, tests, and documentation are developed together in complete coherence:
@@ -76,13 +94,31 @@ Dependencies: `pandoc`, `xelatex` (TeX Live).
   - brew install pandoc
   - brew install --cask mactex-no-gui
 
-Render all outputs:
+### Build Commands
 
 ```bash
+# Generate all outputs (figures, PDFs, LaTeX)
 bash quadmath/scripts/render_pdf.sh
+
+# Clean all generated outputs (regeneratable)
+bash quadmath/scripts/clean_output.sh
 ```
 
-Artifacts will be written to `quadmath/output/` and `.tex` exports to `quadmath/latex/`.
+### Output Structure
+
+After running `render_pdf.sh`, you'll find:
+
+```
+quadmath/output/
+├── figures/          # PNG/MP4/SVG files
+├── data/             # CSV/NPZ files and manifests
+├── pdf/              # Individual and combined PDFs
+│   ├── 01_introduction.pdf
+│   ├── 02_4d_namespaces.pdf
+│   ├── ...
+│   └── quadmath_review.pdf (combined)
+└── tex/              # Exported LaTeX files
+```
 
 ## Development Workflow
 

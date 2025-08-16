@@ -181,7 +181,7 @@
 
 \title{4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute}
-\date{August 15, 2025}
+\date{August 16, 2025}
 
 \begin{document}
 \maketitle
@@ -196,37 +196,32 @@
 \section{4D Namespaces: Coxeter.4D, Einstein.4D,
 Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}}
 
-In this section, we clarify the three internal meanings of ``4D,''
-following a dot-notation that avoids cross-domain confusion. Each
-namespace represents a distinct mathematical framework with specific
-applications in our quadray-based computational system.
+This section provides the definitive reference for the three 4D
+frameworks used throughout this manuscript. Each namespace represents a
+distinct mathematical framework with specific applications in our
+quadray-based computational system.
 
 \hypertarget{coxeter.4d-euclidean-eux2074}{%
 \subsection{Coxeter.4D (Euclidean
 E⁴)}\label{coxeter.4d-euclidean-eux2074}}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Definition}: Standard E⁴ with orthogonal axes and Euclidean
-  metric; the proper setting for classical regular polytopes. As Coxeter
-  notes (Regular Polytopes, Dover ed., p.~119), this Euclidean 4D is not
-  spacetime. Lattice/packing discussions connect to Conway \& Sloane's
-  systematic treatment of higher-dimensional sphere packings and
-  lattices
-  (\href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
-  Packings, Lattices and Groups (Springer)}).
-\item
-  \textbf{Usage}: Embed Quadray configurations or compare alternative
-  parameterizations when a strictly Euclidean 4D setting is desired.
-\item
-  \textbf{Simplexes}: Simplex structures extend naturally to 4D and
-  beyond (e.g., pentachora).
-\item
-  \textbf{Mathematical context}: This framework is appropriate for
-  standard Euclidean geometry, including the Cayley-Menger determinant
-  for computing volumes from edge lengths.
-\end{itemize}
+\textbf{Definition}: Standard E⁴ with orthogonal axes and Euclidean
+metric; the proper setting for classical regular polytopes. As Coxeter
+notes (Regular Polytopes, Dover ed., p.~119), this Euclidean 4D is not
+spacetime. Lattice/packing discussions connect to Conway \& Sloane's
+systematic treatment of higher-dimensional sphere packings and lattices
+(\href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
+Packings, Lattices and Groups (Springer)}).
+
+\textbf{Usage}: Embed Quadray configurations or compare alternative
+parameterizations when a strictly Euclidean 4D setting is desired.
+
+\textbf{Simplexes}: Simplex structures extend naturally to 4D and beyond
+(e.g., pentachora).
+
+\textbf{Mathematical context}: This framework is appropriate for
+standard Euclidean geometry, including the Cayley-Menger determinant for
+computing volumes from edge lengths.
 
 \hypertarget{einstein.4d-relativistic-spacetime}{%
 \subsection{Einstein.4D (Relativistic
@@ -237,31 +232,26 @@ signature, representing the geometric framework for special relativity.
 This namespace provides the mathematical foundation for understanding
 space-time relationships and relativistic phenomena.
 
-\begin{itemize}
-\item
-  \textbf{Spacetime}: Minkowski metric signature.
-\item
-  \textbf{Line element} (mostly-plus convention; see
-  \href{https://en.wikipedia.org/wiki/Minkowski_space}{Minkowski
-  space}):
+\textbf{Spacetime}: Minkowski metric signature.
 
-  \begin{equation}\label{eq:einstein_line_element}
-  ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
-  \end{equation}
-\item
-  \textbf{Optimization analogy}: Metric-aware geodesics generalize to
-  information geometry where the Fisher metric replaces the physical
-  metric. See
-  \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
-  information} and
-  \href{https://en.wikipedia.org/wiki/Natural_gradient}{natural
-  gradient}.
-\item
-  \textbf{Important note}: This namespace is used ONLY as a
-  metric/geodesic analogy when discussing information geometry. Physical
-  constants G, c, Λ do not appear in Quadray lattice methods and should
-  not be mixed with IVM unit conventions.
-\end{itemize}
+\textbf{Line element} (mostly-plus convention; see
+\href{https://en.wikipedia.org/wiki/Minkowski_space}{Minkowski space}):
+
+\begin{equation}\label{eq:einstein_line_element}
+ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
+\end{equation}
+
+\textbf{Optimization analogy}: Metric-aware geodesics generalize to
+information geometry where the Fisher metric replaces the physical
+metric. See
+\href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
+information} and
+\href{https://en.wikipedia.org/wiki/Natural_gradient}{natural gradient}.
+
+\textbf{Important note}: This namespace is used ONLY as a
+metric/geodesic analogy when discussing information geometry. Physical
+constants G, c, Λ do not appear in Quadray lattice methods and should
+not be mixed with IVM unit conventions.
 
 \hypertarget{fuller.4d-synergetics-quadrays}{%
 \subsection{Fuller.4D (Synergetics /
@@ -273,52 +263,44 @@ regular tetrahedron from its center. This namespace embodies the
 synergetic approach to geometry, emphasizing shape relationships and
 integer tetravolumes within the IVM framework.
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Basis}: Four non-negative components A,B,C,D with at least one
-  zero post-normalization, treated as a vector (direction and
-  magnitude), not merely a point. Overview:
-  \href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
-  coordinates}.
-\item
-  \textbf{Geometry}: Tetrahedral; unit tetrahedron volume = 1; integer
-  lattice aligns with close-packed spheres (IVM). Background:
-  \href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}.
-\item
-  \textbf{Distances}: Computed via appropriate projective normalization;
-  edges align with tetrahedral axes. The IVM = CCP = FCC shortcut allows
-  working in 3D embeddings for visualization while preserving the
-  underlying Fuller.4D tetrahedral accounting.
-\item
-  \textbf{Implementation heritage}: Extensive computational validation
-  through Kirby Urner's
-  \href{https://github.com/4dsolutions}{4dsolutions ecosystem}. See the
-  \href{07_resources.md}{Resources} section for comprehensive details on
-  computational implementations and educational materials.
-\end{itemize}
+\textbf{Basis}: Four non-negative components A,B,C,D with at least one
+zero post-normalization, treated as a vector (direction and magnitude),
+not merely a point. Overview:
+\href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
+coordinates}.
+
+\textbf{Geometry}: Tetrahedral; unit tetrahedron volume = 1; integer
+lattice aligns with close-packed spheres (IVM). Background:
+\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}.
+
+\textbf{Distances}: Computed via appropriate projective normalization;
+edges align with tetrahedral axes. The IVM = CCP = FCC shortcut allows
+working in 3D embeddings for visualization while preserving the
+underlying Fuller.4D tetrahedral accounting.
+
+\textbf{Implementation heritage}: Extensive computational validation
+through Kirby Urner's \href{https://github.com/4dsolutions}{4dsolutions
+ecosystem}. See the \href{07_resources.md}{Resources} section for
+comprehensive details on computational implementations and educational
+materials.
 
 \hypertarget{directions-not-dimensions-language-and-models}{%
 \subsubsection{Directions, not dimensions (language and
 models)}\label{directions-not-dimensions-language-and-models}}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Vector-first framing}: Treat Quadrays as four canonical
-  directions (``spokes'' to the vertices of a regular tetrahedron from
-  its center), not as four orthogonal dimensions. The methane molecule
-  (CH₄) and caltrop shape are helpful mental models.
-\item
-  \textbf{Origins outside Synergetics}: Quadrays did not originate with
-  Fuller; we adopt the coordinate system within the IVM context. See
-  \href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
-  coordinates}.
-\item
-  \textbf{Language games}: Quadrays and Cartesian are parallel vector
-  languages on the same Euclidean container; teaching them together
-  avoids oscillating between ``points now, vectors later.''
-\end{itemize}
+\textbf{Vector-first framing}: Treat Quadrays as four canonical
+directions (``spokes'' to the vertices of a regular tetrahedron from its
+center), not as four orthogonal dimensions. The methane molecule (CH₄)
+and caltrop shape are helpful mental models.
+
+\textbf{Origins outside Synergetics}: Quadrays did not originate with
+Fuller; we adopt the coordinate system within the IVM context. See
+\href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
+coordinates}.
+
+\textbf{Language games}: Quadrays and Cartesian are parallel vector
+languages on the same Euclidean container; teaching them together avoids
+oscillating between ``points now, vectors later.''
 
 \hypertarget{figures}{%
 \subsubsection{Figures}\label{figures}}
@@ -373,12 +355,12 @@ In the previous figure, we show the twelve nearest IVM neighbors with
 coordination patterns and vector equilibrium geometry; the current
 figure illustrates random Quadray clouds under several embeddings.
 
-Vector equilibrium (cuboctahedron). The shell formed by the 12 nearest
-IVM neighbors is the cuboctahedron, also called the vector equilibrium
-in synergetics. All 12 vertices are equidistant from the origin with
-equal edge lengths, modeling a balanced local packing. This geometry
-underlies the ``twelve around one'' close-packing motif and appears in
-tensegrity discussions as a canonical balanced structure. See
+\textbf{Vector equilibrium (cuboctahedron)}: The shell formed by the 12
+nearest IVM neighbors is the cuboctahedron, also called the vector
+equilibrium in synergetics. All 12 vertices are equidistant from the
+origin with equal edge lengths, modeling a balanced local packing. This
+geometry underlies the ``twelve around one'' close-packing motif and
+appears in tensegrity discussions as a canonical balanced structure. See
 background:
 \href{https://en.wikipedia.org/wiki/Cuboctahedron}{Cuboctahedron (vector
 equilibrium)} and synergetics references. Computational demonstrations
@@ -388,19 +370,14 @@ include related visualizations in the 4dsolutions ecosystem. See the
 \hypertarget{clarifying-remarks}{%
 \subsubsection{Clarifying remarks}\label{clarifying-remarks}}
 
-\begin{itemize}
-\tightlist
-\item
-  ``A time machine is not a tesseract.''
-  \href{https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919}{KU
-  on synergeo} The tesseract is a Euclidean 4D object (Coxeter.4D),
-  while Minkowski spacetime (Einstein.4D) is indefinite and not
-  Euclidean; conflating the two leads to category errors. Fuller.4D, in
-  turn, is a tetrahedral, mereological framing of ordinary space
-  emphasizing shape/angle relations and IVM quantization. Each namespace
-  carries distinct assumptions and should be used accordingly in
-  analysis.
-\end{itemize}
+``A time machine is not a tesseract.''
+\href{https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919}{KU
+on synergeo} The tesseract is a Euclidean 4D object (Coxeter.4D), while
+Minkowski spacetime (Einstein.4D) is indefinite and not Euclidean;
+conflating the two leads to category errors. Fuller.4D, in turn, is a
+tetrahedral, mereological framing of ordinary space emphasizing
+shape/angle relations and IVM quantization. Each namespace carries
+distinct assumptions and should be used accordingly in analysis.
 
 \hypertarget{practical-usage-guide}{%
 \subsection{Practical usage guide}\label{practical-usage-guide}}

@@ -34,7 +34,6 @@ AUTHOR_TEX="$AUTHOR_NAME\\\\ ORCID: $AUTHOR_ORCID\\\\ Email: $AUTHOR_EMAIL"
 
 # Modules (ordered)
 MODULES=(
-  "00_front_matter.md"
   "01_introduction.md"
   "02_4d_namespaces.md"
   "03_quadray_methods.md"
@@ -323,8 +322,8 @@ build_combined() {
     -V geometry:margin=1cm
     -V geometry:top=1cm
     -V geometry:bottom=1cm
-    -V geometry:left=1cm
-    -V geometry:right=1cm
+    -V geometry:left=1.5cm
+    -V geometry:right=1.5cm
     -V geometry:includeheadfoot
     -V colorlinks=true
     -V linkcolor=red
@@ -444,7 +443,6 @@ main() {
   for module in "${MODULES[@]}"; do
     local title
     case "$module" in
-      "00_front_matter.md") title="QuadMath: Front Matter and Abstract" ;;
       "01_introduction.md") title="Introduction" ;;
       "02_4d_namespaces.md") title="4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D" ;;
       "03_quadray_methods.md") title="Quadray Analytical Details and Methods" ;;
