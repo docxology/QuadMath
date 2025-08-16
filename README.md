@@ -4,6 +4,8 @@ This repository organizes a comprehensive review of Quadray coordinates, integer
 
 **Repository**: [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)
 
+**DOI**: [10.5281/zenodo.16887791](https://zenodo.org/records/16887791)
+
 **License**: Apache-2.0
 
 ## Quick Start
@@ -155,6 +157,7 @@ If you use this work in your research, please cite:
   author={docxology},
   year={2025},
   url={https://github.com/docxology/QuadMath},
+  doi={10.5281/zenodo.16887791},
   license={Apache-2.0}
 }
 ```
