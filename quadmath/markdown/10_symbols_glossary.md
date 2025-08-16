@@ -63,13 +63,13 @@ Descriptions:
 | --- | --- | --- |
 | $\log$ | Natural logarithm | Logarithm base $e$ |
 | $\mathbb{E}[\cdot]$ | Expectation | Mean with respect to a distribution |
-| $F_{i,j}$ | Fisher Information entry | Empirical/expected $\mathbb{E}[\partial_{\theta_i}\log p\,\partial_{\theta_j}\log p]$; Eq. \eqref{eq:supp_fim} in the equations appendix |
-| $\mathcal{F}$ | Variational free energy | $-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]$; Eq. \eqref{eq:supp_free_energy} in the equations appendix |
+| $F_{ij}$ | Fisher Information Matrix | $\mathbb{E}[\partial_{\theta_i}\log p \cdot \partial_{\theta_j}\log p]$; Eq. \eqref{eq:fim} in the equations appendix |
+| $\mathcal{F}$ | Variational free energy | $-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]$; Eq. \eqref{eq:free_energy} in the equations appendix |
 | $\mathrm{KL}[Q\,\|\,P]$ | Kullback–Leibler divergence | $\sum Q\log(Q/P)$; information distance |
-| $\nabla_{\theta}L$ | Gradient | Gradient of loss $L$ with respect to parameters $\theta$ (column vector) |
+| $\nabla_{\theta} L$ | Natural gradient | $F(\theta)^{-1} \nabla_{\theta} L(\theta)$; Eq. \eqref{eq:natural_gradient} in the equations appendix |
 | $\eta$ | Step size | Learning-rate scalar used in updates |
 | $\theta$ | Parameters | Model parameter vector; indices $\theta_i$ |
-| $ds^2$ | Minkowski line element | $-c^2\,dt^2 + dx^2 + dy^2 + dz^2$; Eq. \eqref{eq:supp_minkowski} in the equations appendix |
+| $ds^2$ | Minkowski line element | $-c^2\,dt^2 + dx^2 + dy^2 + dz^2$; Eq. \eqref{eq:minkowski_line_element} in the equations appendix |
 | $c$ | Speed of light | Physical constant appearing in Minkowski metric |
 
 ## Embeddings and Distances
@@ -93,7 +93,7 @@ Descriptions:
 ## Notes (usage and cross-references)
 
 - **Figures referenced**: In-text references use LaTeX's automatic figure numbering for consistent cross-referencing.
-- **Equation references**: Use labels defined in the text (e.g., Eq. \eqref{eq:supp_lattice_det} in the equations appendix).
+- **Equation references**: Use labels defined in the text (e.g., Eq. \eqref{eq:lattice_det} in the equations appendix).
 - **Namespaces**: We use Coxeter.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E⁴, Minkowski spacetime, and Quadray/IVM synergetics, respectively. This avoids conflation of Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and synergetic tetravolume conventions.
 - **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) for algorithmic verification and performance comparison baselines. See the [Resources](07_resources.md) section for comprehensive details.
 

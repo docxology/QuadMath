@@ -430,13 +430,12 @@ Expectation\strut
 Mean with respect to a distribution\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(F_{i,j}\)\strut
+\(F_{ij}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Fisher Information entry\strut
+Fisher Information Matrix\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Empirical/expected
-\(\mathbb{E}[\partial_{\theta_i}\log p\,\partial_{\theta_j}\log p]\);
-Eq. \eqref{eq:supp_fim} in the equations appendix\strut
+\(\mathbb{E}[\partial_{\theta_i}\log p \cdot \partial_{\theta_j}\log p]\);
+Eq. \eqref{eq:fim} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\mathcal{F}\)\strut
@@ -444,7 +443,7 @@ Eq. \eqref{eq:supp_fim} in the equations appendix\strut
 Variational free energy\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]\); Eq.
-\eqref{eq:supp_free_energy} in the equations appendix\strut
+\eqref{eq:free_energy} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\mathrm{KL}[Q\,\|\,P]\)\strut
@@ -454,12 +453,12 @@ Kullback--Leibler divergence\strut
 \(\sum Q\log(Q/P)\); information distance\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(\nabla_{\theta}L\)\strut
+\(\nabla_{\theta} L\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Gradient\strut
+Natural gradient\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Gradient of loss \(L\) with respect to parameters \(\theta\) (column
-vector)\strut
+\(F(\theta)^{-1} \nabla_{\theta} L(\theta)\); Eq.
+\eqref{eq:natural_gradient} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\eta\)\strut
@@ -480,8 +479,8 @@ Model parameter vector; indices \(\theta_i\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Minkowski line element\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(-c^2\,dt^2 + dx^2 + dy^2 + dz^2\); Eq. \eqref{eq:supp_minkowski} in
-the equations appendix\strut
+\(-c^2\,dt^2 + dx^2 + dy^2 + dz^2\); Eq.
+\eqref{eq:minkowski_line_element} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(c\)\strut
@@ -597,7 +596,7 @@ cross-references)}\label{notes-usage-and-cross-references}}
   figure numbering for consistent cross-referencing.
 \item
   \textbf{Equation references}: Use labels defined in the text (e.g.,
-  Eq. \eqref{eq:supp_lattice_det} in the equations appendix).
+  Eq. \eqref{eq:lattice_det} in the equations appendix).
 \item
   \textbf{Namespaces}: We use Coxeter.4D, Einstein.4D, Fuller.4D
   consistently to designate Euclidean E⁴, Minkowski spacetime, and

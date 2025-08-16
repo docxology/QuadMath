@@ -190,7 +190,7 @@ fragility, and enable integer-based accelerated methods. Information
 geometry provides a right language for optimization in the synergetic
 tradition: optimization proceeds not through arbitrary parameter-space
 moves in continuous space, but along geodesics defined by information
-content (see Eq. \eqref{eq:supp_fim} and Eq. \eqref{eq:supp_natgrad} in
+content (see Eq. \eqref{eq:fim} and Eq. \eqref{eq:natural_gradient} in
 the equations appendix; overview:
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
 gradient}).
@@ -237,9 +237,9 @@ eigenspectrum figure above) highlights these scales. Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information}.
 
-Implication: curvature-aware steps using Eq. \eqref{eq:supp_natgrad} in
-the equations appendix adaptively scale updates by the inverse metric,
-improving conditioning relative to vanilla gradient descent.
+Implication: curvature-aware steps using Eq. \eqref{eq:natural_gradient}
+in the equations appendix adaptively scale updates by the inverse
+metric, improving conditioning relative to vanilla gradient descent.
 
 A curious connection unites geodesics in information geometry, the
 physical principle of least action, and Buckminster Fuller's tensegrity
@@ -247,7 +247,7 @@ geodesic domes (Fuller.4D). On statistical manifolds, geodesics are
 shortest paths under the Fisher metric, and natural-gradient flows
 approximate least-action trajectories by minimizing an
 information-length functional constrained by curvature (Eqs.
-\eqref{eq:supp_fim}, \eqref{eq:supp_natgrad} in the equations appendix).
+\eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix).
 In tensegrity domes, geodesic lines on triangulated spherical shells
 distribute stress nearly uniformly while the network balances continuous
 tension with discontinuous compression, attaining maximal stiffness with

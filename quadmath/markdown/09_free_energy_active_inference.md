@@ -8,25 +8,11 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
 
 ## Mathematical Formulation and Equation Callouts (Equations linkage)
 
-- Variational free energy (discrete states) — see Eq. \eqref{eq:supp_free_energy} in the equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy):
+- Variational free energy (discrete states) — see Eq. \eqref{eq:free_energy} in the equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy).
 
-  \begin{equation}\label{eq:free_energy_appendix_ref}
-  \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
-  \end{equation}
+- Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:fim} in the equations appendix and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix).
 
-  where \(Q(s)\) is a variational posterior, \(P(s)\) a prior, and \(P(o\mid s)\) the likelihood. Lower \(\mathcal{F}\) is better.
-
-- Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:supp_fim} in the equations appendix and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix):
-
-  \begin{equation}\label{eq:fim_definition}
-  F_{i,j} = \mathbb{E}\left[ \partial_{\theta_i} \log p(x;\theta)\; \partial_{\theta_j} \log p(x;\theta) \right].
-  \end{equation}
-
-- Natural gradient descent under information geometry — see Eq. \eqref{eq:supp_natgrad} in the equations appendix and [`natural_gradient_step`](08_equations_appendix.md#code:natural_gradient_step); overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient):
-
-  \begin{equation}\label{eq:natural_gradient_update}
-  \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta).
-  \end{equation}
+- Natural gradient descent under information geometry — see Eq. \eqref{eq:natural_gradient} in the equations appendix and [`natural_gradient_step`](08_equations_appendix.md#code:natural_gradient_step); overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
 
 Figures: The following Active Inference figures demonstrate the integration of natural gradient descent with Active Inference principles and the 4D framework context.
 

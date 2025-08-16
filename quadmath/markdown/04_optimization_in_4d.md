@@ -85,11 +85,7 @@ The Fisher Information Matrix (FIM) provides a fundamental bridge between the th
 
 The empirical Fisher Information Matrix $F_{ij}$ quantifies the local curvature of the log-likelihood surface around parameter estimates, providing a natural metric for parameter space geometry. This fundamental concept in information geometry establishes a Riemannian structure on the statistical manifold, where distances and angles are measured according to the intrinsic geometry of the probability distributions rather than the extrinsic Euclidean geometry of the parameter space.
 
-For a model with parameters $\mathbf{w} = (w_0, w_1, w_2)$ and loss function $L(\mathbf{w})$, the FIM is estimated as the expected outer product of score functions:
-
-\begin{equation}\label{eq:fim_empirical}
-F_{ij} = \frac{1}{N}\sum_{n=1}^N \frac{\partial L_n}{\partial w_i} \frac{\partial L_n}{\partial w_j}
-\end{equation}
+For a model with parameters $\mathbf{w} = (w_0, w_1, w_2)$ and loss function $L(\mathbf{w})$, the FIM is estimated as the expected outer product of score functions (see Eq. \eqref{eq:fim_empirical} in the equations appendix).
 
 where $L_n$ represents the loss for individual data samples. This matrix captures both parameter sensitivity (diagonal elements) and parameter interactions (off-diagonal elements), revealing the intrinsic geometry of the optimization landscape.
 
@@ -133,9 +129,7 @@ The Fisher Information Matrix enables natural gradient descent, which implements
 
 The natural gradient update rule is given by:
 
-\begin{equation}\label{eq:natural_gradient}
-\Delta \mathbf{w} = -\eta F^{-1}\nabla L
-\end{equation}
+
 
 where $\eta$ is the learning rate, $F$ is the Fisher Information Matrix from Eq. \eqref{eq:fim_empirical}, and $\nabla L$ is the standard gradient of the loss function. This update rule implements geodesic motion on the statistical manifold, where the metric tensor $g_{ij} = F_{ij}$ determines the local geometry.
 
@@ -173,7 +167,7 @@ The discrete nature of the IVM lattice also influences the FIM structure, as par
 
 The Fisher Information framework naturally extends to variational inference and active inference, where the free energy principle guides both perception and action through information-geometric optimization.
 
-![**Variational Free Energy Landscape with 4D Framework Integration**. This visualization shows the variational free energy $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ (see Eq. \eqref{eq:supp_free_energy}) as a function of the variational distribution parameter, demonstrating the geometry of the variational manifold. **X-axis**: Variational parameter $q(\text{state}=0)$ controlling the distribution over the two discrete states. **Y-axis**: Free energy value $\mathcal{F}$ in natural units. **Curve interpretation**: The free energy exhibits a clear minimum at the optimal variational distribution, representing the best approximation to the true posterior given the constraints of the variational family. **4D Framework Connection**: The free energy landscape represents the geometry of the variational manifold, where optimization follows geodesics defined by the Fisher metric (Einstein.4D analogy). In active inference frameworks, minimizing free energy drives both perception and action, analogous to how geodesics minimize proper time in relativistic spacetime. **KL divergence component**: The free energy balances data fit (first term) with regularization (KL divergence from prior), preventing overfitting while maintaining good predictive performance. **Optimization geometry**: The smooth, convex shape of the free energy landscape makes optimization straightforward using natural gradient descent, which respects the intrinsic geometry of the parameter space. This variational framework provides a principled approach to approximate inference in complex models where exact posterior computation is intractable, while maintaining connections to the broader 4D mathematical frameworks.](../output/figures/free_energy_curve.png)
+![**Variational Free Energy Landscape with 4D Framework Integration**. This visualization shows the variational free energy $\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]$ (see Eq. \eqref{eq:free_energy}) as a function of the variational distribution parameter, demonstrating the geometry of the variational manifold. **X-axis**: Variational parameter $q(\text{state}=0)$ controlling the distribution over the two discrete states. **Y-axis**: Free energy value $\mathcal{F}$ in natural units. **Curve interpretation**: The free energy exhibits a clear minimum at the optimal variational distribution, representing the best approximation to the true posterior given the constraints of the variational family. **4D Framework Connection**: The free energy landscape represents the geometry of the variational manifold, where optimization follows geodesics defined by the Fisher metric (Einstein.4D analogy). In active inference frameworks, minimizing free energy drives both perception and action, analogous to how geodesics minimize proper time in relativistic spacetime. **KL divergence component**: The free energy balances data fit (first term) with regularization (KL divergence from prior), preventing overfitting while maintaining good predictive performance. **Optimization geometry**: The smooth, convex shape of the free energy landscape makes optimization straightforward using natural gradient descent, which respects the intrinsic geometry of the parameter space. This variational framework provides a principled approach to approximate inference in complex models where exact posterior computation is intractable, while maintaining connections to the broader 4D mathematical frameworks.](../output/figures/free_energy_curve.png)
 
 ### Advanced 4D Framework Integration: Active Inference Context
 

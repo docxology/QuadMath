@@ -27,8 +27,8 @@ References: GPU-accelerated geometry processing techniques ([arxiv.org](https://
 
 ## Active Inference and Free Energy
 
-- Free energy $\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]$ (see Eq. \eqref{eq:supp_free_energy} in the equations appendix); background: [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and overviews connecting to predictive coding and control.
-- Belief updates follow steepest descent in Fisher geometry using the natural gradient (see Eq. \eqref{eq:supp_natgrad} in the equations appendix); quadray constraints improve stability/interpretability.
+- Free energy $\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]$ (see Eq. \eqref{eq:free_energy} in the equations appendix); background: [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and overviews connecting to predictive coding and control.
+- Belief updates follow steepest descent in Fisher geometry using the natural gradient (see Eq. \eqref{eq:natural_gradient} in the equations appendix); quadray constraints improve stability/interpretability.
 - Links to metabolic efficiency and biologically plausible computation.
 - For more information, see the Appendix: The Free Energy Principle and Active Inference.
 

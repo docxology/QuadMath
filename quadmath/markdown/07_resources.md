@@ -5,8 +5,8 @@ This section provides comprehensive resources for learning about and working wit
 ## Core Concepts and Background
 
 ### Information Geometry and Optimization
-- **Fisher information**: [Fisher information (reference)](https://en.wikipedia.org/wiki/Fisher_information) — see also Eq. \eqref{eq:supp_fim} in the equations appendix
-- **Natural gradient**: [Natural gradient (reference)](https://en.wikipedia.org/wiki/Natural_gradient) — see also Eq. \eqref{eq:supp_natgrad} in the equations appendix
+- **Fisher information**: [Fisher information (reference)](https://en.wikipedia.org/wiki/Fisher_information) — see also Eq. \eqref{eq:fim} in the equations appendix
+- **Natural gradient**: [Natural gradient (reference)](https://en.wikipedia.org/wiki/Natural_gradient) — see also Eq. \eqref{eq:natural_gradient} in the equations appendix
 
 ### Active Inference and Free Energy
 - **Active Inference Institute**: [Welcome to Active Inference Institute](https://welcome.activeinference.institute/)

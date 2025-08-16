@@ -225,34 +225,19 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
 \begin{itemize}
 \item
   Variational free energy (discrete states) --- see Eq.
-  \eqref{eq:supp_free_energy} in the equations appendix, implemented by
-  \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}:
-
-  \begin{equation}\label{eq:free_energy_appendix_ref}
-  \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
-  \end{equation}
-
-  where \(Q(s)\) is a variational posterior, \(P(s)\) a prior, and
-  \(P(o\mid s)\) the likelihood. Lower \(\mathcal{F}\) is better.
+  \eqref{eq:free_energy} in the equations appendix, implemented by
+  \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}.
 \item
-  Fisher Information Matrix (FIM) as metric --- see Eq.
-  \eqref{eq:supp_fim} in the equations appendix and
-  \href{08_equations_appendix.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}:
-
-  \begin{equation}\label{eq:fim_definition}
-  F_{i,j} = \mathbb{E}\left[ \partial_{\theta_i} \log p(x;\theta)\; \partial_{\theta_j} \log p(x;\theta) \right].
-  \end{equation}
+  Fisher Information Matrix (FIM) as metric --- see Eq. \eqref{eq:fim}
+  in the equations appendix and
+  \href{08_equations_appendix.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}.
 \item
   Natural gradient descent under information geometry --- see Eq.
-  \eqref{eq:supp_natgrad} in the equations appendix and
+  \eqref{eq:natural_gradient} in the equations appendix and
   \href{08_equations_appendix.md\#code:natural_gradient_step}{\passthrough{\lstinline!natural\_gradient\_step!}};
   overview:
   \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
-  gradient}:
-
-  \begin{equation}\label{eq:natural_gradient_update}
-  \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta).
-  \end{equation}
+  gradient}.
 \end{itemize}
 
 Figures: The following Active Inference figures demonstrate the

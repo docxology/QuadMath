@@ -144,11 +144,7 @@ Notes.
 
 ## Integer Volume Quantization {#sec:integer_volume}
 
-For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice (Fuller.4D):
-
-\begin{equation}\label{eq:lattice_det}
-V = \tfrac{1}{6}\,\left|\det\,[\,P_1 - P_0,\; P_2 - P_0,\; P_3 - P_0\,]\right|
-\end{equation}
+For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice (Fuller.4D), see Eq. \eqref{eq:lattice_det} in the equations appendix.
 
 - With integer coordinates, the determinant is integer; lattice tetrahedra yield integer volumes.
 - Unit conventions: regular tetrahedron volume = 1 (synergetics).
@@ -159,17 +155,7 @@ Notes.
 - $V$ is the Euclidean volume measured in IVM tetra-units; the $1/6$ factor converts the parallelepiped determinant to a tetra volume.
 - Background and variations are discussed under Tetrahedron volume formulas: [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
 
-Tom Ace 5×5 determinant (tetravolume directly from quadrays):
-
-\begin{equation}\label{eq:ace5x5}
-V_{ivm} = \tfrac{1}{4} \left| \det \begin{pmatrix}
- a_0 & a_1 & a_2 & a_3 & 1 \\
- b_0 & b_1 & b_2 & b_3 & 1 \\
- c_0 & c_1 & c_2 & c_3 & 1 \\
- d_0 & d_1 & d_2 & d_3 & 1 \\
- 1 & 1 & 1 & 1 & 0
-\end{pmatrix} \right|
-\end{equation}
+Tom Ace 5×5 determinant (tetravolume directly from quadrays), see Eq. \eqref{eq:ace5x5} in the equations appendix.
 
 This returns the same integer volumes for lattice tetrahedra. See the implementation `ace_tetravolume_5x5`.
 
@@ -178,31 +164,11 @@ Notes.
 - Rows correspond to the Quadray 4-tuples of the four vertices with a final affine column of ones; the last row enforces projective normalization.
 - The factor $\tfrac{1}{4}$ returns tetravolumes in IVM units consistent with synergetics. See also [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
 
-Equivalently, define the 5×5 matrix of quadray coordinates augmented with an affine 1 as
+Equivalently, define the 5×5 matrix of quadray coordinates augmented with an affine 1 as shown in Eq. \eqref{eq:ace5x5_expanded} in the equations appendix.
 
-\begin{equation}\label{eq:ace5x5_expanded}
-M(q_0,q_1,q_2,q_3) = \begin{bmatrix}
-q_{01} & q_{02} & q_{03} & q_{04} & 1 \\
-q_{11} & q_{12} & q_{13} & q_{14} & 1 \\
-q_{21} & q_{22} & q_{23} & q_{24} & 1 \\
-q_{31} & q_{32} & q_{33} & q_{34} & 1 \\
-1 & 1 & 1 & 1 & 0
-\end{bmatrix},\qquad V_{ivm} = \tfrac{1}{4}\,\big|\det M(q_0,q_1,q_2,q_3)\big|\,.
-\end{equation}
+Points vs vectors: subtracting points is shorthand for forming edge vectors. We treat quadray 4-tuples as vectors from the origin; differences like $(P_1-P_0)$ mean "edge vectors," avoiding ambiguity between "points" and "vectors."
 
-Points vs vectors: subtracting points is shorthand for forming edge vectors. We treat quadray 4-tuples as vectors from the origin; differences like $(P_1-P_0)$ mean “edge vectors,” avoiding ambiguity between “points” and “vectors.”
-
-Equivalently via Cayley–Menger determinant (Coxeter.4D/Euclidean lengths) ([Cayley–Menger determinant](https://en.wikipedia.org/wiki/Cayley%E2%80%93Menger_determinant)):
-
-\begin{equation}\label{eq:cayley_menger}
-288\,V^2 = \det\begin{pmatrix}
-  0 & 1 & 1 & 1 & 1 \\
-  1 & 0 & d_{01}^2 & d_{02}^2 & d_{03}^2 \\
-  1 & d_{10}^2 & 0 & d_{12}^2 & d_{13}^2 \\
-  1 & d_{20}^2 & d_{21}^2 & 0 & d_{23}^2 \\
-  1 & d_{30}^2 & d_{31}^2 & d_{32}^2 & 0
-\end{pmatrix}
-\end{equation}
+Equivalently via Cayley–Menger determinant (Coxeter.4D/Euclidean lengths) ([Cayley–Menger determinant](https://en.wikipedia.org/wiki/Cayley%E2%80%93Menger_determinant)), see Eq. \eqref{eq:cayley_menger} in the equations appendix.
 
 References: [Cayley–Menger determinant](https://en.wikipedia.org/wiki/Cayley%E2%80%93Menger_determinant), lattice tetrahedra discussions in geometry texts; see also [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume). Code: `integer_tetra_volume`, `ace_tetravolume_5x5`.
 
@@ -228,23 +194,21 @@ Distance definitions depend on the chosen embedding and normalization. For cross
 
 ## XYZ determinant and S3 conversion {#sec:xyz_conversion}
 
-Given XYZ coordinates of tetrahedron vertices (x_i, y_i, z_i), the Euclidean volume is
+Given XYZ coordinates of tetrahedron vertices (x_i, y_i, z_i), the Euclidean volume is computed as shown in Eq. \eqref{eq:xyz_det} in the equations appendix.
 
-\begin{equation}\label{eq:xyz_det}
-V_{xyz} = \tfrac{1}{6} \left| \det \begin{pmatrix}
- x_a & y_a & z_a & 1 \\
- x_b & y_b & z_b & 1 \\
- x_c & y_c & z_c & 1 \\
- x_d & y_d & z_d & 1
-\end{pmatrix} \right|
-\end{equation}
+Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
 
-Synergetics relates IVM and XYZ unit conventions via $S3 = \sqrt{9/8}$. Multiplying an XYZ volume by $S3$ converts to IVM tetra-units when the embedding uses $R$-edge unit cubes and $D=2R$ for quadray edges; see [Synergetics (Fuller)](https://en.wikipedia.org/wiki/Synergetics_(Fuller)).
+### Alternative Volume Formulas
 
-Notes.
+- **Piero della Francesca (PdF) formula**, which consumes edge lengths and returns Euclidean volumes. See Eq. \eqref{eq:pdf} in the equations appendix.
 
-- $(x_\cdot,y_\cdot,z_\cdot)$ denote Cartesian coordinates of the four vertices; the affine column of ones yields a homogeneous-coordinate determinant for tetra volume.
-- Conversion to IVM units uses the synergetics scale $S3=\sqrt{9/8}$.
+  Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
+
+- **Gerald de Jong (GdJ) formula**, which natively returns tetravolumes. See Eq. \eqref{eq:gdj} in the equations appendix.
+
+  In Quadray coordinates, one convenient native form uses edge-vector differences and an integer-preserving determinant (agreeing with Ace 5×5):
+
+  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected to a 3D slice consistent with the synergetics convention; integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong's Quadray notes and Urner's implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
 
 - Euclidean embedding distance via appropriate linear map from quadray to R³.
 - Information geometry metric: Fisher Information Matrix (FIM)
@@ -270,9 +234,7 @@ Notes.
 
   Let edge lengths meeting at a vertex be \(a,b,c\), and the opposite edges be \(d,e,f\). The Euclidean volume satisfies
 
-  \begin{equation}\label{eq:pdf}
-  144\,V_{xyz}^2 = 4 a^2 b^2 c^2 - a^2\,(b^2 + c^2 - f^2)^2 - b^2\,(c^2 + a^2 - e^2)^2 - c^2\,(a^2 + b^2 - d^2)^2 + (b^2 + c^2 - f^2)(c^2 + a^2 - e^2)(a^2 + b^2 - d^2)\,.
-  \end{equation}
+
 
   Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with \(S3=\sqrt{9/8}\). See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
 
@@ -280,15 +242,9 @@ Notes.
 
   In Quadray coordinates, one convenient native form uses edge-vector differences and an integer-preserving determinant (agreeing with Ace 5×5):
 
-  \begin{equation}\label{eq:gdj}
-  V_{ivm} = \frac{1}{4}\,\left|\det \begin{pmatrix}
-  a_1-a_0 & a_2-a_0 & a_3-a_0 \\
-  b_1-b_0 & b_2-b_0 & b_3-b_0 \\
-  c_1-c_0 & c_2-c_0 & c_3-c_0 \\
-  \end{pmatrix}\right|\,.
-  \end{equation}
 
-  where each column is formed from Quadray component differences of \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected to a 3D slice consistent with the synergetics convention; integer arithmetic is exact and the factor \(\tfrac{1}{4}\) produces IVM tetravolumes. See de Jong’s Quadray notes and Urner’s implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
+
+  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected to a 3D slice consistent with the synergetics convention; integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong’s Quadray notes and Urner’s implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
 
 ### Bridging and native tetravolume formulas 
 

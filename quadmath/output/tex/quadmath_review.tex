@@ -423,9 +423,13 @@ Availability}\label{reproducibility-and-data-availability}}
   Symbols and notation are standardized across sections; see
   \href{10_symbols_glossary.md}{Appendix: Symbols and Glossary} for a
   consolidated table of variables and constants used throughout.
-  Equation labels (e.g., Eq. \eqref{eq:supp_lattice_det} and Eq.
-  \eqref{eq:supp_fim}) and figure labels are automatically numbered by
-  LaTeX for consistent cross-referencing.
+  Equation labels (e.g., Eq. \eqref{eq:lattice_det} and Eq.
+  \eqref{eq:fim}) and figure labels are automatically numbered by LaTeX
+  for consistent cross-referencing.
+\item
+  The manuscript is a work in progress and will be updated as the
+  project progresses. There may be errors and missing references, check
+  all methods and equations for consistency.
 \end{itemize}
 
 \hypertarget{graphical-abstract}{%
@@ -506,10 +510,7 @@ space-time relationships and relativistic phenomena.
 
 \textbf{Line element} (mostly-plus convention; see
 \href{https://en.wikipedia.org/wiki/Minkowski_space}{Minkowski space}):
-
-\begin{equation}\label{eq:einstein_line_element}
-ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
-\end{equation}
+see Eq. \eqref{eq:minkowski_line_element} in the equations appendix.
 
 \textbf{Optimization analogy}: Metric-aware geodesics generalize to
 information geometry where the Fisher metric replaces the physical
@@ -1024,11 +1025,7 @@ Notes.
 \subsection{Integer Volume Quantization}\label{sec:integer_volume}}
 
 For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice
-(Fuller.4D):
-
-\begin{equation}\label{eq:lattice_det}
-V = \tfrac{1}{6}\,\left|\det\,[\,P_1 - P_0,\; P_2 - P_0,\; P_3 - P_0\,]\right|
-\end{equation}
+(Fuller.4D), see Eq. \eqref{eq:lattice_det} in the equations appendix.
 
 \begin{itemize}
 \tightlist
@@ -1055,17 +1052,8 @@ Notes.
   -- volume}.
 \end{itemize}
 
-Tom Ace 5×5 determinant (tetravolume directly from quadrays):
-
-\begin{equation}\label{eq:ace5x5}
-V_{ivm} = \tfrac{1}{4} \left| \det \begin{pmatrix}
- a_0 & a_1 & a_2 & a_3 & 1 \\
- b_0 & b_1 & b_2 & b_3 & 1 \\
- c_0 & c_1 & c_2 & c_3 & 1 \\
- d_0 & d_1 & d_2 & d_3 & 1 \\
- 1 & 1 & 1 & 1 & 0
-\end{pmatrix} \right|
-\end{equation}
+Tom Ace 5×5 determinant (tetravolume directly from quadrays), see Eq.
+\eqref{eq:ace5x5} in the equations appendix.
 
 This returns the same integer volumes for lattice tetrahedra. See the
 implementation \passthrough{\lstinline!ace\_tetravolume\_5x5!}.
@@ -1086,17 +1074,8 @@ Notes.
 \end{itemize}
 
 Equivalently, define the 5×5 matrix of quadray coordinates augmented
-with an affine 1 as
-
-\begin{equation}\label{eq:ace5x5_expanded}
-M(q_0,q_1,q_2,q_3) = \begin{bmatrix}
-q_{01} & q_{02} & q_{03} & q_{04} & 1 \\
-q_{11} & q_{12} & q_{13} & q_{14} & 1 \\
-q_{21} & q_{22} & q_{23} & q_{24} & 1 \\
-q_{31} & q_{32} & q_{33} & q_{34} & 1 \\
-1 & 1 & 1 & 1 & 0
-\end{bmatrix},\qquad V_{ivm} = \tfrac{1}{4}\,\big|\det M(q_0,q_1,q_2,q_3)\big|\,.
-\end{equation}
+with an affine 1 as shown in Eq. \eqref{eq:ace5x5_expanded} in the
+equations appendix.
 
 Points vs vectors: subtracting points is shorthand for forming edge
 vectors. We treat quadray 4-tuples as vectors from the origin;
@@ -1106,17 +1085,8 @@ between ``points'' and ``vectors.''
 Equivalently via Cayley--Menger determinant (Coxeter.4D/Euclidean
 lengths)
 (\href{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Menger_determinant}{Cayley--Menger
-determinant}):
-
-\begin{equation}\label{eq:cayley_menger}
-288\,V^2 = \det\begin{pmatrix}
-  0 & 1 & 1 & 1 & 1 \\
-  1 & 0 & d_{01}^2 & d_{02}^2 & d_{03}^2 \\
-  1 & d_{10}^2 & 0 & d_{12}^2 & d_{13}^2 \\
-  1 & d_{20}^2 & d_{21}^2 & 0 & d_{23}^2 \\
-  1 & d_{30}^2 & d_{31}^2 & d_{32}^2 & 0
-\end{pmatrix}
-\end{equation}
+determinant}), see Eq. \eqref{eq:cayley_menger} in the equations
+appendix.
 
 References:
 \href{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Menger_determinant}{Cayley--Menger
@@ -1172,33 +1142,43 @@ Equations appendix.
 conversion}\label{sec:xyz_conversion}}
 
 Given XYZ coordinates of tetrahedron vertices (x\_i, y\_i, z\_i), the
-Euclidean volume is
+Euclidean volume is computed as shown in Eq. \eqref{eq:xyz_det} in the
+equations appendix.
 
-\begin{equation}\label{eq:xyz_det}
-V_{xyz} = \tfrac{1}{6} \left| \det \begin{pmatrix}
- x_a & y_a & z_a & 1 \\
- x_b & y_b & z_b & 1 \\
- x_c & y_c & z_c & 1 \\
- x_d & y_d & z_d & 1
-\end{pmatrix} \right|
-\end{equation}
+Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with
+\(S3=\sqrt{9/8}\). See background discussion under
+\href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron --
+volume}.
 
-Synergetics relates IVM and XYZ unit conventions via
-\(S3 = \sqrt{9/8}\). Multiplying an XYZ volume by \(S3\) converts to IVM
-tetra-units when the embedding uses \(R\)-edge unit cubes and \(D=2R\)
-for quadray edges; see
-\href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics
-(Fuller)}.
-
-Notes.
+\hypertarget{alternative-volume-formulas}{%
+\subsubsection{Alternative Volume
+Formulas}\label{alternative-volume-formulas}}
 
 \begin{itemize}
 \item
-  \((x_\cdot,y_\cdot,z_\cdot)\) denote Cartesian coordinates of the four
-  vertices; the affine column of ones yields a homogeneous-coordinate
-  determinant for tetra volume.
+  \textbf{Piero della Francesca (PdF) formula}, which consumes edge
+  lengths and returns Euclidean volumes. See Eq. \eqref{eq:pdf} in the
+  equations appendix.
+
+  Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with
+  \(S3=\sqrt{9/8}\). See background discussion under
+  \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron
+  -- volume}.
 \item
-  Conversion to IVM units uses the synergetics scale \(S3=\sqrt{9/8}\).
+  \textbf{Gerald de Jong (GdJ) formula}, which natively returns
+  tetravolumes. See Eq. \eqref{eq:gdj} in the equations appendix.
+
+  In Quadray coordinates, one convenient native form uses edge-vector
+  differences and an integer-preserving determinant (agreeing with Ace
+  5×5):
+
+  where each column is formed from Quadray component differences of
+  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected to a 3D slice
+  consistent with the synergetics convention; integer arithmetic is
+  exact and the factor \(\tfrac{1}{4}\) produces IVM tetravolumes. See
+  de Jong's Quadray notes and Urner's implementations for derivations
+  (\href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
+  coordinates}).
 \item
   Euclidean embedding distance via appropriate linear map from quadray
   to R³.
@@ -1266,10 +1246,6 @@ Quadrays}\label{sec:tetravolumes_quadrays}}
   Let edge lengths meeting at a vertex be \(a,b,c\), and the opposite
   edges be \(d,e,f\). The Euclidean volume satisfies
 
-  \begin{equation}\label{eq:pdf}
-  144\,V_{xyz}^2 = 4 a^2 b^2 c^2 - a^2\,(b^2 + c^2 - f^2)^2 - b^2\,(c^2 + a^2 - e^2)^2 - c^2\,(a^2 + b^2 - d^2)^2 + (b^2 + c^2 - f^2)(c^2 + a^2 - e^2)(a^2 + b^2 - d^2)\,.
-  \end{equation}
-
   Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with
   \(S3=\sqrt{9/8}\). See background discussion under
   \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron
@@ -1280,14 +1256,6 @@ Quadrays}\label{sec:tetravolumes_quadrays}}
   In Quadray coordinates, one convenient native form uses edge-vector
   differences and an integer-preserving determinant (agreeing with Ace
   5×5):
-
-  \begin{equation}\label{eq:gdj}
-  V_{ivm} = \frac{1}{4}\,\left|\det \begin{pmatrix}
-  a_1-a_0 & a_2-a_0 & a_3-a_0 \\
-  b_1-b_0 & b_2-b_0 & b_3-b_0 \\
-  c_1-c_0 & c_2-c_0 & c_3-c_0 \\
-  \end{pmatrix}\right|\,.
-  \end{equation}
 
   where each column is formed from Quadray component differences of
   \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected to a 3D slice
@@ -2492,11 +2460,8 @@ parameter space.
 
 For a model with parameters \(\mathbf{w} = (w_0, w_1, w_2)\) and loss
 function \(L(\mathbf{w})\), the FIM is estimated as the expected outer
-product of score functions:
-
-\begin{equation}\label{eq:fim_empirical}
-F_{ij} = \frac{1}{N}\sum_{n=1}^N \frac{\partial L_n}{\partial w_i} \frac{\partial L_n}{\partial w_j}
-\end{equation}
+product of score functions (see Eq. \eqref{eq:fim_empirical} in the
+equations appendix).
 
 where \(L_n\) represents the loss for individual data samples. This
 matrix captures both parameter sensitivity (diagonal elements) and
@@ -2691,10 +2656,6 @@ geometry defined by the FIM.
 
 The natural gradient update rule is given by:
 
-\begin{equation}\label{eq:natural_gradient}
-\Delta \mathbf{w} = -\eta F^{-1}\nabla L
-\end{equation}
-
 where \(\eta\) is the learning rate, \(F\) is the Fisher Information
 Matrix from Eq. \eqref{eq:fim_empirical}, and \(\nabla L\) is the
 standard gradient of the loss function. This update rule implements
@@ -2826,29 +2787,29 @@ both perception and action through information-geometric optimization.
 \caption{\textbf{Variational Free Energy Landscape with 4D Framework
 Integration}. This visualization shows the variational free energy
 \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
-\eqref{eq:supp_free_energy}) as a function of the variational
-distribution parameter, demonstrating the geometry of the variational
-manifold. \textbf{X-axis}: Variational parameter \(q(\text{state}=0)\)
-controlling the distribution over the two discrete states.
-\textbf{Y-axis}: Free energy value \(\mathcal{F}\) in natural units.
-\textbf{Curve interpretation}: The free energy exhibits a clear minimum
-at the optimal variational distribution, representing the best
-approximation to the true posterior given the constraints of the
-variational family. \textbf{4D Framework Connection}: The free energy
-landscape represents the geometry of the variational manifold, where
-optimization follows geodesics defined by the Fisher metric (Einstein.4D
-analogy). In active inference frameworks, minimizing free energy drives
-both perception and action, analogous to how geodesics minimize proper
-time in relativistic spacetime. \textbf{KL divergence component}: The
-free energy balances data fit (first term) with regularization (KL
-divergence from prior), preventing overfitting while maintaining good
-predictive performance. \textbf{Optimization geometry}: The smooth,
-convex shape of the free energy landscape makes optimization
-straightforward using natural gradient descent, which respects the
-intrinsic geometry of the parameter space. This variational framework
-provides a principled approach to approximate inference in complex
-models where exact posterior computation is intractable, while
-maintaining connections to the broader 4D mathematical frameworks.}
+\eqref{eq:free_energy}) as a function of the variational distribution
+parameter, demonstrating the geometry of the variational manifold.
+\textbf{X-axis}: Variational parameter \(q(\text{state}=0)\) controlling
+the distribution over the two discrete states. \textbf{Y-axis}: Free
+energy value \(\mathcal{F}\) in natural units. \textbf{Curve
+interpretation}: The free energy exhibits a clear minimum at the optimal
+variational distribution, representing the best approximation to the
+true posterior given the constraints of the variational family.
+\textbf{4D Framework Connection}: The free energy landscape represents
+the geometry of the variational manifold, where optimization follows
+geodesics defined by the Fisher metric (Einstein.4D analogy). In active
+inference frameworks, minimizing free energy drives both perception and
+action, analogous to how geodesics minimize proper time in relativistic
+spacetime. \textbf{KL divergence component}: The free energy balances
+data fit (first term) with regularization (KL divergence from prior),
+preventing overfitting while maintaining good predictive performance.
+\textbf{Optimization geometry}: The smooth, convex shape of the free
+energy landscape makes optimization straightforward using natural
+gradient descent, which respects the intrinsic geometry of the parameter
+space. This variational framework provides a principled approach to
+approximate inference in complex models where exact posterior
+computation is intractable, while maintaining connections to the broader
+4D mathematical frameworks.}
 \end{figure}
 
 \hypertarget{advanced-4d-framework-integration-active-inference-context}{%
@@ -3020,13 +2981,12 @@ Energy}\label{active-inference-and-free-energy}}
 \item
   Free energy
   \(\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]\) (see
-  Eq. \eqref{eq:supp_free_energy} in the equations appendix);
-  background:
+  Eq. \eqref{eq:free_energy} in the equations appendix); background:
   \href{https://en.wikipedia.org/wiki/Free_energy_principle}{Free energy
   principle} and overviews connecting to predictive coding and control.
 \item
   Belief updates follow steepest descent in Fisher geometry using the
-  natural gradient (see Eq. \eqref{eq:supp_natgrad} in the equations
+  natural gradient (see Eq. \eqref{eq:natural_gradient} in the equations
   appendix); quadray constraints improve stability/interpretability.
 \item
   Links to metabolic efficiency and biologically plausible computation.
@@ -3184,7 +3144,7 @@ fragility, and enable integer-based accelerated methods. Information
 geometry provides a right language for optimization in the synergetic
 tradition: optimization proceeds not through arbitrary parameter-space
 moves in continuous space, but along geodesics defined by information
-content (see Eq. \eqref{eq:supp_fim} and Eq. \eqref{eq:supp_natgrad} in
+content (see Eq. \eqref{eq:fim} and Eq. \eqref{eq:natural_gradient} in
 the equations appendix; overview:
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
 gradient}).
@@ -3231,9 +3191,9 @@ eigenspectrum figure above) highlights these scales. Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information}.
 
-Implication: curvature-aware steps using Eq. \eqref{eq:supp_natgrad} in
-the equations appendix adaptively scale updates by the inverse metric,
-improving conditioning relative to vanilla gradient descent.
+Implication: curvature-aware steps using Eq. \eqref{eq:natural_gradient}
+in the equations appendix adaptively scale updates by the inverse
+metric, improving conditioning relative to vanilla gradient descent.
 
 A curious connection unites geodesics in information geometry, the
 physical principle of least action, and Buckminster Fuller's tensegrity
@@ -3241,7 +3201,7 @@ geodesic domes (Fuller.4D). On statistical manifolds, geodesics are
 shortest paths under the Fisher metric, and natural-gradient flows
 approximate least-action trajectories by minimizing an
 information-length functional constrained by curvature (Eqs.
-\eqref{eq:supp_fim}, \eqref{eq:supp_natgrad} in the equations appendix).
+\eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix).
 In tensegrity domes, geodesic lines on triangulated spherical shells
 distribute stress nearly uniformly while the network balances continuous
 tension with discontinuous compression, attaining maximal stiffness with
@@ -3397,13 +3357,13 @@ Optimization}\label{information-geometry-and-optimization}}
 \item
   \textbf{Fisher information}:
   \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
-  information (reference)} --- see also Eq. \eqref{eq:supp_fim} in the
+  information (reference)} --- see also Eq. \eqref{eq:fim} in the
   equations appendix
 \item
   \textbf{Natural gradient}:
   \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient
-  (reference)} --- see also Eq. \eqref{eq:supp_natgrad} in the equations
-  appendix
+  (reference)} --- see also Eq. \eqref{eq:natural_gradient} in the
+  equations appendix
 \end{itemize}
 
 \hypertarget{active-inference-and-free-energy-1}{%
@@ -3812,7 +3772,7 @@ computational environments.
 \subsection{Volume of a Tetrahedron
 (Lattice)}\label{volume-of-a-tetrahedron-lattice}}
 
-\begin{equation}\label{eq:supp_lattice_det}
+\begin{equation}\label{eq:lattice_det}
 V = \tfrac{1}{6}\,\left|\det\,[\,P_1 - P_0,\; P_2 - P_0,\; P_3 - P_0\,]\right|
 \end{equation}
 
@@ -3828,7 +3788,7 @@ Notes.
 
 Tom Ace 5×5 tetravolume (IVM units):
 
-\begin{equation}\label{eq:supp_ace5x5}
+\begin{equation}\label{eq:ace5x5}
 V_{ivm} = \tfrac{1}{4} \left| \det \begin{pmatrix}
  a_0 & a_1 & a_2 & a_3 & 1 \\
  b_0 & b_1 & b_2 & b_3 & 1 \\
@@ -3847,9 +3807,39 @@ Notes.
   encodes the affine constraint. Division by 4 returns IVM tetravolume.
 \end{itemize}
 
+\hypertarget{expanded-ace-55-matrix}{%
+\subsection{Expanded Ace 5×5 Matrix}\label{expanded-ace-55-matrix}}
+
+The expanded form of the Ace 5×5 matrix with explicit Quadray
+coordinates:
+
+\begin{equation}\label{eq:ace5x5_expanded}
+M(q_0,q_1,q_2,q_3) = \begin{bmatrix}
+q_{01} & q_{02} & q_{03} & q_{04} & 1 \\
+q_{11} & q_{12} & q_{13} & q_{14} & 1 \\
+q_{21} & q_{22} & q_{23} & q_{24} & 1 \\
+q_{31} & q_{32} & q_{33} & q_{34} & 1 \\
+1 & 1 & 1 & 1 & 0
+\end{bmatrix}, \qquad V_{ivm} = \tfrac{1}{4}\,\big|\det M(q_0,q_1,q_2,q_3)\big|
+\end{equation}
+
+Notes.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Matrix structure}: Each row represents a vertex with its
+  Quadray coordinates plus affine coordinate 1.
+\item
+  \textbf{Last row}: Enforces projective normalization constraint.
+\item
+  \textbf{Volume computation}: Determinant divided by 4 gives IVM
+  tetravolume.
+\end{itemize}
+
 XYZ determinant volume and S3 conversion:
 
-\begin{equation}\label{eq:supp_xyz_det}
+\begin{equation}\label{eq:xyz_det}
 V_{xyz} = \tfrac{1}{6} \left| \det \begin{pmatrix}
  x_a & y_a & z_a & 1 \\
  x_b & y_b & z_b & 1 \\
@@ -3865,6 +3855,88 @@ Notes.
 \item
   Homogeneous determinant in Cartesian coordinates for tetra volume;
   conversion to IVM units uses \(S3=\sqrt{9/8}\) as used throughout.
+\end{itemize}
+
+\hypertarget{cayley-menger-determinant-coxeter.4d}{%
+\subsection{Cayley-Menger Determinant
+(Coxeter.4D)}\label{cayley-menger-determinant-coxeter.4d}}
+
+For tetrahedron volume from edge lengths (Coxeter.4D approach):
+
+\begin{equation}\label{eq:cayley_menger}
+288\,V^2 = \det\begin{pmatrix}
+  0 & 1 & 1 & 1 & 1 \\
+  1 & 0 & d_{01}^2 & d_{02}^2 & d_{03}^2 \\
+  1 & d_{10}^2 & 0 & d_{12}^2 & d_{13}^2 \\
+  1 & d_{20}^2 & d_{21}^2 & 0 & d_{23}^2 \\
+  1 & d_{30}^2 & d_{31}^2 & d_{32}^2 & 0
+\end{pmatrix}
+\end{equation}
+
+Notes.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Pairwise distances}: \(d_{ij}\) are Euclidean distances
+  between vertices \(P_i\) and \(P_j\).
+\item
+  \textbf{Length-only formulation}: Cayley--Menger provides a
+  length-only formula for simplex volumes, here specialized to
+  tetrahedra.
+\item
+  \textbf{Conversion to IVM}: Use \(V_{ivm} = S3 \cdot V_{xyz}\) with
+  \(S3=\sqrt{9/8}\) to convert to IVM units.
+\end{itemize}
+
+\hypertarget{piero-della-francesca-formula-pdf}{%
+\subsection{Piero della Francesca Formula
+(PDF)}\label{piero-della-francesca-formula-pdf}}
+
+For tetrahedron volume from edge lengths meeting at a vertex:
+
+\begin{equation}\label{eq:pdf}
+144\,V_{xyz}^2 = 4 a^2 b^2 c^2 - a^2\,(b^2 + c^2 - f^2)^2 - b^2\,(c^2 + a^2 - e^2)^2 - c^2\,(a^2 + b^2 - d^2)^2 + (b^2 + c^2 - f^2)(c^2 + a^2 - e^2)(a^2 + b^2 - d^2)
+\end{equation}
+
+Notes.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Edge lengths}: \(a,b,c\) are edges meeting at a vertex,
+  \(d,e,f\) are opposite edges.
+\item
+  \textbf{Conversion to IVM}: Use \(V_{ivm} = S3 \cdot V_{xyz}\) with
+  \(S3=\sqrt{9/8}\).
+\end{itemize}
+
+\hypertarget{gerald-de-jong-formula-gdj}{%
+\subsection{Gerald de Jong Formula
+(GdJ)}\label{gerald-de-jong-formula-gdj}}
+
+Native Quadray formula for tetrahedron volume:
+
+\begin{equation}\label{eq:gdj}
+V_{ivm} = \frac{1}{4}\,\left|\det \begin{pmatrix}
+a_1-a_0 & a_2-a_0 & a_3-a_0 \\
+b_1-b_0 & b_2-b_0 & b_3-b_0 \\
+c_1-c_0 & c_2-c_0 & c_3-c_0 \\
+\end{pmatrix}\right|
+\end{equation}
+
+Notes.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Quadray differences}: Each column represents edge vectors
+  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) in Quadray coordinates.
+\item
+  \textbf{Native IVM}: Returns tetravolume directly in IVM units without
+  conversion.
+\item
+  \textbf{Integer arithmetic}: Exact for integer Quadray coordinates.
 \end{itemize}
 
 See code:
@@ -3884,7 +3956,7 @@ Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information}.
 
-\begin{equation}\label{eq:supp_fim}
+\begin{equation}\label{eq:fim}
 F_{i,j} = \mathbb{E}\left[ \frac{\partial \, \log p(x;\theta)}{\partial \theta_i}\, \frac{\partial \, \log p(x;\theta)}{\partial \theta_j} \right]
 \end{equation}
 
@@ -3906,6 +3978,29 @@ See \passthrough{\lstinline!src/information.py!} --- empirical
 outer-product estimator
 (\passthrough{\lstinline!fisher\_information\_matrix!}).
 
+\hypertarget{empirical-fisher-information-matrix}{%
+\subsection{Empirical Fisher Information
+Matrix}\label{empirical-fisher-information-matrix}}
+
+For empirical estimation from data, the Fisher Information Matrix is
+computed as:
+
+\begin{equation}\label{eq:fim_empirical}
+F_{i,j} = \frac{1}{N} \sum_{n=1}^{N} \frac{\partial \, \log p(x_n;\theta)}{\partial \theta_i}\, \frac{\partial \, \log p(x_n;\theta)}{\partial \theta_j}
+\end{equation}
+
+Notes.
+
+\begin{itemize}
+\tightlist
+\item
+  Empirical estimate of the FIM from \(N\) data samples; converges to
+  the theoretical FIM as \(N \to \infty\).
+\item
+  Used in natural gradient descent and information geometry
+  applications.
+\end{itemize}
+
 \hypertarget{eq:natgrad}{%
 \subsection{Natural Gradient}\label{eq:natgrad}}
 
@@ -3913,7 +4008,7 @@ Background:
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient}
 (Amari).
 
-\begin{equation}\label{eq:supp_natgrad}
+\begin{equation}\label{eq:natural_gradient}
 \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta)
 \end{equation}
 
@@ -3937,7 +4032,7 @@ inverse-Fisher step (\passthrough{\lstinline!natural\_gradient\_step!}).
 \hypertarget{eq:free_energy}{%
 \subsection{Free Energy (Active Inference)}\label{eq:free_energy}}
 
-\begin{equation}\label{eq:supp_free_energy}
+\begin{equation}\label{eq:free_energy}
 \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
 \end{equation}
 
@@ -3985,7 +4080,7 @@ Choose linear map \(M\) from quadray to \(\mathbb{R}^3\) (or
 \subsection{Minkowski Line Element (Einstein.4D
 analogy)}\label{minkowski-line-element-einstein.4d-analogy}}
 
-\begin{equation}\label{eq:supp_minkowski}
+\begin{equation}\label{eq:minkowski_line_element}
 ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
 \end{equation}
 
@@ -4100,34 +4195,19 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
 \begin{itemize}
 \item
   Variational free energy (discrete states) --- see Eq.
-  \eqref{eq:supp_free_energy} in the equations appendix, implemented by
-  \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}:
-
-  \begin{equation}\label{eq:free_energy_appendix_ref}
-  \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
-  \end{equation}
-
-  where \(Q(s)\) is a variational posterior, \(P(s)\) a prior, and
-  \(P(o\mid s)\) the likelihood. Lower \(\mathcal{F}\) is better.
+  \eqref{eq:free_energy} in the equations appendix, implemented by
+  \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}.
 \item
-  Fisher Information Matrix (FIM) as metric --- see Eq.
-  \eqref{eq:supp_fim} in the equations appendix and
-  \href{08_equations_appendix.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}:
-
-  \begin{equation}\label{eq:fim_definition}
-  F_{i,j} = \mathbb{E}\left[ \partial_{\theta_i} \log p(x;\theta)\; \partial_{\theta_j} \log p(x;\theta) \right].
-  \end{equation}
+  Fisher Information Matrix (FIM) as metric --- see Eq. \eqref{eq:fim}
+  in the equations appendix and
+  \href{08_equations_appendix.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}.
 \item
   Natural gradient descent under information geometry --- see Eq.
-  \eqref{eq:supp_natgrad} in the equations appendix and
+  \eqref{eq:natural_gradient} in the equations appendix and
   \href{08_equations_appendix.md\#code:natural_gradient_step}{\passthrough{\lstinline!natural\_gradient\_step!}};
   overview:
   \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
-  gradient}:
-
-  \begin{equation}\label{eq:natural_gradient_update}
-  \theta \leftarrow \theta - \eta\, F(\theta)^{-1}\, \nabla_{\theta} L(\theta).
-  \end{equation}
+  gradient}.
 \end{itemize}
 
 Figures: The following Active Inference figures demonstrate the
@@ -4637,13 +4717,12 @@ Expectation\strut
 Mean with respect to a distribution\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(F_{i,j}\)\strut
+\(F_{ij}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Fisher Information entry\strut
+Fisher Information Matrix\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Empirical/expected
-\(\mathbb{E}[\partial_{\theta_i}\log p\,\partial_{\theta_j}\log p]\);
-Eq. \eqref{eq:supp_fim} in the equations appendix\strut
+\(\mathbb{E}[\partial_{\theta_i}\log p \cdot \partial_{\theta_j}\log p]\);
+Eq. \eqref{eq:fim} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\mathcal{F}\)\strut
@@ -4651,7 +4730,7 @@ Eq. \eqref{eq:supp_fim} in the equations appendix\strut
 Variational free energy\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]\); Eq.
-\eqref{eq:supp_free_energy} in the equations appendix\strut
+\eqref{eq:free_energy} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\mathrm{KL}[Q\,\|\,P]\)\strut
@@ -4661,12 +4740,12 @@ Kullback--Leibler divergence\strut
 \(\sum Q\log(Q/P)\); information distance\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(\nabla_{\theta}L\)\strut
+\(\nabla_{\theta} L\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Gradient\strut
+Natural gradient\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Gradient of loss \(L\) with respect to parameters \(\theta\) (column
-vector)\strut
+\(F(\theta)^{-1} \nabla_{\theta} L(\theta)\); Eq.
+\eqref{eq:natural_gradient} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(\eta\)\strut
@@ -4687,8 +4766,8 @@ Model parameter vector; indices \(\theta_i\)\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
 Minkowski line element\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-\(-c^2\,dt^2 + dx^2 + dy^2 + dz^2\); Eq. \eqref{eq:supp_minkowski} in
-the equations appendix\strut
+\(-c^2\,dt^2 + dx^2 + dy^2 + dz^2\); Eq.
+\eqref{eq:minkowski_line_element} in the equations appendix\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.30\columnwidth}\raggedright
 \(c\)\strut
@@ -4804,7 +4883,7 @@ cross-references)}\label{notes-usage-and-cross-references}}
   figure numbering for consistent cross-referencing.
 \item
   \textbf{Equation references}: Use labels defined in the text (e.g.,
-  Eq. \eqref{eq:supp_lattice_det} in the equations appendix).
+  Eq. \eqref{eq:lattice_det} in the equations appendix).
 \item
   \textbf{Namespaces}: We use Coxeter.4D, Einstein.4D, Fuller.4D
   consistently to designate Euclidean E⁴, Minkowski spacetime, and

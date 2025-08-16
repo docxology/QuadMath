@@ -2,11 +2,15 @@
 
 This repository organizes a comprehensive review of Quadray coordinates, integer volume quantization, optimization on tetrahedral lattices, and information geometry. It contains modular Markdown sources, LaTeX outputs, and build scripts to produce individual and combined PDFs.
 
+**Repository**: [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)
+
+**License**: Apache-2.0
+
 ## Quick Start
 
 ```bash
 # Clone and setup
-git clone <repository-url>
+git clone https://github.com/docxology/QuadMath.git
 cd QuadMath
 uv sync
 
@@ -129,3 +133,28 @@ quadmath/output/
 5. **Documentation changes** must generate working PDFs
 
 For detailed workflow information, see `WORKFLOW.md`. For development rules and enforcement, see `.cursorrules`.
+
+## Contributing
+
+This project follows a strict test-driven development workflow. Before contributing:
+
+1. **Fork the repository** from [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)
+2. **Create a feature branch** for your changes
+3. **Write tests first** following TDD principles
+4. **Ensure 100% test coverage** is maintained
+5. **Run the complete pipeline** with `bash quadmath/scripts/render_pdf.sh`
+6. **Submit a pull request** with clear description of changes
+
+## Citation
+
+If you use this work in your research, please cite:
+
+```bibtex
+@software{quadmath2025,
+  title={QuadMath: Analytical Review of Quadray Coordinates (4D)},
+  author={docxology},
+  year={2025},
+  url={https://github.com/docxology/QuadMath},
+  license={Apache-2.0}
+}
+```

@@ -18,11 +18,7 @@ This section provides the definitive reference for the three 4D frameworks used 
 
 **Spacetime**: Minkowski metric signature.
 
-**Line element** (mostly-plus convention; see [Minkowski space](https://en.wikipedia.org/wiki/Minkowski_space)):
-
-\begin{equation}\label{eq:einstein_line_element}
-ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
-\end{equation}
+**Line element** (mostly-plus convention; see [Minkowski space](https://en.wikipedia.org/wiki/Minkowski_space)): see Eq. \eqref{eq:minkowski_line_element} in the equations appendix.
 
 **Optimization analogy**: Metric-aware geodesics generalize to information geometry where the Fisher metric replaces the physical metric. See [Fisher information](https://en.wikipedia.org/wiki/Fisher_information) and [natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
 
