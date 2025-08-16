@@ -62,63 +62,76 @@ def main() -> None:
     grads = 2.0 * (X.T * residuals).T  # shape (N, 3)
     F = fisher_information_matrix(grads)
 
-    # FIM visualization with 4D context
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+    # Fisher Information Matrix (FIM) with 4D Framework Context
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     # Panel 1: FIM heatmap with professional styling
     im1 = ax1.imshow(F, cmap="viridis", aspect='equal', interpolation='nearest')
-    ax1.set_title("Fisher Information Matrix (Coxeter.4D → Einstein.4D)", 
+    ax1.set_title("Fisher Information Matrix $F_{ij}$\n(Information Content Heatmap)", 
                   fontsize=12, fontweight='bold', pad=15)
-    ax1.set_xlabel("Parameter index $i$", fontsize=11)
-    ax1.set_ylabel("Parameter index $j$", fontsize=11)
+    ax1.set_xlabel("Parameter index $j$", fontsize=11)
+    ax1.set_ylabel("Parameter index $i$", fontsize=11)
     ax1.set_xticks(range(3))
     ax1.set_yticks(range(3))
     ax1.set_xticklabels(['$w_0$', '$w_1$', '$w_2$'])
     ax1.set_yticklabels(['$w_0$', '$w_1$', '$w_2$'])
     
-    # Add value annotations
+    # Add value annotations with better contrast
     for i in range(3):
         for j in range(3):
-            text = ax1.text(j, i, f'{F[i, j]:.2f}', 
-                           ha="center", va="center", color="white", fontweight='bold')
+            color = "white" if F[i, j] > 0.5 else "black"
+            text = ax1.text(j, i, f'{F[i, j]:.3f}', 
+                           ha="center", va="center", color=color, fontweight='bold', fontsize=9)
     
     cbar1 = fig.colorbar(im1, ax=ax1, fraction=0.046, pad=0.04)
     cbar1.set_label("$F_{ij}$ (information content)", fontsize=11)
     
-    # Panel 2: 4D framework explanation
+    # Panel 2: 4D framework explanation with improved layout
     ax2.axis('off')
-    ax2.text(0.1, 0.9, "4D Framework Context", fontsize=14, fontweight='bold', 
+    ax2.text(0.05, 0.95, "4D Framework Integration", fontsize=14, fontweight='bold', 
+             transform=ax2.transAxes)
+    
+    # Mathematical foundation
+    ax2.text(0.05, 0.88, "Mathematical Foundation:", fontsize=11, fontweight='bold',
+             transform=ax2.transAxes)
+    ax2.text(0.05, 0.82, "$F_{ij} = \\frac{1}{N}\\sum_{n=1}^N \\frac{\\partial L_n}{\\partial w_i} \\frac{\\partial L_n}{\\partial w_j}$", 
+             fontsize=10, transform=ax2.transAxes, style='italic')
+    ax2.text(0.05, 0.76, "where $L_n$ is the loss for sample $n$", fontsize=9,
              transform=ax2.transAxes)
     
     # Coxeter.4D explanation
-    ax2.text(0.1, 0.8, "• Coxeter.4D (Euclidean):", fontsize=11, fontweight='bold',
+    ax2.text(0.05, 0.68, "• Coxeter.4D (Euclidean):", fontsize=11, fontweight='bold',
              transform=ax2.transAxes, color='#1f77b4')
-    ax2.text(0.15, 0.75, "  Standard 3D parameter space", fontsize=10,
+    ax2.text(0.08, 0.63, "  Standard 3D parameter space", fontsize=9,
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.7, "  with Euclidean metric", fontsize=10,
+    ax2.text(0.08, 0.58, "  with Euclidean metric $\\delta_{ij}$", fontsize=9,
              transform=ax2.transAxes)
     
     # Einstein.4D explanation  
-    ax2.text(0.1, 0.6, "• Einstein.4D (Minkowski):", fontsize=11, fontweight='bold',
+    ax2.text(0.05, 0.5, "• Einstein.4D (Minkowski):", fontsize=11, fontweight='bold',
              transform=ax2.transAxes, color='#ff7f0e')
-    ax2.text(0.15, 0.55, "  Fisher metric replaces spacetime", fontsize=10,
+    ax2.text(0.08, 0.45, "  Fisher metric $F_{ij}$ replaces", fontsize=9,
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.5, "  metric; geodesics follow F⁻¹∇L", fontsize=10,
+    ax2.text(0.08, 0.4, "  spacetime metric; geodesics follow", fontsize=9,
+             transform=ax2.transAxes)
+    ax2.text(0.08, 0.35, "  $\\Delta w = F^{-1}\\nabla L$", fontsize=9,
              transform=ax2.transAxes)
     
     # Fuller.4D explanation
-    ax2.text(0.1, 0.4, "• Fuller.4D (Synergetics):", fontsize=11, fontweight='bold',
+    ax2.text(0.05, 0.27, "• Fuller.4D (Synergetics):", fontsize=11, fontweight='bold',
              transform=ax2.transAxes, color='#2ca02c')
-    ax2.text(0.15, 0.35, "  Tetrahedral coordinate system", fontsize=10,
+    ax2.text(0.08, 0.22, "  Tetrahedral coordinate system", fontsize=9,
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.3, "  with IVM quantization", fontsize=10,
+    ax2.text(0.08, 0.17, "  with IVM quantization", fontsize=9,
              transform=ax2.transAxes)
     
-    # Mathematical details
-    ax2.text(0.1, 0.2, "Mathematical Structure:", fontsize=11, fontweight='bold',
+    # Information-theoretic interpretation
+    ax2.text(0.05, 0.09, "Information Content:", fontsize=11, fontweight='bold',
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.15, "$F_{ij} = \\frac{1}{N}\\sum_n \\frac{\\partial L}{\\partial w_i} \\frac{\\partial L}{\\partial w_j}$", 
-             fontsize=10, transform=ax2.transAxes, style='italic')
+    ax2.text(0.08, 0.04, "Diagonal elements: parameter sensitivity", fontsize=9,
+             transform=ax2.transAxes)
+    ax2.text(0.08, -0.01, "Off-diagonal: parameter interactions", fontsize=9,
+             transform=ax2.transAxes)
     
     plt.tight_layout()
     
@@ -141,18 +154,19 @@ def main() -> None:
         y=y,
     )
 
-    # Eigenspectrum visualization
+    # Comprehensive Fisher Information Eigenspectrum with Curvature Analysis
     from metrics import fim_eigenspectrum  # noqa: WPS433
     evals, evecs = fim_eigenspectrum(F)
     
     # Comprehensive curvature analysis
     curvature_analysis = fisher_curvature_analysis(F)
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
-    # Panel 1: Eigenspectrum with styling
+    # Panel 1: Eigenspectrum with improved styling
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
     bars = ax1.bar(np.arange(evals.size), evals, 
-                   color=['#1f77b4', '#ff7f0e', '#2ca02c'], alpha=0.8)
+                   color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
     ax1.set_title("Fisher Information Eigenspectrum\n(Principal Curvature Directions)", 
                   fontsize=12, fontweight='bold', pad=15)
     ax1.set_xlabel("Eigenvalue index", fontsize=11)
@@ -160,52 +174,66 @@ def main() -> None:
     ax1.set_xticks(range(evals.size))
     ax1.set_xticklabels(['$\\lambda_0$', '$\\lambda_1$', '$\\lambda_2$'])
     
-    # Add value annotations on bars
+    # Add value annotations on bars with better positioning
     for i, (bar, val) in enumerate(zip(bars, evals)):
         height = bar.get_height()
-        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.1,
-                f'{val:.2f}', ha='center', va='bottom', fontweight='bold')
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                f'{val:.3f}', ha='center', va='bottom', fontweight='bold', fontsize=9)
     
     # Add grid for better readability
     ax1.grid(True, alpha=0.3, linestyle='--')
+    ax1.set_ylim(0, max(evals) * 1.15)  # Add some headroom for annotations
     
-    # Panel 2: Curvature analysis summary
+    # Panel 2: Comprehensive curvature analysis with better organization
     ax2.axis('off')
-    ax2.text(0.1, 0.9, "Curvature Analysis Summary", fontsize=14, fontweight='bold', 
+    ax2.text(0.05, 0.95, "Curvature Analysis & 4D Framework", fontsize=14, fontweight='bold', 
              transform=ax2.transAxes)
     
-    # Key metrics
-    ax2.text(0.1, 0.8, "Condition Number:", fontsize=11, fontweight='bold',
+    # Key metrics section
+    ax2.text(0.05, 0.88, "Key Metrics:", fontsize=11, fontweight='bold',
+             transform=ax2.transAxes)
+    
+    ax2.text(0.05, 0.82, "Condition Number:", fontsize=10, fontweight='bold',
              transform=ax2.transAxes, color='#1f77b4')
-    ax2.text(0.6, 0.8, f"{curvature_analysis['condition_number']:.2f}", fontsize=11,
+    ax2.text(0.6, 0.82, f"{curvature_analysis['condition_number']:.2f}", fontsize=10,
              transform=ax2.transAxes)
     
-    ax2.text(0.1, 0.7, "Anisotropy Index:", fontsize=11, fontweight='bold',
+    ax2.text(0.05, 0.76, "Anisotropy Index:", fontsize=10, fontweight='bold',
              transform=ax2.transAxes, color='#ff7f0e')
-    ax2.text(0.6, 0.7, f"{curvature_analysis['anisotropy_index']:.3f}", fontsize=11,
+    ax2.text(0.6, 0.76, f"{curvature_analysis['anisotropy_index']:.3f}", fontsize=10,
              transform=ax2.transAxes)
     
-    ax2.text(0.1, 0.6, "Total Curvature:", fontsize=11, fontweight='bold',
+    ax2.text(0.05, 0.7, "Total Curvature:", fontsize=10, fontweight='bold',
              transform=ax2.transAxes, color='#2ca02c')
-    ax2.text(0.6, 0.6, f"{curvature_analysis['trace']:.2f}", fontsize=11,
+    ax2.text(0.6, 0.7, f"{curvature_analysis['trace']:.3f}", fontsize=10,
              transform=ax2.transAxes)
     
-    # Interpretation
-    ax2.text(0.1, 0.5, "Interpretation:", fontsize=11, fontweight='bold',
+    # Eigenvalue interpretation
+    ax2.text(0.05, 0.62, "Eigenvalue Interpretation:", fontsize=11, fontweight='bold',
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.4, "• High $\\lambda$: Tight constraints", fontsize=10,
+    ax2.text(0.08, 0.56, "• $\\lambda_0 = {:.3f}$: Primary direction", fontsize=9,
+             transform=ax2.transAxes, color='#1f77b4')
+    ax2.text(0.08, 0.51, "• $\\lambda_1 = {:.3f}$: Secondary direction", fontsize=9,
+             transform=ax2.transAxes, color='#ff7f0e')
+    ax2.text(0.08, 0.46, "• $\\lambda_2 = {:.3f}$: Tertiary direction", fontsize=9,
+             transform=ax2.transAxes, color='#2ca02c')
+    
+    # 4D framework connection
+    ax2.text(0.05, 0.38, "4D Framework Connection:", fontsize=11, fontweight='bold',
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.35, "• Low $\\lambda$: Loose constraints", fontsize=10,
+    ax2.text(0.08, 0.32, "• Coxeter.4D: Euclidean parameter space", fontsize=9,
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.3, "• Natural gradient scales by $F^{-1}$", fontsize=10,
+    ax2.text(0.08, 0.27, "• Einstein.4D: Fisher metric geometry", fontsize=9,
+             transform=ax2.transAxes)
+    ax2.text(0.08, 0.22, "• Fuller.4D: Tetrahedral structure", fontsize=9,
              transform=ax2.transAxes)
     
-    # 4D connection
-    ax2.text(0.1, 0.2, "4D Connection:", fontsize=11, fontweight='bold',
+    # Optimization implications
+    ax2.text(0.05, 0.14, "Optimization Implications:", fontsize=11, fontweight='bold',
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.15, "Eigenvalues reveal anisotropic", fontsize=10,
+    ax2.text(0.08, 0.08, "• Natural gradient scales by $F^{-1}$", fontsize=9,
              transform=ax2.transAxes)
-    ax2.text(0.15, 0.1, "parameter space structure", fontsize=10,
+    ax2.text(0.08, 0.03, "• Anisotropic scaling improves convergence", fontsize=9,
              transform=ax2.transAxes)
     
     plt.tight_layout()

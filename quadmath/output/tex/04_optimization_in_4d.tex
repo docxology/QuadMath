@@ -416,52 +416,145 @@ Robustness}\label{convergence-and-robustness}}
 \subsection{Information-Geometric View (Einstein.4D analogy in metric
 form)}\label{information-geometric-view-einstein.4d-analogy-in-metric-form}}
 
-\begin{itemize}
-\tightlist
+The Fisher Information Matrix (FIM) provides a fundamental bridge
+between the three 4D frameworks, establishing a Riemannian metric on
+parameter space that guides optimization through information geometry.
+This section demonstrates how the FIM connects Coxeter.4D (Euclidean
+parameter space), Einstein.4D (information-geometric flows), and
+Fuller.4D (tetrahedral structure) in a unified optimization framework.
+
+\hypertarget{fisher-information-as-riemannian-metric}{%
+\subsubsection{Fisher Information as Riemannian
+Metric}\label{fisher-information-as-riemannian-metric}}
+
+The empirical Fisher Information Matrix \(F_{ij}\) quantifies the local
+curvature of the log-likelihood surface around parameter estimates,
+providing a natural metric for parameter space geometry. This
+fundamental concept in information geometry establishes a Riemannian
+structure on the statistical manifold, where distances and angles are
+measured according to the intrinsic geometry of the probability
+distributions rather than the extrinsic Euclidean geometry of the
+parameter space.
+
+For a model with parameters \(\mathbf{w} = (w_0, w_1, w_2)\) and loss
+function \(L(\mathbf{w})\), the FIM is estimated as the expected outer
+product of score functions:
+
+\begin{equation}\label{eq:fim_empirical}
+F_{ij} = \frac{1}{N}\sum_{n=1}^N \frac{\partial L_n}{\partial w_i} \frac{\partial L_n}{\partial w_j}
+\end{equation}
+
+where \(L_n\) represents the loss for individual data samples. This
+matrix captures both parameter sensitivity (diagonal elements) and
+parameter interactions (off-diagonal elements), revealing the intrinsic
+geometry of the optimization landscape.
+
+The Fisher Information Matrix serves as the natural metric tensor
+\(g_{ij} = F_{ij}\) on the statistical manifold, replacing the Euclidean
+metric \(\delta_{ij}\) with a data-dependent metric that reflects the
+actual curvature structure of the objective function. This geometric
+interpretation enables the application of differential geometry concepts
+to optimization problems, where geodesics (locally distance-minimizing
+paths) follow the natural gradient direction \(F^{-1}\nabla L\) rather
+than the standard gradient \(\nabla L\).
+
+The theoretical foundation of this approach stems from the work of
+\href{https://en.wikipedia.org/wiki/Cram\%C3\%A9r\%E2\%80\%93Rao_bound}{Rao
+(1945)} and \href{https://en.wikipedia.org/wiki/Shun-ichi_Amari}{Amari
+(1985)}, who established information geometry as a framework for
+analyzing statistical models through differential geometry. The FIM
+naturally arises as the Hessian of the Kullback-Leibler divergence
+between nearby probability distributions, making it the canonical choice
+for measuring distances on the statistical manifold.
+
+In the context of optimization, the FIM provides several key advantages:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Fisher Information as metric}: use the empirical estimator
-  \passthrough{\lstinline!F = (1/N) \\sum g g^\\top!} from
-  \passthrough{\lstinline!fisher\_information\_matrix!} to analyze
-  curvature of the objective with respect to parameters. See
-  \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
-  information}.
+  \textbf{Invariance to parameterization}: The natural gradient
+  \(F^{-1}\nabla L\) is invariant to smooth, invertible parameter
+  transformations, unlike the standard gradient which depends on the
+  choice of coordinate system.
 \item
-  \textbf{Curvature directions}: leading eigenvalues/eigenvectors of
-  \passthrough{\lstinline!F!} (see
-  \passthrough{\lstinline!fim\_eigenspectrum!}) reveal stiff and sloppy
-  directions; this supports step-size selection and preconditioning.
+  \textbf{Optimal step sizing}: The FIM automatically determines
+  appropriate step sizes in different parameter directions, scaling
+  updates according to local curvature.
 \item
-  \textbf{Figures}: empirical FIM heatmap (see below) and eigenspectrum
-  (see below). Raw data available as NPZ/CSV in
-  \passthrough{\lstinline!quadmath/output/!}.
-\end{itemize}
+  \textbf{Geometric consistency}: Optimization follows geodesics on the
+  statistical manifold, respecting the intrinsic geometry of the
+  parameter space rather than imposing an artificial Euclidean
+  structure.
+\end{enumerate}
+
+This geometric approach to optimization is particularly powerful in the
+context of the 4D frameworks, where it provides a unified mathematical
+language for describing optimization dynamics across different geometric
+paradigms.
+
+\hypertarget{d-framework-integration-through-fisher-information}{%
+\subsubsection{4D Framework Integration through Fisher
+Information}\label{d-framework-integration-through-fisher-information}}
+
+\textbf{Coxeter.4D (Euclidean)}: In standard Euclidean parameter space,
+the metric tensor is simply \(\delta_{ij}\), providing uniform scaling
+in all directions. The FIM \(F_{ij}\) generalizes this to capture the
+actual curvature structure of the objective function.
+
+\textbf{Einstein.4D (Minkowski analogy)}: The Fisher metric replaces the
+spacetime metric, where geodesics follow \(F^{-1}\nabla L\) instead of
+straight lines. This creates optimal parameter update paths that respect
+the intrinsic geometry of the statistical manifold. The natural gradient
+update rule \(\Delta \mathbf{w} = -\eta F^{-1}\nabla L\) implements
+geodesic motion on the information manifold, analogous to how particles
+follow geodesics in relativistic spacetime.
+
+\textbf{Fuller.4D (Synergetics)}: The tetrahedral structure of Quadray
+coordinates naturally encodes the four-fold partition of optimization
+problems, while the FIM provides the metric structure for efficient
+navigation through this space. The discrete nature of the IVM lattice
+creates natural quantization effects that can be exploited for
+computational efficiency.
+
+\hypertarget{comprehensive-fisher-information-analysis}{%
+\subsubsection{Comprehensive Fisher Information
+Analysis}\label{comprehensive-fisher-information-analysis}}
+
+The following figures demonstrate the comprehensive nature of Fisher
+Information analysis, showing both the matrix structure and its
+eigenspectrum interpretation. This analysis reveals the anisotropic
+nature of parameter space and guides the design of efficient
+optimization strategies.
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/fisher_information_matrix.png}
 \caption{\textbf{Fisher Information Matrix (FIM) with 4D Framework
-Context}. This two-panel visualization shows the empirical Fisher
-information matrix alongside a comprehensive explanation of how it
-connects the three 4D frameworks. \textbf{Left panel}: The 3×3 Fisher
+Context}. This comprehensive two-panel visualization demonstrates the
+empirical Fisher information matrix and its deep connections to the
+three 4D mathematical frameworks. \textbf{Left panel}: The 3×3 Fisher
 information matrix \(F_{ij}\) estimated from per-sample gradients of a
-misspecified linear regression model, displayed as a heatmap with value
-annotations. \textbf{Matrix structure}: The FIM captures the local
-curvature of the log-likelihood surface around the current parameter
-estimate, with brighter colors indicating higher information content.
-\textbf{Right panel}: 4D framework context explaining how the FIM
-bridges different mathematical frameworks. \textbf{Coxeter.4D
-(Euclidean)}: Standard 3D parameter space with Euclidean metric.
-\textbf{Einstein.4D (Minkowski)}: Fisher metric replaces spacetime
-metric; geodesics follow \(F^{-1}\nabla L\) for optimal parameter
-updates. \textbf{Fuller.4D (Synergetics)}: Tetrahedral coordinate system
-with IVM quantization. \textbf{Mathematical foundation}:
-\(F_{ij} = \frac{1}{N}\sum_n \frac{\partial L}{\partial w_i} \frac{\partial L}{\partial w_j}\)
-where gradients are computed with respect to parameters
-\(w_0, w_1, w_2\). The diagonal dominance shows each parameter
-contributes independently to the model's predictive power, while
-off-diagonal elements reveal parameter interactions and potential
-redundancy. This FIM structure guides natural gradient descent by
-weighting parameter updates according to local curvature, leading to
+misspecified linear regression model, displayed as a heatmap with
+precise value annotations. The matrix structure reveals the local
+curvature of the log-likelihood surface, where brighter colors indicate
+higher information content. \textbf{Matrix interpretation}: Diagonal
+elements \(F_{ii}\) quantify the sensitivity of the objective to changes
+in parameter \(w_i\), while off-diagonal elements \(F_{ij}\) capture
+parameter interactions and potential redundancy. \textbf{Right panel}:
+Comprehensive 4D framework integration explaining how the FIM bridges
+different mathematical paradigms. \textbf{Mathematical foundation}: The
+FIM is computed according to Eq. \eqref{eq:fim_empirical} where
+gradients are computed with respect to parameters \(w_0, w_1, w_2\).
+\textbf{Coxeter.4D (Euclidean)}: Standard 3D parameter space with
+Euclidean metric \(\delta_{ij}\). \textbf{Einstein.4D (Minkowski)}:
+Fisher metric \(F_{ij}\) replaces spacetime metric; geodesics follow
+\(\Delta w = F^{-1}\nabla L\) for optimal parameter updates.
+\textbf{Fuller.4D (Synergetics)}: Tetrahedral coordinate system with IVM
+quantization. \textbf{Information content}: Diagonal dominance shows
+each parameter contributes independently to the model's predictive
+power, while off-diagonal elements reveal parameter interactions and
+potential redundancy. This FIM structure guides natural gradient descent
+by weighting parameter updates according to local curvature, leading to
 more efficient convergence than standard gradient descent.}
 \end{figure}
 
@@ -469,49 +562,119 @@ more efficient convergence than standard gradient descent.}
 \centering
 \includegraphics{../output/figures/fisher_information_eigenspectrum.png}
 \caption{\textbf{Comprehensive Fisher Information Eigenspectrum with
-Curvature Analysis}. This two-panel visualization provides both the
-eigenvalue decomposition and a detailed interpretation of the parameter
-space geometry. \textbf{Left panel}: Bar chart showing the eigenvalue
-decomposition of the empirical Fisher information matrix, with
-eigenvalues sorted in descending order. Each bar is color-coded and
-annotated with its numerical value. \textbf{Right panel}: Curvature
-analysis summary providing key metrics and interpretation. \textbf{Key
-metrics}: Condition number (anisotropy measure), anisotropy index
-(normalized directional variation), and total curvature (trace of F).
-\textbf{Interpretation}: Large eigenvalues indicate directions of high
-curvature (tight constraints) where the objective function changes
-rapidly with parameter changes. Small eigenvalues indicate directions of
-low curvature (loose constraints) where the objective function is
-relatively flat. \textbf{4D connection}: The eigenvalues reveal the
-anisotropic nature of the parameter space, explaining why natural
-gradient descent (which scales updates by \(F^{-1}\)) converges more
-efficiently than standard gradient descent. The principal directions
-provide insight into which parameter combinations are most sensitive to
-data changes and which are relatively stable. This geometric
-understanding is crucial for designing effective optimization strategies
-and understanding model behavior in the context of information
-geometry.}
+Curvature Analysis}. This detailed two-panel visualization provides both
+the eigenvalue decomposition and a comprehensive interpretation of the
+parameter space geometry within the 4D framework context. \textbf{Left
+panel}: Bar chart showing the eigenvalue decomposition of the empirical
+Fisher information matrix, with eigenvalues sorted in descending order
+and color-coded for visual clarity. Each bar is precisely annotated with
+its numerical value, revealing the principal curvature directions of the
+parameter space. \textbf{Right panel}: Comprehensive curvature analysis
+providing key metrics, eigenvalue interpretation, and 4D framework
+connections. \textbf{Key metrics}: Condition number (anisotropy
+measure), anisotropy index (normalized directional variation), and total
+curvature (trace of F). \textbf{Eigenvalue interpretation}: Each
+eigenvalue \(\lambda_i\) represents the curvature strength in the
+corresponding principal direction. Large eigenvalues indicate directions
+of high curvature (tight constraints) where the objective function
+changes rapidly with parameter changes, while small eigenvalues indicate
+directions of low curvature (loose constraints) where the objective
+function is relatively flat. \textbf{4D framework connection}: The
+eigenvalues reveal the anisotropic nature of the parameter space,
+explaining why natural gradient descent (which scales updates by
+\(F^{-1}\)) converges more efficiently than standard gradient descent.
+\textbf{Coxeter.4D}: The eigenvalues quantify the Euclidean geometry of
+parameter space in different directions. \textbf{Einstein.4D}: The
+Fisher metric geometry creates curved geodesics that respect the
+intrinsic parameter space structure. \textbf{Fuller.4D}: The tetrahedral
+structure provides a natural coordinate system for representing the
+four-fold partition of optimization problems. \textbf{Optimization
+implications}: Natural gradient descent scales parameter updates by
+\(F^{-1}\), creating anisotropic scaling that improves convergence on
+ill-conditioned problems. This geometric understanding is crucial for
+designing effective optimization strategies and understanding model
+behavior in the context of information geometry.}
 \end{figure}
+
+\hypertarget{natural-gradient-descent-geodesic-motion-on-information-manifold}{%
+\subsubsection{Natural Gradient Descent: Geodesic Motion on Information
+Manifold}\label{natural-gradient-descent-geodesic-motion-on-information-manifold}}
+
+The Fisher Information Matrix enables natural gradient descent, which
+implements geodesic motion on the information manifold. Unlike standard
+gradient descent that follows straight lines in parameter space, natural
+gradient descent follows curved paths that respect the intrinsic
+geometry defined by the FIM.
+
+The natural gradient update rule is given by:
+
+\begin{equation}\label{eq:natural_gradient}
+\Delta \mathbf{w} = -\eta F^{-1}\nabla L
+\end{equation}
+
+where \(\eta\) is the learning rate, \(F\) is the Fisher Information
+Matrix from Eq. \eqref{eq:fim_empirical}, and \(\nabla L\) is the
+standard gradient of the loss function. This update rule implements
+geodesic motion on the statistical manifold, where the metric tensor
+\(g_{ij} = F_{ij}\) determines the local geometry.
+
+The theoretical foundation of natural gradient descent was established
+by \href{https://en.wikipedia.org/wiki/Natural_gradient}{Amari (1998)}
+in the context of information geometry. The key insight is that the
+natural gradient \(F^{-1}\nabla L\) is the steepest descent direction
+when distances are measured using the Fisher metric rather than the
+Euclidean metric. This makes natural gradient descent invariant to
+smooth, invertible parameter transformations, a property that standard
+gradient descent lacks.
+
+In the context of the 4D frameworks, natural gradient descent provides a
+unified approach to optimization that respects the intrinsic geometry of
+each framework:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Coxeter.4D}: The natural gradient respects the actual
+  curvature structure of the objective function rather than imposing
+  artificial Euclidean geometry.
+\item
+  \textbf{Einstein.4D}: The Fisher metric replaces the spacetime metric,
+  creating geodesic flows that follow the intrinsic geometry of the
+  parameter space.
+\item
+  \textbf{Fuller.4D}: The tetrahedral structure provides natural
+  coordinate systems where the FIM can exhibit beneficial structural
+  properties.
+\end{itemize}
+
+The efficiency of natural gradient descent comes from its ability to
+automatically adapt step sizes to local curvature. In directions of high
+curvature (large eigenvalues of \(F\)), the natural gradient takes
+smaller steps, while in directions of low curvature (small eigenvalues),
+it takes larger steps. This anisotropic scaling leads to faster
+convergence and better numerical stability compared to standard gradient
+descent.
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/natural_gradient_path.png}
 \caption{\textbf{Natural Gradient Trajectory: Geodesic Motion on
-Information Manifold}. This visualization shows the parameter trajectory
-of natural gradient descent with improved styling and geometric
-interpretation. \textbf{Trajectory}: The blue line with markers traces
-the parameter evolution from initial guess to final optimum, showing the
-path taken through the 2D parameter space. \textbf{Markers}: Each marker
-represents one optimization step, with spacing indicating the step size
-and convergence rate. \textbf{Start/End markers}: Green circle marks the
-initial parameter values, red circle marks the converged optimum.
-\textbf{4D Framework Connection}: This trajectory demonstrates geodesic
-motion on the information manifold, where the Fisher metric (Einstein.4D
-analogy) replaces the physical metric. The natural gradient follows
-\(F^{-1}\nabla L\), creating optimal paths through parameter space that
-respect the intrinsic geometry. \textbf{Convergence behavior}: The
-trajectory shows smooth, direct convergence to the optimum,
-characteristic of natural gradient descent on well-conditioned
+Information Manifold}. This visualization demonstrates the parameter
+trajectory of natural gradient descent, showing how
+information-geometric optimization creates optimal paths through
+parameter space. \textbf{Trajectory}: The blue line with markers traces
+the parameter evolution from initial guess to final optimum, revealing
+the path taken through the 2D parameter space. \textbf{Markers}: Each
+marker represents one optimization step, with spacing indicating the
+step size and convergence rate. \textbf{Start/End markers}: Green circle
+marks the initial parameter values, red circle marks the converged
+optimum. \textbf{4D Framework Connection}: This trajectory demonstrates
+geodesic motion on the information manifold, where the Fisher metric
+(Einstein.4D analogy) replaces the physical metric. The natural gradient
+follows Eq. \eqref{eq:natural_gradient}, creating optimal paths through
+parameter space that respect the intrinsic geometry. \textbf{Convergence
+behavior}: The trajectory shows smooth, direct convergence to the
+optimum, characteristic of natural gradient descent on well-conditioned
 objectives. \textbf{Comparison with standard gradient descent}: Natural
 gradient descent typically produces more direct trajectories than
 standard gradient descent, especially on ill-conditioned problems where
@@ -524,100 +687,155 @@ Added for better readability and to emphasize the discrete nature of the
 optimization steps.}
 \end{figure}
 
+\hypertarget{information-theoretic-foundations-and-4d-framework-coherence}{%
+\subsubsection{Information-Theoretic Foundations and 4D Framework
+Coherence}\label{information-theoretic-foundations-and-4d-framework-coherence}}
+
+The Fisher Information approach provides several key advantages that
+integrate naturally with the 4D framework structure:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Geometric Consistency}: The FIM ensures that optimization
+  respects the intrinsic geometry of the parameter space, maintaining
+  consistency across all three 4D frameworks.
+\item
+  \textbf{Anisotropic Scaling}: Natural gradient descent automatically
+  adapts step sizes to local curvature, improving convergence efficiency
+  on problems with strong parameter space anisotropy.
+\item
+  \textbf{Framework Bridging}: The FIM serves as a mathematical bridge
+  between Coxeter.4D (Euclidean geometry), Einstein.4D
+  (information-geometric flows), and Fuller.4D (tetrahedral structure).
+\item
+  \textbf{Quantitative Analysis}: The eigenspectrum provides
+  quantitative measures of parameter space structure, enabling
+  principled optimization strategy design.
+\end{enumerate}
+
+\hypertarget{quadray-specific-considerations}{%
+\subsubsection{Quadray-Specific
+Considerations}\label{quadray-specific-considerations}}
+
+Under Quadray parameterizations, the FIM often exhibits block-structured
+and symmetric patterns that simplify matrix inversion for
+natural-gradient steps. This structural regularity arises from the
+tetrahedral symmetry of the IVM lattice and can be exploited for
+computational efficiency.
+
+The discrete nature of the IVM lattice also influences the FIM
+structure, as parameter updates are constrained to integer coordinate
+positions. This creates a natural regularization effect that can improve
+optimization stability and convergence.
+
+\hypertarget{variational-free-energy-and-active-inference-integration}{%
+\subsubsection{Variational Free Energy and Active Inference
+Integration}\label{variational-free-energy-and-active-inference-integration}}
+
+The Fisher Information framework naturally extends to variational
+inference and active inference, where the free energy principle guides
+both perception and action through information-geometric optimization.
+
 \begin{figure}
 \centering
 \includegraphics{../output/figures/free_energy_curve.png}
 \caption{\textbf{Variational Free Energy Landscape with 4D Framework
-Integration}. This improved visualization shows the variational free
-energy \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
+Integration}. This visualization shows the variational free energy
+\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
 \eqref{eq:supp_free_energy}) as a function of the variational
-distribution parameter, with improved styling and geometric
-interpretation. \textbf{X-axis}: Variational parameter
-\(q(\text{state}=0)\) controlling the distribution over the two discrete
-states. \textbf{Y-axis}: Free energy value \(\mathcal{F}\) in natural
-units. \textbf{Curve styling}: Improved line plot with better thickness,
-color scheme, and grid overlay for better readability. \textbf{Minimum
-marker}: Red circle highlights the optimal variational distribution
-where free energy is minimized. \textbf{4D Framework Connection}: The
-free energy landscape represents the geometry of the variational
-manifold, where optimization follows geodesics defined by the Fisher
-metric (Einstein.4D analogy). In active inference frameworks, minimizing
-free energy drives both perception and action, analogous to how
-geodesics minimize proper time in relativistic spacetime. \textbf{Curve
-interpretation}: The free energy exhibits a clear minimum at the optimal
-variational distribution, representing the best approximation to the
-true posterior given the constraints of the variational family.
-\textbf{KL divergence component}: The free energy balances data fit
-(first term) with regularization (KL divergence from prior), preventing
-overfitting while maintaining good predictive performance.
-\textbf{Optimization geometry}: The smooth, convex shape of the free
-energy landscape makes optimization straightforward using natural
-gradient descent, which respects the intrinsic geometry of the parameter
-space. This variational framework provides a principled approach to
-approximate inference in complex models where exact posterior
-computation is intractable, while maintaining connections to the broader
-4D mathematical frameworks.}
+distribution parameter, demonstrating the geometry of the variational
+manifold. \textbf{X-axis}: Variational parameter \(q(\text{state}=0)\)
+controlling the distribution over the two discrete states.
+\textbf{Y-axis}: Free energy value \(\mathcal{F}\) in natural units.
+\textbf{Curve interpretation}: The free energy exhibits a clear minimum
+at the optimal variational distribution, representing the best
+approximation to the true posterior given the constraints of the
+variational family. \textbf{4D Framework Connection}: The free energy
+landscape represents the geometry of the variational manifold, where
+optimization follows geodesics defined by the Fisher metric (Einstein.4D
+analogy). In active inference frameworks, minimizing free energy drives
+both perception and action, analogous to how geodesics minimize proper
+time in relativistic spacetime. \textbf{KL divergence component}: The
+free energy balances data fit (first term) with regularization (KL
+divergence from prior), preventing overfitting while maintaining good
+predictive performance. \textbf{Optimization geometry}: The smooth,
+convex shape of the free energy landscape makes optimization
+straightforward using natural gradient descent, which respects the
+intrinsic geometry of the parameter space. This variational framework
+provides a principled approach to approximate inference in complex
+models where exact posterior computation is intractable, while
+maintaining connections to the broader 4D mathematical frameworks.}
 \end{figure}
+
+\hypertarget{advanced-4d-framework-integration-active-inference-context}{%
+\subsubsection{Advanced 4D Framework Integration: Active Inference
+Context}\label{advanced-4d-framework-integration-active-inference-context}}
+
+The integration of Fisher Information with Active Inference demonstrates
+the full power of the 4D framework approach, where Coxeter.4D provides
+exact geometry, Einstein.4D supplies information-geometric flows, and
+Fuller.4D offers the tetrahedral structure for representing the
+four-fold partition of perception-action systems.
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/figure_13_4d_trajectory.png}
-\caption{\textbf{Figure 13: 4D Natural Gradient Trajectory with Active
-Inference Context}. This comprehensive visualization demonstrates
-natural gradient descent (Eq. \eqref{eq:supp_natgrad}) operating within
-the Active Inference framework, showing how information-geometric
-optimization drives perception-action dynamics. \textbf{3D Trajectory}:
-The main panel shows the 4D parameter evolution in 3D space with time
-encoded as color, representing the four-fold partition of Active
-Inference: perception (μ), action (a), internal states (s), and external
-causes (ψ). \textbf{Free Energy Evolution}: The right panel tracks free
-energy minimization over optimization steps, demonstrating the Active
-Inference principle of surprise reduction. \textbf{Component Dynamics}:
-The bottom-left panel shows how each component of the four-fold
-partition evolves during optimization, revealing the coordinated
-dynamics of perception and action. \textbf{4D Framework Integration}:
-The bottom-center panel explains how Coxeter.4D (Euclidean), Einstein.4D
-(Minkowski analogy), and Fuller.4D (Synergetics) frameworks integrate in
-this context. \textbf{Fisher Information}: The bottom-right panel
-displays the Fisher Information Matrix that guides natural gradient
-descent, showing the information geometry underlying the optimization
-process. This figure demonstrates how natural gradient descent
-implements geodesic motion on the information manifold, analogous to how
-particles follow geodesics in Einstein.4D spacetime, while operating
-within the tetrahedral structure of Fuller.4D coordinates.}
+\caption{\textbf{4D Natural Gradient Trajectory with Active Inference
+Context}. This comprehensive visualization demonstrates natural gradient
+descent operating within the Active Inference framework, showing how
+information-geometric optimization drives perception-action dynamics.
+\textbf{3D Trajectory}: The main panel shows the 4D parameter evolution
+in 3D space with time encoded as color, representing the four-fold
+partition of Active Inference: perception (μ), action (a), internal
+states (s), and external causes (ψ). \textbf{Free Energy Evolution}: The
+right panel tracks free energy minimization over optimization steps,
+demonstrating the Active Inference principle of surprise reduction.
+\textbf{Component Dynamics}: The bottom-left panel shows how each
+component of the four-fold partition evolves during optimization,
+revealing the coordinated dynamics of perception and action. \textbf{4D
+Framework Integration}: The bottom-center panel explains how Coxeter.4D
+(Euclidean), Einstein.4D (Minkowski analogy), and Fuller.4D
+(Synergetics) frameworks integrate in this context. \textbf{Fisher
+Information}: The bottom-right panel displays the Fisher Information
+Matrix that guides natural gradient descent, showing the information
+geometry underlying the optimization process. This figure demonstrates
+how natural gradient descent implements geodesic motion on the
+information manifold, analogous to how particles follow geodesics in
+Einstein.4D spacetime, while operating within the tetrahedral structure
+of Fuller.4D coordinates.}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{../output/figures/figure_14_free_energy_landscape.png}
-\caption{\textbf{Figure 14: Free Energy Landscape with 4D Active
-Inference Context}. This comprehensive visualization explores the
-variational free energy landscape
-\(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\) (see Eq.
-\eqref{eq:supp_free_energy}) within the 4D Active Inference framework.
-\textbf{3D Landscape}: The main panel shows the free energy surface over
-a 2D parameter space representing perception-action balance, with the
-global minimum marked for optimal inference. \textbf{Contour Analysis}:
-The top-right panel provides 2D contours of the free energy landscape,
-revealing the information geometry structure that guides optimization.
-\textbf{Cross-Sections}: The bottom-left panel shows free energy
-cross-sections at different parameter values, demonstrating parameter
-sensitivity and the smoothness of the optimization landscape.
-\textbf{Four-Fold Partition}: The bottom-center panel illustrates the
-Active Inference tetrahedral structure connecting internal states (μ),
-sensory observations (s), actions (a), and external causes (ψ), showing
-how Fuller.4D geometry naturally encodes this partition. \textbf{Local
-Curvature}: The bottom-right panel displays local curvature information
-derived from the Fisher Information structure, revealing how the
-information geometry adapts to different regions of the parameter space.
-This figure demonstrates how the Free Energy Principle operates within
-the 4D framework: Coxeter.4D provides exact Euclidean geometry for
-measurements, Einstein.4D supplies information-geometric flows for
-optimization, and Fuller.4D offers the tetrahedral structure for
-representing the four-fold partition of Active Inference. The landscape
-shows how minimizing free energy balances prediction error with model
-complexity, driving both perception and action through natural gradient
-descent on the information manifold.}
+\caption{\textbf{Free Energy Landscape with 4D Active Inference
+Context}. This comprehensive visualization explores the variational free
+energy landscape \(\mathcal{F} = -\log P(o|s) + \text{KL}[Q(s)||P(s)]\)
+(see Eq. \eqref{eq:supp_free_energy}) within the 4D Active Inference
+framework. \textbf{3D Landscape}: The main panel shows the free energy
+surface over a 2D parameter space representing perception-action
+balance, with the global minimum marked for optimal inference.
+\textbf{Contour Analysis}: The top-right panel provides 2D contours of
+the free energy landscape, revealing the information geometry structure
+that guides optimization. \textbf{Cross-Sections}: The bottom-left panel
+shows free energy cross-sections at different parameter values,
+demonstrating parameter sensitivity and the smoothness of the
+optimization landscape. \textbf{Four-Fold Partition}: The bottom-center
+panel illustrates the Active Inference tetrahedral structure connecting
+internal states (μ), sensory observations (s), actions (a), and external
+causes (ψ), showing how Fuller.4D geometry naturally encodes this
+partition. \textbf{Local Curvature}: The bottom-right panel displays
+local curvature information derived from the Fisher Information
+structure, revealing how the information geometry adapts to different
+regions of the parameter space. This figure demonstrates how the Free
+Energy Principle operates within the 4D framework: Coxeter.4D provides
+exact Euclidean geometry for measurements, Einstein.4D supplies
+information-geometric flows for optimization, and Fuller.4D offers the
+tetrahedral structure for representing the four-fold partition of Active
+Inference. The landscape shows how minimizing free energy balances
+prediction error with model complexity, driving both perception and
+action through natural gradient descent on the information manifold.}
 \end{figure}
 
 \begin{itemize}
@@ -661,11 +879,7 @@ materials, and cross-language validation, see the
 \item
   The simplex-based optimizer exhibits discrete volume plateaus and
   converges to low-spread configurations; see the simplex figure above
-  and the MP4/CSV artifacts in
-  \passthrough{\lstinline!quadmath/output/!}.
-\item
-  The greedy IVM descent produces monotone trajectories with
-  integer-valued objectives; see the discrete descent figure below.
+  and the MP4/CSV artifacts in `
 \end{itemize}
 
 \end{document}
