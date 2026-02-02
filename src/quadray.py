@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from typing import Iterable, Tuple
 from linalg_utils import bareiss_determinant_int
 
-from linalg_utils import bareiss_determinant_int
-
 
 @dataclass(frozen=True)
 class Quadray:
