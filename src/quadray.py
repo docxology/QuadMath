@@ -141,6 +141,111 @@ def dot(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float
     return float(x1 * x2 + y1 * y2 + z1 * z2)
 
 
+def distance(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float:
+    """Euclidean distance between two quadray points under the given embedding.
+
+    Parameters
+    - q1, q2: Quadray points (Fuller.4D)
+    - embedding: 3x4 matrix mapping Fuller.4D -> Coxeter.4D/XYZ slice
+
+    Returns
+    - float: Non-negative Euclidean distance in R^3
+    """
+    x1, y1, z1 = _to_xyz_array(q1, embedding)
+    x2, y2, z2 = _to_xyz_array(q2, embedding)
+    dx, dy, dz = x2 - x1, y2 - y1, z2 - z1
+    return float((dx * dx + dy * dy + dz * dz) ** 0.5)
+
+
+def angle(q1: Quadray, q2: Quadray, q3: Quadray,
+          embedding: Iterable[Iterable[float]]) -> float:
+    """Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians).
+
+    Uses the embedded dot-product formula:
+        cos(theta) = <v1, v2> / (|v1| |v2|)
+    where v1 = q1 - q2 and v2 = q3 - q2 in R^3.
+
+    Parameters
+    - q1, q2, q3: Quadray points; angle is measured at q2
+    - embedding: 3x4 matrix mapping Fuller.4D -> Coxeter.4D/XYZ slice
+
+    Returns
+    - float: Angle in radians in [0, pi]
+
+    Raises
+    - ValueError: If q1==q2 or q3==q2 (degenerate angle)
+    """
+    import math
+    ax, ay, az = _to_xyz_array(q1, embedding)
+    bx, by, bz = _to_xyz_array(q2, embedding)
+    cx, cy, cz = _to_xyz_array(q3, embedding)
+    v1x, v1y, v1z = ax - bx, ay - by, az - bz
+    v2x, v2y, v2z = cx - bx, cy - by, cz - bz
+    len1 = (v1x * v1x + v1y * v1y + v1z * v1z) ** 0.5
+    len2 = (v2x * v2x + v2y * v2y + v2z * v2z) ** 0.5
+    if len1 == 0.0 or len2 == 0.0:
+        raise ValueError("Degenerate angle: vertex coincides with an endpoint")
+    cos_theta = (v1x * v2x + v1y * v2y + v1z * v2z) / (len1 * len2)
+    # Clamp for numerical safety
+    cos_theta = max(-1.0, min(1.0, cos_theta))
+    return float(math.acos(cos_theta))
+
+
+def centroid(*quads: Quadray) -> Quadray:
+    """Component-wise mean of quadray points, rounded to the nearest lattice point.
+
+    Computes the arithmetic mean of each component (a, b, c, d) across all
+    input quadrays, rounds to the nearest integer, and normalizes.
+
+    Parameters
+    - *quads: Two or more Quadray points
+
+    Returns
+    - Quadray: Normalized lattice-point centroid
+
+    Raises
+    - ValueError: If fewer than one quadray is provided
+    """
+    if len(quads) == 0:
+        raise ValueError("At least one Quadray is required")
+    n = len(quads)
+    sa = sum(q.a for q in quads)
+    sb = sum(q.b for q in quads)
+    sc = sum(q.c for q in quads)
+    sd = sum(q.d for q in quads)
+    return Quadray(
+        round(sa / n), round(sb / n), round(sc / n), round(sd / n)
+    ).normalize()
+
+
+def quadray_from_xyz(
+    x: float, y: float, z: float,
+    embedding: Iterable[Iterable[float]],
+) -> Quadray:
+    """Map an R^3 point back to the nearest integer quadray lattice point.
+
+    Computes the pseudoinverse of the 3x4 embedding matrix to find the
+    real-valued quadray coordinates, then rounds to the nearest integer
+    lattice point and normalizes.
+
+    Parameters
+    - x, y, z: Cartesian coordinates (Coxeter.4D)
+    - embedding: 3x4 matrix used in to_xyz (Fuller.4D -> Coxeter.4D)
+
+    Returns
+    - Quadray: Nearest normalized integer lattice point
+    """
+    import numpy as np
+    rows = list(embedding)
+    M = np.array([list(r) for r in rows], dtype=float)  # shape (3, 4)
+    xyz = np.array([x, y, z], dtype=float)
+    # Pseudoinverse: M^+ = M^T (M M^T)^{-1}
+    q_real = M.T @ np.linalg.solve(M @ M.T, xyz)
+    # Round to nearest integers and normalize
+    q_int = [int(round(v)) for v in q_real]
+    return Quadray(q_int[0], q_int[1], q_int[2], q_int[3]).normalize()
+
+
 __all__ = [
     "Quadray",
     "to_xyz",
@@ -149,4 +254,8 @@ __all__ = [
     "DEFAULT_EMBEDDING",
     "magnitude",
     "dot",
+    "distance",
+    "angle",
+    "centroid",
+    "quadray_from_xyz",
 ]

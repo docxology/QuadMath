@@ -32,6 +32,11 @@ class DiscretePath:
     values: List[float]
 
 
+# Lightweight protocol for optional typing of moves parameter
+class OptionalMoves(Iterable[Quadray]):
+    pass
+
+
 def discrete_ivm_descent(
     objective: Callable[[Quadray], float],
     start: Quadray,
@@ -89,16 +94,9 @@ def discrete_ivm_descent(
     return DiscretePath(path=path, values=values)
 
 
-# Lightweight protocol for optional typing of moves parameter
-class OptionalMoves(Iterable[Quadray]):
-    pass
-
-
 __all__ = [
     "neighbor_moves_ivm",
     "apply_move",
     "DiscretePath",
     "discrete_ivm_descent",
 ]
-
-

@@ -8,7 +8,9 @@ from information import (
     fisher_information_quadray,
     expected_free_energy,
     active_inference_step,
-    information_geometric_distance
+    information_geometric_distance,
+    mutual_information,
+    information_gain,
 )
 
 
@@ -331,3 +333,65 @@ def test_information_geometric_distance_zero_distance():
     
     distance = information_geometric_distance(F, x, x)
     assert np.allclose(distance, 0.0, rtol=1e-10)
+
+
+# --------------- Mutual information tests ---------------
+
+
+def test_mutual_information_independent():
+    """Independent X and Y should have zero MI."""
+    # p(x, y) = p(x) * p(y) => MI = 0
+    p_x = np.array([0.3, 0.7])
+    p_y = np.array([0.4, 0.6])
+    p_joint = np.outer(p_x, p_y)
+    mi = mutual_information(p_joint)
+    assert np.isclose(mi, 0.0, atol=1e-10)
+
+
+def test_mutual_information_correlated():
+    """Correlated X and Y should have positive MI."""
+    # Strongly correlated: diagonal-dominant joint
+    p_joint = np.array([[0.45, 0.05], [0.05, 0.45]])
+    mi = mutual_information(p_joint)
+    assert mi > 0.0
+
+
+def test_mutual_information_perfect():
+    """Perfectly correlated variables: MI = H(X) = H(Y)."""
+    p_joint = np.array([[0.5, 0.0], [0.0, 0.5]])
+    mi = mutual_information(p_joint)
+    expected = np.log(2)  # H(X) for uniform binary
+    assert np.isclose(mi, expected, rtol=1e-6)
+
+
+def test_mutual_information_not_2d():
+    with pytest.raises(ValueError):
+        mutual_information(np.array([0.5, 0.5]))
+
+
+def test_mutual_information_zero_mass():
+    with pytest.raises(ValueError):
+        mutual_information(np.zeros((2, 2)))
+
+
+# --------------- Information gain tests ---------------
+
+
+def test_information_gain_no_change():
+    """Identical prior and posterior implies zero gain."""
+    p = np.array([0.5, 0.5])
+    ig = information_gain(p, p)
+    assert np.isclose(ig, 0.0, atol=1e-10)
+
+
+def test_information_gain_positive():
+    """Updated beliefs should show positive information gain."""
+    prior = np.array([0.5, 0.5])
+    posterior = np.array([0.9, 0.1])
+    ig = information_gain(prior, posterior)
+    assert ig > 0.0
+
+
+def test_information_gain_shape_mismatch():
+    with pytest.raises(ValueError):
+        information_gain(np.array([0.5, 0.5]), np.array([0.3, 0.3, 0.4]))

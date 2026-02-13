@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from metrics import shannon_entropy, information_length, fim_eigenspectrum, fisher_condition_number, fisher_curvature_analysis, fisher_quadray_comparison
+from metrics import shannon_entropy, information_length, fim_eigenspectrum, fisher_condition_number, fisher_curvature_analysis, fisher_quadray_comparison, kl_divergence, jensen_shannon_divergence, fisher_rao_metric
 
 
 def test_shannon_entropy_basic():
@@ -280,3 +280,85 @@ def test_non_square_matrix_errors():
     # Non-square matrix for fisher_curvature_analysis
     with pytest.raises(ValueError, match="F must be square"):
         fisher_curvature_analysis(F_rect)
+
+
+# --------------- KL divergence tests ---------------
+
+
+def test_kl_divergence_identical():
+    p = np.array([0.5, 0.5])
+    kl = kl_divergence(p, p)
+    assert np.isclose(kl, 0.0, atol=1e-10)
+
+
+def test_kl_divergence_different():
+    p = np.array([0.9, 0.1])
+    q = np.array([0.5, 0.5])
+    kl = kl_divergence(p, q)
+    assert kl > 0.0
+
+
+def test_kl_divergence_shape_error():
+    with pytest.raises(ValueError):
+        kl_divergence(np.array([0.5, 0.5]), np.array([0.3, 0.3, 0.4]))
+
+
+def test_kl_divergence_non_negative():
+    rng = np.random.RandomState(42)
+    p = rng.dirichlet(np.ones(5))
+    q = rng.dirichlet(np.ones(5))
+    assert kl_divergence(p, q) >= -1e-12  # Non-negative (up to numerics)
+
+
+# --------------- Jensen-Shannon divergence tests ---------------
+
+
+def test_jsd_identical():
+    p = np.array([0.25, 0.25, 0.25, 0.25])
+    jsd = jensen_shannon_divergence(p, p)
+    assert np.isclose(jsd, 0.0, atol=1e-10)
+
+
+def test_jsd_symmetric():
+    p = np.array([0.9, 0.1])
+    q = np.array([0.1, 0.9])
+    assert np.isclose(jensen_shannon_divergence(p, q), jensen_shannon_divergence(q, p))
+
+
+def test_jsd_bounded():
+    p = np.array([1.0, 0.0, 0.0])
+    q = np.array([0.0, 0.0, 1.0])
+    jsd = jensen_shannon_divergence(p, q)
+    assert jsd <= np.log(2) + 1e-10
+
+
+def test_jsd_shape_error():
+    with pytest.raises(ValueError):
+        jensen_shannon_divergence(np.array([0.5, 0.5]), np.array([0.3, 0.3, 0.4]))
+
+
+# --------------- Fisher-Rao metric tests ---------------
+
+
+def test_fisher_rao_identical():
+    p = np.array([0.5, 0.5])
+    d = fisher_rao_metric(p, p)
+    assert np.isclose(d, 0.0, atol=1e-6)
+
+
+def test_fisher_rao_positive():
+    p = np.array([0.9, 0.1])
+    q = np.array([0.1, 0.9])
+    d = fisher_rao_metric(p, q)
+    assert d > 0.0
+
+
+def test_fisher_rao_shape_error():
+    with pytest.raises(ValueError):
+        fisher_rao_metric(np.array([0.5, 0.5]), np.array([0.3, 0.3, 0.4]))
+
+
+def test_fisher_rao_symmetric():
+    p = np.array([0.7, 0.3])
+    q = np.array([0.2, 0.8])
+    assert np.isclose(fisher_rao_metric(p, q), fisher_rao_metric(q, p))

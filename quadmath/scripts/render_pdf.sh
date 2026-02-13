@@ -23,7 +23,7 @@ PREAMBLE_MD="$MARKDOWN_DIR/00_preamble.md"
 PDF_DIR="$OUTPUT_DIR/pdf"
 TEX_DIR="$OUTPUT_DIR/tex"
 DATA_DIR="$OUTPUT_DIR/data"
-FIGURE_DIR="$OUTPUT_DIR/output"
+FIGURE_DIR="$OUTPUT_DIR/figures"
 LATEX_TEMP_DIR="$OUTPUT_DIR/latex_temp"
 
 # Author/metadata

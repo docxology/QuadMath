@@ -361,3 +361,65 @@ def information_geometric_distance(
     distance_squared = float(dx.T @ F @ dx)
     
     return np.sqrt(max(0.0, distance_squared))  # Ensure non-negative
+
+
+def mutual_information(p_joint: np.ndarray, eps: float = 1e-15) -> float:
+    """Mutual information I(X; Y) from a joint probability matrix.
+
+    Computes I(X; Y) = H(X) + H(Y) - H(X, Y) where H denotes Shannon
+    entropy.  The joint distribution is normalized internally.
+
+    Parameters
+    - p_joint: 2D array of shape (|X|, |Y|) with non-negative entries.
+    - eps: Small constant for numerical stability in the log.
+
+    Returns
+    - float: Mutual information in nats (>= 0).
+
+    Raises
+    - ValueError: If p_joint is not 2D or has non-positive total mass.
+    """
+    p_joint = np.asarray(p_joint, dtype=float)
+    if p_joint.ndim != 2:
+        raise ValueError("p_joint must be 2D")
+    total = np.sum(p_joint)
+    if total <= 0.0:
+        raise ValueError("p_joint must have positive total mass")
+    pn = p_joint / total
+
+    # Marginals
+    p_x = np.sum(pn, axis=1)  # shape (|X|,)
+    p_y = np.sum(pn, axis=0)  # shape (|Y|,)
+
+    # Entropies
+    h_x = float(-np.sum(p_x * np.log(p_x + eps)))
+    h_y = float(-np.sum(p_y * np.log(p_y + eps)))
+    h_xy = float(-np.sum(pn * np.log(pn + eps)))
+
+    return max(0.0, h_x + h_y - h_xy)
+
+
+def information_gain(prior: np.ndarray, posterior: np.ndarray, eps: float = 1e-15) -> float:
+    """Information gain (Bayesian surprise) between prior and posterior.
+
+    Computes D_KL(posterior || prior), measuring how much the beliefs changed
+    after observing data.  In active inference this quantifies epistemic value.
+
+    Parameters
+    - prior: Non-negative weights for the prior distribution.
+    - posterior: Non-negative weights for the posterior distribution.
+    - eps: Small constant for numerical stability.
+
+    Returns
+    - float: KL divergence in nats (>= 0).
+
+    Raises
+    - ValueError: If shapes do not match.
+    """
+    prior = np.asarray(prior, dtype=float)
+    posterior = np.asarray(posterior, dtype=float)
+    if prior.shape != posterior.shape:
+        raise ValueError("prior and posterior must have the same shape")
+    pn = posterior / np.sum(posterior)
+    qn = prior / np.sum(prior)
+    return float(np.sum(pn * (np.log(pn + eps) - np.log(qn + eps))))

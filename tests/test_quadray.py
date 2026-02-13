@@ -6,7 +6,12 @@ from quadray import (
     ace_tetravolume_5x5,
     magnitude,
     dot,
+    distance,
+    angle,
+    centroid,
+    quadray_from_xyz,
 )
+import math
 
 
 def test_normalize():
@@ -57,3 +62,94 @@ def test_vector_magnitude_and_dot():
     assert m1 > 0 and m2 > 0
     d = dot(q1, q2, DEFAULT_EMBEDDING)
     assert isinstance(d, float)
+
+
+# --------------- New method tests ---------------
+
+
+def test_distance_same_point():
+    q = Quadray(1, 0, 0, 0)
+    assert distance(q, q, DEFAULT_EMBEDDING) == 0.0
+
+
+def test_distance_positive():
+    q1 = Quadray(1, 0, 0, 0)
+    q2 = Quadray(0, 1, 0, 0)
+    d = distance(q1, q2, DEFAULT_EMBEDDING)
+    assert d > 0.0
+    # distance should equal |q1 - q2| via embedding
+    x1, y1, z1 = to_xyz(q1, DEFAULT_EMBEDDING)
+    x2, y2, z2 = to_xyz(q2, DEFAULT_EMBEDDING)
+    expected = ((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2) ** 0.5
+    assert abs(d - expected) < 1e-12
+
+
+def test_distance_symmetric():
+    q1 = Quadray(2, 1, 0, 0)
+    q2 = Quadray(0, 0, 1, 2)
+    assert abs(distance(q1, q2, DEFAULT_EMBEDDING) - distance(q2, q1, DEFAULT_EMBEDDING)) < 1e-12
+
+
+def test_angle_right_angle():
+    # Origin and two orthogonal directions
+    origin = Quadray(0, 0, 0, 0)
+    q1 = Quadray(1, 0, 0, 0)
+    q2 = Quadray(0, 1, 0, 0)
+    # The angle at origin between q1 and q2 depends on the embedding
+    a = angle(q1, origin, q2, DEFAULT_EMBEDDING)
+    assert 0.0 < a < math.pi  # Valid angle
+    assert isinstance(a, float)
+
+
+def test_angle_degenerate():
+    q = Quadray(1, 0, 0, 0)
+    try:
+        angle(q, q, Quadray(0, 1, 0, 0), DEFAULT_EMBEDDING)
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_angle_straight_line():
+    # Opposite directions should give angle close to pi
+    origin = Quadray(0, 0, 0, 0)
+    q1 = Quadray(2, 0, 0, 0)
+    # q2 in opposite direction: map q1 to xyz, negate, find closest quadray
+    x1, y1, z1 = to_xyz(q1, DEFAULT_EMBEDDING)
+    q2 = quadray_from_xyz(-x1, -y1, -z1, DEFAULT_EMBEDDING)
+    a = angle(q1, origin, q2, DEFAULT_EMBEDDING)
+    assert a > 2.5  # Should be close to pi
+
+
+def test_centroid_single_point():
+    q = Quadray(2, 1, 0, 0)
+    c = centroid(q)
+    assert c == q.normalize()
+
+
+def test_centroid_multiple_points():
+    q1 = Quadray(2, 0, 0, 0)
+    q2 = Quadray(0, 2, 0, 0)
+    c = centroid(q1, q2)
+    assert min(c.as_tuple()) == 0  # Normalized
+
+
+def test_centroid_empty():
+    try:
+        centroid()
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_quadray_from_xyz_roundtrip():
+    q_original = Quadray(2, 1, 1, 0)
+    x, y, z = to_xyz(q_original, DEFAULT_EMBEDDING)
+    q_recovered = quadray_from_xyz(x, y, z, DEFAULT_EMBEDDING)
+    # Should recover the same point (normalized)
+    assert q_recovered == q_original.normalize()
+
+
+def test_quadray_from_xyz_origin():
+    q = quadray_from_xyz(0.0, 0.0, 0.0, DEFAULT_EMBEDDING)
+    assert q == Quadray(0, 0, 0, 0)

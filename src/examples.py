@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Iterable
 
 from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz, integer_tetra_volume, ace_tetravolume_5x5
-from nelder_mead_quadray import nelder_mead_quadray
+from nelder_mead_quadray import nelder_mead_quadray, SimplexState
 
 
 def example_ivm_neighbors() -> List[Quadray]:
@@ -28,7 +28,7 @@ def example_volume() -> int:
     return integer_tetra_volume(p0, p1, p2, p3)
 
 
-def example_optimize():
+def example_optimize() -> SimplexState:
     """Run Nelder–Mead over integer quadrays for a simple convex objective (Fuller.4D).
 
     Returns

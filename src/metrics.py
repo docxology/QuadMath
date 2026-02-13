@@ -208,3 +208,87 @@ def fisher_quadray_comparison(
     }
     
     return comparison
+
+
+def kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
+    """Kullback–Leibler divergence D_KL(p || q) for discrete distributions.
+
+    Measures the information lost when q is used to approximate p.  Always
+    non-negative; equals zero iff p == q (up to normalization).
+
+    Parameters
+    - p: Non-negative weights for the reference distribution.
+    - q: Non-negative weights for the approximating distribution.
+    - eps: Small constant for numerical stability in the log.
+
+    Returns
+    - float: D_KL(p || q) in nats (>= 0).
+
+    Raises
+    - ValueError: If p and q have different shapes.
+    """
+    if p.shape != q.shape:
+        raise ValueError("p and q must have the same shape")
+    pn = p / np.sum(p)
+    qn = q / np.sum(q)
+    return float(np.sum(pn * (np.log(pn + eps) - np.log(qn + eps))))
+
+
+def jensen_shannon_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
+    """Jensen–Shannon divergence JSD(p || q) for discrete distributions.
+
+    A symmetric, bounded divergence defined as:
+        JSD(p || q) = 0.5 * D_KL(p || m) + 0.5 * D_KL(q || m)
+    where m = 0.5 * (p + q).  The result is in [0, ln(2)] nats.
+
+    Parameters
+    - p: Non-negative weights for distribution p.
+    - q: Non-negative weights for distribution q.
+    - eps: Small constant for numerical stability.
+
+    Returns
+    - float: JSD in nats, in [0, ln(2)].
+
+    Raises
+    - ValueError: If p and q have different shapes.
+    """
+    if p.shape != q.shape:
+        raise ValueError("p and q must have the same shape")
+    pn = p / np.sum(p)
+    qn = q / np.sum(q)
+    m = 0.5 * (pn + qn)
+    kl_pm = float(np.sum(pn * (np.log(pn + eps) - np.log(m + eps))))
+    kl_qm = float(np.sum(qn * (np.log(qn + eps) - np.log(m + eps))))
+    return 0.5 * kl_pm + 0.5 * kl_qm
+
+
+def fisher_rao_metric(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
+    """Fisher–Rao geodesic distance on the probability simplex.
+
+    The Fisher–Rao metric is the unique Riemannian metric (up to scale)
+    that is invariant under sufficient statistics.  For discrete distributions:
+        d_FR(p, q) = 2 * arccos( sum_i sqrt(p_i * q_i) )
+
+    This is the geodesic distance on the statistical manifold and connects
+    to the Fisher information matrix as its infinitesimal form.
+
+    Parameters
+    - p: Non-negative weights for distribution p.
+    - q: Non-negative weights for distribution q.
+    - eps: Small constant for numerical stability.
+
+    Returns
+    - float: Geodesic distance in [0, pi].
+
+    Raises
+    - ValueError: If p and q have different shapes.
+    """
+    if p.shape != q.shape:
+        raise ValueError("p and q must have the same shape")
+    pn = p / np.sum(p)
+    qn = q / np.sum(q)
+    # Bhattacharyya coefficient
+    bc = float(np.sum(np.sqrt(pn * qn + eps * eps)))
+    # Clamp for numerical safety
+    bc = max(-1.0, min(1.0, bc))
+    return float(2.0 * np.arccos(bc))
