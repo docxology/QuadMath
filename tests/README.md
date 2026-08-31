@@ -4,9 +4,17 @@ This directory contains the comprehensive test suite for QuadMath. All tests mai
 
 ## Test Statistics
 
-- **Total Tests**: 117
-- **Coverage**: 100% (statements and branches)
-- **Test Files**: 24
+Counts drift; derive them live rather than trusting prose (verified 2026-08-31:
+23 test files on disk):
+
+```bash
+ls tests/test_*.py | wc -l                                  # test files
+grep -c "def test_" tests/test_*.py | awk -F: '{s+=$NF} END {print s}'   # test functions (approx; parametrize may vary)
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q --co | tail -1   # exact collected count (slow on external drives: >5 min)
+```
+
+- **Coverage**: 100% of `src/` required (statements and branches) — enforced by
+  `.coveragerc` (`fail_under = 100`). Check: `uv run coverage report`.
 
 ## Running Tests
 

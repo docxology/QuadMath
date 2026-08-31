@@ -8,6 +8,16 @@ This repository organizes a comprehensive review of Quadray coordinates, integer
 
 **License**: Apache-2.0
 
+## Status & Next Actions
+
+- **Status**: Published v1 (Zenodo DOI above). Manuscript details and layout
+  rationale: `docs/manuscript/MANUSCRIPT_STATUS.md`. Verify against disk, not
+  this line: `ls quadmath/output/pdf/quadmath_review.pdf`.
+- **Backlog / next actions**: `TODO.md` at repo root is the single canonical
+  to-do list.
+- **Verification**: `./run_all.sh --test-only` (tests + 100% coverage gate).
+  Full pipeline: `./run_all.sh --with-pdf`.
+
 ## Quick Start
 
 ```bash
@@ -54,7 +64,8 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
 
 - `src/`: Source code modules (100% test coverage required)
 - `tests/`: Test suite (no mocks, real numerical examples)
-- `quadmath/markdown/`
+- `quadmath/markdown/` (numbered sections, assembled in order by `render_pdf.sh`)
+  - `00_preamble.md`: LaTeX preamble source (generated from markdown)
   - `01_introduction.md`: Introduction to 4D namespaces and quadrays
   - `02_4d_namespaces.md`: Coxeter.4D, Einstein.4D, Fuller.4D distinctions
   - `03_quadray_methods.md`: Quadray analytical details and methods
@@ -66,9 +77,8 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
   - `09_free_energy_active_inference.md`: Free energy and active inference
   - `10_symbols_glossary.md`: Auto-generated API glossary from source code
 - `quadmath/scripts/`: Figure and data generation scripts that import from `src/`
-- `quadmath/latex/`: LaTeX preamble and utilities
-- `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX)
-- `quadmath/resources/`: Images, diagrams, and supplementary assets
+- `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
+- `docs/manuscript/MANUSCRIPT_STATUS.md`: manuscript status and canonical-layout rationale
 
 ## Test Suite and Code Connections
 

@@ -8,7 +8,7 @@ DOI [10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
 
 | Path | Contents |
 |---|---|
-| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` … `09_free_energy_active_inference.md`) |
+| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` … `10_symbols_glossary.md`, 11 files) |
 | `quadmath/scripts/` | Render and clean scripts (`render_pdf.sh`, `clean_output.sh`) |
 | `src/`, `tests/` | Supporting code and test suite |
 | `QuadMath_v1_DAF_08-16-2025.pdf` | Published version-1 PDF |
