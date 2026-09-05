@@ -10,7 +10,7 @@ Counts drift; derive them live rather than trusting prose (verified 2026-08-31:
 ```bash
 ls tests/test_*.py | wc -l                                  # test files
 grep -c "def test_" tests/test_*.py | awk -F: '{s+=$NF} END {print s}'   # test functions (approx; parametrize may vary)
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q --co | tail -1   # exact collected count (slow on external drives: >5 min)
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q --co | tail -1   # exact collected count
 ```
 
 - **Coverage**: 100% of `src/` required (statements and branches) — enforced by
@@ -65,32 +65,48 @@ uv run pytest -v --tb=short
 
 ### `conftest.py`
 
-Contains shared pytest fixtures:
+Forces the headless Matplotlib backend and puts `src/` on `sys.path`:
 
 ```python
-import pytest
+import os
 import sys
-from pathlib import Path
 
-# Ensure src/ is importable
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Force headless backend for matplotlib in tests
+os.environ.setdefault("MPLBACKEND", "Agg")
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+SRC = os.path.join(ROOT, "src")
+if SRC not in sys.path:
+    sys.path.insert(0, SRC)
 ```
 
 ### `.coveragerc`
 
-Coverage configuration enforcing 100%:
+Coverage configuration enforcing 100% (statements and branches):
 
 ```ini
 [run]
+branch = True
 source = src
-omit = 
-    src/__pycache__/*
-    tests/*
 
 [report]
+omit =
+    **/tests/*
+    **/site-packages/*
 fail_under = 100
-show_missing = true
+show_missing = True
+precision = 0
 ```
+
+### Slow collection on external drives
+
+Full-suite wall time here is ~1.5 min with a healthy `.venv` (188 tests,
+2026-09-05). Earlier reports of >5 min pathological collection coincided with
+a corrupted venv (broken `numpy`/`matplotlib` installs make every module
+import fail and retry, which looks like a collection hang). If collection
+crawls again, first verify imports: `uv run python -c "import numpy,
+matplotlib"`, and repair with `uv sync --reinstall-package numpy
+--reinstall-package matplotlib`.
 
 ## Testing Patterns
 

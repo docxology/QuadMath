@@ -92,7 +92,7 @@ def main():
     # ... plotting code ...
     
     # Save figure
-    fig_path = get_figure_dir() / "output_name.png"
+    fig_path = os.path.join(get_figure_dir(), "output_name.png")
     fig.savefig(fig_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"Generated: {fig_path}")
@@ -162,7 +162,7 @@ uv run python quadmath/scripts/validate_markdown.py --strict
 Auto-generates `quadmath/markdown/10_symbols_glossary.md` from:
 
 - All modules in `src/`
-- Public functions (in `__all__`)
+- All public (non-underscore) top-level functions, classes, and ALL-CAPS constants
 - Docstrings and type hints
 
 ```bash

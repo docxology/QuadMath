@@ -1,8 +1,23 @@
 import os
 
+import pytest
+
+import visualize
 from nelder_mead_quadray import nelder_mead_quadray
 from visualize import animate_simplex, plot_simplex_trace
 from quadray import Quadray
+
+
+@pytest.fixture(autouse=True)
+def _isolate_output_dirs(tmp_path, monkeypatch):
+    """Redirect figure/data output to tmp dirs so tests never touch (or
+    delete) the shared quadmath/output/ tree that the manuscript references."""
+    fig_dir = tmp_path / "figures"
+    data_dir = tmp_path / "data"
+    fig_dir.mkdir()
+    data_dir.mkdir()
+    monkeypatch.setattr(visualize, "get_figure_dir", lambda: str(fig_dir))
+    monkeypatch.setattr(visualize, "get_data_dir", lambda: str(data_dir))
 
 
 def test_simplex_animation_saves_file():
@@ -13,7 +28,7 @@ def test_simplex_animation_saves_file():
     state = nelder_mead_quadray(f, initial, max_iter=8)
     path = animate_simplex(state.history, save=True)
     assert os.path.isfile(path)
-    os.remove(path)
+
 
 
 def test_simplex_animation_no_save():

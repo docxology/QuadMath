@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,18 +42,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
@@ -56,7 +49,6 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -165,10 +157,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Resources}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -179,20 +185,17 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{resources}{%
-\section{Resources}\label{resources}}
+\section{Resources}\label{resources}
 
 This section provides comprehensive resources for learning about and
 working with Quadrays, synergetics, and the computational methods
 discussed in this manuscript.
 
-\hypertarget{core-concepts-and-background}{%
 \subsection{Core Concepts and
-Background}\label{core-concepts-and-background}}
+Background}\label{core-concepts-and-background}
 
-\hypertarget{information-geometry-and-optimization}{%
 \subsubsection{Information Geometry and
-Optimization}\label{information-geometry-and-optimization}}
+Optimization}\label{information-geometry-and-optimization}
 
 \begin{itemize}
 \tightlist
@@ -208,9 +211,8 @@ Optimization}\label{information-geometry-and-optimization}}
   equations appendix
 \end{itemize}
 
-\hypertarget{active-inference-and-free-energy}{%
 \subsubsection{Active Inference and Free
-Energy}\label{active-inference-and-free-energy}}
+Energy}\label{active-inference-and-free-energy}
 
 \begin{itemize}
 \tightlist
@@ -224,9 +226,7 @@ Energy}\label{active-inference-and-free-energy}}
   Inference --- recent review (UCL Discovery, 2023)}
 \end{itemize}
 
-\hypertarget{mathematical-foundations}{%
-\subsubsection{Mathematical
-Foundations}\label{mathematical-foundations}}
+\subsubsection{Mathematical Foundations}\label{mathematical-foundations}
 
 \begin{itemize}
 \tightlist
@@ -247,12 +247,10 @@ Foundations}\label{mathematical-foundations}}
   method}, adapted here to the Quadray lattice
 \end{itemize}
 
-\hypertarget{quadrays-and-synergetics-core-starting-points}{%
 \subsection{Quadrays and Synergetics (Core Starting
-Points)}\label{quadrays-and-synergetics-core-starting-points}}
+Points)}\label{quadrays-and-synergetics-core-starting-points}
 
-\hypertarget{introductory-materials}{%
-\subsubsection{Introductory Materials}\label{introductory-materials}}
+\subsubsection{Introductory Materials}\label{introductory-materials}
 
 \begin{itemize}
 \tightlist
@@ -276,9 +274,8 @@ Points)}\label{quadrays-and-synergetics-core-starting-points}}
   coordinates (reference)}
 \end{itemize}
 
-\hypertarget{historical-and-background-materials}{%
 \subsubsection{Historical and Background
-Materials}\label{historical-and-background-materials}}
+Materials}\label{historical-and-background-materials}
 
 \begin{itemize}
 \tightlist
@@ -307,21 +304,18 @@ Materials}\label{historical-and-background-materials}}
   Big Ideas: Synergetics}
 \end{itemize}
 
-\hypertarget{dsolutions-ecosystem-comprehensive-computational-framework}{%
 \subsection{4dsolutions Ecosystem: Comprehensive Computational
-Framework}\label{dsolutions-ecosystem-comprehensive-computational-framework}}
+Framework}\label{dsolutions-ecosystem-comprehensive-computational-framework}
 
 The \href{https://github.com/4dsolutions}{4dsolutions organization}
 provides the most extensive computational framework for Quadrays and
 synergetic geometry, spanning 29+ repositories with implementations
 across multiple programming languages.
 
-\hypertarget{core-computational-modules}{%
 \subsubsection{Core Computational
-Modules}\label{core-computational-modules}}
+Modules}\label{core-computational-modules}
 
-\hypertarget{primary-python-libraries}{%
-\paragraph{Primary Python Libraries}\label{primary-python-libraries}}
+\paragraph{Primary Python Libraries}\label{primary-python-libraries}
 
 \begin{itemize}
 \tightlist
@@ -342,8 +336,7 @@ Modules}\label{core-computational-modules}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{cross-language-validation}{%
-\paragraph{Cross-Language Validation}\label{cross-language-validation}}
+\paragraph{Cross-Language Validation}\label{cross-language-validation}
 
 \begin{itemize}
 \tightlist
@@ -375,15 +368,13 @@ Modules}\label{core-computational-modules}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{primary-hub-school_of_tomorrow-python-notebooks}{%
 \subsubsection{Primary Hub: School\_of\_Tomorrow (Python +
-Notebooks)}\label{primary-hub-school_of_tomorrow-python-notebooks}}
+Notebooks)}\label{primary-hub-school_of_tomorrow-python-notebooks}
 
 \textbf{Repository}:
 \href{https://github.com/4dsolutions/School_of_Tomorrow}{School\_of\_Tomorrow}
 
-\hypertarget{core-modules}{%
-\paragraph{Core Modules}\label{core-modules}}
+\paragraph{Core Modules}\label{core-modules}
 
 \begin{itemize}
 \tightlist
@@ -405,8 +396,7 @@ Notebooks)}\label{primary-hub-school_of_tomorrow-python-notebooks}}
   \passthrough{\lstinline!smod\_play.py!} (synergetic modules)
 \end{itemize}
 
-\hypertarget{key-notebooks}{%
-\paragraph{Key Notebooks}\label{key-notebooks}}
+\paragraph{Key Notebooks}\label{key-notebooks}
 
 \begin{itemize}
 \tightlist
@@ -431,12 +421,10 @@ Notebooks)}\label{primary-hub-school_of_tomorrow-python-notebooks}}
   materials)
 \end{itemize}
 
-\hypertarget{additional-repositories}{%
-\subsubsection{Additional Repositories}\label{additional-repositories}}
+\subsubsection{Additional Repositories}\label{additional-repositories}
 
-\hypertarget{tetravolumes-algorithms-and-pedagogy}{%
 \paragraph{Tetravolumes (Algorithms and
-Pedagogy)}\label{tetravolumes-algorithms-and-pedagogy}}
+Pedagogy)}\label{tetravolumes-algorithms-and-pedagogy}
 
 \begin{itemize}
 \tightlist
@@ -454,9 +442,8 @@ Pedagogy)}\label{tetravolumes-algorithms-and-pedagogy}}
   Volumes.ipynb}
 \end{itemize}
 
-\hypertarget{visualization-and-rendering}{%
 \paragraph{Visualization and
-Rendering}\label{visualization-and-rendering}}
+Rendering}\label{visualization-and-rendering}
 
 \begin{itemize}
 \tightlist
@@ -474,13 +461,11 @@ Rendering}\label{visualization-and-rendering}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{educational-framework-and-curricula}{%
 \subsubsection{Educational Framework and
-Curricula}\label{educational-framework-and-curricula}}
+Curricula}\label{educational-framework-and-curricula}
 
-\hypertarget{oregon-curriculum-network-ocn}{%
 \paragraph{Oregon Curriculum Network
-(OCN)}\label{oregon-curriculum-network-ocn}}
+(OCN)}\label{oregon-curriculum-network-ocn}
 
 \begin{itemize}
 \tightlist
@@ -492,8 +477,7 @@ Curricula}\label{educational-framework-and-curricula}}
   \href{http://www.4dsolutions.net/ocn/pymath.html}{pymath page}
 \end{itemize}
 
-\hypertarget{historical-documentation}{%
-\paragraph{Historical Documentation}\label{historical-documentation}}
+\paragraph{Historical Documentation}\label{historical-documentation}
 
 \begin{itemize}
 \tightlist
@@ -512,8 +496,7 @@ Curricula}\label{educational-framework-and-curricula}}
   edu-sig archives} tracing 25+ years of development
 \end{itemize}
 
-\hypertarget{media-and-publications}{%
-\subsubsection{Media and Publications}\label{media-and-publications}}
+\subsubsection{Media and Publications}\label{media-and-publications}
 
 \begin{itemize}
 \tightlist
@@ -529,12 +512,10 @@ Curricula}\label{educational-framework-and-curricula}}
   Academia.edu}
 \end{itemize}
 
-\hypertarget{community-discussions-and-collaborative-platforms}{%
 \subsection{Community Discussions and Collaborative
-Platforms}\label{community-discussions-and-collaborative-platforms}}
+Platforms}\label{community-discussions-and-collaborative-platforms}
 
-\hypertarget{active-platforms}{%
-\subsubsection{Active Platforms}\label{active-platforms}}
+\subsubsection{Active Platforms}\label{active-platforms}
 
 \begin{itemize}
 \tightlist
@@ -548,8 +529,7 @@ Platforms}\label{community-discussions-and-collaborative-platforms}}
   ongoing community discussions and technical exchanges
 \end{itemize}
 
-\hypertarget{historical-archives}{%
-\subsubsection{Historical Archives}\label{historical-archives}}
+\subsubsection{Historical Archives}\label{historical-archives}
 
 \begin{itemize}
 \tightlist
@@ -560,13 +540,11 @@ Platforms}\label{community-discussions-and-collaborative-platforms}}
   approaches and problem-solving techniques
 \end{itemize}
 
-\hypertarget{related-projects-and-applications}{%
 \subsection{Related Projects and
-Applications}\label{related-projects-and-applications}}
+Applications}\label{related-projects-and-applications}
 
-\hypertarget{tetrahedral-voxel-engines}{%
 \subsubsection{Tetrahedral Voxel
-Engines}\label{tetrahedral-voxel-engines}}
+Engines}\label{tetrahedral-voxel-engines}
 
 \begin{itemize}
 \tightlist
@@ -576,8 +554,7 @@ Engines}\label{tetrahedral-voxel-engines}}
   engine using Quadrays}
 \end{itemize}
 
-\hypertarget{academic-publications}{%
-\subsubsection{Academic Publications}\label{academic-publications}}
+\subsubsection{Academic Publications}\label{academic-publications}
 
 \begin{itemize}
 \tightlist
@@ -587,8 +564,7 @@ Engines}\label{tetrahedral-voxel-engines}}
   the Flextegrity Lattice (academia.edu)}
 \end{itemize}
 
-\hypertarget{context-and-integration}{%
-\subsubsection{Context and Integration}\label{context-and-integration}}
+\subsubsection{Context and Integration}\label{context-and-integration}
 
 These materials popularize the IVM/CCP/FCC framing of space, integer
 tetravolumes, and projective Quadray normalization. They inform the

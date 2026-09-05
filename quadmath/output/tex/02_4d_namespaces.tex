@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,39 +42,28 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -178,10 +172,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -192,18 +200,16 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}{%
 \section{4D Namespaces: Coxeter.4D, Einstein.4D,
-Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}}
+Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}
 
 This section provides the definitive reference for the three 4D
 frameworks used throughout this manuscript. Each namespace represents a
 distinct mathematical framework with specific applications in our
 quadray-based computational system.
 
-\hypertarget{coxeter.4d-euclidean-eux2074}{%
 \subsection{Coxeter.4D (Euclidean
-E⁴)}\label{coxeter.4d-euclidean-eux2074}}
+E⁴)}\label{coxeter.4d-euclidean-eux2074}
 
 \textbf{Definition}: Standard E⁴ with orthogonal axes and Euclidean
 metric; the proper setting for classical regular polytopes. As Coxeter
@@ -223,9 +229,8 @@ parameterizations when a strictly Euclidean 4D setting is desired.
 standard Euclidean geometry, including the Cayley-Menger determinant for
 computing volumes from edge lengths.
 
-\hypertarget{einstein.4d-relativistic-spacetime}{%
 \subsection{Einstein.4D (Relativistic
-spacetime)}\label{einstein.4d-relativistic-spacetime}}
+spacetime)}\label{einstein.4d-relativistic-spacetime}
 
 \textbf{Definition}: Minkowski spacetime with indefinite metric
 signature, representing the geometric framework for special relativity.
@@ -250,9 +255,8 @@ metric/geodesic analogy when discussing information geometry. Physical
 constants G, c, Λ do not appear in Quadray lattice methods and should
 not be mixed with IVM unit conventions.
 
-\hypertarget{fuller.4d-synergetics-quadrays}{%
 \subsection{Fuller.4D (Synergetics /
-Quadrays)}\label{fuller.4d-synergetics-quadrays}}
+Quadrays)}\label{fuller.4d-synergetics-quadrays}
 
 \textbf{Definition}: Tetrahedral coordinate system based on four
 non-negative components representing directions to the vertices of a
@@ -281,9 +285,8 @@ ecosystem}. See the \href{07_resources.md}{Resources} section for
 comprehensive details on computational implementations and educational
 materials.
 
-\hypertarget{directions-not-dimensions-language-and-models}{%
 \subsubsection{Directions, not dimensions (language and
-models)}\label{directions-not-dimensions-language-and-models}}
+models)}\label{directions-not-dimensions-language-and-models}
 
 \textbf{Vector-first framing}: Treat Quadrays as four canonical
 directions (``spokes'' to the vertices of a regular tetrahedron from its
@@ -299,12 +302,11 @@ coordinates}.
 languages on the same Euclidean container; teaching them together avoids
 oscillating between ``points now, vectors later.''
 
-\hypertarget{figures}{%
-\subsubsection{Figures}\label{figures}}
+\subsubsection{Figures}\label{figures}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/ivm_neighbors_edges.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={IVM neighbors and coordination patterns (2×2 panel layout). Panel A: The twelve nearest IVM neighbors plotted as blue points in 3D space under the default embedding, showing the positions corresponding to permutations of the Quadray integer coordinates \{2,1,1,0\}. These points form the vertices of a cuboctahedron (vector equilibrium) centered at the origin with uniform radial distances. Panel B: The same neighbor points with radial edges (light lines) connecting each neighbor to the central origin, emphasizing the spoke-like radial symmetry and equal distances from center to shell. Panel C: Twelve-around-one close-packed spheres configuration where each neighbor position hosts a sphere with radius chosen so neighboring spheres kiss along cuboctahedron edges, illustrating the fundamental CCP/FCC/IVM correspondence. The central gray sphere represents the ``one'' in Fuller's ``twelve around one'' motif. Panel D: Adjacency graph showing strut connections (solid lines) between touching neighbor spheres, revealing the cuboctahedron's edge structure, plus light radial cables to the origin representing a stylized tensegrity interpretation of the vector equilibrium geometry.}]{../output/figures/ivm_neighbors_edges.png}}
 \caption{\textbf{IVM neighbors and coordination patterns (2×2 panel
 layout)}. \textbf{Panel A}: The twelve nearest IVM neighbors plotted as
 blue points in 3D space under the default embedding, showing the
@@ -328,7 +330,7 @@ equilibrium geometry.}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/quadray_clouds.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Random Quadray point clouds under different embeddings (3-panel comparison). Each panel shows 200 randomly sampled integer Quadray coordinates with components in \{0,1,2,3,4,5\} projected to 3D space using different embedding matrices. Left panel (Default embedding): Points (blue) under the default symmetric embedding matrix showing the natural tetrahedral-symmetric distribution of normalized Quadrays in 3D space. Center panel (Scaled embedding, 0.75×): The same Quadray points (orange) under a uniformly scaled version of the default embedding, demonstrating how the point cloud structure scales proportionally while preserving relative geometries. Right panel (Urner embedding): The same points (purple) projected through the canonical Urner embedding matrix, illustrating how different linear mappings from Fuller.4D to Coxeter.4D (3D slice) affect the spatial distribution while preserving the underlying discrete lattice relationships. This comparison demonstrates the flexibility in choosing embeddings for visualization and analysis while maintaining the fundamental Quadray coordinate relationships.}]{../output/figures/quadray_clouds.png}}
 \caption{\textbf{Random Quadray point clouds under different embeddings
 (3-panel comparison)}. Each panel shows 200 randomly sampled integer
 Quadray coordinates with components in \{0,1,2,3,4,5\} projected to 3D
@@ -364,8 +366,7 @@ equilibrium)} and synergetics references. Computational demonstrations
 include related visualizations in the 4dsolutions ecosystem. See the
 \href{07_resources.md}{Resources} section for comprehensive details.
 
-\hypertarget{clarifying-remarks}{%
-\subsubsection{Clarifying remarks}\label{clarifying-remarks}}
+\subsubsection{Clarifying remarks}\label{clarifying-remarks}
 
 ``A time machine is not a tesseract.''
 \href{https://groups.io/g/synergeo/topic/my_take_on_close_pack/114531919}{KU
@@ -376,8 +377,7 @@ tetrahedral, mereological framing of ordinary space emphasizing
 shape/angle relations and IVM quantization. Each namespace carries
 distinct assumptions and should be used accordingly in analysis.
 
-\hypertarget{practical-usage-guide}{%
-\subsection{Practical usage guide}\label{practical-usage-guide}}
+\subsection{Practical usage guide}\label{practical-usage-guide}
 
 \begin{itemize}
 \tightlist

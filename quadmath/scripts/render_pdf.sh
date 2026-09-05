@@ -30,7 +30,7 @@ LATEX_TEMP_DIR="$OUTPUT_DIR/latex_temp"
 AUTHOR_NAME="Daniel Ari Friedman"
 AUTHOR_ORCID="0000-0001-6232-9096"
 AUTHOR_EMAIL="daniel@activeinference.institute"
-DOI="10.5281/zenodo.16887800"
+DOI="10.5281/zenodo.16887791"
 AUTHOR_TEX="$AUTHOR_NAME\\\\ ORCID: $AUTHOR_ORCID\\\\ Email: $AUTHOR_EMAIL\\\\ DOI: $DOI"
 
 # Modules (ordered)

@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,39 +42,28 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -178,10 +172,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Appendix: Free Energy and Active Inference}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -192,12 +200,10 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{appendix-the-free-energy-principle-and-active-inference}{%
 \section{Appendix: The Free Energy Principle and Active
-Inference}\label{appendix-the-free-energy-principle-and-active-inference}}
+Inference}\label{appendix-the-free-energy-principle-and-active-inference}
 
-\hypertarget{overview}{%
-\subsection{Overview}\label{overview}}
+\subsection{Overview}\label{overview}
 
 The Free Energy Principle (FEP) posits that biological systems maintain
 their states by minimizing variational free energy, thereby reducing
@@ -218,9 +224,8 @@ E4), Einstein.4D (Minkowski spacetime analogy), Fuller.4D
 (Synergetics/Quadrays)---see
 \passthrough{\lstinline!02\_4d\_namespaces.md!}.
 
-\hypertarget{mathematical-formulation-and-equation-callouts-equations-linkage}{%
 \subsection{Mathematical Formulation and Equation Callouts (Equations
-linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage}}
+linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage}
 
 \begin{itemize}
 \item
@@ -253,7 +258,7 @@ trajectories. See the path animation artifact
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/partition_tetrahedron.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D. This 3D tetrahedral visualization demonstrates the geometric embedding of Active Inference's fundamental four-fold partition within the Quadray coordinate system. Tetrahedral structure: The four vertices of the regular tetrahedron represent the four components of the Active Inference framework: perception, action, internal states, and external states. Partition mapping: Each face of the tetrahedron corresponds to a specific partition of the four-fold system, with the edges representing the relationships and interactions between different components. Fuller.4D significance: This geometric representation leverages the tetrahedral nature of Quadray coordinates to provide an intuitive visualization of the Active Inference framework's structure. The tetrahedron serves as a natural container for the four-fold partition, emphasizing the interconnected nature of perception, action, and state representation in active inference. Optimization context: The tetrahedral geometry also suggests natural optimization strategies that respect the four-fold structure, potentially leading to more efficient inference algorithms that leverage the geometric relationships between different components. This visualization demonstrates how the Fuller.4D framework can provide insights into complex systems like Active Inference through geometric intuition.}]{../output/figures/partition_tetrahedron.png}}
 \caption{\textbf{Active Inference four-fold partition mapped to a
 Quadray tetrahedron in Fuller.4D}. This 3D tetrahedral visualization
 demonstrates the geometric embedding of Active Inference's fundamental
@@ -281,7 +286,7 @@ intuition.}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/figure_13_4d_trajectory.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={4D Natural Gradient Trajectory with Active Inference Context. This comprehensive visualization demonstrates natural gradient descent operating within the Active Inference framework, showing how information-geometric optimization drives perception-action dynamics. 3D Trajectory: The main panel shows the 4D parameter evolution in 3D space with time encoded as color, representing the four-fold partition of Active Inference: perception (μ), action (a), internal states (s), and external causes (ψ). Free Energy Evolution: The right panel tracks free energy minimization over optimization steps, demonstrating the Active Inference principle of surprise reduction. Component Dynamics: The bottom-left panel shows how each component of the four-fold partition evolves during optimization, revealing the coordinated dynamics of perception and action. Optimization Diagnostics: The bottom-center panel displays step sizes and gradient norms, providing insights into the convergence behavior and numerical stability of the natural gradient algorithm. Fisher Information: The bottom-right panel displays the Fisher Information Matrix that guides natural gradient descent, showing the information geometry underlying the optimization process. This figure demonstrates how natural gradient descent implements geodesic motion on the information manifold, analogous to how particles follow geodesics in Einstein.4D spacetime, while operating within the tetrahedral structure of Fuller.4D coordinates. The optimization now shows stable convergence in just 11 steps with final parameter errors below 0.015, demonstrating the effectiveness of information-geometric optimization in Active Inference frameworks.}]{../output/figures/figure_13_4d_trajectory.png}}
 \caption{\textbf{4D Natural Gradient Trajectory with Active Inference
 Context}. This comprehensive visualization demonstrates natural gradient
 descent operating within the Active Inference framework, showing how
@@ -312,7 +317,7 @@ Inference frameworks.}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/figure_14_free_energy_landscape.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Free Energy Landscape in 4D Active Inference Framework. This comprehensive visualization explores the variational free energy surface over perception and action parameters. 3D landscape: The surface plot shows the free energy as a function of two variational parameters, revealing the complex topology that Active Inference optimization must navigate. Contour analysis: 2D contours provide detailed information about parameter sensitivity and optimization paths. Cross-sectional analysis: Multiple cross-sections at different parameter values demonstrate how free energy varies with respect to individual parameters, revealing the landscape's structure. Four-fold partition visualization: The text panel explains how Active Inference maps to tetrahedral structures in Fuller.4D, with the four components (μ, s, a, ψ) representing internal states, sensory observations, actions, and external causes. Information geometry metrics: Local curvature analysis reveals the Fisher information structure, showing how the information manifold's geometry influences optimization dynamics. Mathematical foundation: The visualization demonstrates the mathematical structure of variational inference, including variational posteriors Q(s), priors P(s), and likelihoods P(o\textbar s) that connect observations to latent states.}]{../output/figures/figure_14_free_energy_landscape.png}}
 \caption{\textbf{Free Energy Landscape in 4D Active Inference
 Framework}. This comprehensive visualization explores the variational
 free energy surface over perception and action parameters. \textbf{3D
@@ -336,9 +341,8 @@ P(s), and likelihoods P(o\textbar s) that connect observations to latent
 states.}
 \end{figure}
 
-\hypertarget{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}{%
 \subsection{Four-Fold Partition and Tetrahedral Mapping (Quadrays;
-Fuller.4D)}\label{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}}
+Fuller.4D)}\label{four-fold-partition-and-tetrahedral-mapping-quadrays-fuller.4d}
 
 Active Inference partitions the agent--environment system into four
 coupled states:
@@ -393,9 +397,8 @@ Code linkage (no snippet): see
 \passthrough{\lstinline!src/examples.py!} and the partition tetrahedron
 figure above.
 
-\hypertarget{how-the-4d-namespaces-relate-here}{%
 \subsection{How the 4D namespaces relate
-here}\label{how-the-4d-namespaces-relate-here}}
+here}\label{how-the-4d-namespaces-relate-here}
 
 \begin{itemize}
 \tightlist
@@ -417,9 +420,8 @@ The three roles are complementary: Fuller.4D encodes partition
 structure, Coxeter.4D provides exact metric geometry for static
 comparisons, and Einstein.4D guides dynamical descent.
 
-\hypertarget{joint-optimization-in-the-tetrahedral-framework-methods-linkage}{%
 \subsection{Joint Optimization in the Tetrahedral Framework (Methods
-linkage)}\label{joint-optimization-in-the-tetrahedral-framework-methods-linkage}}
+linkage)}\label{joint-optimization-in-the-tetrahedral-framework-methods-linkage}
 
 \begin{itemize}
 \tightlist
@@ -440,9 +442,8 @@ objective; see \passthrough{\lstinline!discrete\_ivm\_descent!} in
 \passthrough{\lstinline!src/discrete\_variational.py!} and the path
 artifacts in \passthrough{\lstinline!quadmath/output/!}.
 
-\hypertarget{implications-for-ai-and-robust-computation}{%
 \subsection{Implications for AI and Robust
-Computation}\label{implications-for-ai-and-robust-computation}}
+Computation}\label{implications-for-ai-and-robust-computation}
 
 FEP/Active Inference provide algorithms that unify perception and action
 under uncertainty, offering biologically plausible alternatives to
@@ -450,9 +451,8 @@ standard RL with adaptive exploration and robust decision-making. See
 \href{https://arxiv.org/abs/1907.03876}{applications in AI
 (arXiv:1907.03876)}.
 
-\hypertarget{code-reproducibility-and-cross-references}{%
 \subsection{Code, Reproducibility, and
-Cross-References}\label{code-reproducibility-and-cross-references}}
+Cross-References}\label{code-reproducibility-and-cross-references}
 
 -- Equation references:
 \href{08_equations_appendix.md\#eq:free_energy}{Eq. (Free Energy)},

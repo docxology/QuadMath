@@ -1,31 +1,31 @@
 # Generated figure/data paths
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/fisher_information_matrix.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/fisher_information_eigenspectrum.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/fisher_information_eigenvalues.csv
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/partition_tetrahedron.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/natural_gradient_path.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/natural_gradient_path.csv
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/free_energy_curve.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
-4D trajectory figure saved: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
-Figure 14 saved to: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
-• Figure 13: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
-• Figure 14: /home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/volumes_scale_plot.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/volumes_scale_data.csv
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors_edges.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/ivm_neighbors_data.csv
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/quadray_clouds.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/quadray_clouds_data.npz
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_animation.mp4
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_trace.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_final.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/simplex_trace_visualization.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/ivm_neighbors.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path.mp4
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/discrete_path_final.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.csv
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/discrete_path.npz
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/figures/bridging_vs_native.png
-/home/trim/Documents/GitHub/QuadMath/quadmath/output/data/bridging_vs_native.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/fisher_information_matrix.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/fisher_information_eigenspectrum.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/fisher_information_eigenvalues.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/partition_tetrahedron.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/natural_gradient_path.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/natural_gradient_path.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/free_energy_curve.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/discrete_path.mp4
+4D trajectory figure saved: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
+Figure 14 saved to: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
+• Figure 13: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/figure_13_4d_trajectory.png
+• Figure 14: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/figure_14_free_energy_landscape.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/volumes_scale_plot.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/volumes_scale_data.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/ivm_neighbors.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/ivm_neighbors_edges.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/ivm_neighbors_data.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/quadray_clouds.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/quadray_clouds_data.npz
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_animation.mp4
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_trace.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_final.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_trace_visualization.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/ivm_neighbors.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/discrete_path.mp4
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/discrete_path_final.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/discrete_path.csv
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/discrete_path.npz
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/bridging_vs_native.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/bridging_vs_native.csv

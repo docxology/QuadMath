@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,39 +42,28 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -178,10 +172,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Introduction}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -192,11 +200,9 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
-\hypertarget{abstract}{%
-\subsection{Abstract}\label{abstract}}
+\subsection{Abstract}\label{abstract}
 
 We review a unified analytical framework for four dimensional (4D)
 modeling and Quadray coordinates, synthesizing geometric foundations,
@@ -232,8 +238,7 @@ All source code for the manuscript is available at
 lattice, integer volume quantization, information geometry,
 optimization, synergetics, active inference.
 
-\hypertarget{overview}{%
-\subsection{Overview}\label{overview}}
+\subsection{Overview}\label{overview}
 
 Quadray coordinates provide a tetrahedral basis for modeling space and
 computation, standing in contrast to Cartesian cubic frameworks.
@@ -261,8 +266,7 @@ This paper unifies three threads:
   motion on statistical manifolds.
 \end{itemize}
 
-\hypertarget{d-namespace-framework}{%
-\subsection{4D Namespace Framework}\label{d-namespace-framework}}
+\subsection{4D Namespace Framework}\label{d-namespace-framework}
 
 In this synthetic review, we distinguish three internal meanings of
 ``4D,'' following a dot-notation that avoids cross-domain confusion. For
@@ -292,8 +296,7 @@ Namespaces}.
   emphasizes angle/shape relations independent of time/energy.
 \end{itemize}
 
-\hypertarget{contributions}{%
-\subsection{Contributions}\label{contributions}}
+\subsection{Contributions}\label{contributions}
 
 The paper makes the following key contributions:
 
@@ -317,8 +320,7 @@ The paper makes the following key contributions:
   information-theoretic objectives.
 \end{itemize}
 
-\hypertarget{manuscript-structure}{%
-\subsection{Manuscript Structure}\label{manuscript-structure}}
+\subsection{Manuscript Structure}\label{manuscript-structure}
 
 \begin{itemize}
 \tightlist
@@ -341,8 +343,7 @@ The paper makes the following key contributions:
   consolidated symbols/glossary with an auto-generated API index.
 \end{itemize}
 
-\hypertarget{companion-code-and-tests}{%
-\subsection{Companion Code and Tests}\label{companion-code-and-tests}}
+\subsection{Companion Code and Tests}\label{companion-code-and-tests}
 
 The manuscript is accompanied by a fully-tested Python codebase under
 \passthrough{\lstinline!src/!} with unit tests under
@@ -379,9 +380,8 @@ paper:
 For comprehensive background resources, computational implementations,
 and related work, see the \href{07_resources.md}{Resources} section.
 
-\hypertarget{reproducibility-and-data-availability}{%
 \subsection{Reproducibility and Data
-Availability}\label{reproducibility-and-data-availability}}
+Availability}\label{reproducibility-and-data-availability}
 
 \begin{itemize}
 \tightlist
@@ -391,9 +391,9 @@ Availability}\label{reproducibility-and-data-availability}}
   @docxology username). See the repository home page for source,
   figures, and scripts:
   \href{https://github.com/docxology/QuadMath}{QuadMath repository}. The
-  repository is also archived with DOI
-  \href{https://zenodo.org/records/16887791}{10.5281/zenodo.16887791} at
-  \href{https://zenodo.org/records/16887791}{Zenodo}.
+  repository is also archived on
+  \href{https://zenodo.org/records/16887791}{Zenodo record 16887791}
+  with DOI 10.5281/zenodo.16887791.
 \item
   The manuscript is licensed under the Apache License 2.0. See the
   \href{../LICENSE}{LICENSE} file for details.
@@ -426,8 +426,7 @@ Availability}\label{reproducibility-and-data-availability}}
   all methods and equations for consistency.
 \end{itemize}
 
-\hypertarget{graphical-abstract}{%
-\subsection{Graphical Abstract}\label{graphical-abstract}}
+\subsection{Graphical Abstract}\label{graphical-abstract}
 
 \textbf{Panel A} shows Quadray axes (A,B,C,D) under a symmetric
 embedding with wireframe context. \textbf{Panel B} shows close-packed
@@ -436,7 +435,7 @@ one'').
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/graphical_abstract_quadray.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Quadray coordinate system overview (graphical abstract). Panel A: Four Quadray axes (A,B,C,D) rendered as colored directional arrows from the origin to the vertices of a regular tetrahedron under the default symmetric embedding. Each axis is distinctly colored (A=blue, B=orange, C=green, D=red) with axis labels positioned at the vertex endpoints. A light gray wireframe connects the four vertices to emphasize the tetrahedral geometry underlying the coordinate system. This panel illustrates the fundamental Fuller.4D direction-based structure where Quadrays represent four canonical directions in tetrahedral space rather than orthogonal Cartesian dimensions. Panel B: The same tetrahedral vertices shown as close-packed spheres with radius chosen so neighboring spheres kiss along tetrahedron edges, emphasizing the connection to the Isotropic Vector Matrix (IVM), Cubic Close Packing (CCP), and Face-Centered Cubic (FCC) arrangements. Each sphere is colored to match its corresponding axis from Panel A, with light edge wireframes providing geometric context. This visualization demonstrates how Quadray coordinates naturally align with dense sphere packing and the ``twelve around one'' coordination motif central to synergetics and Fuller.4D modeling.}]{../output/figures/graphical_abstract_quadray.png}}
 \caption{\textbf{Quadray coordinate system overview (graphical
 abstract)}. \textbf{Panel A}: Four Quadray axes (A,B,C,D) rendered as
 colored directional arrows from the origin to the vertices of a regular

@@ -63,29 +63,43 @@ def test_fisher_information_matrix_numerical_stability():
     assert np.allclose(F, F.T)
 
 
-def test_fisher_information_quadray_basic():
-    """Test basic quadray FIM functionality."""
-    grads = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
-    F_cart, F_quad = fisher_information_quadray(grads)
-    
-    assert F_cart.shape == (3, 3)
-    assert F_quad.shape == (3, 3)
-    assert np.allclose(F_cart, F_quad)  # Placeholder implementation
-
-
 def test_natural_gradient_step_runs():
     g = np.array([1.0, -2.0])
     F = np.eye(2)
-    step = natural_gradient_step(g, F, step_size=0.1, ridge=0.0)
-    assert step.shape == (2,)
-
-
-def test_natural_gradient_step_positive_definite():
-    """Test that natural gradient step handles positive definiteness."""
-    g = np.array([1.0, -2.0])
-    F = np.array([[1.0, 0.5], [0.5, 1.0]])  # Positive definite
     step = natural_gradient_step(g, F, step_size=0.1, ridge=1e-9)
     assert step.shape == (2,)
+
+
+def test_fisher_information_quadray_pullback():
+    """F_quadray must be the pullback E^T F_cart E under the embedding."""
+    grads = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+    F_cart, F_quad = fisher_information_quadray(grads)
+
+    assert F_cart.shape == (3, 3)
+    assert F_quad.shape == (4, 4)
+
+    from quadray import DEFAULT_EMBEDDING
+    E = np.asarray(DEFAULT_EMBEDDING, dtype=float)
+    assert np.allclose(F_quad, E.T @ F_cart @ E)
+
+
+def test_fisher_information_quadray_null_direction():
+    """The quadray null direction (1,1,1,1) is in the kernel of F_quadray."""
+    grads = np.array([[1.0, 2.0, 3.0], [-1.0, 0.5, 2.0], [0.3, -0.7, 1.1]])
+    _F_cart, F_quad = fisher_information_quadray(grads)
+    assert np.allclose(F_quad @ np.ones(4), 0.0, atol=1e-12)
+
+
+def test_fisher_information_quadray_explicit_embedding():
+    """An explicit 3x4 embedding overrides the default; wrong shapes raise."""
+    grads = np.array([[1.0, 0.0, 1.0], [0.0, 2.0, 1.0]])
+    from quadray import DEFAULT_EMBEDDING
+    E = 0.5 * np.asarray(DEFAULT_EMBEDDING, dtype=float)
+    F_cart, F_quad = fisher_information_quadray(grads, embedding_matrix=E)
+    assert np.allclose(F_quad, E.T @ F_cart @ E)
+
+    with pytest.raises(ValueError):
+        fisher_information_quadray(grads, embedding_matrix=np.eye(3))
 
 
 def test_natural_gradient_step_ridge_stabilization():

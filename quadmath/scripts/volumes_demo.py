@@ -27,12 +27,13 @@ def main() -> None:
     import matplotlib.pyplot as plt  # noqa: WPS433
     import csv  # noqa: WPS433
 
+    # Unit IVM tetrahedron: origin plus three (2,1,1,0)-type neighbor moves
     p0 = Quadray(0, 0, 0, 0)
-    p1 = Quadray(1, 0, 0, 0)
-    p2 = Quadray(0, 1, 0, 0)
-    p3 = Quadray(0, 0, 1, 0)
+    p1 = Quadray(2, 1, 1, 0)
+    p2 = Quadray(1, 2, 1, 0)
+    p3 = Quadray(1, 1, 2, 0)
     v_ivm = integer_tetra_volume(p0, p1, p2, p3)
-    print(f"IVM unit tetra volume (integer): {v_ivm}")
+    print(f"IVM unit tetra volume (exact): {v_ivm}")
 
     d2 = np.ones((4, 4)) - np.eye(4)
     v_xyz = tetra_volume_cayley_menger(d2)

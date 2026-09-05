@@ -49,7 +49,9 @@ def test_cayley_menger_matches_integer_volume_for_simple_case():
         ]
     )
     V_xyz = tetra_volume_cayley_menger(d2)  # XYZ volume of regular tetra with edge 1
-    # In XYZ units, V = sqrt(2)/12; our integer_tetra_volume returns 1 in IVM units
+    # In XYZ units, V = sqrt(2)/12 for a unit-edge regular tetrahedron. The
+    # quadray volume functions in src/quadray.py measure a different object:
+    # exact IVM tetravolume |det|/4 of lattice tetrahedra (unit IVM tetra = 1).
     assert np.isclose(V_xyz, np.sqrt(2.0) / 12.0, rtol=1e-6)
 
 

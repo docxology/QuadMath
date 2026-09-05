@@ -1,26 +1,43 @@
 from __future__ import annotations
 
+from fractions import Fraction
+from itertools import permutations
 from typing import List, Iterable
 
 from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz, integer_tetra_volume, ace_tetravolume_5x5
 from nelder_mead_quadray import nelder_mead_quadray, SimplexState
 
 
+def _ivm_neighbor_permutations() -> List[Quadray]:
+    """Shared implementation: the 12 distinct permutations of (2,1,1,0), sorted.
+
+    Single source of truth for `example_ivm_neighbors` and
+    `example_cuboctahedron_neighbors`, which expose the same set under the two
+    roles documented in the manuscript (neighbor-move set vs. shell positions).
+    Sorted output keeps results deterministic regardless of set ordering.
+    """
+    return [Quadray(*perm) for perm in sorted(set(permutations((2, 1, 1, 0))))]
+
+
 def example_ivm_neighbors() -> List[Quadray]:
     """Return the 12 nearest IVM neighbors as permutations of {2,1,1,0} (Fuller.4D).
 
-    These are canonical examples used throughout the paper to illustrate local
-    neighborhoods in the quadray lattice.
+    Same set as `example_cuboctahedron_neighbors`, in its "neighbor-move set
+    around any lattice point" role; used throughout the paper to illustrate
+    local neighborhoods in the quadray lattice. Both public names share one
+    implementation for deterministic, single-source behavior.
     """
-    # 12 permutations of {2,1,1,0}
-    base = [2, 1, 1, 0]
-    import itertools
-
-    return [Quadray(*perm) for perm in set(itertools.permutations(base))]
+    return _ivm_neighbor_permutations()
 
 
-def example_volume() -> int:
-    """Compute the unit IVM tetrahedron volume from simple quadray vertices (Fuller.4D)."""
+def example_volume() -> Fraction:
+    """Return the exact IVM tetravolume of the primitive lattice tetrahedron.
+
+    The tetrahedron spanned by (0,0,0,0), (1,0,0,0), (0,1,0,0), (0,0,1,0)
+    has projected determinant 1, hence exact IVM volume Fraction(1, 4).
+    (The unit IVM tetrahedron — origin plus three (2,1,1,0)-type neighbors —
+    has volume 1; this example intentionally illustrates the primitive cell.)
+    """
     p0 = Quadray(0, 0, 0, 0)
     p1 = Quadray(1, 0, 0, 0)
     p2 = Quadray(0, 1, 0, 0)
@@ -47,12 +64,12 @@ def example_optimize() -> SimplexState:
 def example_cuboctahedron_neighbors() -> List[Quadray]:
     """Return twelve-around-one IVM neighbors (vector equilibrium shell).
 
-    The set consists of all distinct permutations of (2,1,1,0), each treated
-    as a Quadray vector and left in its normalized, non-negative form.
+    Same set as `example_ivm_neighbors` — the 12 distinct permutations of
+    (2,1,1,0) — exposed under its "shell positions around one lattice point"
+    role, as documented in the manuscript's cuboctahedron sections. Both names
+    are kept as documented public API; the implementation is shared.
     """
-    import itertools
-
-    return [Quadray(*perm) for perm in set(itertools.permutations([2, 1, 1, 0]))]
+    return _ivm_neighbor_permutations()
 
 
 def example_cuboctahedron_vertices_xyz() -> List[tuple[float, float, float]]:
@@ -67,7 +84,7 @@ def example_cuboctahedron_vertices_xyz() -> List[tuple[float, float, float]]:
 
 def example_partition_tetra_volume(
     mu: Iterable[int], s: Iterable[int], a: Iterable[int], psi: Iterable[int]
-) -> int:
+) -> Fraction:
     """Construct a tetrahedron from the four-fold partition and return tetravolume (Fuller.4D).
 
     Parameters

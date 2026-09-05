@@ -6,13 +6,21 @@ import os
 def get_repo_root(start: str | None = None) -> str:
     """Heuristically find repository root by walking up from `start`.
 
-    Stops at the first directory containing either `.git/` or `README.md`.
-    If neither is encountered before filesystem root, returns the last checked
-    path (a safe terminal fallback).
+    Stops at the first directory containing `.git/`, or a `README.md` plus
+    `pyproject.toml`. A bare `README.md` in a subpackage directory (`src/`,
+    `tests/`) is not enough — without the `pyproject.toml` requirement the
+    walk would stop at `src/` and misplace all generated outputs under
+    `src/quadmath/output/`. If no marker is encountered before the
+    filesystem root, returns the last checked path (a safe terminal fallback).
     """
     path = os.path.abspath(start or os.path.dirname(__file__))
     while True:
-        if os.path.isdir(os.path.join(path, ".git")) or os.path.exists(os.path.join(path, "README.md")):
+        has_git = os.path.isdir(os.path.join(path, ".git"))
+        has_readme_and_project = (
+            os.path.exists(os.path.join(path, "README.md"))
+            and os.path.exists(os.path.join(path, "pyproject.toml"))
+        )
+        if has_git or has_readme_and_project:
             return path
         parent = os.path.dirname(path)
         if parent == path:

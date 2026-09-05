@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+from fractions import Fraction
 from dataclasses import dataclass
 from typing import Iterable, Tuple
 from linalg_utils import bareiss_determinant_int
@@ -55,11 +57,18 @@ def to_xyz(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[float, flo
     return (x, y, z)
 
 
-def integer_tetra_volume(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> int:
-    """Compute integer tetra-volume using det[p1-p0, p2-p0, p3-p0] (Fuller.4D).
+def integer_tetra_volume(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> Fraction:
+    """Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D).
 
-    Returns the determinant magnitude normalized to synergetics units
-    (unit IVM tetra = 1). If the determinant is divisible by 4, divide by 4.
+    V_ivm = |det[P1-P0, P2-P0, P3-P0]| / 4, computed with the exact integer
+    Bareiss determinant on the (a-d, b-d, c-d) projection of the edge vectors
+    and returned as an exact :class:`fractions.Fraction`.
+
+    The unit IVM tetrahedron (origin plus three IVM neighbor moves, i.e.
+    permutations of (2,1,1,0)) has determinant 4 and volume exactly 1.
+    The primitive tetrahedron spanned by (0,0,0,0), (1,0,0,0), (0,1,0,0),
+    (0,0,1,0) has determinant 1 and volume exactly 1/4.  General lattice
+    tetrahedra may have non-integral volume, so no integrality is assumed.
     """
     v1 = p1.sub(p0)
     v2 = p2.sub(p0)
@@ -70,16 +79,20 @@ def integer_tetra_volume(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> 
 
     M = [list(project(v1)), list(project(v2)), list(project(v3))]
     det = bareiss_determinant_int(M)
-    abs_det = abs(det)
-    return abs_det // 4 if abs_det % 4 == 0 else abs_det
+    return Fraction(abs(det), 4)
 
 
-def ace_tetravolume_5x5(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> int:
-    """Tom Ace 5x5 determinant in IVM units (Fuller.4D).
+def ace_tetravolume_5x5(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> Fraction:
+    """Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D).
 
     V_ivm = |det(A)| / 4, with
     A = [[a b c d 1], ... for four vertices; last row [1 1 1 1 0]].
-    Uses exact integer Bareiss determinant. Returns an integer.
+    Uses the exact integer Bareiss determinant and returns an exact
+    :class:`fractions.Fraction` (unit IVM tetra = 1, primitive tetra = 1/4).
+
+    For integer quadray vertices, |det(A)| always equals the magnitude of the
+    3x3 projected determinant used by :func:`integer_tetra_volume`, so the two
+    functions agree exactly on every input (verified on randomized cases).
     """
     A = [
         [p0.a, p0.b, p0.c, p0.d, 1],
@@ -89,8 +102,7 @@ def ace_tetravolume_5x5(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> i
         [1, 1, 1, 1, 0],
     ]
     det = bareiss_determinant_int(A)
-    v = abs(det)
-    return v // 4
+    return Fraction(abs(det), 4)
 
 
 DEFAULT_EMBEDDING: Tuple[Tuple[float, float, float, float], ...] = (
@@ -175,7 +187,6 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
     Raises
     - ValueError: If q1==q2 or q3==q2 (degenerate angle)
     """
-    import math
     ax, ay, az = _to_xyz_array(q1, embedding)
     bx, by, bz = _to_xyz_array(q2, embedding)
     cx, cy, cz = _to_xyz_array(q3, embedding)

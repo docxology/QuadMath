@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,23 +42,15 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
 \lstset{defaultdialect=[x86masm]Assembler}
-\usepackage{longtable,booktabs}
+\usepackage{longtable,booktabs,array}
+\usepackage{caption}
+\captionsetup[table]{skip=6pt}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -64,21 +61,22 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -187,10 +185,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Quadray Analytical Details and Methods}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -201,12 +213,10 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{quadray-analytical-details-and-methods}{%
 \section{Quadray Analytical Details and
-Methods}\label{quadray-analytical-details-and-methods}}
+Methods}\label{quadray-analytical-details-and-methods}
 
-\hypertarget{overview}{%
-\subsection{Overview}\label{overview}}
+\subsection{Overview}\label{overview}
 
 This section provides detailed analytical methods for working with
 Quadray coordinates, including coordinate conventions, volume
@@ -214,15 +224,13 @@ calculations, and optimization approaches. We emphasize the distinction
 between different 4D frameworks and provide practical computational
 methods.
 
-\hypertarget{mathematical-foundations}{%
-\subsection{Mathematical Foundations}\label{mathematical-foundations}}
+\subsection{Mathematical Foundations}\label{mathematical-foundations}
 
 The methods presented here rest on three interconnected mathematical
 frameworks. For comprehensive definitions, see
 \href{02_4d_namespaces.md}{Section 2: 4D Namespaces}.
 
-\hypertarget{framework-distinctions}{%
-\subsubsection{Framework Distinctions}\label{framework-distinctions}}
+\subsubsection{Framework Distinctions}\label{framework-distinctions}
 
 \begin{itemize}
 \tightlist
@@ -237,9 +245,8 @@ frameworks. For comprehensive definitions, see
   lattice constraints and IVM unit conventions
 \end{itemize}
 
-\hypertarget{key-mathematical-principles}{%
 \subsubsection{Key Mathematical
-Principles}\label{key-mathematical-principles}}
+Principles}\label{key-mathematical-principles}
 
 \begin{itemize}
 \tightlist
@@ -257,8 +264,7 @@ Principles}\label{key-mathematical-principles}}
   calculations remain exact for integer inputs
 \end{itemize}
 
-\hypertarget{implementation-strategy}{%
-\subsubsection{Implementation Strategy}\label{implementation-strategy}}
+\subsubsection{Implementation Strategy}\label{implementation-strategy}
 
 All mathematical concepts are implemented with: - \textbf{Exact
 arithmetic} where possible (integer determinants, symbolic computation)
@@ -268,8 +274,7 @@ between different formulations (Ace 5×5 vs Cayley--Menger, native vs
 bridging approaches) - \textbf{Comprehensive testing} ensuring
 mathematical correctness across edge cases
 
-\hypertarget{framework-integration}{%
-\subsection{Framework Integration}\label{framework-integration}}
+\subsection{Framework Integration}\label{framework-integration}
 
 The three 4D frameworks serve distinct but complementary roles in our
 implementation:
@@ -304,9 +309,8 @@ setting through integer lattice constraints (Fuller.4D) 4. Bridge and
 swap among frameworks via coordinate transformations and unit
 conversions
 
-\hypertarget{fuller.4d-coordinates-and-normalization}{%
 \subsection{Fuller.4D Coordinates and
-Normalization}\label{fuller.4d-coordinates-and-normalization}}
+Normalization}\label{fuller.4d-coordinates-and-normalization}
 
 \begin{itemize}
 \tightlist
@@ -334,10 +338,9 @@ Normalization}\label{fuller.4d-coordinates-and-normalization}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{conversions-and-vector-operations-quadray-cartesian-fuller.4d-coxeter.4dxyz}{%
 \subsection{Conversions and Vector Operations: Quadray ↔ Cartesian
 (Fuller.4D ↔
-Coxeter.4D/XYZ)}\label{conversions-and-vector-operations-quadray-cartesian-fuller.4d-coxeter.4dxyz}}
+Coxeter.4D/XYZ)}\label{conversions-and-vector-operations-quadray-cartesian-fuller.4d-coxeter.4dxyz}
 
 \begin{itemize}
 \tightlist
@@ -373,9 +376,8 @@ Coxeter.4D/XYZ)}\label{conversions-and-vector-operations-quadray-cartesian-fulle
   to XYZ via \passthrough{\lstinline!M!}.
 \end{itemize}
 
-\hypertarget{integer-coordinate-constructions-compact-derivation-box}{%
 \subsubsection{Integer-coordinate constructions (compact derivation
-box)}\label{integer-coordinate-constructions-compact-derivation-box}}
+box)}\label{integer-coordinate-constructions-compact-derivation-box}
 
 \begin{itemize}
 \tightlist
@@ -396,68 +398,40 @@ box)}\label{integer-coordinate-constructions-compact-derivation-box}}
   relationships.
 \end{itemize}
 
-\begin{longtable}[]{@{}lll@{}}
-\toprule
-\begin{minipage}[b]{0.30\columnwidth}\raggedright
-Object\strut
-\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
-Quadray construction (sketch)\strut
-\end{minipage} & \begin{minipage}[b]{0.30\columnwidth}\raggedright
-IVM volume\strut
-\end{minipage}\tabularnewline
-\midrule
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Object
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Quadray construction (sketch)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+IVM volume
+\end{minipage} \\
+\midrule\noalign{}
 \endhead
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Regular tetrahedron\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Vertices \passthrough{\lstinline!o=(0,0,0,0)!},
+\bottomrule\noalign{}
+\endlastfoot
+Regular tetrahedron & Vertices \passthrough{\lstinline!o=(0,0,0,0)!},
 \passthrough{\lstinline!p=(2,1,0,1)!},
 \passthrough{\lstinline!q=(2,1,1,0)!},
-\passthrough{\lstinline!r=(2,0,1,1)!}\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-1\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Cube (same edge)\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame;
-edges tracked by XYZ embedding; compare the following figure\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-3\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Octahedron (same edge)\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Convex hull of mid-edges of the tetra frame (pairwise axis sums
-normalized)\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-4\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Rhombic dodecahedron\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Voronoi cell of FCC/CCP packing at origin (dual to cuboctahedron)\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-6\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Cuboctahedron (vector equilibrium)\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Shell of the 12 nearest IVM neighbors: permutations of
-\passthrough{\lstinline!(2,1,1,0)!}\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-20\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{0.30\columnwidth}\raggedright
-Truncated octahedron\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-Archimedean solid with 6 square and 8 hexagonal faces; space-filling
-tiling\strut
-\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright
-20\strut
-\end{minipage}\tabularnewline
-\bottomrule
+\passthrough{\lstinline!r=(2,0,1,1)!} & 1 \\
+Cube (same edge) & Union of 3 mutually orthogonal rhombic belts wrapped
+on the tetra frame; edges tracked by XYZ embedding; compare the
+following figure & 3 \\
+Octahedron (same edge) & Convex hull of mid-edges of the tetra frame
+(pairwise axis sums normalized) & 4 \\
+Rhombic dodecahedron & Voronoi cell of FCC/CCP packing at origin (dual
+to cuboctahedron) & 6 \\
+Cuboctahedron (vector equilibrium) & Shell of the 12 nearest IVM
+neighbors: permutations of \passthrough{\lstinline!(2,1,1,0)!} & 20 \\
+Truncated octahedron & Archimedean solid with 6 square and 8 hexagonal
+faces; space-filling tiling & 20 \\
 \end{longtable}
+}
 
 Small coordinate examples (subset):
 
@@ -501,9 +475,8 @@ for i in range(len(xyz)):
 assert len(touch) > 0
 \end{lstlisting}
 
-\hypertarget{example-vertex-lists-and-volume-checks-illustrative}{%
 \subsubsection{Example vertex lists and volume checks
-(illustrative)}\label{example-vertex-lists-and-volume-checks-illustrative}}
+(illustrative)}\label{example-vertex-lists-and-volume-checks-illustrative}
 
 The following snippets use canonical IVM neighbor points (permutations
 of \((2,1,1,0)\)) to illustrate simple decompositions consistent with
@@ -553,8 +526,7 @@ Notes.
   tetra (projective normalization), which the 5×5 determinant respects.
 \end{itemize}
 
-\hypertarget{sec:integer_volume}{%
-\subsection{Integer Volume Quantization}\label{sec:integer_volume}}
+\subsection{Integer Volume Quantization}\label{sec:integer_volume}
 
 For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice
 (Fuller.4D), see Eq. \eqref{eq:lattice_det} in the equations appendix.
@@ -562,10 +534,20 @@ For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice
 \begin{itemize}
 \tightlist
 \item
-  With integer coordinates, the determinant is integer; lattice
-  tetrahedra yield integer volumes.
+  With integer quadray coordinates the projected determinant is an exact
+  integer, and the IVM tetravolume is the exact rational \(|{\det}|/4\)
+  (see Eq. \eqref{eq:gdj}), implemented with
+  \passthrough{\lstinline!fractions.Fraction!} in
+  \passthrough{\lstinline!integer\_tetra\_volume!} and
+  \passthrough{\lstinline!ace\_tetravolume\_5x5!}. Volumes are integral
+  for tetrahedra that tile into unit IVM tetras (determinant divisible
+  by 4) and fractional otherwise: the primitive tetrahedron spanned by
+  \((0,0,0,0)\), \((1,0,0,0)\), \((0,1,0,0)\), \((0,0,1,0)\) has
+  determinant 1 and exact volume \(\tfrac{1}{4}\).
 \item
-  Unit conventions: regular tetrahedron volume = 1 (synergetics).
+  Unit conventions: the unit IVM tetrahedron (origin plus three IVM
+  neighbor moves, permutations of \((2,1,1,0)\)) has determinant 4 and
+  volume exactly 1 (synergetics).
 \end{itemize}
 
 Notes.
@@ -575,8 +557,11 @@ Notes.
 \item
   \(P_0,\ldots,P_3\) are tetrahedron vertices in Quadray coordinates.
 \item
-  \(V\) is the Euclidean volume measured in IVM tetra-units; the \(1/6\)
-  factor converts the parallelepiped determinant to a tetra volume.
+  \(V\) in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ) volume;
+  converting it to IVM tetra-units requires the synergetics scale factor
+  \(S3=\sqrt{9/8}\) in sphere-radius units (Eq. \eqref{eq:xyz_det}). For
+  lattice tetrahedra, the direct quadray formula Eq. \eqref{eq:gdj}
+  yields the IVM volume exactly, without unit conversion.
 \item
   Background and variations are discussed under Tetrahedron volume
   formulas:
@@ -587,8 +572,12 @@ Notes.
 Tom Ace 5×5 determinant (tetravolume directly from quadrays), see Eq.
 \eqref{eq:ace5x5} in the equations appendix.
 
-This returns the same integer volumes for lattice tetrahedra. See the
-implementation \passthrough{\lstinline!ace\_tetravolume\_5x5!}.
+This returns the same exact tetravolumes as
+\passthrough{\lstinline!integer\_tetra\_volume!} for every lattice
+tetrahedron: \(|\det_{5\times5}|\) always equals the magnitude of the
+projected \(3\times3\) determinant, so both implementations agree
+exactly (both return \passthrough{\lstinline!fractions.Fraction!} values
+\(|\det|/4\)).
 
 Notes.
 
@@ -642,26 +631,26 @@ Notes.
 
 \begin{longtable}[]{@{}ll@{}}
 \caption{Polyhedra tetravolumes in IVM units (edge length equal to the
-unit tetra edge). \{\#tbl:polyhedra\_volumes\}}\tabularnewline
-\toprule
-Polyhedron (edge = tetra edge) & Volume (tetra-units)\tabularnewline
-\midrule
+unit tetra edge).}\label{tbl:polyhedra_volumes}\tabularnewline
+\toprule\noalign{}
+Polyhedron (edge = tetra edge) & Volume (tetra-units) \\
+\midrule\noalign{}
 \endfirsthead
-\toprule
-Polyhedron (edge = tetra edge) & Volume (tetra-units)\tabularnewline
-\midrule
+\toprule\noalign{}
+Polyhedron (edge = tetra edge) & Volume (tetra-units) \\
+\midrule\noalign{}
 \endhead
-Regular Tetrahedron & 1\tabularnewline
-Cube & 3\tabularnewline
-Octahedron & 4\tabularnewline
-Rhombic Dodecahedron & 6\tabularnewline
-Cuboctahedron (Vector Equilibrium) & 20\tabularnewline
-Truncated Octahedron & 20\tabularnewline
-\bottomrule
+\bottomrule\noalign{}
+\endlastfoot
+Regular Tetrahedron & 1 \\
+Cube & 3 \\
+Octahedron & 4 \\
+Rhombic Dodecahedron & 6 \\
+Cuboctahedron (Vector Equilibrium) & 20 \\
+Truncated Octahedron & 20 \\
 \end{longtable}
 
-\hypertarget{distances-and-metrics}{%
-\subsection{Distances and Metrics}\label{distances-and-metrics}}
+\subsection{Distances and Metrics}\label{distances-and-metrics}
 
 Distance definitions depend on the chosen embedding and normalization.
 For cross-references to information geometry, see
@@ -669,9 +658,7 @@ For cross-references to information geometry, see
 \href{08_equations_appendix.md\#eq:natgrad}{natural gradient} in the
 Equations appendix.
 
-\hypertarget{sec:xyz_conversion}{%
-\subsection{XYZ determinant and S3
-conversion}\label{sec:xyz_conversion}}
+\subsection{XYZ determinant and S3 conversion}\label{sec:xyz_conversion}
 
 Given XYZ coordinates of tetrahedron vertices (x\_i, y\_i, z\_i), the
 Euclidean volume is computed as shown in Eq. \eqref{eq:xyz_det} in the
@@ -682,9 +669,8 @@ Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with
 \href{https://en.wikipedia.org/wiki/Tetrahedron\#Volume}{Tetrahedron --
 volume}.
 
-\hypertarget{alternative-volume-formulas}{%
 \subsubsection{Alternative Volume
-Formulas}\label{alternative-volume-formulas}}
+Formulas}\label{alternative-volume-formulas}
 
 \begin{itemize}
 \item
@@ -728,9 +714,8 @@ Formulas}\label{alternative-volume-formulas}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{fisher-geometry-in-quadray-space}{%
 \subsection{Fisher Geometry in Quadray
-Space}\label{fisher-geometry-in-quadray-space}}
+Space}\label{fisher-geometry-in-quadray-space}
 
 \begin{itemize}
 \tightlist
@@ -741,12 +726,9 @@ Space}\label{fisher-geometry-in-quadray-space}}
   concentration.
 \end{itemize}
 
-\hypertarget{practical-methods}{%
-\subsection{Practical Methods}\label{practical-methods}}
+\subsection{Practical Methods}\label{practical-methods}
 
-\hypertarget{sec:tetravolumes_quadrays}{%
-\subsection{Tetravolumes with
-Quadrays}\label{sec:tetravolumes_quadrays}}
+\subsection{Tetravolumes with Quadrays}\label{sec:tetravolumes_quadrays}
 
 \begin{itemize}
 \item
@@ -798,9 +780,8 @@ Quadrays}\label{sec:tetravolumes_quadrays}}
   coordinates}).
 \end{itemize}
 
-\hypertarget{bridging-and-native-tetravolume-formulas}{%
 \subsubsection{Bridging and native tetravolume
-formulas}\label{bridging-and-native-tetravolume-formulas}}
+formulas}\label{bridging-and-native-tetravolume-formulas}
 
 \begin{itemize}
 \tightlist
@@ -825,7 +806,7 @@ The figure and source CSV/NPZ are in
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/bridging_vs_native.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Validation of bridging vs native tetravolume formulations across canonical examples. This bar chart compares IVM tetravolumes computed via two independent methods: the ``bridging'' approach using Cayley--Menger determinants on Euclidean edge lengths converted to IVM units via the synergetics factor S3=\textbackslash sqrt\{9/8\}, versus the ``native'' approach using Tom Ace's 5×5 determinant formula that operates directly on Quadray coordinates without XYZ intermediates. Test cases: Unit tetrahedron (V=1), 2× edge scaling (V=8), mixed coordinate tetrahedron, centered tetrahedron (V=3), and large mixed tetrahedron, all using integer Quadray coordinates. Results: The overlapping bars demonstrate numerical agreement at machine precision between the length-based Coxeter.4D approach (Cayley--Menger + S3 conversion) and the coordinate-based Fuller.4D approach (Ace 5×5), confirming the mathematical equivalence of these formulations under synergetics unit conventions. Raw numerical data saved as bridging\_vs\_native.csv for reproducibility and further analysis.}]{../output/figures/bridging_vs_native.png}}
 \caption{\textbf{Validation of bridging vs native tetravolume
 formulations across canonical examples}. This bar chart compares IVM
 tetravolumes computed via two independent methods: the ``bridging''
@@ -841,13 +822,13 @@ at machine precision between the length-based Coxeter.4D approach
 (Cayley--Menger + S3 conversion) and the coordinate-based Fuller.4D
 approach (Ace 5×5), confirming the mathematical equivalence of these
 formulations under synergetics unit conventions. Raw numerical data
-saved as \passthrough{\lstinline!bridging\_vs\_native.csv!} for
+saved as \protect\passthrough{\lstinline!bridging\_vs\_native.csv!} for
 reproducibility and further analysis.}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/volumes_scale_plot.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Tetrahedron volume scaling relationships: Euclidean vs IVM unit conventions. This plot demonstrates the mathematical relationship between edge length scaling and tetravolume under both Euclidean (XYZ) and IVM (synergetics) unit conventions. X-axis: Edge length scaling factor (0 to 5.0). Y-axis: Tetrahedron volume in respective units. Blue line (Euclidean): Volume scales as the cube of edge length, following the standard V = \textbackslash frac\{\textbackslash sqrt\{2\}\}\{12\} \textbackslash cdot L\^{}3 relationship for regular tetrahedra. Orange line (IVM): Volume scales as the cube of edge length but in IVM tetra-units, following V\_\{ivm\} = \textbackslash frac\{1\}\{8\} \textbackslash cdot L\^{}3 where the regular tetrahedron with unit edge has volume 1/8. Key insight: The ratio between these two scaling laws is the synergetics factor S3 = \textbackslash sqrt\{9/8\} \textbackslash approx 1.06066, which converts between Euclidean and IVM volume conventions. Mathematical foundation: This scaling relationship demonstrates how both conventions preserve the cubic scaling relationship, but with different fundamental units reflecting the different geometric assumptions of Coxeter.4D (Euclidean) versus Fuller.4D (synergetics) frameworks. The plot provides the theoretical foundation for understanding volume conversions and scaling behavior in the IVM system.}]{../output/figures/volumes_scale_plot.png}}
 \caption{\textbf{Tetrahedron volume scaling relationships: Euclidean vs
 IVM unit conventions}. This plot demonstrates the mathematical
 relationship between edge length scaling and tetravolume under both
@@ -873,7 +854,7 @@ behavior in the IVM system.}
 
 \begin{figure}
 \centering
-\includegraphics{../output/figures/polyhedra_quadray_constructions.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Synergetic polyhedra volume relationships in the Quadray/IVM framework (comprehensive visualization). This figure combines 3D polyhedra visualizations with an extended network diagram showing integer volume relationships among key synergetic polyhedra. Left panel (3D visualizations): Color-coded polyhedra including regular tetrahedron (V=1, fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron (V=6), cuboctahedron (V=20), and truncated octahedron (V=20), all constructed with consistent edge lengths and proper geometric faces. Right panel (network diagram): Extended volume relationships showing fundamental shapes (V=1,3,4,6), complex constructions (V=20), and scaling relationships (2× edge length → 8× volume). Additional polyhedra: Includes truncated octahedron (V=20) and scaled variants demonstrating the ``third power'' volume scaling law V ∝ L³ in IVM units. Geometric constructions: Edge-union relationships, truncation operations, dual polyhedra, and Voronoi cell constructions. Fuller.4D significance: These integer volume ratios reflect the quantized nature of space-filling in synergetics, where the regular tetrahedron provides a natural unit container and other polyhedra emerge as integer multiples, supporting discrete geometric computation and exact lattice-based optimization methods. All constructions respect the IVM unit convention where the regular tetrahedron has tetravolume 1.}]{../output/figures/polyhedra_quadray_constructions.png}}
 \caption{\textbf{Synergetic polyhedra volume relationships in the
 Quadray/IVM framework (comprehensive visualization)}. This figure
 combines 3D polyhedra visualizations with an extended network diagram
@@ -898,8 +879,7 @@ methods. All constructions respect the IVM unit convention where the
 regular tetrahedron has tetravolume 1.}
 \end{figure}
 
-\hypertarget{short-python-snippets}{%
-\subsubsection{Short Python snippets}\label{short-python-snippets}}
+\subsubsection{Short Python snippets}\label{short-python-snippets}
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
@@ -945,9 +925,8 @@ V_xyz_sym = cayley_menger_volume_symbolic(d2)      # sqrt(2)/12
 V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz_sym))  # 1/8
 \end{lstlisting}
 
-\hypertarget{random-tetrahedra-in-the-ivm-integer-volumes}{%
 \subsubsection{Random tetrahedra in the IVM (integer
-volumes)}\label{random-tetrahedra-in-the-ivm-integer-volumes}}
+volumes)}\label{random-tetrahedra-in-the-ivm-integer-volumes}
 
 \begin{itemize}
 \tightlist
@@ -975,11 +954,10 @@ A = random_walk(Quadray(0,0,0,0), 1000)
 B = random_walk(Quadray(0,0,0,0), 1000)
 C = random_walk(Quadray(0,0,0,0), 1000)
 D = random_walk(Quadray(0,0,0,0), 1000)
-V = ace_tetravolume_5x5(A,B,C,D)            # integer
+V = ace_tetravolume_5x5(A,B,C,D)            # exact IVM volume as a Fraction
 \end{lstlisting}
 
-\hypertarget{algebraic-precision}{%
-\subsubsection{Algebraic precision}\label{algebraic-precision}}
+\subsubsection{Algebraic precision}\label{algebraic-precision}
 
 \begin{itemize}
 \tightlist
@@ -989,8 +967,11 @@ V = ace_tetravolume_5x5(A,B,C,D)            # integer
   \href{https://en.wikipedia.org/wiki/Bareiss_algorithm}{Bareiss
   algorithm} (already used by
   \passthrough{\lstinline!ace\_tetravolume\_5x5!}) or symbolic engines
-  (e.g., \passthrough{\lstinline!sympy!}). For large random-walk
-  examples with integer inputs, volumes are exact integers.
+  (e.g., \passthrough{\lstinline!sympy!}). For random-walk examples with
+  integer quadray inputs, volumes are exact rationals
+  (\passthrough{\lstinline!fractions.Fraction!}): integral when the
+  tetrahedron decomposes into unit IVM tetras, fractional (in quarters)
+  otherwise.
 \item
   When computing via XYZ determinants, high-precision floats (e.g.,
   \passthrough{\lstinline!gmpy2.mpfr!}) or symbolic matrices avoid
@@ -998,9 +979,8 @@ V = ace_tetravolume_5x5(A,B,C,D)            # integer
   to be integral.
 \end{itemize}
 
-\hypertarget{xyz-determinant-and-the-s3-conversion}{%
 \subsubsection{XYZ determinant and the S3
-conversion}\label{xyz-determinant-and-the-s3-conversion}}
+conversion}\label{xyz-determinant-and-the-s3-conversion}
 
 \begin{itemize}
 \tightlist
@@ -1009,9 +989,8 @@ conversion}\label{xyz-determinant-and-the-s3-conversion}}
   for the determinant form and the S3 conversion to IVM units.
 \end{itemize}
 
-\hypertarget{d3-vs-r3-60-closing-the-lid-vs-orthogonal-cubing}{%
 \subsubsection{D\^{}3 vs R\^{}3: 60° ``closing the lid'' vs orthogonal
-``cubing''}\label{d3-vs-r3-60-closing-the-lid-vs-orthogonal-cubing}}
+``cubing''}\label{d3-vs-r3-60-closing-the-lid-vs-orthogonal-cubing}
 
 \begin{itemize}
 \tightlist
@@ -1045,17 +1024,15 @@ See implementation:
   maintain non-negativity and a minimal zero.
 \end{itemize}
 
-\hypertarget{practical-implementation-workflow}{%
 \subsection{Practical Implementation
-Workflow}\label{practical-implementation-workflow}}
+Workflow}\label{practical-implementation-workflow}
 
 The methods described in this document follow a unified workflow that
 ensures mathematical correctness, computational efficiency, and
 reproducibility:
 
-\hypertarget{mathematical-formulation}{%
 \subsubsection{1. Mathematical
-Formulation}\label{mathematical-formulation}}
+Formulation}\label{mathematical-formulation}
 
 \begin{itemize}
 \tightlist
@@ -1070,9 +1047,8 @@ Formulation}\label{mathematical-formulation}}
   Cayley--Menger, symbolic) for cross-validation
 \end{itemize}
 
-\hypertarget{implementation-strategy-1}{%
 \subsubsection{2. Implementation
-Strategy}\label{implementation-strategy-1}}
+Strategy}\label{implementation-strategy-1}
 
 \begin{itemize}
 \tightlist
@@ -1087,8 +1063,7 @@ Strategy}\label{implementation-strategy-1}}
   identical results on test cases
 \end{itemize}
 
-\hypertarget{testing-and-validation}{%
-\subsubsection{3. Testing and Validation}\label{testing-and-validation}}
+\subsubsection{3. Testing and Validation}\label{testing-and-validation}
 
 \begin{itemize}
 \tightlist
@@ -1103,9 +1078,8 @@ Strategy}\label{implementation-strategy-1}}
   with exact symbolic results
 \end{itemize}
 
-\hypertarget{documentation-and-reproducibility}{%
 \subsubsection{4. Documentation and
-Reproducibility}\label{documentation-and-reproducibility}}
+Reproducibility}\label{documentation-and-reproducibility}
 
 \begin{itemize}
 \tightlist
@@ -1121,9 +1095,8 @@ Reproducibility}\label{documentation-and-reproducibility}}
   reproducibility
 \end{itemize}
 
-\hypertarget{optimization-and-extension}{%
 \subsubsection{5. Optimization and
-Extension}\label{optimization-and-extension}}
+Extension}\label{optimization-and-extension}
 
 \begin{itemize}
 \tightlist
@@ -1142,410 +1115,338 @@ This workflow ensures that mathematical theory, computational
 implementation, and practical application remain coherent and verifiable
 throughout the development process.
 
-\hypertarget{code-methods-anchors}{%
-\subsection{Code methods (anchors)}\label{code-methods-anchors}}
+\subsection{Code methods (anchors)}\label{code-methods-anchors}
 
-\hypertarget{code:core_quadray}{%
-\subsubsection{Core Quadray operations}\label{code:core_quadray}}
+\subsubsection{Core Quadray operations}\label{code:core_quadray}
 
-\hypertarget{code:Quadray}{%
-\paragraph{\texorpdfstring{\texttt{Quadray}}{Quadray}}\label{code:Quadray}}
+\paragraph{\texorpdfstring{\texttt{Quadray}}{Quadray}}\label{code:Quadray}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- Quadray vector
 class with non-negative components and at least one zero (Fuller.4D).
 
-\hypertarget{code:DEFAULT_EMBEDDING}{%
-\paragraph{\texorpdfstring{\texttt{DEFAULT\_EMBEDDING}}{DEFAULT\_EMBEDDING}}\label{code:DEFAULT_EMBEDDING}}
+\paragraph{\texorpdfstring{\texttt{DEFAULT\_EMBEDDING}}{DEFAULT\_EMBEDDING}}\label{code:DEFAULT_EMBEDDING}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- canonical 3×4
 symmetric embedding matrix for Quadray to XYZ conversion.
 
-\hypertarget{code:to_xyz}{%
-\paragraph{\texorpdfstring{\texttt{to\_xyz}}{to\_xyz}}\label{code:to_xyz}}
+\paragraph{\texorpdfstring{\texttt{to\_xyz}}{to\_xyz}}\label{code:to_xyz}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- map quadray to R³
 via a 3×4 embedding matrix (Fuller.4D → Coxeter.4D slice).
 
-\hypertarget{code:magnitude}{%
-\paragraph{\texorpdfstring{\texttt{magnitude}}{magnitude}}\label{code:magnitude}}
+\paragraph{\texorpdfstring{\texttt{magnitude}}{magnitude}}\label{code:magnitude}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- return Euclidean
 magnitude \textbar\textbar q\textbar\textbar{} under the given embedding
 (vector norm).
 
-\hypertarget{code:dot}{%
-\paragraph{\texorpdfstring{\texttt{dot}}{dot}}\label{code:dot}}
+\paragraph{\texorpdfstring{\texttt{dot}}{dot}}\label{code:dot}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- return Euclidean
 dot product \textless q1,q2\textgreater{} under the given embedding.
 
-\hypertarget{code:volume_calculations}{%
-\subsubsection{Volume calculations}\label{code:volume_calculations}}
+\subsubsection{Volume calculations}\label{code:volume_calculations}
 
-\hypertarget{code:integer_tetra_volume}{%
-\paragraph{\texorpdfstring{\texttt{integer\_tetra\_volume}}{integer\_tetra\_volume}}\label{code:integer_tetra_volume}}
+\paragraph{\texorpdfstring{\texttt{integer\_tetra\_volume}}{integer\_tetra\_volume}}\label{code:integer_tetra_volume}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- integer 3×3
-determinant for lattice tetravolume.
+Source: \passthrough{\lstinline!src/quadray.py!} --- exact projected
+\(3\times3\) determinant over 4, i.e.~the IVM tetravolume \(|\det|/4\)
+as a \passthrough{\lstinline!fractions.Fraction!}.
 
-\hypertarget{code:ace_tetravolume_5x5}{%
-\paragraph{\texorpdfstring{\texttt{ace\_tetravolume\_5x5}}{ace\_tetravolume\_5x5}}\label{code:ace_tetravolume_5x5}}
+\paragraph{\texorpdfstring{\texttt{ace\_tetravolume\_5x5}}{ace\_tetravolume\_5x5}}\label{code:ace_tetravolume_5x5}
 
 Source: \passthrough{\lstinline!src/quadray.py!} --- Tom Ace 5×5
 determinant in IVM units.
 
-\hypertarget{code:tetra_volume_cayley_menger}{%
-\paragraph{\texorpdfstring{\texttt{tetra\_volume\_cayley\_menger}}{tetra\_volume\_cayley\_menger}}\label{code:tetra_volume_cayley_menger}}
+\paragraph{\texorpdfstring{\texttt{tetra\_volume\_cayley\_menger}}{tetra\_volume\_cayley\_menger}}\label{code:tetra_volume_cayley_menger}
 
 Source: \passthrough{\lstinline!src/cayley\_menger.py!} --- length-based
 formula (XYZ units).
 
-\hypertarget{code:ivm_tetra_volume_cayley_menger}{%
-\paragraph{\texorpdfstring{\texttt{ivm\_tetra\_volume\_cayley\_menger}}{ivm\_tetra\_volume\_cayley\_menger}}\label{code:ivm_tetra_volume_cayley_menger}}
+\paragraph{\texorpdfstring{\texttt{ivm\_tetra\_volume\_cayley\_menger}}{ivm\_tetra\_volume\_cayley\_menger}}\label{code:ivm_tetra_volume_cayley_menger}
 
 Source: \passthrough{\lstinline!src/cayley\_menger.py!} ---
 Cayley--Menger volume converted to IVM units.
 
-\hypertarget{code:coordinate_conversions}{%
 \subsubsection{Coordinate
-conversions}\label{code:coordinate_conversions}}
+conversions}\label{code:coordinate_conversions}
 
-\hypertarget{code:urner_embedding}{%
-\paragraph{\texorpdfstring{\texttt{urner\_embedding}}{urner\_embedding}}\label{code:urner_embedding}}
+\paragraph{\texorpdfstring{\texttt{urner\_embedding}}{urner\_embedding}}\label{code:urner_embedding}
 
 Source: \passthrough{\lstinline!src/conversions.py!} --- canonical XYZ
 embedding.
 
-\hypertarget{code:quadray_to_xyz}{%
-\paragraph{\texorpdfstring{\texttt{quadray\_to\_xyz}}{quadray\_to\_xyz}}\label{code:quadray_to_xyz}}
+\paragraph{\texorpdfstring{\texttt{quadray\_to\_xyz}}{quadray\_to\_xyz}}\label{code:quadray_to_xyz}
 
 Source: \passthrough{\lstinline!src/conversions.py!} --- apply embedding
 matrix to map Quadray to XYZ.
 
-\hypertarget{code:linear_algebra}{%
-\subsubsection{Linear algebra utilities}\label{code:linear_algebra}}
+\subsubsection{Linear algebra utilities}\label{code:linear_algebra}
 
-\hypertarget{code:bareiss_determinant_int}{%
-\paragraph{\texorpdfstring{\texttt{bareiss\_determinant\_int}}{bareiss\_determinant\_int}}\label{code:bareiss_determinant_int}}
+\paragraph{\texorpdfstring{\texttt{bareiss\_determinant\_int}}{bareiss\_determinant\_int}}\label{code:bareiss_determinant_int}
 
 Source: \passthrough{\lstinline!src/linalg\_utils.py!} --- exact integer
 Bareiss determinant.
 
-\hypertarget{code:optimization}{%
-\subsubsection{Optimization methods}\label{code:optimization}}
+\subsubsection{Optimization methods}\label{code:optimization}
 
-\hypertarget{code:nelder_mead_quadray}{%
-\paragraph{\texorpdfstring{\texttt{nelder\_mead\_quadray}}{nelder\_mead\_quadray}}\label{code:nelder_mead_quadray}}
+\paragraph{\texorpdfstring{\texttt{nelder\_mead\_quadray}}{nelder\_mead\_quadray}}\label{code:nelder_mead_quadray}
 
 Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
 Nelder--Mead optimization adapted to the integer quadray lattice.
 
-\hypertarget{code:discrete_ivm_descent}{%
-\paragraph{\texorpdfstring{\texttt{discrete\_ivm\_descent}}{discrete\_ivm\_descent}}\label{code:discrete_ivm_descent}}
+\paragraph{\texorpdfstring{\texttt{discrete\_ivm\_descent}}{discrete\_ivm\_descent}}\label{code:discrete_ivm_descent}
 
 Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
 greedy integer-valued descent over the IVM using canonical neighbor
 moves; returns a \passthrough{\lstinline!DiscretePath!} with visited
 Quadrays and objective values.
 
-\hypertarget{code:neighbor_moves_ivm}{%
-\paragraph{\texorpdfstring{\texttt{neighbor\_moves\_ivm}}{neighbor\_moves\_ivm}}\label{code:neighbor_moves_ivm}}
+\paragraph{\texorpdfstring{\texttt{neighbor\_moves\_ivm}}{neighbor\_moves\_ivm}}\label{code:neighbor_moves_ivm}
 
 Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
 return the 12 canonical IVM neighbor moves as Quadray deltas.
 
-\hypertarget{code:apply_move}{%
-\paragraph{\texorpdfstring{\texttt{apply\_move}}{apply\_move}}\label{code:apply_move}}
+\paragraph{\texorpdfstring{\texttt{apply\_move}}{apply\_move}}\label{code:apply_move}
 
 Source: \passthrough{\lstinline!src/discrete\_variational.py!} --- apply
 a lattice move and normalize to the canonical representative.
 
-\hypertarget{code:information_geometry}{%
 \subsubsection{Information geometry
-methods}\label{code:information_geometry}}
+methods}\label{code:information_geometry}
 
-\hypertarget{code:fisher_information_matrix}{%
-\paragraph{\texorpdfstring{\texttt{fisher\_information\_matrix}}{fisher\_information\_matrix}}\label{code:fisher_information_matrix}}
+\paragraph{\texorpdfstring{\texttt{fisher\_information\_matrix}}{fisher\_information\_matrix}}\label{code:fisher_information_matrix}
 
 Source: \passthrough{\lstinline!src/information.py!} --- empirical
 outer-product estimator.
 
-\hypertarget{code:fisher_information_quadray}{%
-\paragraph{\texorpdfstring{\texttt{fisher\_information\_quadray}}{fisher\_information\_quadray}}\label{code:fisher_information_quadray}}
+\paragraph{\texorpdfstring{\texttt{fisher\_information\_quadray}}{fisher\_information\_quadray}}\label{code:fisher_information_quadray}
 
 Source: \passthrough{\lstinline!src/information.py!} --- compute Fisher
 information matrix in both Cartesian and Quadray coordinates.
 
-\hypertarget{code:natural_gradient_step}{%
-\paragraph{\texorpdfstring{\texttt{natural\_gradient\_step}}{natural\_gradient\_step}}\label{code:natural_gradient_step}}
+\paragraph{\texorpdfstring{\texttt{natural\_gradient\_step}}{natural\_gradient\_step}}\label{code:natural_gradient_step}
 
 Source: \passthrough{\lstinline!src/information.py!} --- damped
 inverse-Fisher step.
 
-\hypertarget{code:free_energy}{%
-\paragraph{\texorpdfstring{\texttt{free\_energy}}{free\_energy}}\label{code:free_energy}}
+\paragraph{\texorpdfstring{\texttt{free\_energy}}{free\_energy}}\label{code:free_energy}
 
 Source: \passthrough{\lstinline!src/information.py!} --- discrete-state
 variational free energy.
 
-\hypertarget{code:expected_free_energy}{%
-\paragraph{\texorpdfstring{\texttt{expected\_free\_energy}}{expected\_free\_energy}}\label{code:expected_free_energy}}
+\paragraph{\texorpdfstring{\texttt{expected\_free\_energy}}{expected\_free\_energy}}\label{code:expected_free_energy}
 
 Source: \passthrough{\lstinline!src/information.py!} --- expected free
 energy for Active Inference with prior preferences.
 
-\hypertarget{code:active_inference_step}{%
-\paragraph{\texorpdfstring{\texttt{active\_inference\_step}}{active\_inference\_step}}\label{code:active_inference_step}}
+\paragraph{\texorpdfstring{\texttt{active\_inference\_step}}{active\_inference\_step}}\label{code:active_inference_step}
 
 Source: \passthrough{\lstinline!src/information.py!} --- joint
 perception-action update step in Active Inference.
 
-\hypertarget{code:information_geometric_distance}{%
-\paragraph{\texorpdfstring{\texttt{information\_geometric\_distance}}{information\_geometric\_distance}}\label{code:information_geometric_distance}}
+\paragraph{\texorpdfstring{\texttt{information\_geometric\_distance}}{information\_geometric\_distance}}\label{code:information_geometric_distance}
 
 Source: \passthrough{\lstinline!src/information.py!} --- compute
 information-geometric distance between two points.
 
-\hypertarget{code:perception_update}{%
-\paragraph{\texorpdfstring{\texttt{perception\_update}}{perception\_update}}\label{code:perception_update}}
+\paragraph{\texorpdfstring{\texttt{perception\_update}}{perception\_update}}\label{code:perception_update}
 
 Source: \passthrough{\lstinline!src/information.py!} --- continuous-time
 perception update: dμ/dt = D μ - dF/dμ.
 
-\hypertarget{code:action_update}{%
-\paragraph{\texorpdfstring{\texttt{action\_update}}{action\_update}}\label{code:action_update}}
+\paragraph{\texorpdfstring{\texttt{action\_update}}{action\_update}}\label{code:action_update}
 
 Source: \passthrough{\lstinline!src/information.py!} --- continuous-time
 action update: da/dt = -dF/da.
 
-\hypertarget{code:finite_difference_gradient}{%
-\paragraph{\texorpdfstring{\texttt{finite\_difference\_gradient}}{finite\_difference\_gradient}}\label{code:finite_difference_gradient}}
+\paragraph{\texorpdfstring{\texttt{finite\_difference\_gradient}}{finite\_difference\_gradient}}\label{code:finite_difference_gradient}
 
 Source: \passthrough{\lstinline!src/information.py!} --- compute
 numerical gradient of a scalar function via central differences.
 
-\hypertarget{code:metrics}{%
-\subsubsection{Metrics and analysis}\label{code:metrics}}
+\subsubsection{Metrics and analysis}\label{code:metrics}
 
-\hypertarget{code:shannon_entropy}{%
-\paragraph{\texorpdfstring{\texttt{shannon\_entropy}}{shannon\_entropy}}\label{code:shannon_entropy}}
+\paragraph{\texorpdfstring{\texttt{shannon\_entropy}}{shannon\_entropy}}\label{code:shannon_entropy}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- Shannon entropy
 H(p) for a discrete distribution.
 
-\hypertarget{code:information_length}{%
-\paragraph{\texorpdfstring{\texttt{information\_length}}{information\_length}}\label{code:information_length}}
+\paragraph{\texorpdfstring{\texttt{information\_length}}{information\_length}}\label{code:information_length}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- path length in
 information space via gradient-weighted arc length.
 
-\hypertarget{code:fim_eigenspectrum}{%
-\paragraph{\texorpdfstring{\texttt{fim\_eigenspectrum}}{fim\_eigenspectrum}}\label{code:fim_eigenspectrum}}
+\paragraph{\texorpdfstring{\texttt{fim\_eigenspectrum}}{fim\_eigenspectrum}}\label{code:fim_eigenspectrum}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- eigen-decomposition
 of a Fisher information matrix.
 
-\hypertarget{code:fisher_condition_number}{%
-\paragraph{\texorpdfstring{\texttt{fisher\_condition\_number}}{fisher\_condition\_number}}\label{code:fisher_condition_number}}
+\paragraph{\texorpdfstring{\texttt{fisher\_condition\_number}}{fisher\_condition\_number}}\label{code:fisher_condition_number}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- compute the
 condition number of the Fisher information matrix.
 
-\hypertarget{code:fisher_curvature_analysis}{%
-\paragraph{\texorpdfstring{\texttt{fisher\_curvature\_analysis}}{fisher\_curvature\_analysis}}\label{code:fisher_curvature_analysis}}
+\paragraph{\texorpdfstring{\texttt{fisher\_curvature\_analysis}}{fisher\_curvature\_analysis}}\label{code:fisher_curvature_analysis}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- comprehensive
 analysis of Fisher information matrix curvature.
 
-\hypertarget{code:fisher_quadray_comparison}{%
-\paragraph{\texorpdfstring{\texttt{fisher\_quadray\_comparison}}{fisher\_quadray\_comparison}}\label{code:fisher_quadray_comparison}}
+\paragraph{\texorpdfstring{\texttt{fisher\_quadray\_comparison}}{fisher\_quadray\_comparison}}\label{code:fisher_quadray_comparison}
 
 Source: \passthrough{\lstinline!src/metrics.py!} --- compare Fisher
 information matrices between coordinate systems.
 
-\hypertarget{code:examples}{%
-\subsubsection{Examples and utilities}\label{code:examples}}
+\subsubsection{Examples and utilities}\label{code:examples}
 
-\hypertarget{code:example_ivm_neighbors}{%
-\paragraph{\texorpdfstring{\texttt{example\_ivm\_neighbors}}{example\_ivm\_neighbors}}\label{code:example_ivm_neighbors}}
+\paragraph{\texorpdfstring{\texttt{example\_ivm\_neighbors}}{example\_ivm\_neighbors}}\label{code:example_ivm_neighbors}
 
 Source: \passthrough{\lstinline!src/examples.py!} --- return the 12
-nearest IVM neighbors as permutations of \{2,1,1,0\}.
+nearest IVM neighbors as permutations of \{2,1,1,0\} (neighbor-move-set
+role).
 
-\hypertarget{code:example_cuboctahedron_neighbors}{%
-\paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_neighbors}}{example\_cuboctahedron\_neighbors}}\label{code:example_cuboctahedron_neighbors}}
+\paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_neighbors}}{example\_cuboctahedron\_neighbors}}\label{code:example_cuboctahedron_neighbors}
 
 Source: \passthrough{\lstinline!src/examples.py!} --- return
-twelve-around-one IVM neighbors (vector equilibrium shell).
+twelve-around-one IVM neighbors (vector-equilibrium-shell role). Same
+set as \passthrough{\lstinline!example\_ivm\_neighbors!}; both public
+names are documented API sharing one sorted, deterministic
+implementation.
 
-\hypertarget{code:example_cuboctahedron_vertices_xyz}{%
-\paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_vertices\_xyz}}{example\_cuboctahedron\_vertices\_xyz}}\label{code:example_cuboctahedron_vertices_xyz}}
+\paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_vertices\_xyz}}{example\_cuboctahedron\_vertices\_xyz}}\label{code:example_cuboctahedron_vertices_xyz}
 
 Source: \passthrough{\lstinline!src/examples.py!} --- return XYZ
 coordinates for the twelve-around-one neighbors.
 
-\hypertarget{code:example_partition_tetra_volume}{%
-\paragraph{\texorpdfstring{\texttt{example\_partition\_tetra\_volume}}{example\_partition\_tetra\_volume}}\label{code:example_partition_tetra_volume}}
+\paragraph{\texorpdfstring{\texttt{example\_partition\_tetra\_volume}}{example\_partition\_tetra\_volume}}\label{code:example_partition_tetra_volume}
 
 Source: \passthrough{\lstinline!src/examples.py!} --- construct a
-tetrahedron from the four-fold partition and return tetravolume.
+tetrahedron from the four-fold partition and return the exact IVM
+tetravolume (\passthrough{\lstinline!fractions.Fraction!}).
 
-\hypertarget{code:symbolic}{%
-\subsubsection{Symbolic computation}\label{code:symbolic}}
+\subsubsection{Symbolic computation}\label{code:symbolic}
 
-\hypertarget{code:cayley_menger_volume_symbolic}{%
-\paragraph{\texorpdfstring{\texttt{cayley\_menger\_volume\_symbolic}}{cayley\_menger\_volume\_symbolic}}\label{code:cayley_menger_volume_symbolic}}
+\paragraph{\texorpdfstring{\texttt{cayley\_menger\_volume\_symbolic}}{cayley\_menger\_volume\_symbolic}}\label{code:cayley_menger_volume_symbolic}
 
 Source: \passthrough{\lstinline!src/symbolic.py!} --- return symbolic
 Euclidean tetrahedron volume from squared distances.
 
-\hypertarget{code:convert_xyz_volume_to_ivm_symbolic}{%
-\paragraph{\texorpdfstring{\texttt{convert\_xyz\_volume\_to\_ivm\_symbolic}}{convert\_xyz\_volume\_to\_ivm\_symbolic}}\label{code:convert_xyz_volume_to_ivm_symbolic}}
+\paragraph{\texorpdfstring{\texttt{convert\_xyz\_volume\_to\_ivm\_symbolic}}{convert\_xyz\_volume\_to\_ivm\_symbolic}}\label{code:convert_xyz_volume_to_ivm_symbolic}
 
 Source: \passthrough{\lstinline!src/symbolic.py!} --- convert a symbolic
 Euclidean volume to IVM tetravolume via S3.
 
-\hypertarget{code:visualization}{%
-\subsubsection{Visualization and animation}\label{code:visualization}}
+\subsubsection{Visualization and animation}\label{code:visualization}
 
-\hypertarget{code:animate_discrete_path}{%
-\paragraph{\texorpdfstring{\texttt{animate\_discrete\_path}}{animate\_discrete\_path}}\label{code:animate_discrete_path}}
+\paragraph{\texorpdfstring{\texttt{animate\_discrete\_path}}{animate\_discrete\_path}}\label{code:animate_discrete_path}
 
 Source: \passthrough{\lstinline!src/visualize.py!} --- animate a
 \passthrough{\lstinline!DiscretePath!} to MP4; saves CSV/NPZ trajectory
 to \passthrough{\lstinline!quadmath/output/!}.
 
-\hypertarget{code:plot_ivm_neighbors}{%
-\paragraph{\texorpdfstring{\texttt{plot\_ivm\_neighbors}}{plot\_ivm\_neighbors}}\label{code:plot_ivm_neighbors}}
+\paragraph{\texorpdfstring{\texttt{plot\_ivm\_neighbors}}{plot\_ivm\_neighbors}}\label{code:plot_ivm_neighbors}
 
 Source: \passthrough{\lstinline!src/visualize.py!} --- scatter the 12
 IVM neighbor points in 3D.
 
-\hypertarget{code:plot_partition_tetrahedron}{%
-\paragraph{\texorpdfstring{\texttt{plot\_partition\_tetrahedron}}{plot\_partition\_tetrahedron}}\label{code:plot_partition_tetrahedron}}
+\paragraph{\texorpdfstring{\texttt{plot\_partition\_tetrahedron}}{plot\_partition\_tetrahedron}}\label{code:plot_partition_tetrahedron}
 
 Source: \passthrough{\lstinline!src/visualize.py!} --- plot the
 four-fold partition as a labeled tetrahedron in 3D.
 
-\hypertarget{code:animate_simplex}{%
-\paragraph{\texorpdfstring{\texttt{animate\_simplex}}{animate\_simplex}}\label{code:animate_simplex}}
+\paragraph{\texorpdfstring{\texttt{animate\_simplex}}{animate\_simplex}}\label{code:animate_simplex}
 
 Source: \passthrough{\lstinline!src/visualize.py!} --- animate simplex
 evolution across iterations.
 
-\hypertarget{code:plot_simplex_trace}{%
-\paragraph{\texorpdfstring{\texttt{plot\_simplex\_trace}}{plot\_simplex\_trace}}\label{code:plot_simplex_trace}}
+\paragraph{\texorpdfstring{\texttt{plot\_simplex\_trace}}{plot\_simplex\_trace}}\label{code:plot_simplex_trace}
 
 Source: \passthrough{\lstinline!src/visualize.py!} --- plot
 per-iteration diagnostics for Nelder--Mead.
 
-\hypertarget{code:utilities}{%
-\subsubsection{Path and file utilities}\label{code:utilities}}
+\subsubsection{Path and file utilities}\label{code:utilities}
 
-\hypertarget{code:get_repo_root}{%
-\paragraph{\texorpdfstring{\texttt{get\_repo\_root}}{get\_repo\_root}}\label{code:get_repo_root}}
+\paragraph{\texorpdfstring{\texttt{get\_repo\_root}}{get\_repo\_root}}\label{code:get_repo_root}
 
 Source: \passthrough{\lstinline!src/paths.py!} --- heuristically find
 repository root by walking up from start.
 
-\hypertarget{code:get_output_dir}{%
-\paragraph{\texorpdfstring{\texttt{get\_output\_dir}}{get\_output\_dir}}\label{code:get_output_dir}}
+\paragraph{\texorpdfstring{\texttt{get\_output\_dir}}{get\_output\_dir}}\label{code:get_output_dir}
 
 Source: \passthrough{\lstinline!src/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output!} path at the repo root and
 ensure it exists.
 
-\hypertarget{code:get_data_dir}{%
-\paragraph{\texorpdfstring{\texttt{get\_data\_dir}}{get\_data\_dir}}\label{code:get_data_dir}}
+\paragraph{\texorpdfstring{\texttt{get\_data\_dir}}{get\_data\_dir}}\label{code:get_data_dir}
 
 Source: \passthrough{\lstinline!src/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output/data!} path and ensure it
 exists.
 
-\hypertarget{code:get_figure_dir}{%
-\paragraph{\texorpdfstring{\texttt{get\_figure\_dir}}{get\_figure\_dir}}\label{code:get_figure_dir}}
+\paragraph{\texorpdfstring{\texttt{get\_figure\_dir}}{get\_figure\_dir}}\label{code:get_figure_dir}
 
 Source: \passthrough{\lstinline!src/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output/figures!} path and ensure it
 exists.
 
-\hypertarget{code:nelder_mead_components}{%
 \subsubsection{Additional Nelder--Mead
-components}\label{code:nelder_mead_components}}
+components}\label{code:nelder_mead_components}
 
-\hypertarget{code:SimplexState}{%
-\paragraph{\texorpdfstring{\texttt{SimplexState}}{SimplexState}}\label{code:SimplexState}}
+\paragraph{\texorpdfstring{\texttt{SimplexState}}{SimplexState}}\label{code:SimplexState}
 
 Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
 optimization trajectory state containing vertices, values, volume, and
 history.
 
-\hypertarget{code:order_simplex}{%
-\paragraph{\texorpdfstring{\texttt{order\_simplex}}{order\_simplex}}\label{code:order_simplex}}
+\paragraph{\texorpdfstring{\texttt{order\_simplex}}{order\_simplex}}\label{code:order_simplex}
 
 Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} --- sort
 vertices by objective value ascending and return paired lists.
 
-\hypertarget{code:centroid_excluding}{%
-\paragraph{\texorpdfstring{\texttt{centroid\_excluding}}{centroid\_excluding}}\label{code:centroid_excluding}}
+\paragraph{\texorpdfstring{\texttt{centroid\_excluding}}{centroid\_excluding}}\label{code:centroid_excluding}
 
 Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
 integer centroid of three vertices, excluding the specified index.
 
-\hypertarget{code:project_to_lattice}{%
-\paragraph{\texorpdfstring{\texttt{project\_to\_lattice}}{project\_to\_lattice}}\label{code:project_to_lattice}}
+\paragraph{\texorpdfstring{\texttt{project\_to\_lattice}}{project\_to\_lattice}}\label{code:project_to_lattice}
 
 Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
 project a quadray to the canonical lattice representative via normalize.
 
-\hypertarget{code:compute_volume}{%
-\paragraph{\texorpdfstring{\texttt{compute\_volume}}{compute\_volume}}\label{code:compute_volume}}
+\paragraph{\texorpdfstring{\texttt{compute\_volume}}{compute\_volume}}\label{code:compute_volume}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
-integer IVM tetra-volume from the first four vertices.
+Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} --- exact
+IVM tetra-volume (\passthrough{\lstinline!fractions.Fraction!},
+\(|\det|/4\)) from the first four vertices.
 
-\hypertarget{code:discrete_variational}{%
 \subsubsection{Discrete variational
-components}\label{code:discrete_variational}}
+components}\label{code:discrete_variational}
 
-\hypertarget{code:DiscretePath}{%
-\paragraph{\texorpdfstring{\texttt{DiscretePath}}{DiscretePath}}\label{code:DiscretePath}}
+\paragraph{\texorpdfstring{\texttt{DiscretePath}}{DiscretePath}}\label{code:DiscretePath}
 
 Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
 optimization trajectory on the integer quadray lattice.
 
-\hypertarget{code:OptionalMoves}{%
-\paragraph{\texorpdfstring{\texttt{OptionalMoves}}{OptionalMoves}}\label{code:OptionalMoves}}
+\subsubsection{Glossary generation}\label{code:glossary}
 
-Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
-lightweight protocol for optional typing of moves parameter.
-
-\hypertarget{code:glossary}{%
-\subsubsection{Glossary generation}\label{code:glossary}}
-
-\hypertarget{code:build_api_index}{%
-\paragraph{\texorpdfstring{\texttt{build\_api\_index}}{build\_api\_index}}\label{code:build_api_index}}
+\paragraph{\texorpdfstring{\texttt{build\_api\_index}}{build\_api\_index}}\label{code:build_api_index}
 
 Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- build API
 index from source directory.
 
-\hypertarget{code:generate_markdown_table}{%
-\paragraph{\texorpdfstring{\texttt{generate\_markdown\_table}}{generate\_markdown\_table}}\label{code:generate_markdown_table}}
+\paragraph{\texorpdfstring{\texttt{generate\_markdown\_table}}{generate\_markdown\_table}}\label{code:generate_markdown_table}
 
 Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- generate
 markdown table from API entries.
 
-\hypertarget{code:inject_between_markers}{%
-\paragraph{\texorpdfstring{\texttt{inject\_between\_markers}}{inject\_between\_markers}}\label{code:inject_between_markers}}
+\paragraph{\texorpdfstring{\texttt{inject\_between\_markers}}{inject\_between\_markers}}\label{code:inject_between_markers}
 
 Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- inject
 payload between markers in markdown text.
 
-\hypertarget{code:geometry}{%
-\subsubsection{Geometry utilities}\label{code:geometry}}
+\subsubsection{Geometry utilities}\label{code:geometry}
 
-\hypertarget{code:minkowski_interval}{%
-\paragraph{\texorpdfstring{\texttt{minkowski\_interval}}{minkowski\_interval}}\label{code:minkowski_interval}}
+\paragraph{\texorpdfstring{\texttt{minkowski\_interval}}{minkowski\_interval}}\label{code:minkowski_interval}
 
 Source: \passthrough{\lstinline!src/geometry.py!} --- return the
 Minkowski interval squared ds² (Einstein.4D).
@@ -1555,8 +1456,8 @@ Relevant tests (\passthrough{\lstinline!tests/!}):
 \begin{itemize}
 \tightlist
 \item
-  \passthrough{\lstinline!test\_quadray.py!} (unit IVM tetra,
-  divisibility-by-4 scaling, Ace vs.~integer method)
+  \passthrough{\lstinline!test\_quadray.py!} (unit IVM tetra, primitive
+  tetra = 1/4, exact scaled volume, Ace vs.~integer agreement)
 \item
   \passthrough{\lstinline!test\_quadray\_cov.py!} (Ace determinant basic
   check)
@@ -1577,15 +1478,13 @@ Relevant tests (\passthrough{\lstinline!tests/!}):
   \passthrough{\lstinline!test\_paths\_cov.py!}
 \end{itemize}
 
-\hypertarget{comprehensive-test-coverage}{%
 \subsubsection{Comprehensive test
-coverage}\label{comprehensive-test-coverage}}
+coverage}\label{comprehensive-test-coverage}
 
 The test suite provides 100\% coverage of all source modules with the
 following focus areas:
 
-\hypertarget{core-functionality-tests}{%
-\paragraph{Core functionality tests}\label{core-functionality-tests}}
+\paragraph{Core functionality tests}\label{core-functionality-tests}
 
 \begin{itemize}
 \tightlist
@@ -1600,9 +1499,8 @@ following focus areas:
   algorithm correctness, edge cases, numerical stability
 \end{itemize}
 
-\hypertarget{optimization-and-variational-methods}{%
 \paragraph{Optimization and variational
-methods}\label{optimization-and-variational-methods}}
+methods}\label{optimization-and-variational-methods}
 
 \begin{itemize}
 \tightlist
@@ -1617,9 +1515,8 @@ methods}\label{optimization-and-variational-methods}}
   energy minimization, perception-action updates
 \end{itemize}
 
-\hypertarget{information-geometry-and-metrics}{%
 \paragraph{Information geometry and
-metrics}\label{information-geometry-and-metrics}}
+metrics}\label{information-geometry-and-metrics}
 
 \begin{itemize}
 \tightlist
@@ -1634,8 +1531,7 @@ metrics}\label{information-geometry-and-metrics}}
   coverage of information geometry functions
 \end{itemize}
 
-\hypertarget{examples-and-utilities}{%
-\paragraph{Examples and utilities}\label{examples-and-utilities}}
+\paragraph{Examples and utilities}\label{examples-and-utilities}
 
 \begin{itemize}
 \tightlist
@@ -1650,9 +1546,8 @@ metrics}\label{information-geometry-and-metrics}}
   structure utilities, output directory management
 \end{itemize}
 
-\hypertarget{visualization-and-symbolic-computation}{%
 \paragraph{Visualization and symbolic
-computation}\label{visualization-and-symbolic-computation}}
+computation}\label{visualization-and-symbolic-computation}
 
 \begin{itemize}
 \tightlist
@@ -1673,9 +1568,8 @@ computation}\label{visualization-and-symbolic-computation}}
   End-to-end symbolic workflow validation
 \end{itemize}
 
-\hypertarget{api-and-documentation-generation}{%
 \paragraph{API and documentation
-generation}\label{api-and-documentation-generation}}
+generation}\label{api-and-documentation-generation}
 
 \begin{itemize}
 \tightlist
@@ -1687,8 +1581,7 @@ generation}\label{api-and-documentation-generation}}
   Extended glossary generation coverage
 \end{itemize}
 
-\hypertarget{reproducibility-checklist}{%
-\subsection{Reproducibility checklist}\label{reproducibility-checklist}}
+\subsection{Reproducibility checklist}\label{reproducibility-checklist}
 
 \begin{itemize}
 \tightlist

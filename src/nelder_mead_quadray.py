@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from fractions import Fraction
 from typing import Callable, List, Tuple, Optional
 
 from quadray import Quadray, integer_tetra_volume
@@ -10,12 +11,12 @@ from quadray import Quadray, integer_tetra_volume
 class SimplexState:
     vertices: List[Quadray]
     values: List[float]
-    volume: int
+    volume: Fraction
     history: List[List[Quadray]]
     best_values: List[float]
     worst_values: List[float]
     spreads: List[float]
-    volumes: List[int]
+    volumes: List[Fraction]
 
 
 def order_simplex(vertices: List[Quadray], f: Callable[[Quadray], float]) -> Tuple[List[Quadray], List[float]]:
@@ -43,8 +44,8 @@ def project_to_lattice(q: Quadray) -> Quadray:
     return q.normalize()
 
 
-def compute_volume(vertices: List[Quadray]) -> int:
-    """Integer IVM tetra-volume from the first four vertices."""
+def compute_volume(vertices: List[Quadray]) -> Fraction:
+    """Exact IVM tetra-volume (a Fraction, |det|/4) of the first four vertices."""
     return integer_tetra_volume(vertices[0], vertices[1], vertices[2], vertices[3])
 
 

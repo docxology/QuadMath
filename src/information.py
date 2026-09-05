@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 from typing import Optional, Tuple
 
+from quadray import DEFAULT_EMBEDDING
+
 
 def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> np.ndarray:
     """Estimate the Fisher information matrix via sample gradients.
@@ -56,33 +58,39 @@ def fisher_information_quadray(
     frameworks.
     
     Parameters
-    - gradients: Array of shape (num_samples, num_params) containing per-sample
-      gradients with respect to Cartesian parameters.
-    - embedding_matrix: Optional 4x3 matrix for Quadray to Cartesian projection.
-      If None, uses the default embedding.
+    - gradients: Array of shape (num_samples, 3) containing per-sample
+      gradients with respect to Cartesian (XYZ) parameters.
+    - embedding_matrix: Optional 3x4 embedding matrix mapping the quadray
+      axes (a, b, c, d) to Cartesian XYZ, as used by `quadray.to_xyz`.
+      If None, uses `quadray.DEFAULT_EMBEDDING`.
     
     Returns
     - Tuple[np.ndarray, np.ndarray]: (F_cartesian, F_quadray)
-      F_cartesian: Fisher matrix in Cartesian coordinates
-      F_quadray: Fisher matrix in Quadray coordinates
+      F_cartesian: Fisher matrix in Cartesian coordinates, shape (3, 3)
+      F_quadray: Fisher matrix in Quadray coordinates, shape (4, 4)
     
     Notes
-    - The transformation F_quadray = J^T F_cartesian J where J is the Jacobian
-      of the coordinate transformation.
-    - This reveals how information geometry adapts to different parameterizations.
-    - In Fuller.4D, the tetrahedral structure may reveal symmetries not apparent
-      in Cartesian coordinates.
+    - The transformation is the standard pullback of the Fisher metric under
+      the linear embedding x = E q: with Jacobian J = dx/dq = E (3x4),
+      F_quadray = J^T F_cartesian J.
+    - Because E (1,1,1,1) = 0 (the quadray null direction), F_quadray is
+      singular along (1,1,1,1); the metric acts on the 3D quotient lattice.
+    - This reveals how information geometry adapts to different
+      parameterizations: the anisotropy of the tetrahedral basis becomes
+      explicit in F_quadray.
     """
-    # For now, we'll use a simplified approach focusing on the concept
-    # The full transformation would require computing the Jacobian of the
-    # coordinate transformation, which is complex for the general case.
-    
-    # Compute Cartesian FIM
+
     F_cart = fisher_information_matrix(gradients)
     
-    # Placeholder: return the Cartesian FIM for both
-    # In practice, this would compute the actual Quadray FIM via coordinate transformation
-    F_quadray = F_cart.copy()
+    E = np.asarray(
+        DEFAULT_EMBEDDING if embedding_matrix is None else embedding_matrix,
+        dtype=float,
+    )
+    if E.shape != (3, 4):
+        raise ValueError("embedding_matrix must have shape (3, 4)")
+    
+    # Pullback of the Fisher metric under x = E q: F_q = E^T F_cart E
+    F_quadray = E.T @ F_cart @ E
     
     return F_cart, F_quadray
 
@@ -242,8 +250,10 @@ def expected_free_energy(
 ) -> float:
     """Expected free energy for Active Inference with prior preferences.
     
-    Computes the expected free energy G = E_q[log p(o|s) - log q(s)] + log p(o),
-    which is minimized during action selection in Active Inference.
+    Computes the expected free energy G = -E_q[log p(o|s)] - E_q[log q(s)] + log p(o),
+    which is minimized during action selection in Active Inference. The first two
+    terms combine expected surprise (negative expected log-likelihood) with the
+    entropy of the variational posterior.
     
     This function connects to the expected free energy principle where agents
     select actions that minimize expected surprise, analogous to how geodesics

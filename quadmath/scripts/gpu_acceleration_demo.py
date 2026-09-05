@@ -16,8 +16,8 @@ import os
 import sys
 import time
 import numpy as np
-from typing import List, Tuple, Optional
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from typing import Tuple, Optional
+from concurrent.futures import ProcessPoolExecutor
 import multiprocessing as mp
 
 
@@ -35,9 +35,11 @@ def generate_large_tetrahedral_dataset(n_tetrahedra: int = 10000) -> np.ndarray:
     This simulates the kind of large-scale geometric data that would benefit
     from GPU acceleration in real applications.
     """
-    # Generate random integer quadray coordinates
+    # Generate random integer quadray coordinates with a fixed seed so the
+    # benchmark is deterministic (repo standard: fixed RNG seeds).
     # Each tetrahedron is represented by 4 vertices, each with 4 coordinates
-    dataset = np.random.randint(-10, 11, size=(n_tetrahedra, 4, 4), dtype=np.int32)
+    rng = np.random.default_rng(0)
+    dataset = rng.integers(-10, 11, size=(n_tetrahedra, 4, 4), dtype=np.int32)
     
     # Ensure some tetrahedra have meaningful volumes by avoiding degenerate cases
     for i in range(n_tetrahedra):
@@ -53,37 +55,21 @@ def generate_large_tetrahedral_dataset(n_tetrahedra: int = 10000) -> np.ndarray:
     return dataset
 
 
-def parallel_volume_calculation_worker(tetrahedron: np.ndarray) -> int:
+def parallel_volume_calculation_worker(tetrahedron: np.ndarray) -> float:
     """Worker function for parallel volume calculation.
     
     This simulates what would be a GPU kernel in actual implementation.
+    Volume follows the repo IVM convention via `quadray.integer_tetra_volume`
+    (imported from src/; no local re-implementation). Volumes are exact
+    Fractions; they are returned as floats for array statistics.
     """
-    from linalg_utils import bareiss_determinant_int
+    from quadray import Quadray, integer_tetra_volume
     
-    # Convert quadray coordinates to edge vectors for volume calculation
-    # This is the kind of computation that would be parallelized on GPU
-    p0, p1, p2, p3 = tetrahedron
-    
-    # Compute edge vectors (p1-p0, p2-p0, p3-p0)
-    edge1 = p1 - p0
-    edge2 = p2 - p0
-    edge3 = p3 - p0
-    
-    # Convert to list of lists for the determinant function
-    # We need only the first 3 coordinates for 3D volume calculation
-    matrix = [
-        [int(edge1[0]), int(edge1[1]), int(edge1[2])],
-        [int(edge2[0]), int(edge2[1]), int(edge2[2])],
-        [int(edge3[0]), int(edge3[1]), int(edge3[2])]
-    ]
-    
-    # Calculate volume using integer determinant
-    volume = abs(bareiss_determinant_int(matrix)) // 6
-    
-    return volume
+    p0, p1, p2, p3 = (Quadray(*map(int, vertex)) for vertex in tetrahedron)
+    return float(integer_tetra_volume(p0, p1, p2, p3))
 
 
-def parallel_volume_calculation_cpu(dataset: np.ndarray, n_workers: Optional[int] = None) -> np.ndarray:
+def parallel_volume_calculation_cpu(dataset: np.ndarray, n_workers: Optional[int] = None) -> Tuple[np.ndarray, float]:
     """Calculate volumes for all tetrahedra using CPU parallelization.
     
     This demonstrates the parallel processing pattern that would be implemented
@@ -101,14 +87,15 @@ def parallel_volume_calculation_cpu(dataset: np.ndarray, n_workers: Optional[int
     
     end_time = time.time()
     
-    volumes_array = np.array(volumes, dtype=np.int32)
-    print(f"CPU parallel computation completed in {end_time - start_time:.3f} seconds")
+    volumes_array = np.array(volumes, dtype=float)
+    elapsed = end_time - start_time
+    print(f"CPU parallel computation completed in {elapsed:.3f} seconds")
     print(f"Volume statistics: min={volumes_array.min()}, max={volumes_array.max()}, mean={volumes_array.mean():.2f}")
     
-    return volumes_array
+    return volumes_array, elapsed
 
 
-def sequential_volume_calculation(dataset: np.ndarray) -> np.ndarray:
+def sequential_volume_calculation(dataset: np.ndarray) -> Tuple[np.ndarray, float]:
     """Calculate volumes sequentially for comparison."""
     print(f"Computing volumes for {len(dataset)} tetrahedra sequentially...")
     
@@ -120,10 +107,11 @@ def sequential_volume_calculation(dataset: np.ndarray) -> np.ndarray:
     
     end_time = time.time()
     
-    volumes_array = np.array(volumes, dtype=np.int32)
-    print(f"Sequential computation completed in {end_time - start_time:.3f} seconds")
+    volumes_array = np.array(volumes, dtype=float)
+    elapsed = end_time - start_time
+    print(f"Sequential computation completed in {elapsed:.3f} seconds")
     
-    return volumes_array
+    return volumes_array, elapsed
 
 
 def parallel_prefix_sum_demo(data: np.ndarray) -> np.ndarray:
@@ -138,33 +126,47 @@ def parallel_prefix_sum_demo(data: np.ndarray) -> np.ndarray:
     
     start_time = time.time()
     
-    # Simple parallel prefix sum implementation
-    # In GPU implementation, this would use efficient parallel scan algorithms
+    # Work-efficient (Blelloch) exclusive scan on a power-of-two padded copy;
+    # in a GPU implementation this maps directly onto shared-memory scans.
+    # Integer inputs scan exactly; float inputs use float64 (parallel scan
+    # reorders additions, so verification below uses a tolerance for floats).
     n = len(data)
-    result = data.copy()
+    is_integer = np.issubdtype(np.asarray(data).dtype, np.integer)
+    dtype = np.int64 if is_integer else np.float64
+    size = 1
+    while size < n:
+        size *= 2
+    buf = np.zeros(size, dtype=dtype)
+    buf[:n] = data
     
-    # Up-sweep phase (reduce) - ensure we don't go out of bounds
+    # Up-sweep phase (reduce)
     step = 1
-    while step < n:
-        for i in range(0, n - step, 2 * step):
-            if i + 2 * step - 1 < n:  # Bounds check
-                result[i + 2 * step - 1] += result[i + step - 1]
+    while step < size:
+        for i in range(0, size, 2 * step):
+            buf[i + 2 * step - 1] += buf[i + step - 1]
         step *= 2
     
-    # Down-sweep phase (scan) - ensure we don't go out of bounds
-    result[n - 1] = 0
-    step = step // 2
+    # Down-sweep phase (scan)
+    buf[size - 1] = 0
+    step = size // 2
     while step >= 1:
-        for i in range(0, n - step, 2 * step):
-            if i + 2 * step - 1 < n:  # Bounds check
-                temp = result[i + step - 1]
-                result[i + step - 1] = result[i + 2 * step - 1]
-                result[i + 2 * step - 1] += temp
+        for i in range(0, size, 2 * step):
+            left = buf[i + step - 1]
+            buf[i + step - 1] = buf[i + 2 * step - 1]
+            buf[i + 2 * step - 1] += left
         step //= 2
     
+    result = buf[:n]
     end_time = time.time()
     print(f"Parallel prefix sum completed in {end_time - start_time:.6f} seconds")
     
+    # Verify against the exclusive prefix sum; a scan bug must fail loudly
+    expected = np.cumsum(data, dtype=dtype) - np.asarray(data, dtype=dtype)
+    if is_integer:
+        if not np.array_equal(result, expected):
+            raise ValueError("parallel prefix sum produced incorrect results")
+    elif not np.allclose(result, expected, rtol=1e-9, atol=1e-9):
+        raise ValueError("parallel prefix sum produced incorrect results")
     return result
 
 
@@ -225,16 +227,15 @@ def gpu_acceleration_benchmark() -> None:
     print("=" * 40)
     
     # Sequential computation
-    seq_volumes = sequential_volume_calculation(dataset)
+    seq_volumes, seq_time = sequential_volume_calculation(dataset)
     
     # CPU parallel computation
-    par_volumes = parallel_volume_calculation_cpu(dataset)
+    par_volumes, par_time = parallel_volume_calculation_cpu(dataset)
     
-    # Verify results match
-    if np.array_equal(seq_volumes, par_volumes):
-        print("✅ Parallel and sequential results match")
-    else:
-        print("❌ Results mismatch detected")
+    # Verify results match; a mismatch must fail loudly
+    if not np.array_equal(seq_volumes, par_volumes):
+        raise ValueError("parallel and sequential volume results mismatch")
+    print("✅ Parallel and sequential results match")
     
     # Benchmark prefix sum (scan) algorithm
     print("\n" + "=" * 40)
@@ -244,16 +245,8 @@ def gpu_acceleration_benchmark() -> None:
     # Use volume data for prefix sum demonstration
     prefix_result = parallel_prefix_sum_demo(seq_volumes)
     
-    # Verify prefix sum correctness
-    expected_prefix = np.cumsum(seq_volumes) - seq_volumes  # Exclusive prefix sum
-    if np.array_equal(prefix_result, expected_prefix):
-        print("✅ Prefix sum results are correct")
-    else:
-        print("❌ Prefix sum results mismatch")
-        print(f"   Expected first few: {expected_prefix[:5]}")
-        print(f"   Got first few:      {prefix_result[:5]}")
-        # For demonstration purposes, we'll use the correct numpy implementation
-        prefix_result = expected_prefix
+    # The scan verifies itself against the exclusive prefix sum and raises on mismatch
+    print("✅ Prefix sum results are correct")
     
     # Memory optimization demonstration
     print("\n" + "=" * 40)
@@ -268,8 +261,10 @@ def gpu_acceleration_benchmark() -> None:
     print("=" * 40)
     
     print("1. **Parallel Volume Calculation**:")
-    print("   - CPU parallel: ~{:.1f}x speedup over sequential".format(
-        len(dataset) / mp.cpu_count()))
+    print("   - Sequential: {:.3f}s vs CPU parallel: {:.3f}s -> {:.2f}x measured speedup".format(
+        seq_time, par_time, seq_time / par_time))
+    print("   - Per-task pickling overhead dominates for cheap kernels; real GPU")
+    print("     kernels amortize transfer with much larger per-thread work.")
     print("   - GPU expected: ~100-1000x speedup for large datasets")
     
     print("\n2. **Memory Bandwidth**:")
@@ -283,7 +278,6 @@ def gpu_acceleration_benchmark() -> None:
     print("\n4. **Dynamic Programming**:")
     print("   - Parallel prefix sums enable efficient optimization algorithms")
     print("   - CUDA Dynamic Parallelism handles varying computational loads")
-    
     print("\nThis demonstration shows the computational patterns that would")
     print("achieve significant speedups when implemented on GPU hardware.")
 

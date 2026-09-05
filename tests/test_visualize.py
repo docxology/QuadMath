@@ -1,14 +1,29 @@
 import os
 
+import pytest
+
+import visualize
 from visualize import plot_ivm_neighbors, plot_partition_tetrahedron, animate_discrete_path
 from quadray import Quadray
 from discrete_variational import discrete_ivm_descent
 
 
+@pytest.fixture(autouse=True)
+def _isolate_output_dirs(tmp_path, monkeypatch):
+    """Redirect figure/data output to tmp dirs so tests never touch (or
+    delete) the shared quadmath/output/ tree that the manuscript references."""
+    fig_dir = tmp_path / "figures"
+    data_dir = tmp_path / "data"
+    fig_dir.mkdir()
+    data_dir.mkdir()
+    monkeypatch.setattr(visualize, "get_figure_dir", lambda: str(fig_dir))
+    monkeypatch.setattr(visualize, "get_data_dir", lambda: str(data_dir))
+
+
 def test_plot_ivm_neighbors_saves_file():
     path = plot_ivm_neighbors(save=True)
     assert os.path.isfile(path)
-    os.remove(path)
+
 
 
 def test_plot_ivm_neighbors_no_save():
@@ -23,7 +38,7 @@ def test_plot_partition_tetrahedron_saves_file():
     psi = (2, 2, 1, 1)
     path = plot_partition_tetrahedron(mu, s, a, psi, save=True)
     assert os.path.isfile(path)
-    os.remove(path)
+
 
 
 def test_plot_partition_tetrahedron_no_save():
@@ -42,7 +57,7 @@ def test_animate_discrete_path_saves_file():
     dpath = discrete_ivm_descent(f, Quadray(6, 0, 0, 0), max_iter=10)
     out = animate_discrete_path(dpath, save=True)
     assert os.path.isfile(out)
-    os.remove(out)
+
 
 
 def test_animate_discrete_path_no_save():

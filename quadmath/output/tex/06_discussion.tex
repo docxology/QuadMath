@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,18 +42,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
@@ -56,7 +49,6 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -165,10 +157,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Discussion}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -179,8 +185,7 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+\section{Discussion}\label{discussion}
 
 Quadray geometry (Fuller.4D) offers an interpretable, quantized view of
 geometry, topology, information, and optimization. Integer volumes
@@ -223,9 +228,8 @@ functions and I/O:
 \href{https://gcc.gnu.org/onlinedocs/libquadmath/index.html}{GCC
 libquadmath}.
 
-\hypertarget{fisher-information-and-curvature}{%
 \subsection{Fisher Information and
-Curvature}\label{fisher-information-and-curvature}}
+Curvature}\label{fisher-information-and-curvature}
 
 The Fisher Information Matrix (FIM) defines a Riemannian metric on
 parameter space and quantifies local curvature of the statistical
@@ -258,10 +262,9 @@ compatibility). The shared economy---optimal routing through low-cost
 directions---links geodesic shells in architecture to geodesic flows in
 parameter spaces; see background on tensegrity/geodesic domes @Web.
 
-\hypertarget{quadray-coordinates-and-4d-structure-fuller.4d-vs-coxeter.4d-vs-einstein.4d}{%
 \subsection{Quadray Coordinates and 4D Structure (Fuller.4D vs
 Coxeter.4D vs
-Einstein.4D)}\label{quadray-coordinates-and-4d-structure-fuller.4d-vs-coxeter.4d-vs-einstein.4d}}
+Einstein.4D)}\label{quadray-coordinates-and-4d-structure-fuller.4d-vs-coxeter.4d-vs-einstein.4d}
 
 Quadray coordinates provide a tetrahedral basis with projective
 normalization, aligning with close-packed sphere centers (IVM).
@@ -275,9 +278,8 @@ Coxeter.4D for Euclidean embeddings, lengths, and simplex families,
 (iii) Einstein.4D for metric analogies only --- not for interpreting
 synergetic tetravolumes.
 
-\hypertarget{integrating-fim-with-quadray-models}{%
 \subsection{Integrating FIM with Quadray
-Models}\label{integrating-fim-with-quadray-models}}
+Models}\label{integrating-fim-with-quadray-models}
 
 Applying the FIM within quadray-parameterized models ties statistical
 curvature to tetrahedral structure. Practical takeaways:
@@ -302,13 +304,11 @@ curvature to tetrahedral structure. Practical takeaways:
   proposals.
 \end{itemize}
 
-\hypertarget{implications-for-optimization-and-estimation}{%
 \subsection{Implications for Optimization and
-Estimation}\label{implications-for-optimization-and-estimation}}
+Estimation}\label{implications-for-optimization-and-estimation}
 
-\hypertarget{clarifications-on-frequencytime-dimensions}{%
 \subsubsection{Clarifications on ``frequency/time''
-dimensions}\label{clarifications-on-frequencytime-dimensions}}
+dimensions}\label{clarifications-on-frequencytime-dimensions}
 
 \begin{itemize}
 \tightlist
@@ -322,9 +322,8 @@ dimensions}\label{clarifications-on-frequencytime-dimensions}}
   avoids category errors while preserving the intended interpretability.
 \end{itemize}
 
-\hypertarget{on-distance-based-tetravolume-formulas-clarification}{%
 \subsubsection{On distance-based tetravolume formulas
-(clarification)}\label{on-distance-based-tetravolume-formulas-clarification}}
+(clarification)}\label{on-distance-based-tetravolume-formulas-clarification}
 
 \begin{itemize}
 \tightlist
@@ -339,9 +338,8 @@ dimensions}\label{clarifications-on-frequencytime-dimensions}}
   notebooks and discussion.
 \end{itemize}
 
-\hypertarget{symbolic-analysis-bridging-vs-native-results-linkage}{%
 \subsubsection{Symbolic analysis (bridging vs native) (Results
-linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}}
+linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}
 
 \begin{itemize}
 \item
@@ -367,9 +365,8 @@ linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}}
   stable trajectories.
 \end{itemize}
 
-\hypertarget{community-ecosystem-and-validation}{%
 \subsection{Community Ecosystem and
-Validation}\label{community-ecosystem-and-validation}}
+Validation}\label{community-ecosystem-and-validation}
 
 The extensive computational ecosystem around Quadrays and synergetic
 geometry provides validation, pedagogical context, and practical

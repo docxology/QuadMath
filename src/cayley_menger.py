@@ -38,6 +38,13 @@ def ivm_tetra_volume_cayley_menger(d2: np.ndarray) -> float:
     Euclidean (XYZ) volume returned by ``tetra_volume_cayley_menger`` into IVM
     tetra-units, consistent with synergetics conventions.
 
+    Unit convention: ``d2`` must be measured in units where the
+    close-packing sphere radius is 1, i.e. the unit IVM tetrahedron has edge
+    2 (XYZ volume 4/(3*sqrt(2)) <-> IVM volume 1). Feeding distances at other
+    scales (e.g. directly from `squared_distances_from_quadrays` with
+    `DEFAULT_EMBEDDING`, whose unit tetra edge is 2*sqrt(2)) rescales IVM
+    volumes by (edge/2)^3.
+
     Parameters
     - d2: 4x4 ndarray of squared distances between vertices (zeros on diagonal).
 
@@ -65,6 +72,11 @@ def squared_distances_from_quadrays(
 
     Returns
     - np.ndarray: 4x4 symmetric matrix with zeros on the diagonal.
+
+    Note: with `quadray.DEFAULT_EMBEDDING` the unit IVM tetrahedron (origin
+    plus three IVM neighbor moves) has edge 2*sqrt(2); rescale the embedding
+    by 1/sqrt(2) if results must match the sphere-radius-1 convention of
+    `ivm_tetra_volume_cayley_menger`.
     """
     from quadray import to_xyz
     pts = [np.array(to_xyz(p, embedding)) for p in (p0, p1, p2, p3)]

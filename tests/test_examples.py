@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 from examples import (
     example_ivm_neighbors,
     example_volume,
@@ -11,7 +13,8 @@ from examples import (
 def test_examples_ivm_neighbors_and_volume():
     pts = example_ivm_neighbors()
     assert len(pts) == 12
-    assert example_volume() == 1
+    # Primitive tetra: exact IVM volume is 1/4 under the exact |det|/4 semantics
+    assert example_volume() == Fraction(1, 4)
 
 
 def test_example_optimize_runs():
@@ -25,13 +28,15 @@ def test_example_partition_tetra_volume_basic():
     a = (1, 1, 2, 0)
     psi = (2, 2, 1, 1)
     V = example_partition_tetra_volume(mu, s, a, psi)
-    assert isinstance(V, int)
+    assert isinstance(V, Fraction)
     assert V >= 0
 
 
 def test_cuboctahedron_neighbors_and_xyz():
     neis = example_cuboctahedron_neighbors()
     assert len(neis) == 12
+    # Same set as example_ivm_neighbors (shared implementation), deterministic order
+    assert neis == example_ivm_neighbors()
     xyz = example_cuboctahedron_vertices_xyz()
     assert len(xyz) == 12
     # All neighbors lie at the same radius under the default embedding

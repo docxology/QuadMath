@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 from quadray import (
     Quadray,
     integer_tetra_volume,
@@ -21,11 +23,23 @@ def test_normalize():
 
 
 def test_volume_unit_tetra():
+    # Unit IVM tetrahedron: origin plus three (2,1,1,0)-type neighbor moves
+    p0 = Quadray(0, 0, 0, 0)
+    p1 = Quadray(2, 1, 1, 0)
+    p2 = Quadray(1, 2, 1, 0)
+    p3 = Quadray(1, 1, 2, 0)
+    v = integer_tetra_volume(p0, p1, p2, p3)
+    assert v == 1 and isinstance(v, Fraction)
+
+
+def test_volume_primitive_tetra_is_one_quarter():
+    # Regression for the old divide-by-4-only-if-divisible heuristic, which
+    # reported 1 for this tetrahedron (true exact IVM volume is 1/4)
     p0 = Quadray(0, 0, 0, 0)
     p1 = Quadray(1, 0, 0, 0)
     p2 = Quadray(0, 1, 0, 0)
     p3 = Quadray(0, 0, 1, 0)
-    assert integer_tetra_volume(p0, p1, p2, p3) == 1
+    assert integer_tetra_volume(p0, p1, p2, p3) == Fraction(1, 4)
 
 
 def test_ace_tetravolume_matches_integer_tetra_volume():
@@ -36,11 +50,20 @@ def test_ace_tetravolume_matches_integer_tetra_volume():
     # These form a unit IVM tetrahedron from a common origin
     v1 = integer_tetra_volume(p0, p1, p2, p3)
     v2 = ace_tetravolume_5x5(p0, p1, p2, p3)
-    assert v1 == 1 and v2 == 1
+    assert v1 == 1 and v2 == 1 and v1 == v2
 
 
-def test_volume_divisible_by_four_branch():
-    # Projections diag(2,2,2) => determinant 8, normalization returns 2
+def test_ace_and_integer_agree_on_non_divisible_determinant():
+    # Old behavior disagreed here: integer heuristic returned 1, Ace floored to 0
+    p0 = Quadray(0, 0, 0, 0)
+    p1 = Quadray(1, 0, 0, 0)
+    p2 = Quadray(0, 1, 0, 0)
+    p3 = Quadray(0, 0, 1, 0)
+    assert ace_tetravolume_5x5(p0, p1, p2, p3) == integer_tetra_volume(p0, p1, p2, p3) == Fraction(1, 4)
+
+
+def test_volume_exact_scaled_tetra():
+    # Determinant 8 => exact volume 8/4 = 2 (no divisibility special-casing)
     p0 = Quadray(0, 0, 0, 0)
     p1 = Quadray(2, 0, 0, 0)
     p2 = Quadray(0, 2, 0, 0)

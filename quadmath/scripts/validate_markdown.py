@@ -24,12 +24,31 @@ LINK_PATTERN = re.compile(r"\[([^\]]+)\]\((https?://[^\)]+)\)")
 BARE_URL_PATTERN = re.compile(r"(?<!\]\()https?://\S+")
 
 
+def strip_code_fences(text: str) -> str:
+    """Remove fenced code blocks (``` / ~~~) so examples are not validated as content."""
+    out: List[str] = []
+    in_fence = False
+    fence_marker = ""
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if not in_fence and (stripped.startswith("```") or stripped.startswith("~~~")):
+            in_fence = True
+            fence_marker = stripped[:3]
+            continue
+        if in_fence and stripped.startswith(fence_marker):
+            in_fence = False
+            fence_marker = ""
+            continue
+        if not in_fence:
+            out.append(line)
+    return "\n".join(out)
+
 def collect_symbols(md_paths: List[str]) -> Tuple[Set[str], Set[str]]:
     labels: Set[str] = set()
     anchors: Set[str] = set()
     for path in md_paths:
         with open(path, "r", encoding="utf-8") as fh:
-            text = fh.read()
+            text = strip_code_fences(fh.read())
         labels.update(EQ_LABEL_PATTERN.findall(text))
         anchors.update(ANCHOR_PATTERN.findall(text))
     return labels, anchors
@@ -39,7 +58,7 @@ def validate_images(md_paths: List[str], repo_root: str) -> List[str]:
     problems: List[str] = []
     for path in md_paths:
         with open(path, "r", encoding="utf-8") as fh:
-            text = fh.read()
+            text = strip_code_fences(fh.read())
         for img in IMG_PATTERN.findall(text):
             # Strip optional attributes after ) are not included by regex
             img_clean = img.split()[0]
@@ -56,7 +75,7 @@ def validate_refs(md_paths: List[str], labels: Set[str], anchors: Set[str], repo
     problems: List[str] = []
     for path in md_paths:
         with open(path, "r", encoding="utf-8") as fh:
-            text = fh.read()
+            text = strip_code_fences(fh.read())
         for ref in EQ_REF_PATTERN.findall(text):
             if ref not in labels:
                 problems.append(f"Missing equation label for \\eqref{{{ref}}} in {os.path.relpath(path, repo_root)}")
@@ -84,7 +103,7 @@ def validate_math(md_paths: List[str], repo_root: str) -> List[str]:
     seen_labels: Set[str] = set()
     for path in md_paths:
         with open(path, "r", encoding="utf-8") as fh:
-            text = fh.read()
+            text = strip_code_fences(fh.read())
         # Disallow $$ and \[ \] display math in sources
         if "$$" in text:
             problems.append(f"Use equation environment instead of $$ in {os.path.relpath(path, repo_root)}")

@@ -133,11 +133,13 @@ The table below enumerates public symbols from `src/` modules.
 | Module | Symbol | Kind | Signature | Summary |
 | --- | --- | --- | --- | --- |
 | `cayley_menger` | `ivm_tetra_volume_cayley_menger` | function | `(d2)` | Compute IVM tetravolume from squared distances via Cayley–Menger. |
+| `cayley_menger` | `squared_distances_from_quadrays` | function | `(p0, p1, p2, p3, embedding)` | Build the 4x4 squared-distance matrix from four quadray vertices. |
+| `cayley_menger` | `tetra_circumradius` | function | `(d2)` | Circumscribed sphere radius of a tetrahedron from squared distances. |
+| `cayley_menger` | `tetra_inradius` | function | `(d2)` | Inscribed sphere radius of a tetrahedron from squared distances. |
 | `cayley_menger` | `tetra_volume_cayley_menger` | function | `(d2)` | Compute Euclidean tetrahedron volume from squared distances (Coxeter.4D). |
 | `conversions` | `quadray_to_xyz` | function | `(q, M)` | Map a `Quadray` to Cartesian XYZ via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `conversions` | `urner_embedding` | function | `(scale)` | Return a 3x4 Urner-style symmetric embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `discrete_variational` | `DiscretePath` | class | `` | Optimization trajectory on the integer quadray lattice. |
-| `discrete_variational` | `OptionalMoves` | class | `` |  |
 | `discrete_variational` | `apply_move` | function | `(q, delta)` | Apply a lattice move and normalize to the canonical representative. |
 | `discrete_variational` | `discrete_ivm_descent` | function | `(objective, start, moves=, max_iter=, on_step=)` | Greedy discrete descent over the quadray integer lattice. |
 | `discrete_variational` | `neighbor_moves_ivm` | function | `()` | Return the 12 canonical IVM neighbor moves as Quadray deltas. |
@@ -146,8 +148,11 @@ The table below enumerates public symbols from `src/` modules.
 | `examples` | `example_ivm_neighbors` | function | `()` | Return the 12 nearest IVM neighbors as permutations of {2,1,1,0} (Fuller.4D). |
 | `examples` | `example_optimize` | function | `()` | Run Nelder–Mead over integer quadrays for a simple convex objective (Fuller.4D). |
 | `examples` | `example_partition_tetra_volume` | function | `(mu, s, a, psi)` | Construct a tetrahedron from the four-fold partition and return tetravolume (Fuller.4D). |
-| `examples` | `example_volume` | function | `()` | Compute the unit IVM tetrahedron volume from simple quadray vertices (Fuller.4D). |
+| `examples` | `example_volume` | function | `()` | Return the exact IVM tetravolume of the primitive lattice tetrahedron. |
+| `geometry` | `lorentz_factor` | function | `(v, c)` | Lorentz factor gamma = 1 / sqrt(1 - v^2/c^2) (Einstein.4D). |
 | `geometry` | `minkowski_interval` | function | `(dt, dx, dy, dz, c)` | Return the Minkowski interval squared ds^2 (Einstein.4D). |
+| `geometry` | `proper_time` | function | `(dt, dx, dy, dz, c)` | Proper time elapsed for a timelike interval (Einstein.4D). |
+| `geometry` | `spacetime_classify` | function | `(ds2, tol)` | Classify a Minkowski interval squared as timelike, spacelike, or lightlike. |
 | `glossary_gen` | `ApiEntry` | class | `` |  |
 | `glossary_gen` | `build_api_index` | function | `(src_dir)` |  |
 | `glossary_gen` | `generate_markdown_table` | function | `(entries)` |  |
@@ -159,19 +164,26 @@ The table below enumerates public symbols from `src/` modules.
 | `information` | `fisher_information_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. |
 | `information` | `fisher_information_quadray` | function | `(gradients, embedding_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. |
 | `information` | `free_energy` | function | `(log_p_o_given_s, q, p)` | Variational free energy for discrete latent states. |
+| `information` | `information_gain` | function | `(prior, posterior, eps)` | Information gain (Bayesian surprise) between prior and posterior. |
 | `information` | `information_geometric_distance` | function | `(F, x1, x2)` | Compute information-geometric distance between two points. |
+| `information` | `mutual_information` | function | `(p_joint, eps)` | Mutual information I(X; Y) from a joint probability matrix. |
 | `information` | `natural_gradient_step` | function | `(gradient, fisher, step_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. |
 | `information` | `perception_update` | function | `(mu, derivative_operator, free_energy_fn, step_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. |
 | `linalg_utils` | `bareiss_determinant_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. |
+| `linalg_utils` | `bareiss_rank` | function | `(matrix)` | Compute the exact integer rank of a matrix via Bareiss elimination. |
+| `linalg_utils` | `integer_adjugate` | function | `(matrix)` | Compute the exact integer adjugate (classical adjoint) of a square matrix. |
 | `metrics` | `fim_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. |
 | `metrics` | `fisher_condition_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. |
 | `metrics` | `fisher_curvature_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. |
 | `metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
+| `metrics` | `fisher_rao_metric` | function | `(p, q, eps)` | Fisher–Rao geodesic distance on the probability simplex. |
 | `metrics` | `information_length` | function | `(path_gradients)` | Path length in information space via gradient-weighted arc length. |
+| `metrics` | `jensen_shannon_divergence` | function | `(p, q, eps)` | Jensen–Shannon divergence JSD(p \|\| q) for discrete distributions. |
+| `metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence D_KL(p \|\| q) for discrete distributions. |
 | `metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
 | `nelder_mead_quadray` | `SimplexState` | class | `` |  |
 | `nelder_mead_quadray` | `centroid_excluding` | function | `(vertices, exclude_idx)` | Integer centroid of three vertices, excluding the specified index. |
-| `nelder_mead_quadray` | `compute_volume` | function | `(vertices)` | Integer IVM tetra-volume from the first four vertices. |
+| `nelder_mead_quadray` | `compute_volume` | function | `(vertices)` | Exact IVM tetra-volume (a Fraction, \|det\|/4) of the first four vertices. |
 | `nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
@@ -181,10 +193,14 @@ The table below enumerates public symbols from `src/` modules.
 | `paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
 | `quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
 | `quadray` | `Quadray` | class | `` | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
-| `quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant in IVM units (Fuller.4D). |
+| `quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
+| `quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
+| `quadray` | `centroid` | function | `(*quads)` | Component-wise mean of quadray points, rounded to the nearest lattice point. |
+| `quadray` | `distance` | function | `(q1, q2, embedding)` | Euclidean distance between two quadray points under the given embedding. |
 | `quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
-| `quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute integer tetra-volume using det[p1-p0, p2-p0, p3-p0] (Fuller.4D). |
+| `quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
 | `quadray` | `magnitude` | function | `(q, embedding)` | Return Euclidean magnitude \|\|q\|\| under the given embedding (vector norm). |
+| `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the nearest integer quadray lattice point. |
 | `quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |

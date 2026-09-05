@@ -40,7 +40,7 @@ def plot_ivm_neighbors(embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING,
 
     Parameters
     - embedding: 3x4 mapping from A,B,C,D to X,Y,Z (defaults to symmetric embedding).
-    - save: If True, write PNG to `quadmath/output/`, else return empty string.
+    - save: If True, write PNG to `quadmath/output/figures/`, else return empty string.
 
     Returns
     - str: Output file path if saved, else "".
@@ -143,7 +143,7 @@ def animate_simplex(vertices_list, embedding: Iterable[Iterable[float]] = DEFAUL
 def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
     """Plot per-iteration diagnostics for Nelder–Mead.
 
-    Shows best/worst objective values and spread on the left axis and integer
+    Shows best/worst objective values and spread on the left axis and exact
     IVM tetra-volume on the right axis across iterations. Saves PNG and raw
     CSV/NPZ data under `quadmath/output/` when save=True.
 
@@ -167,8 +167,9 @@ def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
     ax1.grid(True, alpha=0.3)
 
     ax2 = ax1.twinx()
-    ax2.step(iterations, state.volumes, label="volume (IVM)", color="tab:blue", where="post")
-    ax2.set_ylabel("integer volume")
+    volumes = [float(v) for v in state.volumes]  # exact Fractions -> floats for plotting
+    ax2.step(iterations, volumes, label="volume (IVM)", color="tab:blue", where="post")
+    ax2.set_ylabel("IVM volume")
 
     # Combine legends
     lines, labels = ax1.get_legend_handles_labels()
@@ -182,20 +183,18 @@ def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
     fig.savefig(png_path, dpi=160, bbox_inches="tight")
 
     # Save raw arrays
-    import numpy as np  # local import to keep module imports minimal
-    import csv
     np.savez(
         os.path.join(data_dir, "simplex_trace.npz"),
         iterations=np.array(iterations, dtype=int),
         best_values=np.array(state.best_values, dtype=float),
         worst_values=np.array(state.worst_values, dtype=float),
         spreads=np.array(state.spreads, dtype=float),
-        volumes=np.array(state.volumes, dtype=int),
+        volumes=np.array(volumes, dtype=float),
     )
     with open(os.path.join(data_dir, "simplex_trace.csv"), "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["iteration", "best", "worst", "spread", "volume"])
-        for i, b, w, s, v in zip(iterations, state.best_values, state.worst_values, state.spreads, state.volumes):
+        for i, b, w, s, v in zip(iterations, state.best_values, state.worst_values, state.spreads, volumes):
             writer.writerow([i, b, w, s, v])
 
     plt.close(fig)
@@ -307,9 +306,6 @@ def animate_discrete_path(
     ani.save(outpath, writer="ffmpeg", fps=3)
 
     # Save raw data
-    import numpy as np  # local to avoid polluting module scope earlier
-    import csv
-    import os
 
     q_arr = np.array([q.as_tuple() for q in path.path], dtype=int)
     xyz_arr = np.array([to_xyz(q, embedding) for q in path.path], dtype=float)

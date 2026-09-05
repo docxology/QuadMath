@@ -2,8 +2,23 @@ from __future__ import annotations
 
 import types
 
+import pytest
+
+import visualize
 from visualize import _set_axes_equal, animate_discrete_path
 from discrete_variational import DiscretePath
+
+
+@pytest.fixture(autouse=True)
+def _isolate_output_dirs(tmp_path, monkeypatch):
+    """Redirect figure/data output to tmp dirs so tests never touch the
+    shared quadmath/output/ tree that the manuscript references."""
+    fig_dir = tmp_path / "figures"
+    data_dir = tmp_path / "data"
+    fig_dir.mkdir()
+    data_dir.mkdir()
+    monkeypatch.setattr(visualize, "get_figure_dir", lambda: str(fig_dir))
+    monkeypatch.setattr(visualize, "get_data_dir", lambda: str(data_dir))
 
 
 class DummyAxis:

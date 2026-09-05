@@ -15,8 +15,8 @@ deleted.
 ## Medium
 
 - [x] Entry doc had no status/next-actions section (orientation ladder) — added Status & Next Actions pointing at MANUSCRIPT_STATUS.md and TODO.md. (README.md)
-- [ ] Render pipeline advertises DOI `10.5281/zenodo.16887800` in `quadmath/scripts/render_pdf.sh:33` while README/docs cite `10.5281/zenodo.16887791` — confirm which DOI is canonical for the rendered PDF stamp and unify (source change, needs owner decision). (quadmath/scripts/render_pdf.sh, README.md)
-- [ ] Full pytest collection is pathologically slow (>5 min; blocked two audit attempts) on external-drive checkouts — consider `--co -q` guidance or a `.pytest_cache`/`-p no:cacheprovider` note in tests/README if a cause is identified. (tests/README.md)
+- [x] Render pipeline advertised DOI `10.5281/zenodo.16887800` in `quadmath/scripts/render_pdf.sh` while README/docs cite `10.5281/zenodo.16887791` — unified to `10.5281/zenodo.16887791` (cited in 6 doc locations vs 1; canonical per README/AGENTS/docs). (quadmath/scripts/render_pdf.sh, README.md)
+- [x] Full pytest collection was pathologically slow (>5 min) on external-drive checkouts — cause identified: corrupted `.venv` (broken numpy/matplotlib installs make each module import fail and retry). Healthy-venv full suite: ~1.5 min. Diagnosis + repair commands documented in tests/README.md. (tests/README.md)
 
 ## Major
 

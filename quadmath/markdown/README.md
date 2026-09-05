@@ -100,7 +100,7 @@ uv run python quadmath/scripts/validate_markdown.py --strict
 
 ### What Gets Validated
 
-1. **Image references** - All `![...](path)` must resolve to existing files
+1. **Image references** - every image embed (caption plus relative path) must resolve to an existing file under `quadmath/output/`
 2. **Equation labels** - All `\label{eq:...}` must be unique
 3. **Internal links** - Anchors must exist in target files
 4. **URL format** - No bare URLs (use `[text](url)` format)

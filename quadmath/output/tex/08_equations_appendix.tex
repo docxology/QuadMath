@@ -1,23 +1,27 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
-%
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
   10pt,
 ]{article}
-\usepackage{lmodern}
-\usepackage{setspace}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
   \setmainfont[]{DejaVu Serif}
   \setmonofont[]{DejaVu Sans Mono}
 \fi
@@ -27,6 +31,7 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -37,18 +42,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  colorlinks=true,
-  linkcolor=red,
-  filecolor=red,
-  citecolor=red,
-  urlcolor=red,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
 \usepackage{listings}
 \newcommand{\passthrough}[1]{#1}
 \lstset{defaultdialect=[5.3]Lua}
@@ -56,7 +49,6 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{3}
 % Enable graphics inclusion and ensure figure numbering works
 \usepackage{graphicx}
 \renewcommand{\figurename}{Figure}
@@ -165,10 +157,24 @@
 }
 
 % Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Equations and Math Supplement}
-\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887800}
-\date{August 16, 2025}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{September 05, 2026}
 
 \begin{document}
 \maketitle
@@ -179,13 +185,11 @@
 \tableofcontents
 }
 \setstretch{1.0}
-\hypertarget{equations-and-math-supplement-appendix}{%
 \section{Equations and Math Supplement
-(Appendix)}\label{equations-and-math-supplement-appendix}}
+(Appendix)}\label{equations-and-math-supplement-appendix}
 
-\hypertarget{volume-of-a-tetrahedron-lattice}{%
 \subsection{Volume of a Tetrahedron
-(Lattice)}\label{volume-of-a-tetrahedron-lattice}}
+(Lattice)}\label{volume-of-a-tetrahedron-lattice}
 
 \begin{equation}\label{eq:lattice_det}
 V = \tfrac{1}{6}\,\left|\det\,[\,P_1 - P_0,\; P_2 - P_0,\; P_3 - P_0\,]\right|
@@ -222,8 +226,7 @@ Notes.
   encodes the affine constraint. Division by 4 returns IVM tetravolume.
 \end{itemize}
 
-\hypertarget{expanded-ace-55-matrix}{%
-\subsection{Expanded Ace 5×5 Matrix}\label{expanded-ace-55-matrix}}
+\subsection{Expanded Ace 5×5 Matrix}\label{expanded-ace-55-matrix}
 
 The expanded form of the Ace 5×5 matrix with explicit Quadray
 coordinates:
@@ -272,9 +275,8 @@ Notes.
   conversion to IVM units uses \(S3=\sqrt{9/8}\) as used throughout.
 \end{itemize}
 
-\hypertarget{cayley-menger-determinant-coxeter.4d}{%
 \subsection{Cayley-Menger Determinant
-(Coxeter.4D)}\label{cayley-menger-determinant-coxeter.4d}}
+(Coxeter.4D)}\label{cayley-menger-determinant-coxeter.4d}
 
 For tetrahedron volume from edge lengths (Coxeter.4D approach):
 
@@ -304,9 +306,8 @@ Notes.
   \(S3=\sqrt{9/8}\) to convert to IVM units.
 \end{itemize}
 
-\hypertarget{piero-della-francesca-formula-pdf}{%
 \subsection{Piero della Francesca Formula
-(PDF)}\label{piero-della-francesca-formula-pdf}}
+(PDF)}\label{piero-della-francesca-formula-pdf}
 
 For tetrahedron volume from edge lengths meeting at a vertex:
 
@@ -326,9 +327,8 @@ Notes.
   \(S3=\sqrt{9/8}\).
 \end{itemize}
 
-\hypertarget{gerald-de-jong-formula-gdj}{%
 \subsection{Gerald de Jong Formula
-(GdJ)}\label{gerald-de-jong-formula-gdj}}
+(GdJ)}\label{gerald-de-jong-formula-gdj}
 
 Native Quadray formula for tetrahedron volume:
 
@@ -364,8 +364,7 @@ algorithm}. External validation: these formulas align with
 implementations in the 4dsolutions ecosystem. See the
 \href{07_resources.md}{Resources} section for comprehensive details.
 
-\hypertarget{eq:fim}{%
-\subsection{Fisher Information Matrix (FIM)}\label{eq:fim}}
+\subsection{Fisher Information Matrix (FIM)}\label{eq:fim}
 
 Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
@@ -393,9 +392,8 @@ See \passthrough{\lstinline!src/information.py!} --- empirical
 outer-product estimator
 (\passthrough{\lstinline!fisher\_information\_matrix!}).
 
-\hypertarget{empirical-fisher-information-matrix}{%
 \subsection{Empirical Fisher Information
-Matrix}\label{empirical-fisher-information-matrix}}
+Matrix}\label{empirical-fisher-information-matrix}
 
 For empirical estimation from data, the Fisher Information Matrix is
 computed as:
@@ -416,8 +414,7 @@ Notes.
   applications.
 \end{itemize}
 
-\hypertarget{eq:natgrad}{%
-\subsection{Natural Gradient}\label{eq:natgrad}}
+\subsection{Natural Gradient}\label{eq:natgrad}
 
 Background:
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural gradient}
@@ -444,8 +441,7 @@ See code:
 See \passthrough{\lstinline!src/information.py!} --- damped
 inverse-Fisher step (\passthrough{\lstinline!natural\_gradient\_step!}).
 
-\hypertarget{eq:free_energy}{%
-\subsection{Free Energy (Active Inference)}\label{eq:free_energy}}
+\subsection{Free Energy (Active Inference)}\label{eq:free_energy}
 
 \begin{equation}\label{eq:free_energy}
 \mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
@@ -475,25 +471,22 @@ trajectories and free energy landscapes are shown in
 appendix focuses on unique figures specific to mathematical formulations
 and validation.
 
-\hypertarget{quadray-normalization-fuller.4d}{%
 \subsection{Quadray Normalization
-(Fuller.4D)}\label{quadray-normalization-fuller.4d}}
+(Fuller.4D)}\label{quadray-normalization-fuller.4d}
 
 Given \(q=(a,b,c,d)\), choose \(k=\min(a,b,c,d)\) and set
 \(q' = q - (k,k,k,k)\) to enforce at least one zero with non-negative
 entries.
 
-\hypertarget{distance-embedding-sketch-coxeter.4d-slice}{%
 \subsection{Distance (Embedding Sketch; Coxeter.4D
-slice)}\label{distance-embedding-sketch-coxeter.4d-slice}}
+slice)}\label{distance-embedding-sketch-coxeter.4d-slice}
 
 Choose linear map \(M\) from quadray to \(\mathbb{R}^3\) (or
 \(\mathbb{R}^4\)) consistent with tetrahedral axes; then
 \(d(q_1,q_2) = \lVert M(q_1) - M(q_2) \rVert_2\).
 
-\hypertarget{minkowski-line-element-einstein.4d-analogy}{%
 \subsection{Minkowski Line Element (Einstein.4D
-analogy)}\label{minkowski-line-element-einstein.4d-analogy}}
+analogy)}\label{minkowski-line-element-einstein.4d-analogy}
 
 \begin{equation}\label{eq:minkowski_line_element}
 ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
@@ -502,9 +495,8 @@ ds^2 = -c^2\,dt^2 + dx^2 + dy^2 + dz^2
 Background:
 \href{https://en.wikipedia.org/wiki/Minkowski_space}{Minkowski space}.
 
-\hypertarget{high-precision-arithmetic-note}{%
 \subsection{High-Precision Arithmetic
-Note}\label{high-precision-arithmetic-note}}
+Note}\label{high-precision-arithmetic-note}
 
 When evaluating determinants, FIMs, or geodesic distances for sensitive
 problems, use quad precision (binary128) via GCC's
@@ -516,9 +508,8 @@ problems, use quad precision (binary128) via GCC's
 libquadmath}. Where possible, it is useful to use symbolic math
 libraries like SymPy to compute exact values.
 
-\hypertarget{reproducibility-artifacts-and-external-validation}{%
 \subsubsection{Reproducibility artifacts and external
-validation}\label{reproducibility-artifacts-and-external-validation}}
+validation}\label{reproducibility-artifacts-and-external-validation}
 
 \begin{itemize}
 \tightlist
@@ -556,9 +547,8 @@ validation}\label{reproducibility-artifacts-and-external-validation}}
   validation.
 \end{itemize}
 
-\hypertarget{namespaces-summary-notation}{%
 \subsection{Namespaces summary
-(notation)}\label{namespaces-summary-notation}}
+(notation)}\label{namespaces-summary-notation}
 
 \begin{itemize}
 \tightlist

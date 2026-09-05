@@ -146,18 +146,18 @@ Notes.
 
 For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice (Fuller.4D), see Eq. \eqref{eq:lattice_det} in the equations appendix.
 
-- With integer coordinates, the determinant is integer; lattice tetrahedra yield integer volumes.
-- Unit conventions: regular tetrahedron volume = 1 (synergetics).
+- With integer quadray coordinates the projected determinant is an exact integer, and the IVM tetravolume is the exact rational $|{\det}|/4$ (see Eq. \eqref{eq:gdj}), implemented with `fractions.Fraction` in `integer_tetra_volume` and `ace_tetravolume_5x5`. Volumes are integral for tetrahedra that tile into unit IVM tetras (determinant divisible by 4) and fractional otherwise: the primitive tetrahedron spanned by $(0,0,0,0)$, $(1,0,0,0)$, $(0,1,0,0)$, $(0,0,1,0)$ has determinant 1 and exact volume $\tfrac{1}{4}$.
+- Unit conventions: the unit IVM tetrahedron (origin plus three IVM neighbor moves, permutations of $(2,1,1,0)$) has determinant 4 and volume exactly 1 (synergetics).
 
 Notes.
 
 - $P_0,\ldots,P_3$ are tetrahedron vertices in Quadray coordinates.
-- $V$ is the Euclidean volume measured in IVM tetra-units; the $1/6$ factor converts the parallelepiped determinant to a tetra volume.
+- $V$ in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ) volume; converting it to IVM tetra-units requires the synergetics scale factor $S3=\sqrt{9/8}$ in sphere-radius units (Eq. \eqref{eq:xyz_det}). For lattice tetrahedra, the direct quadray formula Eq. \eqref{eq:gdj} yields the IVM volume exactly, without unit conversion.
 - Background and variations are discussed under Tetrahedron volume formulas: [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
 
 Tom Ace 5×5 determinant (tetravolume directly from quadrays), see Eq. \eqref{eq:ace5x5} in the equations appendix.
 
-This returns the same integer volumes for lattice tetrahedra. See the implementation `ace_tetravolume_5x5`.
+This returns the same exact tetravolumes as `integer_tetra_volume` for every lattice tetrahedron: $|\det_{5\times5}|$ always equals the magnitude of the projected $3\times3$ determinant, so both implementations agree exactly (both return `fractions.Fraction` values $|\det|/4$).
 
 Notes.
 
@@ -329,12 +329,12 @@ A = random_walk(Quadray(0,0,0,0), 1000)
 B = random_walk(Quadray(0,0,0,0), 1000)
 C = random_walk(Quadray(0,0,0,0), 1000)
 D = random_walk(Quadray(0,0,0,0), 1000)
-V = ace_tetravolume_5x5(A,B,C,D)            # integer
+V = ace_tetravolume_5x5(A,B,C,D)            # exact IVM volume as a Fraction
 ```
 
 ### Algebraic precision
 
-- Determinants via floating-point introduce rounding noise. For exact arithmetic, use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm) (already used by `ace_tetravolume_5x5`) or symbolic engines (e.g., `sympy`). For large random-walk examples with integer inputs, volumes are exact integers.
+- Determinants via floating-point introduce rounding noise. For exact arithmetic, use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm) (already used by `ace_tetravolume_5x5`) or symbolic engines (e.g., `sympy`). For random-walk examples with integer quadray inputs, volumes are exact rationals (`fractions.Fraction`): integral when the tetrahedron decomposes into unit IVM tetras, fractional (in quarters) otherwise.
 - When computing via XYZ determinants, high-precision floats (e.g., `gmpy2.mpfr`) or symbolic matrices avoid vestigial errors; round at the end if the underlying result is known to be integral.
 
 ### XYZ determinant and the S3 conversion
@@ -411,7 +411,7 @@ Source: `src/quadray.py` — return Euclidean dot product <q1,q2> under the give
 
 #### `integer_tetra_volume` {#code:integer_tetra_volume}
 
-Source: `src/quadray.py` — integer 3×3 determinant for lattice tetravolume.
+Source: `src/quadray.py` — exact projected $3\times3$ determinant over 4, i.e. the IVM tetravolume $|\det|/4$ as a `fractions.Fraction`.
 
 #### `ace_tetravolume_5x5` {#code:ace_tetravolume_5x5}
 
@@ -531,11 +531,11 @@ Source: `src/metrics.py` — compare Fisher information matrices between coordin
 
 #### `example_ivm_neighbors` {#code:example_ivm_neighbors}
 
-Source: `src/examples.py` — return the 12 nearest IVM neighbors as permutations of {2,1,1,0}.
+Source: `src/examples.py` — return the 12 nearest IVM neighbors as permutations of {2,1,1,0} (neighbor-move-set role).
 
 #### `example_cuboctahedron_neighbors` {#code:example_cuboctahedron_neighbors}
 
-Source: `src/examples.py` — return twelve-around-one IVM neighbors (vector equilibrium shell).
+Source: `src/examples.py` — return twelve-around-one IVM neighbors (vector-equilibrium-shell role). Same set as `example_ivm_neighbors`; both public names are documented API sharing one sorted, deterministic implementation.
 
 #### `example_cuboctahedron_vertices_xyz` {#code:example_cuboctahedron_vertices_xyz}
 
@@ -543,7 +543,7 @@ Source: `src/examples.py` — return XYZ coordinates for the twelve-around-one n
 
 #### `example_partition_tetra_volume` {#code:example_partition_tetra_volume}
 
-Source: `src/examples.py` — construct a tetrahedron from the four-fold partition and return tetravolume.
+Source: `src/examples.py` — construct a tetrahedron from the four-fold partition and return the exact IVM tetravolume (`fractions.Fraction`).
 
 ### Symbolic computation {#code:symbolic}
 
@@ -615,17 +615,13 @@ Source: `src/nelder_mead_quadray.py` — project a quadray to the canonical latt
 
 #### `compute_volume` {#code:compute_volume}
 
-Source: `src/nelder_mead_quadray.py` — integer IVM tetra-volume from the first four vertices.
+Source: `src/nelder_mead_quadray.py` — exact IVM tetra-volume (`fractions.Fraction`, $|\det|/4$) from the first four vertices.
 
 ### Discrete variational components {#code:discrete_variational}
 
 #### `DiscretePath` {#code:DiscretePath}
 
 Source: `src/discrete_variational.py` — optimization trajectory on the integer quadray lattice.
-
-#### `OptionalMoves` {#code:OptionalMoves}
-
-Source: `src/discrete_variational.py` — lightweight protocol for optional typing of moves parameter.
 
 ### Glossary generation {#code:glossary}
 
@@ -649,7 +645,7 @@ Source: `src/geometry.py` — return the Minkowski interval squared ds² (Einste
 
 Relevant tests (`tests/`):
 
-- `test_quadray.py` (unit IVM tetra, divisibility-by-4 scaling, Ace vs. integer method)
+- `test_quadray.py` (unit IVM tetra, primitive tetra = 1/4, exact scaled volume, Ace vs. integer agreement)
 - `test_quadray_cov.py` (Ace determinant basic check)
 - `test_cayley_menger.py` (regular tetra volume in XYZ units)
 - `test_linalg_utils.py` (Bareiss determinant behavior)

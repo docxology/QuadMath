@@ -7,13 +7,13 @@ This directory contains the core Python implementation of QuadMath mathematical 
 | Module | Purpose | Key Exports |
 |--------|---------|-------------|
 | `quadray.py` | Core Quadray coordinate system | `Quadray`, `to_xyz`, `integer_tetra_volume`, `ace_tetravolume_5x5` |
-| `cayley_menger.py` | Cayley-Menger determinant methods | `cayley_menger_tetravolume`, `cm_distance_matrix` |
+| `cayley_menger.py` | Cayley-Menger determinant methods | `tetra_volume_cayley_menger`, `ivm_tetra_volume_cayley_menger`, `squared_distances_from_quadrays`, `tetra_circumradius`, `tetra_inradius` |
 | `information.py` | Information geometry & Active Inference | `fisher_information_matrix`, `free_energy`, `active_inference_step` |
 | `metrics.py` | Information-theoretic metrics | `shannon_entropy`, `fim_eigenspectrum`, `fisher_curvature_analysis` |
 | `discrete_variational.py` | IVM lattice optimization | `neighbor_moves_ivm`, `discrete_ivm_descent`, `DiscretePath` |
 | `nelder_mead_quadray.py` | Nelder-Mead on quadray lattice | `nelder_mead_quadray`, `SimplexState` |
 | `visualize.py` | Plotting and animation | `plot_ivm_neighbors`, `animate_simplex`, `plot_simplex_trace` |
-| `linalg_utils.py` | Linear algebra utilities | `bareiss_determinant_int` |
+| `linalg_utils.py` | Linear algebra utilities | `bareiss_determinant_int`, `bareiss_rank`, `integer_adjugate` |
 | `conversions.py` | Coordinate conversions | Quadray ↔ XYZ conversions |
 | `geometry.py` | Geometric utilities | Basic geometry functions |
 | `paths.py` | Path management | `get_output_dir`, `get_figure_dir`, `get_data_dir` |
@@ -113,8 +113,10 @@ visualize.py
     ├──► discrete_variational.py
     └──► paths.py
 
-information.py (standalone, numpy only)
+information.py
+    └──► quadray.py (DEFAULT_EMBEDDING for the Quadray Fisher pullback)
 metrics.py (standalone, numpy only)
+cayley_menger.py (standalone, numpy only; imports quadray.to_xyz lazily)
 ```
 
 ## Development Standards
