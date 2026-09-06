@@ -1,2 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+.venv/
 
-tests/__pycache__/test_conversions.cpython-310-pytest-8.4.1.pyc
+# Editor
+.DS_Store
