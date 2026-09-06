@@ -48,12 +48,14 @@ Outputs:
 from __future__ import annotations
 
 import os
+import sys
 os.environ["MPLBACKEND"] = "Agg"  # Headless mode - BEFORE importing matplotlib
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Import from src/ only
+# src/ path bootstrap, then import top-level src/ modules
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
 from quadray import Quadray
 from paths import get_figure_dir, get_data_dir
 
