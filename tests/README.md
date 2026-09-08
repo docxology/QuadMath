@@ -4,8 +4,8 @@ This directory contains the comprehensive test suite for QuadMath. All tests mai
 
 ## Test Statistics
 
-Counts drift; derive them live rather than trusting prose (verified 2026-08-31:
-23 test files on disk):
+Counts drift; derive them live rather than trusting prose (verified
+2026-09-08: 23 test files on disk, 194 collected).
 
 ```bash
 ls tests/test_*.py | wc -l                                  # test files
@@ -41,7 +41,7 @@ uv run pytest -v --tb=short
 | `test_quadray_cov.py` | `quadray.py` | Additional coverage |
 | `test_cayley_menger.py` | `cayley_menger.py` | Determinant methods |
 | `test_information.py` | `information.py` | Fisher information, free energy |
-| `test_information_cov.py` | `information.py` | Additional coverage |
+| `test_information_cov.py` | `information.py`, `glossary_gen.py` | Additional coverage |
 | `test_metrics.py` | `metrics.py` | Entropy, eigenspectrum |
 | `test_metrics_cov.py` | `metrics.py` | Additional coverage |
 | `test_discrete_variational.py` | `discrete_variational.py` | IVM descent |
@@ -59,13 +59,15 @@ uv run pytest -v --tb=short
 | `test_symbolic_cov.py` | `symbolic.py` | Additional coverage |
 | `test_glossary_gen.py` | `glossary_gen.py` | API documentation |
 | `test_active_inference.py` | `information.py` | Active Inference functions |
-| `test_sympy_formalisms.py` | `symbolic.py` | Symbolic math |
+| `test_sympy_formalisms.py` | `quadmath/scripts/sympy_formalisms.py` | Symbolic math (script module) |
+| `test_validate_markdown.py` | `quadmath/scripts/validate_markdown.py` | Manuscript-validation contract |
 
 ## Test Configuration
 
 ### `conftest.py`
 
-Forces the headless Matplotlib backend and puts `src/` on `sys.path`:
+Forces the headless Matplotlib backend and puts `src/` (plus
+`quadmath/scripts/` for script-module tests) on `sys.path`:
 
 ```python
 import os
@@ -78,6 +80,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 SRC = os.path.join(ROOT, "src")
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
+
+SCRIPTS = os.path.join(ROOT, "quadmath", "scripts")
+if SCRIPTS not in sys.path:
+    sys.path.insert(0, SCRIPTS)
 ```
 
 ### `.coveragerc`
