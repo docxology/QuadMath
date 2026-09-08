@@ -15,11 +15,11 @@ This directory contains the complete build system for generating figures, PDFs, 
 
 ### Directory Roles
 
-| Directory | Role | Disposable? |
+| Directory | Role | Regeneratable? |
 |-----------|------|-------------|
 | `markdown/` | Manuscript source | ❌ No |
 | `scripts/` | Build scripts | ❌ No |
-| `output/` | Generated artifacts | ✅ Yes |
+| `output/` | Generated artifacts | 🔁 Regeneratable (git-tracked) |
 
 ### Before Modifying Scripts
 
@@ -162,13 +162,6 @@ See [Section Title](02_4d_namespaces.md#section-anchor)
        # ...existing...
        "new_figure.py",
    ]
-   ```
-
-3. Add to `render_pdf.sh` (if needed for PDF build):
-
-   ```bash
-   log_info "Running new_figure.py..."
-   uv run python "$SCRIPT_DIR/new_figure.py"
    ```
 
 ### Adding a New Markdown Section
