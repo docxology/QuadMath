@@ -14,7 +14,7 @@ The methods presented here rest on three interconnected mathematical frameworks.
 - **Fuller.4D**: Synergetics/Quadray coordinates with integer lattice constraints and IVM unit conventions
 
 ### Key Mathematical Principles
-- **Integer volume quantization**: Lattice constraints ensure tetrahedral volumes are exact integers in IVM units
+- **Rational volume quantization**: Lattice constraints quantize tetrahedral volumes to exact quarter-unit (1/4-grain) rationals in IVM units — integral for unit-tetra tilings, e.g. $\tfrac14$ for the primitive tetrahedron
 - **Coordinate system bridges**: Linear transformations between Fuller.4D and Coxeter.4D preserve geometric relationships
 - **Information geometry**: Fisher metric provides Riemannian structure for optimization on parameter manifolds
 - **Exact arithmetic**: Bareiss algorithm ensures determinant calculations remain exact for integer inputs
@@ -34,7 +34,7 @@ The three 4D frameworks serve distinct but complementary roles in our implementa
 
 - **Einstein.4D provides the analogy**: The Minkowski metric structure inspires our information geometry approach, where the Fisher information matrix acts as a Riemannian metric on parameter space. Natural gradient descent follows geodesics on this information manifold, analogous to how particles follow geodesics in spacetime.
 
-- **Fuller.4D provides the constraints**: The Quadray coordinate system and IVM lattice impose integer constraints that enable exact arithmetic and discrete optimization. The synergetics unit conventions (regular tetrahedron volume = 1) create a quantized geometry where volumes are exact integers.
+- **Fuller.4D provides the constraints**: The Quadray coordinate system and IVM lattice impose integer constraints that enable exact arithmetic and discrete optimization. The synergetics unit conventions (regular tetrahedron volume = 1) create a quantized geometry where volumes are exact rationals on the 1/4 grid — integral for tetrahedra tiling unit IVM tetras, $\tfrac14$-grain otherwise.
 
 This multi-framework approach allows us to:
 1. Use standard Euclidean methods for volume calculations where relevant or already in use (Coxeter.4D)

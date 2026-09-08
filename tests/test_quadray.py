@@ -176,6 +176,19 @@ def test_quadray_from_xyz_roundtrip():
     assert q_recovered == q_original.normalize()
 
 
+
+def test_quadray_from_xyz_roundtrip_half_integer_ties():
+    # Regression: preimages with sum(q) % 4 == 2 project onto exact
+    # half-integer ties; per-component banker's rounding used to leave the
+    # (1,1,1,1)-coset and return a point with a different XYZ image.
+    for q_original in (Quadray(1, 1, 0, 0), Quadray(0, 0, 1, 1),
+                       Quadray(0, 1, 1, 0), Quadray(0, 0, 3, 3)):
+        x, y, z = to_xyz(q_original, DEFAULT_EMBEDDING)
+        q_back = quadray_from_xyz(x, y, z, DEFAULT_EMBEDDING)
+        # The recovered quadray must map back to the same XYZ point
+        assert to_xyz(q_back, DEFAULT_EMBEDDING) == (x, y, z)
+
+
 def test_quadray_from_xyz_origin():
     q = quadray_from_xyz(0.0, 0.0, 0.0, DEFAULT_EMBEDDING)
     assert q == Quadray(0, 0, 0, 0)
