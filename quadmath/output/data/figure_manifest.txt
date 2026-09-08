@@ -23,6 +23,9 @@ Figure 14 saved to: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadM
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_final.png
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/simplex_trace_visualization.png
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/ivm_neighbors.png
+/Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/graphical_abstract_quadray.png
+Figure 4 saved to: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/polyhedra_quadray_constructions.png
+High-resolution version saved to: /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/polyhedra_quadray_constructions_hq.png
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/discrete_path.mp4
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/figures/discrete_path_final.png
 /Volumes/external_drive/Git/projects/ongoing/docxology/QuadMath/quadmath/output/data/discrete_path.csv
