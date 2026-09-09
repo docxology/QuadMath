@@ -5,7 +5,7 @@ import pytest
 import visualize
 from nelder_mead_quadray import nelder_mead_quadray
 from visualize import animate_simplex, plot_simplex_trace
-from quadray import Quadray
+from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz
 
 
 @pytest.fixture(autouse=True)
@@ -29,6 +29,37 @@ def test_simplex_animation_saves_file():
     path = animate_simplex(state.history, save=True)
     assert os.path.isfile(path)
 
+
+def test_nelder_mead_reaches_lattice_optimum():
+    # Convex bowl whose continuous minimum sits at (1, -0.5, 0.25) under the
+    # default embedding; the true lattice argmin (verified by enumeration over
+    # the neighborhood) is Quadray(1, 0, 1, 1) with f = 0.8125.
+    def f(q: Quadray) -> float:
+        x, y, z = to_xyz(q, DEFAULT_EMBEDDING)
+        return (x - 1.0) ** 2 + (y + 0.5) ** 2 + (z - 0.25) ** 2
+
+    initial = [Quadray(1, 0, 0, 0), Quadray(0, 1, 0, 0),
+               Quadray(0, 0, 1, 0), Quadray(1, 1, 0, 0)]
+    state = nelder_mead_quadray(f, initial, max_iter=100)
+    assert state.values[0] == pytest.approx(0.8125)
+    assert state.vertices[0] == Quadray(1, 0, 1, 1)
+
+
+
+
+def test_nelder_mead_outside_contraction_rejection():
+    # Covers the classical NM path where the outside-contraction candidate is
+    # worse than the reflection (spike at (12,0,0,0)), so the reflection is
+    # kept instead.
+    def f(q: Quadray) -> float:
+        base = (q.a - 11) ** 2 + q.b ** 2 + q.c ** 2 + q.d ** 2
+        return base + (50 if q.as_tuple() == (12, 0, 0, 0) else 0)
+
+    initial = [Quadray(11, 0, 0, 0), Quadray(10, 1, 0, 0),
+               Quadray(10, 0, 1, 0), Quadray(6, 0, 0, 0)]
+    state = nelder_mead_quadray(f, initial, max_iter=3)
+    assert state.values[0] == 0.0
+    assert state.vertices[0] == Quadray(11, 0, 0, 0)
 
 
 def test_simplex_animation_no_save():
