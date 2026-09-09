@@ -233,11 +233,15 @@ def quadray_from_xyz(
     x: float, y: float, z: float,
     embedding: Iterable[Iterable[float]],
 ) -> Quadray:
-    """Map an R^3 point back to the nearest integer quadray lattice point.
+    """Map an R^3 point back to the quadray lattice via pseudoinverse rounding.
 
     Computes the pseudoinverse of the 3x4 embedding matrix to find the
-    real-valued quadray coordinates, then rounds to the nearest integer
-    lattice point and normalizes.
+    min-norm real-valued quadray coordinates, rounds half up to integers, and
+    normalizes. For points that lie exactly on the lattice this round-trips
+    exactly (the rounded point stays in the preimage's (1,1,1,1)-coset). For
+    general R^3 points the result is the nearest lattice point in quadray
+    coordinates (component-wise), which is not always the nearest in embedded
+    XYZ distance.
 
     Parameters
     - x, y, z: Cartesian coordinates (Coxeter.4D)

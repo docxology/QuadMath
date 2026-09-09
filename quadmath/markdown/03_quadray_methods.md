@@ -106,40 +106,42 @@ assert len(touch) > 0
 
 ### Example vertex lists and volume checks (illustrative)
 
-The following snippets use canonical IVM neighbor points (permutations of \((2,1,1,0)\)) to illustrate simple decompositions consistent with synergetics volumes. Each tetra volume is computed via `ace_tetravolume_5x5` and summed.
+The following snippets show executable decompositions for standard synergetics volumes. Each tetra volume is computed via `ace_tetravolume_5x5` and summed.
 
-Octahedron (V = 4) as four unit IVM tetras around the origin:
+Octahedron (V = 4): the octahedron with vertices $\pm 2\hat e_i$ (edge $2\sqrt2$, matching the unit IVM tetra) decomposes into eight origin-apex orthant tetras, each of volume $\tfrac12$:
 
 ```python
 from quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
-T = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-    (Quadray(2,0,1,1), Quadray(1,2,0,1), Quadray(0,1,2,1)),  # representative variant
+axes = [
+    Quadray(1,0,0,1), Quadray(0,1,1,0),   # +x, -x
+    Quadray(1,1,0,0), Quadray(0,0,1,1),   # +y, -y
+    Quadray(1,0,1,0), Quadray(0,1,0,1),   # +z, -z
 ]
-V_oct = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in T)
+V_oct = sum(
+    ace_tetravolume_5x5(o, x, y, z)
+    for x in axes[0:2] for y in axes[2:4] for z in axes[4:6]
+)  # 8 * 1/2 = 4
 ```
 
-Cube (V = 3) as three unit IVM tetras (orthant-like around the origin):
+Cube (V = 3): the cube with XYZ vertices $(\pm1,\pm1,\pm1)$ (edge 2) decomposes into the inscribed tetra on four alternating cube vertices (V = 1) plus four corner tetras (V = $\tfrac12$ each):
 
 ```python
 from quadray import Quadray, ace_tetravolume_5x5
 
-o = Quadray(0,0,0,0)
-triples = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-]
-V_cube = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in triples)
+inner = ace_tetravolume_5x5(
+    Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
+)  # 1
+corner = ace_tetravolume_5x5(
+    Quadray(0,1,1,1), Quadray(0,0,0,1), Quadray(0,1,0,0), Quadray(0,0,1,0),
+)  # 1/2
+V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 ```
 
 Notes.
 
-- These decompositions are illustrative and use canonical IVM neighbor triples that produce unit tetras under `ace_tetravolume_5x5`. Other equivalent tilings are possible.
+- The octahedron and cube decompositions above execute exactly as shown (verified against `ace_tetravolume_5x5`). Other equivalent tilings are possible.
 - Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a tetra (projective normalization), which the 5×5 determinant respects.
 
 ## Integer Volume Quantization {#sec:integer_volume}
