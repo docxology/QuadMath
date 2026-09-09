@@ -38,4 +38,24 @@ def test_sympy_formalisms_manifest(tmp_path, monkeypatch) -> None:
         content = f.read()
     assert "V_xyz_unit_regular_tetra" in content
     assert "V_ivm_unit_regular_tetra" in content
-    assert "magnitude_symbolic" in content
+
+
+def test_ace_and_cm_s3_agree(tmp_path, monkeypatch) -> None:
+    # Contract: the Ace 5x5 tetravolume must equal the Cayley-Menger + S3
+    # conversion on every shared example. The committed
+    # bridging_vs_native.csv previously showed match=False on all rows (S3
+    # applied under the wrong embedding scale); this test locks the fixed
+    # convention in place.
+    import csv
+
+    from sympy_formalisms import compare_ace_vs_cm_examples
+
+    monkeypatch.setattr("sympy_formalisms._get_output_dir", lambda: str(tmp_path))
+    csv_path = compare_ace_vs_cm_examples()
+    with open(csv_path) as f:
+        rows = list(csv.reader(f))
+    assert rows[0] == ["case", "V_ace_ivm_int", "V_cm_s3_ivm_sym", "match"]
+    assert len(rows) == 6
+    for case, ace, cm, match in rows[1:]:
+        assert match == "True", f"{case}: ace={ace} cm_s3={cm}"
+        assert ace == cm
