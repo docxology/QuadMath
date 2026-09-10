@@ -189,7 +189,7 @@
 
 \title{Appendix: Free Energy and Active Inference}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -232,6 +232,15 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   Variational free energy (discrete states) --- see Eq.
   \eqref{eq:free_energy} in the equations appendix, implemented by
   \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}.
+\item
+  Expected free energy (action selection) --- see Eq.
+  \eqref{eq:expected_free_energy} in the equations appendix, implemented
+  by
+  \href{03_quadray_methods.md\#code:expected_free_energy}{\passthrough{\lstinline!expected\_free\_energy!}}:
+  the canonical \(G\) combines the epistemic KL to the prior, the
+  posterior entropy with the variational-bound sign, ambiguity (negative
+  expected log-likelihood), and pragmatic preferences that lower \(G\)
+  for preferred outcomes.
 \item
   Fisher Information Matrix (FIM) as metric --- see Eq. \eqref{eq:fim}
   in the equations appendix and

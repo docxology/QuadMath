@@ -177,7 +177,7 @@ The table below enumerates public symbols from `src/` modules.
 | `metrics` | `fisher_curvature_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. |
 | `metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
 | `metrics` | `fisher_rao_metric` | function | `(p, q, eps)` | Fisher–Rao geodesic distance on the probability simplex. |
-| `metrics` | `information_length` | function | `(path_gradients)` | Path length in information space via gradient-weighted arc length. |
+| `metrics` | `information_length` | function | `(path_gradients)` | Gradient-weighted proxy for informational path length (NOT the |
 | `metrics` | `jensen_shannon_divergence` | function | `(p, q, eps)` | Jensen–Shannon divergence JSD(p \|\| q) for discrete distributions. |
 | `metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence D_KL(p \|\| q) for discrete distributions. |
 | `metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
@@ -200,7 +200,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
 | `quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
 | `quadray` | `magnitude` | function | `(q, embedding)` | Return Euclidean magnitude \|\|q\|\| under the given embedding (vector norm). |
-| `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the nearest integer quadray lattice point. |
+| `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the quadray lattice via pseudoinverse rounding. |
 | `quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |

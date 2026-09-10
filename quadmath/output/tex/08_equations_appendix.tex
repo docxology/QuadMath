@@ -174,7 +174,7 @@
 
 \title{Equations and Math Supplement}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -470,6 +470,42 @@ trajectories and free energy landscapes are shown in
 \href{04_optimization_in_4d.md}{Section 4: Optimization in 4D}. The
 appendix focuses on unique figures specific to mathematical formulations
 and validation.
+
+\subsection{Expected Free Energy (Active
+Inference)}\label{eq:expected_free_energy}
+
+Background:
+\href{https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind}{Active
+Inference (Parr, Pezzulo \& Friston, MIT Press, 2022)}.
+
+\begin{equation}\label{eq:expected_free_energy}
+G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; H\big[Q(s)\big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
+\end{equation}
+
+Explanation.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Epistemic term}: the KL divergence between variational
+  posterior and prior over states.
+\item
+  \textbf{Entropy}: the posterior entropy enters with the
+  variational-bound sign, \(\mathbb{E}_q[\log Q(s)] = -H[Q(s)]\).
+\item
+  \textbf{Ambiguity}: the negative expected log-likelihood of outcomes
+  penalizes noisy observations.
+\item
+  \textbf{Pragmatic term}: prior preferences \(P(o)\) enter negatively,
+  so preferred outcomes lower \(G\); agents minimize \(G\) during action
+  selection.
+\end{itemize}
+
+See code:
+\href{03_quadray_methods.md\#code:expected_free_energy}{\passthrough{\lstinline!expected\_free\_energy!}}.
+
+See \passthrough{\lstinline!src/information.py!} --- canonical expected
+free energy (\passthrough{\lstinline!expected\_free\_energy!}).
 
 \subsection{Quadray Normalization
 (Fuller.4D)}\label{quadray-normalization-fuller.4d}

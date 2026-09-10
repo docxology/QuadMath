@@ -174,7 +174,7 @@
 
 \title{Discussion}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -248,9 +248,10 @@ metric, improving conditioning relative to vanilla gradient descent.
 A curious connection unites geodesics in information geometry, the
 physical principle of least action, and Buckminster Fuller's tensegrity
 geodesic domes (Fuller.4D). On statistical manifolds, geodesics are
-shortest paths under the Fisher metric, and natural-gradient flows
-approximate least-action trajectories by minimizing an
-information-length functional constrained by curvature (Eqs.
+shortest paths under the Fisher metric, and natural-gradient flows trace
+paths that motivate gradient-weighted path-length heuristics (the
+\passthrough{\lstinline!information\_length!} proxy in
+\passthrough{\lstinline!metrics.py!}) constrained by curvature (Eqs.
 \eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix).
 In tensegrity domes, geodesic lines on triangulated spherical shells
 distribute stress nearly uniformly while the network balances continuous
