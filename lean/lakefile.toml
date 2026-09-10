@@ -1,0 +1,8 @@
+name = "Quadlean"
+version = "0.1.0"
+defaultTargets = ["Quadlean"]
+
+# Core Lean 4 only: no Mathlib (or any other) dependency.
+[[lean_lib]]
+name = "Quadlean"
+globs = ["Quadlean", "QuadMath.+"]

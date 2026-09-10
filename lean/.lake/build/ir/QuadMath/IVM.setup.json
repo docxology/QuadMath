@@ -1,0 +1,9 @@
+{"plugins": [],
+ "package": "Quadlean",
+ "options": {},
+ "name": "QuadMath.IVM",
+ "isModule": false,
+ "importArts":
+ {"QuadMath.Quadray":
+  [["/Users/hum/Documents/GitHub/HumOS/projects/platform/hum-docxology/repos/public/QuadMath/lean/.lake/build/lib/lean/QuadMath/Quadray.olean"]]},
+ "dynlibs": []}

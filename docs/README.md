@@ -8,9 +8,14 @@ DOI [10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
 
 | Path | Contents |
 |---|---|
-| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` … `10_symbols_glossary.md`, 11 files) |
-| `quadmath/scripts/` | Render/clean scripts plus 14 figure, data, glossary, and validation generators (16 scripts) |
+| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` … `12_ivm_dynamics.md`, 12 files) — editing source of truth |
+| `quadmath/scripts/` | Render/clean scripts plus figure, data, glossary, and validation generators (17 scripts) |
 | `src/`, `tests/` | Supporting code and test suite |
+| `docs/manuscript/` | Template-layout manuscript projection for the shared docxology render pipeline (`config.yaml`, `preamble.md`, `references.bib`, sections `01…99`, `figures/`) — see its `README.md` and `MANUSCRIPT_STATUS.md` |
+| `docs/development/` | Test/coverage workflow and the docs link checker (`check_links.py`) |
+| `docs/learning/` | Draft docs for the in-progress IVM field/dynamics modules (`src/ivm_field.py`, `src/ivm_dynamics.py`) |
+| `docs/lean/` | Pointer page for the Lean formalization (`lean/`, parallel work) |
+| `docs/overview.md` | Repository tour |
 | `QuadMath_v1_DAF_08-16-2025.pdf` | Published version-1 PDF (not git-tracked; regenerate via `render_pdf.sh`, canonical copy on Zenodo) |
 | `run_all.sh` | Full build entry point |
 
@@ -25,7 +30,17 @@ bash quadmath/scripts/render_pdf.sh   # generate figures, LaTeX, PDFs
 bash quadmath/scripts/clean_output.sh # remove generated outputs
 ```
 
+## Docs checks
+
+```bash
+uv run python quadmath/scripts/validate_markdown.py  # manuscript source tree
+uv run python docs/development/check_links.py        # this docs tree
+```
+
 ## Status
 
-Published (v1, Zenodo). See `docs/manuscript/MANUSCRIPT_STATUS.md` for why the
-paper lives under `quadmath/markdown/` rather than a top-level `manuscript/` tree.
+Published (v1, Zenodo). The manuscript now has two coordinated trees:
+`quadmath/markdown/` (source) and `docs/manuscript/` (template-layout
+projection for the shared render pipeline). See
+`docs/manuscript/MANUSCRIPT_STATUS.md` for the layout, render parity, and
+caveats.
