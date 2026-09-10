@@ -233,11 +233,15 @@ def quadray_from_xyz(
     x: float, y: float, z: float,
     embedding: Iterable[Iterable[float]],
 ) -> Quadray:
-    """Map an R^3 point back to the nearest integer quadray lattice point.
+    """Map an R^3 point back to the quadray lattice via pseudoinverse rounding.
 
     Computes the pseudoinverse of the 3x4 embedding matrix to find the
-    real-valued quadray coordinates, then rounds to the nearest integer
-    lattice point and normalizes.
+    min-norm real-valued quadray coordinates, rounds half up to integers, and
+    normalizes. For points that lie exactly on the lattice this round-trips
+    exactly (the rounded point stays in the preimage's (1,1,1,1)-coset). For
+    general R^3 points the result is the nearest lattice point in quadray
+    coordinates (component-wise), which is not always the nearest in embedded
+    XYZ distance.
 
     Parameters
     - x, y, z: Cartesian coordinates (Coxeter.4D)
@@ -252,8 +256,14 @@ def quadray_from_xyz(
     xyz = np.array([x, y, z], dtype=float)
     # Pseudoinverse: M^+ = M^T (M M^T)^{-1}
     q_real = M.T @ np.linalg.solve(M @ M.T, xyz)
-    # Round to nearest integers and normalize
-    q_int = [int(round(v)) for v in q_real]
+    # Round half up (floor(v + 0.5)), NOT banker's rounding: when the exact
+    # preimage q has sum(q) % 4 == 2, the projection lands exactly on
+    # half-integer ties in all four components. Per-component round-half-even
+    # breaks ties inconsistently and can leave the (1,1,1,1)-coset of q, so
+    # the rounded point maps to a different XYZ location (edge-length errors).
+    # floor(v + 0.5) provably stays in q's coset, making lattice round-trips
+    # exact.
+    q_int = [int(math.floor(v + 0.5)) for v in q_real]
     return Quadray(q_int[0], q_int[1], q_int[2], q_int[3]).normalize()
 
 

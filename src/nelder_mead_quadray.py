@@ -62,11 +62,17 @@ def nelder_mead_quadray(
 ) -> SimplexState:
     """Nelder–Mead on the integer quadray lattice.
 
-    The algorithm mirrors the continuous simplex method but snaps proposed points
-    back to the lattice using `normalize()`. The history of simplex vertices is
+    The algorithm mirrors the continuous simplex method (classical coefficients
+    alpha=1, gamma=2, rho=0.5, sigma=0.5, including the outside/inside
+    contraction split) but snaps proposed points back to the lattice using
+    `normalize()`. Because points are quantized, termination relies on lattice
+    collapse (zero simplex volume with small value spread) rather than the
+    classical value-spread criterion. The history of simplex vertices is
     returned for downstream visualization.
 
-    Parameters mirror the classical Nelder–Mead coefficients and stop criteria.
+    Note: a degenerate (zero-volume, collinear) initial simplex stays confined
+    to its line under reflection/expansion/shrink; termination then occurs at
+    the line optimum.
     """
     assert len(initial_vertices) == 4, "Need 4 vertices for 4D (tetrahedron)"
     vertices, values = order_simplex(initial_vertices, f)
@@ -75,7 +81,7 @@ def nelder_mead_quadray(
     best_values: List[float] = [values[0]]
     worst_values: List[float] = [values[-1]]
     spreads: List[float] = [values[-1] - values[0]]
-    volumes: List[int] = [compute_volume(vertices)]
+    volumes: List[Fraction] = [compute_volume(vertices)]
 
     for _ in range(max_iter):
         vertices, values = order_simplex(vertices, f)
@@ -110,9 +116,25 @@ def nelder_mead_quadray(
             )
             ve = project_to_lattice(ve)
             vertices[3] = ve if f(ve) < fr else vr
-        elif fr < values[2]:
-            vertices[3] = vr
+        elif fr < values[3]:
+            # Classical NM: outside contraction when f(vr) < f(worst), i.e. the
+            # contracted point moves from the centroid TOWARD the reflection.
+            # (The previous single else-branch used the inside-contraction
+            # point for both subcases, deviating from the mirrored algorithm.)
+            vc = Quadray(
+                centroid.a + int(rho * (vr.a - centroid.a)),
+                centroid.b + int(rho * (vr.b - centroid.b)),
+                centroid.c + int(rho * (vr.c - centroid.c)),
+                centroid.d + int(rho * (vr.d - centroid.d)),
+            )
+            vc = project_to_lattice(vc)
+            if f(vc) <= fr:
+                vertices[3] = vc
+            else:
+                vertices[3] = vr
         else:
+            # Inside contraction: f(vr) >= f(worst); move from the centroid
+            # toward the worst vertex.
             vc = Quadray(
                 centroid.a + int(rho * (worst.a - centroid.a)),
                 centroid.b + int(rho * (worst.b - centroid.b)),

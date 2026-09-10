@@ -233,8 +233,8 @@ bash quadmath/scripts/clean_output.sh
 ```
 
 This script:
-- Removes `quadmath/output/` directory (all disposable)
-- Removes `quadmath/latex/` directory (all disposable)
+- Removes `quadmath/output/` directory (all regeneratable, including LaTeX
+  temp files; note: currently git-tracked, so cleaning produces a large diff)
 - Preserves source code, tests, markdown, and scripts
 - Provides clear instructions for regeneration
 
@@ -250,7 +250,8 @@ quadmath/output/
 └── tex/              # Exported LaTeX files
 ```
 
-All directories under `quadmath/output/` are disposable and can be safely cleaned.
+All directories under `quadmath/output/` are regeneratable from source. They are
+currently git-tracked, so cleaning them is a deliberate choice (large diff).
 
 ## Benefits of This Paradigm
 

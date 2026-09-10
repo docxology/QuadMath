@@ -8,7 +8,7 @@ This directory contains the build system for generating figures, PDFs, and LaTeX
 quadmath/
 ├── markdown/          # Manuscript source files (11 sections)
 ├── scripts/           # Generation and build scripts (16 scripts)
-├── output/            # Generated artifacts (disposable)
+├── output/            # Generated artifacts (regeneratable; git-tracked)
 │   ├── figures/       # PNG, MP4, SVG files
 │   ├── data/          # CSV, NPZ data files
 │   ├── pdf/           # Generated PDFs
@@ -80,14 +80,14 @@ All files under `output/` are regeneratable from source:
 ```
 output/
 ├── figures/
-│   ├── ivm_neighbors.png
-│   ├── fisher_curvature.png
-│   ├── simplex_animation.mp4
+│   ├── ivm_neighbors_edges.png
+│   ├── fisher_information_matrix.png
+│   ├── simplex_final.png
 │   └── ...
 ├── data/
-│   ├── volumes.csv
-│   ├── trajectory.npz
-│   └── output_manifest.txt
+│   ├── volumes_scale_data.csv
+│   ├── simplex_trace.npz
+│   └── figure_manifest.txt
 ├── pdf/
 │   ├── 01_introduction.pdf
 │   ├── 02_4d_namespaces.pdf

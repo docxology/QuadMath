@@ -1,8 +1,11 @@
+from fractions import Fraction
+
 from examples import example_optimize
 
 
-def test_example_optimize_state_volume_and_history():
+def test_example_optimize_converges():
     state = example_optimize()
-    # Touch fields to cover dataclass structure
-    assert hasattr(state, "volume") and isinstance(state.history, list)
-
+    # Nelder-Mead on the convex bowl must fully converge: zero simplex volume
+    assert state.volume == Fraction(0)
+    # And record the optimization trajectory
+    assert len(state.history) >= 1

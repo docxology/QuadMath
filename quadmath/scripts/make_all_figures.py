@@ -64,6 +64,8 @@ def main() -> None:
         os.path.join(_repo_root(), "quadmath", "scripts", "ivm_neighbors.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "quadray_clouds.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "simplex_animation.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "graphical_abstract_quadray.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "polyhedra_quadray_constructions.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "discrete_variational_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "sympy_formalisms.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "gpu_acceleration_demo.py"),

@@ -98,6 +98,7 @@ This document provides a comprehensive overview of how the QuadMath repository a
 **Purpose**: Document mathematical concepts with references to implemented code.
 
 **Structure**:
+- `00_preamble.md`: LaTeX preamble source (extracted by `render_pdf.sh`)
 - `01_introduction.md`: Introduction to 4D namespaces
 - `02_4d_namespaces.md`: Coxeter.4D, Einstein.4D, Fuller.4D
 - `03_quadray_methods.md`: Quadray analytical details
@@ -119,28 +120,13 @@ This document provides a comprehensive overview of how the QuadMath repository a
 
 ### Phase 1: Code Validation
 ```bash
-# Run all generation scripts to validate src/ code works
-uv run python quadmath/scripts/ivm_neighbors.py
-uv run python quadmath/scripts/quadray_clouds.py
-uv run python quadmath/scripts/volumes_demo.py
-# ... and more
+# Run all figure/data generation scripts in one pass (fails hard on error)
+uv run python quadmath/scripts/make_all_figures.py
 ```
 
 **Purpose**: Ensures that all source code modules can be imported and used successfully by generation scripts.
 
-### Phase 2: Markdown Validation
-```bash
-# Validate all markdown references and images
-uv run python quadmath/scripts/validate_markdown.py
-```
-
-**Checks**:
-- All referenced images exist in output directories
-- Internal links have valid anchors
-- Equations have unique labels
-- No bare URLs (use informative link text)
-
-### Phase 3: Documentation Generation
+### Phase 2: Documentation Generation
 ```bash
 # Auto-generate glossary from current src/ API
 uv run python quadmath/scripts/generate_glossary.py
@@ -148,24 +134,31 @@ uv run python quadmath/scripts/generate_glossary.py
 
 **Purpose**: Keeps documentation automatically synchronized with source code changes.
 
+### Phase 3: Markdown Validation
+```bash
+# Validate all markdown references and images (strict: issues fail the build)
+uv run python quadmath/scripts/validate_markdown.py --strict
+```
+
+**Purpose**: Ensures all referenced figures, links, and equation labels resolve before building.
+
 ### Phase 4: Output Generation
 ```bash
-# Build individual PDFs from validated markdown
-pandoc [markdown_file] -o [output_pdf]
+# Convert validated markdown to LaTeX (with preamble included)
+pandoc [markdown_file] -o [output_tex] -H [preamble.tex]
 
-# Build combined PDF from all sections
-pandoc [combined_markdown] -o quadmath_review.pdf
-
-# Export LaTeX for further processing
-pandoc [markdown_file] -o [output_tex]
+# Compile PDFs with xelatex (multiple passes for cross-references)
+xelatex [output_tex] -output-directory=[output/pdf]
 ```
+Individual per-section PDFs and the combined `quadmath_review.pdf` are both
+built this way by `render_pdf.sh`.
 
 ## Data Flow and Dependencies
 
 ### Input Dependencies
 1. **Source code** (`src/`) - Mathematical implementations
 2. **Markdown files** (`quadmath/markdown/`) - Documentation content
-3. **LaTeX preamble** (`quadmath/latex/preamble.tex`) - Formatting
+3. **LaTeX preamble** (`quadmath/output/latex_temp/preamble.tex`, generated from `quadmath/markdown/00_preamble.md`) - Formatting
 
 ### Processing Pipeline
 1. **Scripts import from src/** → Validate code functionality
@@ -187,7 +180,7 @@ quadmath/output/
 
 ### 1. Test Coverage Enforcement
 - **100% coverage required** via `.coveragerc`
-- **Automated validation** in CI/CD pipeline
+- **Enforced locally** via `uv run coverage report` (`fail_under = 100` in `.coveragerc`)
 - **Real numerical examples** ensure mathematical correctness
 
 ### 2. Markdown Validation

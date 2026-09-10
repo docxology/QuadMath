@@ -7,12 +7,12 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 OUTPUT_DIR="$REPO_ROOT/quadmath/output"
-LATEX_DIR="$REPO_ROOT/quadmath/latex"
 
 echo "🧹 Cleaning QuadMath output directories..."
 echo "Repository root: $REPO_ROOT"
 
-# Clean output directory (all disposable)
+# Clean output directory (regeneratable; note: currently git-tracked, so
+# cleaning produces a large diff — commit or stash deliberately)
 if [ -d "$OUTPUT_DIR" ]; then
     echo "Removing output directory: $OUTPUT_DIR"
     rm -rf "$OUTPUT_DIR"
@@ -21,14 +21,7 @@ else
     echo "ℹ️  Output directory not found: $OUTPUT_DIR"
 fi
 
-# Clean latex directory (all disposable)
-if [ -d "$LATEX_DIR" ]; then
-    echo "Removing latex directory: $LATEX_DIR"
-    rm -rf "$LATEX_DIR"
-    echo "✅ Latex directory cleaned"
-else
-    echo "ℹ️  Latex directory not found: $LATEX_DIR"
-fi
+echo "💡 Run 'quadmath/scripts/render_pdf.sh' to regenerate everything from markdown sources"
 
 echo ""
 echo "🎯 All output directories cleaned!"

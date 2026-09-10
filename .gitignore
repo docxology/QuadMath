@@ -7,4 +7,6 @@ __pycache__/
 .venv/
 
 # Editor
+# Versioned published PDF (8.5MB; canonical copy on Zenodo via DOI)
+QuadMath_v1_DAF_*.pdf
 .DS_Store

@@ -116,13 +116,9 @@ def tetra_circumradius(d2: np.ndarray) -> float:
     det_CM = np.linalg.det(CM)
     if abs(det_CM) < 1e-30:
         return 0.0
-    # Circumradius formula: R^2 = -det(M_top) / (2 * det(CM))
-    # where M_top is the 4x4 minor obtained by deleting row 0 and col 0
-    # Actually use direct formula: R^2 = (sum of cofactor products) / ...
-    # Simpler: compute volume V, then use R = |product of edge lengths| / (8V * ...)
-    # Most elegant: from CM directly.
-    # R^2 = - CM_cofactor(0,0) / (2 * det(CM))
-    # CM_cofactor(0,0) = (-1)^(0+0) * det(minor(0,0))
+    # Circumradius formula: R^2 = -CM_cofactor(0,0) / (2 * det(CM)), where the
+    # cofactor is det(minor(0,0)) of the 4x4 minor obtained by deleting row 0
+    # and column 0 of the 5x5 Cayley-Menger matrix.
     minor_00 = CM[1:, 1:]
     det_minor = np.linalg.det(minor_00)
     R2 = -det_minor / (2.0 * det_CM)

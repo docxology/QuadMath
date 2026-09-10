@@ -36,6 +36,10 @@ bash quadmath/scripts/render_pdf.sh
 bash quadmath/scripts/clean_output.sh
 ```
 
+> The published version-1 PDF (`QuadMath_v1_DAF_08-16-2025.pdf`) is not kept in
+> git (8.5MB; canonical copy on Zenodo via the DOI above). Generate a fresh
+> copy with `bash quadmath/scripts/render_pdf.sh`.
+
 ## Repository Architecture: The render_pdf.sh Paradigm
 
 This repository follows a **unified test-driven development workflow** where source code, tests, and documentation are developed together in complete coherence:

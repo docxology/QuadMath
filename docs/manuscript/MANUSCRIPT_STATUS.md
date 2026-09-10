@@ -4,7 +4,9 @@
 
 Published analytical paper repository. The paper content lives under
 `quadmath/markdown/` as numbered section files with render/clean scripts,
-plus a versioned PDF (`QuadMath_v1_DAF_08-16-2025.pdf`) and a Zenodo DOI.
+plus a versioned PDF (`QuadMath_v1_DAF_08-16-2025.pdf`, not kept in git — the
+canonical copy is on Zenodo via the DOI above; regenerate locally with
+`bash quadmath/scripts/render_pdf.sh`) and a Zenodo DOI.
 
 ## Evidence checked
 

@@ -149,8 +149,8 @@ def test_tetra_circumradius_negative_r2():
         [1.0, 1.0, 4.0, 0.0],
     ])
     R = tetra_circumradius(d2)
-    # Should still return a non-negative value (possibly 0.0 if R2 <= 0)
-    assert R >= 0.0
+    # Guard clamps a non-positive R^2 to exactly zero
+    assert R == 0.0
 
 
 def test_tetra_inradius_zero_area_face():
@@ -167,5 +167,6 @@ def test_tetra_inradius_zero_area_face():
         [1.0, 1.0, 0.0, 1.0],
         [1.0, 1.0, 1.0, 0.0],
     ])
+    # Zero-area face guard yields exactly zero inradius
     r = tetra_inradius(d2)
-    assert r >= 0.0  # Either positive or 0 depending on geometry
+    assert r == 0.0

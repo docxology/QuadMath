@@ -27,9 +27,9 @@ def test_example_partition_tetra_volume_basic():
     s = (1, 2, 1, 0)
     a = (1, 1, 2, 0)
     psi = (2, 2, 1, 1)
+    # Known exact tetravolume for this partition (Ace 5x5 determinant / 4)
     V = example_partition_tetra_volume(mu, s, a, psi)
-    assert isinstance(V, Fraction)
-    assert V >= 0
+    assert V == Fraction(1, 2)
 
 
 def test_cuboctahedron_neighbors_and_xyz():

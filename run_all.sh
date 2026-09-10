@@ -112,8 +112,8 @@ print_success "All figures generated"
 
 print_header "Phase 3: Validating Markdown"
 
-print_info "Running validate_markdown.py..."
-uv run python quadmath/scripts/validate_markdown.py
+print_info "Running validate_markdown.py --strict..."
+uv run python quadmath/scripts/validate_markdown.py --strict
 
 print_success "Markdown validation passed"
 

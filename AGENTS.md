@@ -99,17 +99,13 @@ bash quadmath/scripts/clean_output.sh
 ```
 quadray.py ─────────────────────┬──► nelder_mead_quadray.py
      │                          │
-     └──► linalg_utils.py       └──► discrete_variational.py
-                                            │
-cayley_menger.py ◄──────────────────────────┘
-
-information.py ◄──── metrics.py
-
-visualize.py ◄──── paths.py
+     ├──► linalg_utils.py       └──► discrete_variational.py
      │
-     ├──── quadray.py
-     ├──── nelder_mead_quadray.py
-     └──── discrete_variational.py
+     └──► visualize.py (also imports paths.py, discrete_variational.py)
+
+cayley_menger.py ──► quadray.py (lazy import of to_xyz)
+information.py ──► quadray.py (DEFAULT_EMBEDDING); metrics.py is standalone
+conversions.py, examples.py ──► quadray.py; symbolic.py, glossary_gen.py: leaf modules
 ```
 
 ## Quality Gates

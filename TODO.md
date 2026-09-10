@@ -21,3 +21,11 @@ deleted.
 ## Major
 
 - [ ] None open.
+
+## Flagged 2026-09-08 review (verified findings awaiting owner decision)
+
+- [ ] `src/information.py` `expected_free_energy`: entropy term enters as `+H(q)` and `p` is normalized but unused; preference term adds `+log_p_o` as documented. This is self-consistent with its docstring but does not match canonical expected free energy (Parr/Pezzulo/Friston: epistemic KL + ambiguity − pragmatic), where entropy is penalized and preferences lower G. Changing semantics affects the appendix narrative — needs an owner decision, then pinned-value tests. (src/information.py, tests/test_information.py)
+- [ ] `src/nelder_mead_quadray.py`: a degenerate (collinear/zero-volume) initial simplex stays confined to its line (affine combinations); termination relies on lattice collapse, and `int()` truncation plus floor centroid bias directions. Documented in the docstring; a CVP-style restart/perturbation would be the robust fix. (src/nelder_mead_quadray.py)
+- [ ] `src/quadray.py` `quadray_from_xyz`: exact for lattice points (fixed 2026-09-08), but for off-lattice inputs component-wise rounding is not the true closest lattice point in XYZ distance; a proper closest-vector correction would fulfill the original "nearest" wording. (src/quadray.py)
+- [ ] `quadmath/output/**` build artifacts are git-tracked (~25 MB incl. 11 PDFs) while docs call them regeneratable. Deliberate as of 8d36f7c ("artifacts rebuilt"); if untracked later, note that standalone `validate_markdown.py` on a fresh clone requires running `make_all_figures.py` first. (.gitignore, quadmath/output/)
+

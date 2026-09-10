@@ -19,10 +19,14 @@ def shannon_entropy(p: np.ndarray, eps: float = 1e-15) -> float:
 
 
 def information_length(path_gradients: np.ndarray) -> float:
-    """Path length in information space via gradient-weighted arc length.
+    """Gradient-weighted proxy for informational path length (NOT the
+    information-geometric arc length).
 
-    Given a sequence of parameter gradients along a path, accumulate
-    sum ||Δθ_t|| · ||g_t|| as a simple proxy for informational path length.
+    Given a sequence of parameter-space vectors along a path, accumulate
+    sum ||Δθ_t|| · ||g_t|| where Δθ_t is the difference of consecutive rows.
+    Note the rows play two roles (positions for the difference term, gradient
+    magnitudes for the weight); this is a heuristic proxy, not the Fisher-Rao
+    arc length ∫ √(dθᵀ F dθ), and nothing in the codebase minimizes it.
     
     This connects to Einstein.4D concepts where proper time is measured along
     geodesics, but here we measure information-theoretic "distance" along

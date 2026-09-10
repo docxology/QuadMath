@@ -88,7 +88,7 @@ def compare_ace_vs_cm_examples() -> str:
     Returns
     - str: path to generated CSV file
     """
-    from sympy import Matrix, sqrt, simplify, N
+    from sympy import Matrix, sqrt, simplify, N, Rational
     import csv
     import matplotlib.pyplot as plt
 
@@ -97,7 +97,10 @@ def compare_ace_vs_cm_examples() -> str:
     from quadray import Quadray, ace_tetravolume_5x5, DEFAULT_EMBEDDING
     from symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
 
-    M = Matrix(DEFAULT_EMBEDDING)
+    # Rational entries: DEFAULT_EMBEDDING holds floats, which would poison
+    # the symbolic CM determinant with float noise and make exact `simplify`
+    # comparisons impossible.
+    M = Matrix(DEFAULT_EMBEDDING).applyfunc(Rational)
     # Deterministic small examples (non-degenerate, simple)
     examples = [
         # unit tetra from origin-like set
@@ -141,11 +144,24 @@ def compare_ace_vs_cm_examples() -> str:
                 else:
                     diff = pts[i] - pts[j]
                     d2[i, j] = simplify(diff.dot(diff))
-        V_xyz = cayley_menger_volume_symbolic(d2)
+        # DEFAULT_EMBEDDING puts the unit IVM tetra edge at 2*sqrt(2); the S3
+        # bridging factor is defined in sphere-radius-1 (edge-2) units. Rescale
+        # squared distances by 1/2 (embedding scale 1/sqrt(2)) before the
+        # Cayley-Menger -> S3 conversion, per the convention note in
+        # src/cayley_menger.py. Without this, every comparison is off by
+        # exactly 2*sqrt(2).
+        V_xyz = cayley_menger_volume_symbolic(d2 / 2)
         V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz))
         cm_vals.append(float(N(V_ivm_sym)))
         match = bool(simplify(V_ivm_sym - V_ace) == 0)
         rows.append((case_names[idx], str(V_ace), str(V_ivm_sym), str(match)))
+
+    if not all(r[3] == "True" for r in rows[1:]):
+        failed = [(r[0], r[1], r[2]) for r in rows[1:] if r[3] != "True"]
+        raise RuntimeError(
+            "Ace 5x5 and CM+S3 disagree (embedding-scale convention broken): "
+            f"{failed}"
+        )
 
     data_dir = _get_data_dir()
     figure_dir = _get_figure_dir()
@@ -166,7 +182,7 @@ def compare_ace_vs_cm_examples() -> str:
         "Unit Tetra",
         "2× Edge (V=8)", 
         "Mixed Coords",
-        "Centered (V=3)",
+        "Centered (V=2)",
         "Large Mixed"
     ]
 
@@ -191,11 +207,9 @@ def compare_ace_vs_cm_examples() -> str:
 
     # Footnote explaining equivalence and data artifact
     ax.text(0.01, -0.22,
-            "Test cases: Unit tetra (V=1), 2× edge scaling (V=8), mixed coordinates, centered (V=3), large mixed.\n"
-            "Both methods agree at machine precision, validating the S3 conversion factor. Data: quadmath/output/bridging_vs_native.csv",
+            "Test cases: Unit tetra (V=1), 2× edge scaling (V=8), mixed coordinates, centered (V=2), large mixed.\n"
+            "Both methods agree exactly (symbolic identity), validating the S3 conversion factor. Data: quadmath/output/data/bridging_vs_native.csv",
             transform=ax.transAxes, ha="left", va="top", fontsize=9)
-
-    # Start y-axis at 0 and add a small headroom
     top = max(max(ace_vals, default=0.0), max(cm_vals, default=0.0))
     ax.set_ylim(0.0, top * 1.12 if top > 0 else 1.0)
 

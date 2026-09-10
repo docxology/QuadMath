@@ -9,6 +9,22 @@
 
 set -euo pipefail
 export LANG="${LANG:-C.UTF-8}"
+# Optional flags (parsed from argv)
+SKIP_FIGURES=false
+for arg in "$@"; do
+  case "$arg" in
+    --skip-figures) SKIP_FIGURES=true ;;
+    -h|--help)
+      echo "Usage: render_pdf.sh [--skip-figures]"
+      echo "  --skip-figures  Skip figure/data regeneration; still run glossary + validation + PDF builds"
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $arg" >&2
+      exit 1
+      ;;
+  esac
+done
 
 # =============================================================================
 # CONFIGURATION AND PATHS
@@ -131,42 +147,38 @@ run_generation_scripts() {
   export MPLBACKEND=Agg
   log_info "Using runner: $runner"
   
-  # Array of scripts to run
+  # Single generation pass: make_all_figures.py runs every figure/data
+  # generator, fails hard if any generator fails, and writes the manifest.
   local scripts=(
-    "ivm_neighbors.py"
-    "quadray_clouds.py"
-    "volumes_demo.py"
-    "simplex_animation.py"
-    "graphical_abstract_quadray.py"
-    "polyhedra_quadray_constructions.py"
-    "sympy_formalisms.py"
-    "information_demo.py"
-    "active_inference_figures.py"
+    "make_all_figures.py"
     "generate_glossary.py"
     "validate_markdown.py"
-    "make_all_figures.py"
   )
   
-  local failed_scripts=()
   
   for script in "${scripts[@]}"; do
     local script_path="$REPO_ROOT/quadmath/scripts/$script"
-    if [ -f "$script_path" ]; then
-      log_info "Running: $script"
-      if $runner "$script_path" >/dev/null 2>&1; then
-        log_info "✅ Success: $script"
-      else
-        log_warn "⚠️  Failed: $script (continuing)"
-        failed_scripts+=("$script")
-      fi
+    if [ ! -f "$script_path" ]; then
+      log_error "Missing script: $script_path"
+      exit 1
+    fi
+    if [ "$script" = "make_all_figures.py" ] && [ "$SKIP_FIGURES" = "true" ]; then
+      log_info "Skipping figure/data regeneration (--skip-figures)"
+      continue
+    fi
+    local extra_args=()
+    if [ "$script" = "validate_markdown.py" ]; then
+      # Strict: validation issues fail the build instead of printing warnings
+      extra_args+=("--strict")
+    fi
+    log_info "Running: $script"
+    if $runner "$script_path" ${extra_args[@]+"${extra_args[@]}"} >/dev/null 2>&1; then
+      log_info "✅ Success: $script"
     else
-      log_debug "Skipping: $script (not found)"
+      log_error "❌ Failed: $script"
+      exit 1
     fi
   done
-  
-  if [ ${#failed_scripts[@]} -gt 0 ]; then
-    log_warn "Some scripts failed: ${failed_scripts[*]}"
-  fi
   
   log_info "Figure generation complete"
 }

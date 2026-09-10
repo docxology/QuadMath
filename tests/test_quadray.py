@@ -71,10 +71,11 @@ def test_volume_exact_scaled_tetra():
     assert integer_tetra_volume(p0, p1, p2, p3) == 2
 
 
-def test_to_xyz_runs():
+def test_to_xyz_known_image():
     q = Quadray(2, 1, 1, 0)
     x, y, z = to_xyz(q, DEFAULT_EMBEDDING)
-    assert all(isinstance(v, float) for v in (x, y, z))
+    # Exact image under the default embedding (integral input, +/-1 rows)
+    assert (x, y, z) == (0.0, 2.0, 2.0)
 
 
 def test_vector_magnitude_and_dot():
@@ -82,9 +83,12 @@ def test_vector_magnitude_and_dot():
     q2 = Quadray(0, 1, 0, 0)
     m1 = magnitude(q1, DEFAULT_EMBEDDING)
     m2 = magnitude(q2, DEFAULT_EMBEDDING)
-    assert m1 > 0 and m2 > 0
+    # Quadray basis vectors embed at length sqrt(3) (tetrahedral basis)
+    assert math.isclose(m1, math.sqrt(3), rel_tol=1e-12)
+    assert math.isclose(m2, math.sqrt(3), rel_tol=1e-12)
+    # Distinct quadray basis vectors have inner product -1 (not orthogonal)
     d = dot(q1, q2, DEFAULT_EMBEDDING)
-    assert isinstance(d, float)
+    assert d == -1.0
 
 
 # --------------- New method tests ---------------
@@ -113,15 +117,14 @@ def test_distance_symmetric():
     assert abs(distance(q1, q2, DEFAULT_EMBEDDING) - distance(q2, q1, DEFAULT_EMBEDDING)) < 1e-12
 
 
-def test_angle_right_angle():
-    # Origin and two orthogonal directions
+def test_angle_tetrahedral_between_basis_vectors():
+    # Angle at the origin between two quadray basis vectors
     origin = Quadray(0, 0, 0, 0)
     q1 = Quadray(1, 0, 0, 0)
     q2 = Quadray(0, 1, 0, 0)
-    # The angle at origin between q1 and q2 depends on the embedding
     a = angle(q1, origin, q2, DEFAULT_EMBEDDING)
-    assert 0.0 < a < math.pi  # Valid angle
-    assert isinstance(a, float)
+    # cos = -1/3 => the tetrahedral bond angle ~109.47 degrees
+    assert math.isclose(a, math.acos(-1.0 / 3.0), rel_tol=1e-12)
 
 
 def test_angle_degenerate():
@@ -171,6 +174,19 @@ def test_quadray_from_xyz_roundtrip():
     q_recovered = quadray_from_xyz(x, y, z, DEFAULT_EMBEDDING)
     # Should recover the same point (normalized)
     assert q_recovered == q_original.normalize()
+
+
+
+def test_quadray_from_xyz_roundtrip_half_integer_ties():
+    # Regression: preimages with sum(q) % 4 == 2 project onto exact
+    # half-integer ties; per-component banker's rounding used to leave the
+    # (1,1,1,1)-coset and return a point with a different XYZ image.
+    for q_original in (Quadray(1, 1, 0, 0), Quadray(0, 0, 1, 1),
+                       Quadray(0, 1, 1, 0), Quadray(0, 0, 3, 3)):
+        x, y, z = to_xyz(q_original, DEFAULT_EMBEDDING)
+        q_back = quadray_from_xyz(x, y, z, DEFAULT_EMBEDDING)
+        # The recovered quadray must map back to the same XYZ point
+        assert to_xyz(q_back, DEFAULT_EMBEDDING) == (x, y, z)
 
 
 def test_quadray_from_xyz_origin():
