@@ -481,7 +481,7 @@ Source: `src/information.py` — discrete-state variational free energy.
 
 #### `expected_free_energy` {#code:expected_free_energy}
 
-Source: `src/information.py` — expected free energy for Active Inference with prior preferences.
+Source: `src/information.py` — canonical expected free energy $G$ for Active Inference (epistemic KL + ambiguity − pragmatic; see the equations appendix).
 
 #### `active_inference_step` {#code:active_inference_step}
 

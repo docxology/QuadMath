@@ -10,6 +10,8 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
 
 - Variational free energy (discrete states) — see Eq. \eqref{eq:free_energy} in the equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy).
 
+- Expected free energy (action selection) — see Eq. \eqref{eq:expected_free_energy} in the equations appendix, implemented by [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy): the canonical $G$ combines the epistemic KL to the prior, the posterior entropy with the variational-bound sign, ambiguity (negative expected log-likelihood), and pragmatic preferences that lower $G$ for preferred outcomes.
+
 - Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:fim} in the equations appendix and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix).
 
 - Natural gradient descent under information geometry — see Eq. \eqref{eq:natural_gradient} in the equations appendix and [`natural_gradient_step`](08_equations_appendix.md#code:natural_gradient_step); overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
