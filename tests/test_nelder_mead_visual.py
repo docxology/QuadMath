@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import pytest
 
@@ -119,3 +120,79 @@ def test_nelder_mead_zero_iter_diagnostics():
     assert len(state.worst_values) == 1
     assert len(state.spreads) == 1
     assert len(state.history) == 1
+
+
+def _distance_objective(target: Quadray):
+    """Squared Euclidean distance (default embedding) to a lattice target."""
+    tx, ty, tz = to_xyz(target, DEFAULT_EMBEDDING)
+
+    def f(q: Quadray) -> float:
+        x, y, z = to_xyz(q, DEFAULT_EMBEDDING)
+        return (x - tx) ** 2 + (y - ty) ** 2 + (z - tz) ** 2
+
+    return f
+
+
+def test_nelder_mead_degenerate_line_escapes_confinement():
+    # Collinear initial simplex along the (1,1,1,0) direction: every classical
+    # NM move is an affine combination, so without the CVP-style restart the
+    # search stays confined to that line and terminates at the line optimum
+    # (value 3.0), never reaching the true lattice argmin Quadray(4,1,0,0)
+    # (verified by enumeration) with value 0.0.
+    target = Quadray(4, 1, 0, 0)
+    initial = [Quadray(0, 0, 0, 0), Quadray(1, 1, 1, 0), Quadray(2, 2, 2, 0), Quadray(3, 3, 3, 0)]
+    steps: List[List[Quadray]] = []
+    state = nelder_mead_quadray(_distance_objective(target), initial, max_iter=200, on_step=steps.append)
+    assert state.vertices[0] == target
+    assert state.values[0] == 0.0
+    # The restart must have left the degenerate line: non-zero volumes appear.
+    assert any(v != 0 for v in state.volumes)
+    # The on_step callback observes the restart snapshots too.
+    assert len(steps) >= 1
+
+
+def test_nelder_mead_degenerate_plane_escapes_confinement():
+    # Coplanar (but not collinear) initial simplex in the c=d=0 plane; the
+    # true lattice argmin Quadray(1,0,3,0) (verified by enumeration) lies off
+    # the plane, so only a restart can reach it.
+    target = Quadray(1, 0, 3, 0)
+    initial = [Quadray(0, 0, 0, 0), Quadray(2, 0, 0, 0), Quadray(0, 2, 0, 0), Quadray(2, 2, 0, 0)]
+    state = nelder_mead_quadray(_distance_objective(target), initial, max_iter=200)
+    assert state.vertices[0] == target
+    assert state.values[0] == 0.0
+    assert any(v != 0 for v in state.volumes)
+
+
+def test_nelder_mead_collapsed_local_optimum_terminates():
+    # A simplex collapsed exactly at the objective's lattice minimum: all
+    # axial neighbor probes are worse, so the convergence branch returns
+    # immediately without any restart.
+    target = Quadray(1, 0, 0, 0)
+    initial = [Quadray(1, 0, 0, 0)] * 4
+    state = nelder_mead_quadray(_distance_objective(target), initial, max_iter=5)
+    assert len(state.history) == 1
+    assert state.volume == 0
+    assert all(v == target for v in state.vertices)
+    assert state.values[0] == 0.0
+
+
+def test_nelder_mead_probes_escape_premature_collapse():
+    # The simplex-animation demo objective: without the axial probe the NM
+    # run collapsed at a premature local lattice point (value 3.5) although
+    # the true minimum 0.6 at Quadray(2,0,0,0) — xyz (2,2,2) under the
+    # default embedding — is reachable. The probe restart escapes the
+    # premature collapse and converges to the optimum within the demo budget.
+    def f(q: Quadray) -> float:
+        x, y, z = to_xyz(q, DEFAULT_EMBEDDING)
+        obj = (x - 2) ** 2 + (y - 2) ** 2 + (z - 2) ** 2
+        if x < 0 and y < 0:
+            obj += 5.0
+        if abs(x) > 4 or abs(y) > 4 or abs(z) > 4:
+            obj += 10.0
+        return obj + 0.1 * abs(x + y + z)
+
+    initial = [Quadray(5, 0, 0, 0), Quadray(4, 1, 0, 0), Quadray(0, 4, 1, 0), Quadray(1, 1, 1, 0)]
+    state = nelder_mead_quadray(f, initial, max_iter=20)
+    assert state.vertices[0] == Quadray(2, 0, 0, 0)
+    assert abs(state.values[0] - 0.6) < 1e-12
+    assert state.volume == 0

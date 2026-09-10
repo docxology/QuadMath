@@ -9,6 +9,7 @@ This section describes optimization methods adapted to the integer Quadray latti
 - **Adaptation**: standard Nelder–Mead simplex operations with projection to integer Quadray coordinates.
 - **Projection**: after each reflection/expansion/contraction, snap to nearest integer lattice point via projective normalization.
 - **Volume tracking**: monitor integer tetravolume as convergence diagnostic; discrete steps create stable plateaus.
+- **Degenerate-simplex restart**: a zero-volume (collinear/coplanar) simplex with objective spread still above tolerance cannot descend via affine NM moves, which stay on the confining line/plane. The algorithm performs a CVP-style restart, re-seeding a full-volume simplex at the best vertex plus quadray unit directions scaled by 2; each restart consumes one iteration.
 
 ### Parameters
 
@@ -22,7 +23,7 @@ References: original Nelder–Mead method and common parameterizations in optimi
 ## Volume-Level Dynamics
 
 - Simplex volume decreases in discrete integer steps, creating stable plateaus ("energy levels").
-- Termination: when volume stabilizes at a minimal level and function spread is below tolerance.
+- Termination: when volume stabilizes at a minimal level and function spread is below tolerance; a degenerate simplex with non-negligible spread instead triggers a CVP-style restart (see the Nelder–Mead section above).
 - Monitoring: track integer simplex volume and the objective spread at each iteration for convergence diagnostics.
 
 ## Quadray Lattice Optimization Pseudocode {#code:nelder_mead_on_integer_lattice}
@@ -32,8 +33,9 @@ while not converged:
   order vertices by objective
   centroid of best three
   propose reflected (then possibly expanded/contracted) point
-  project to integer quadray; renormalize with (k,k,k,k)
   accept per standard tests; else shrink toward best
+  if simplex volume is zero but spread remains above tolerance:
+    restart: re-seed full-volume simplex at best vertex (+2 in three quadray unit directions)
   update integer volume and function spread trackers
 ```
 
