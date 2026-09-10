@@ -106,6 +106,13 @@ quadray.py ─────────────────────┬─
 cayley_menger.py ──► quadray.py (lazy import of to_xyz)
 information.py ──► quadray.py (DEFAULT_EMBEDDING); metrics.py is standalone
 conversions.py, examples.py ──► quadray.py; symbolic.py, glossary_gen.py: leaf modules
+ivm_field.py ──► quadray.py (DEFAULT_EMBEDDING/to_xyz; shell enumeration + field learning)
+ivm_dynamics.py ──► quadray.py (lattice graph; heat/majority dynamics + trajectory fit)
+lattice_search.py ──► quadray.py (precomputed ball index; nearest-site queries)
+omni_numbering.py ──► standalone (layer-BFS shells, packed int64 site keys)
+
+lean/ ── Lean 4 (core, no Mathlib) mirror of quadray.py + ivm_field.py lattice
+        definitions; see lean/README.md for the module correspondence table.
 ```
 
 ## Quality Gates

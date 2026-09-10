@@ -17,6 +17,9 @@ This directory contains the markdown source files for the QuadMath manuscript. T
 | `08_equations_appendix.md` | Appendix A | Mathematical equations |
 | `09_free_energy_active_inference.md` | Appendix B | Active inference application |
 | `10_symbols_glossary.md` | Appendix C | Auto-generated API glossary |
+| `11_ivm_field_learning.md` | IVM Field Learning | Static field learning on the isotropic vector matrix |
+| `12_ivm_dynamics.md` | IVM Dynamics | Dynamic lattice fields and trajectory identification |
+| `13_lattice_tooling.md` | Lattice Tooling | Nearest-site queries and shell numbering |
 
 ## Writing Guidelines
 
