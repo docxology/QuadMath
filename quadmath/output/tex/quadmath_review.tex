@@ -202,7 +202,7 @@
 
 \title{QuadMath: An Analytical Review of 4D and Quadray Coordinates}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -705,8 +705,10 @@ Principles}\label{key-mathematical-principles}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Integer volume quantization}: Lattice constraints ensure
-  tetrahedral volumes are exact integers in IVM units
+  \textbf{Rational volume quantization}: Lattice constraints quantize
+  tetrahedral volumes to exact quarter-unit (1/4-grain) rationals in IVM
+  units --- integral for unit-tetra tilings, e.g.~\(\tfrac14\) for the
+  primitive tetrahedron
 \item
   \textbf{Coordinate system bridges}: Linear transformations between
   Fuller.4D and Coxeter.4D preserve geometric relationships
@@ -751,7 +753,8 @@ implementation:
   system and IVM lattice impose integer constraints that enable exact
   arithmetic and discrete optimization. The synergetics unit conventions
   (regular tetrahedron volume = 1) create a quantized geometry where
-  volumes are exact integers.
+  volumes are exact rationals on the 1/4 grid --- integral for
+  tetrahedra tiling unit IVM tetras, \(\tfrac14\)-grain otherwise.
 \end{itemize}
 
 This multi-framework approach allows us to: 1. Use standard Euclidean
@@ -932,38 +935,43 @@ assert len(touch) > 0
 \subsubsection{Example vertex lists and volume checks
 (illustrative)}\label{example-vertex-lists-and-volume-checks-illustrative}
 
-The following snippets use canonical IVM neighbor points (permutations
-of \((2,1,1,0)\)) to illustrate simple decompositions consistent with
+The following snippets show executable decompositions for standard
 synergetics volumes. Each tetra volume is computed via
 \passthrough{\lstinline!ace\_tetravolume\_5x5!} and summed.
 
-Octahedron (V = 4) as four unit IVM tetras around the origin:
+Octahedron (V = 4): the octahedron with vertices \(\pm 2\hat e_i\) (edge
+\(2\sqrt2\), matching the unit IVM tetra) decomposes into eight
+origin-apex orthant tetras, each of volume \(\tfrac12\):
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
-T = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-    (Quadray(2,0,1,1), Quadray(1,2,0,1), Quadray(0,1,2,1)),  # representative variant
+axes = [
+    Quadray(1,0,0,1), Quadray(0,1,1,0),   # +x, -x
+    Quadray(1,1,0,0), Quadray(0,0,1,1),   # +y, -y
+    Quadray(1,0,1,0), Quadray(0,1,0,1),   # +z, -z
 ]
-V_oct = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in T)
+V_oct = sum(
+    ace_tetravolume_5x5(o, x, y, z)
+    for x in axes[0:2] for y in axes[2:4] for z in axes[4:6]
+)  # 8 * 1/2 = 4
 \end{lstlisting}
 
-Cube (V = 3) as three unit IVM tetras (orthant-like around the origin):
+Cube (V = 3): the cube with XYZ vertices \((\pm1,\pm1,\pm1)\) (edge 2)
+decomposes into the inscribed tetra on four alternating cube vertices (V
+= 1) plus four corner tetras (V = \(\tfrac12\) each):
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
 
-o = Quadray(0,0,0,0)
-triples = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-]
-V_cube = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in triples)
+inner = ace_tetravolume_5x5(
+    Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
+)  # 1
+corner = ace_tetravolume_5x5(
+    Quadray(0,1,1,1), Quadray(0,0,0,1), Quadray(0,1,0,0), Quadray(0,0,1,0),
+)  # 1/2
+V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 \end{lstlisting}
 
 Notes.
@@ -971,10 +979,9 @@ Notes.
 \begin{itemize}
 \tightlist
 \item
-  These decompositions are illustrative and use canonical IVM neighbor
-  triples that produce unit tetras under
-  \passthrough{\lstinline!ace\_tetravolume\_5x5!}. Other equivalent
-  tilings are possible.
+  The octahedron and cube decompositions above execute exactly as shown
+  (verified against \passthrough{\lstinline!ace\_tetravolume\_5x5!}).
+  Other equivalent tilings are possible.
 \item
   Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a
   tetra (projective normalization), which the 5×5 determinant respects.
@@ -1691,8 +1698,9 @@ variational free energy.
 
 \paragraph{\texorpdfstring{\texttt{expected\_free\_energy}}{expected\_free\_energy}}\label{code:expected_free_energy}
 
-Source: \passthrough{\lstinline!src/information.py!} --- expected free
-energy for Active Inference with prior preferences.
+Source: \passthrough{\lstinline!src/information.py!} --- canonical
+expected free energy \(G\) for Active Inference (epistemic KL +
+ambiguity − pragmatic; see the equations appendix).
 
 \paragraph{\texorpdfstring{\texttt{active\_inference\_step}}{active\_inference\_step}}\label{code:active_inference_step}
 
@@ -2116,6 +2124,13 @@ Lattice}\label{neldermead-on-integer-lattice}
 \item
   \textbf{Volume tracking}: monitor integer tetravolume as convergence
   diagnostic; discrete steps create stable plateaus.
+\item
+  \textbf{Degenerate-simplex restart}: a zero-volume
+  (collinear/coplanar) simplex with objective spread still above
+  tolerance cannot descend via affine NM moves, which stay on the
+  confining line/plane. The algorithm performs a CVP-style restart,
+  re-seeding a full-volume simplex at the best vertex plus quadray unit
+  directions scaled by 2; each restart consumes one iteration.
 \end{itemize}
 
 \subsubsection{Parameters}\label{parameters}
@@ -2146,7 +2161,9 @@ method}.
   plateaus (``energy levels'').
 \item
   Termination: when volume stabilizes at a minimal level and function
-  spread is below tolerance.
+  spread is below tolerance; a degenerate simplex with non-negligible
+  spread instead triggers a CVP-style restart (see the Nelder--Mead
+  section above).
 \item
   Monitoring: track integer simplex volume and the objective spread at
   each iteration for convergence diagnostics.
@@ -2160,8 +2177,9 @@ while not converged:
   order vertices by objective
   centroid of best three
   propose reflected (then possibly expanded/contracted) point
-  project to integer quadray; renormalize with (k,k,k,k)
   accept per standard tests; else shrink toward best
+  if simplex volume is zero but spread remains above tolerance:
+    restart: re-seed full-volume simplex at best vertex (+2 in three quadray unit directions)
   update integer volume and function spread trackers
 \end{lstlisting}
 
@@ -2462,6 +2480,17 @@ potential redundancy. This FIM structure guides natural gradient descent
 by weighting parameter updates according to local curvature, leading to
 more efficient convergence than standard gradient descent.}
 \end{figure}
+
+Note on the estimator: the matrix in the figure above is computed from
+per-sample \textbf{squared-loss} gradients
+(\passthrough{\lstinline!2·x\_i·r\_i!}) at a misspecified
+\passthrough{\lstinline!w\_est!}
+(\passthrough{\lstinline!information\_demo.py!}), i.e.~a
+Gauss--Newton/Gram surrogate. It coincides with the empirical FIM of Eq.
+\eqref{eq:fim_empirical} only for true score functions --- exactly at
+\(w_{\text{true}}\) in expectation under Gaussian noise --- so treat the
+displayed matrix as a curvature-scale illustration rather than a model
+FIM estimate.
 
 \begin{figure}
 \centering
@@ -3043,9 +3072,10 @@ metric, improving conditioning relative to vanilla gradient descent.
 A curious connection unites geodesics in information geometry, the
 physical principle of least action, and Buckminster Fuller's tensegrity
 geodesic domes (Fuller.4D). On statistical manifolds, geodesics are
-shortest paths under the Fisher metric, and natural-gradient flows
-approximate least-action trajectories by minimizing an
-information-length functional constrained by curvature (Eqs.
+shortest paths under the Fisher metric, and natural-gradient flows trace
+paths that motivate gradient-weighted path-length heuristics (the
+\passthrough{\lstinline!information\_length!} proxy in
+\passthrough{\lstinline!metrics.py!}) constrained by curvature (Eqs.
 \eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix).
 In tensegrity domes, geodesic lines on triangulated spherical shells
 distribute stress nearly uniformly while the network balances continuous
@@ -3859,6 +3889,42 @@ trajectories and free energy landscapes are shown in
 appendix focuses on unique figures specific to mathematical formulations
 and validation.
 
+\subsection{Expected Free Energy (Active
+Inference)}\label{eq:expected_free_energy}
+
+Background:
+\href{https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind}{Active
+Inference (Parr, Pezzulo \& Friston, MIT Press, 2022)}.
+
+\begin{equation}\label{eq:expected_free_energy}
+G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; H\big[Q(s)\big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
+\end{equation}
+
+Explanation.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Epistemic term}: the KL divergence between variational
+  posterior and prior over states.
+\item
+  \textbf{Entropy}: the posterior entropy enters with the
+  variational-bound sign, \(\mathbb{E}_q[\log Q(s)] = -H[Q(s)]\).
+\item
+  \textbf{Ambiguity}: the negative expected log-likelihood of outcomes
+  penalizes noisy observations.
+\item
+  \textbf{Pragmatic term}: prior preferences \(P(o)\) enter negatively,
+  so preferred outcomes lower \(G\); agents minimize \(G\) during action
+  selection.
+\end{itemize}
+
+See code:
+\href{03_quadray_methods.md\#code:expected_free_energy}{\passthrough{\lstinline!expected\_free\_energy!}}.
+
+See \passthrough{\lstinline!src/information.py!} --- canonical expected
+free energy (\passthrough{\lstinline!expected\_free\_energy!}).
+
 \subsection{Quadray Normalization
 (Fuller.4D)}\label{quadray-normalization-fuller.4d}
 
@@ -3987,6 +4053,15 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
   Variational free energy (discrete states) --- see Eq.
   \eqref{eq:free_energy} in the equations appendix, implemented by
   \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}.
+\item
+  Expected free energy (action selection) --- see Eq.
+  \eqref{eq:expected_free_energy} in the equations appendix, implemented
+  by
+  \href{03_quadray_methods.md\#code:expected_free_energy}{\passthrough{\lstinline!expected\_free\_energy!}}:
+  the canonical \(G\) combines the epistemic KL to the prior, the
+  posterior entropy with the variational-bound sign, ambiguity (negative
+  expected log-likelihood), and pragmatic preferences that lower \(G\)
+  for preferred outcomes.
 \item
   Fisher Information Matrix (FIM) as metric --- see Eq. \eqref{eq:fim}
   in the equations appendix and
@@ -4734,8 +4809,8 @@ information matrices between coordinate systems. \\
 the probability simplex. \\
 \passthrough{\lstinline!metrics!} &
 \passthrough{\lstinline!information\_length!} & function &
-\passthrough{\lstinline!(path\_gradients)!} & Path length in information
-space via gradient-weighted arc length. \\
+\passthrough{\lstinline!(path\_gradients)!} & Gradient-weighted proxy
+for informational path length (NOT the \\
 \passthrough{\lstinline!metrics!} &
 \passthrough{\lstinline!jensen\_shannon\_divergence!} & function &
 \passthrough{\lstinline!(p, q, eps)!} & Jensen--Shannon divergence JSD(p
@@ -4767,7 +4842,7 @@ p1, p2,
 p3)\passthrough{\lstinline!| Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). | |!}quadray\passthrough{\lstinline!|!}magnitude\passthrough{\lstinline!| function |!}(q,
 embedding)\passthrough{\lstinline!| Return Euclidean magnitude \\|\\|q\\|\\| under the given embedding (vector norm). | |!}quadray\passthrough{\lstinline!|!}quadray\_from\_xyz\passthrough{\lstinline!| function |!}(x,
 y, z,
-embedding)\passthrough{\lstinline!| Map an R\^3 point back to the nearest integer quadray lattice point. | |!}quadray\passthrough{\lstinline!|!}to\_xyz\passthrough{\lstinline!| function |!}(q,
+embedding)\passthrough{\lstinline!| Map an R\^3 point back to the quadray lattice via pseudoinverse rounding. | |!}quadray\passthrough{\lstinline!|!}to\_xyz\passthrough{\lstinline!| function |!}(q,
 embedding)\passthrough{\lstinline!| Map quadray to R\^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). | |!}symbolic\passthrough{\lstinline!|!}cayley\_menger\_volume\_symbolic\passthrough{\lstinline!| function |!}(d2)\passthrough{\lstinline!| Return symbolic Euclidean tetrahedron volume from squared distances. | |!}symbolic\passthrough{\lstinline!|!}convert\_xyz\_volume\_to\_ivm\_symbolic\passthrough{\lstinline!| function |!}(V\_xyz)\passthrough{\lstinline!| Convert a symbolic Euclidean volume to IVM tetravolume via S3. | |!}visualize\passthrough{\lstinline!|!}animate\_discrete\_path\passthrough{\lstinline!| function |!}(path,
 embedding,
 save)\passthrough{\lstinline!| Animate a point moving along a discrete quadray path. | |!}visualize\passthrough{\lstinline!|!}animate\_simplex\passthrough{\lstinline!| function |!}(vertices\_list,

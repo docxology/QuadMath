@@ -187,7 +187,7 @@
 
 \title{Appendix: Symbols and Glossary}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -672,8 +672,8 @@ information matrices between coordinate systems. \\
 the probability simplex. \\
 \passthrough{\lstinline!metrics!} &
 \passthrough{\lstinline!information\_length!} & function &
-\passthrough{\lstinline!(path\_gradients)!} & Path length in information
-space via gradient-weighted arc length. \\
+\passthrough{\lstinline!(path\_gradients)!} & Gradient-weighted proxy
+for informational path length (NOT the \\
 \passthrough{\lstinline!metrics!} &
 \passthrough{\lstinline!jensen\_shannon\_divergence!} & function &
 \passthrough{\lstinline!(p, q, eps)!} & Jensen--Shannon divergence JSD(p
@@ -705,7 +705,7 @@ p1, p2,
 p3)\passthrough{\lstinline!| Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). | |!}quadray\passthrough{\lstinline!|!}magnitude\passthrough{\lstinline!| function |!}(q,
 embedding)\passthrough{\lstinline!| Return Euclidean magnitude \\|\\|q\\|\\| under the given embedding (vector norm). | |!}quadray\passthrough{\lstinline!|!}quadray\_from\_xyz\passthrough{\lstinline!| function |!}(x,
 y, z,
-embedding)\passthrough{\lstinline!| Map an R\^3 point back to the nearest integer quadray lattice point. | |!}quadray\passthrough{\lstinline!|!}to\_xyz\passthrough{\lstinline!| function |!}(q,
+embedding)\passthrough{\lstinline!| Map an R\^3 point back to the quadray lattice via pseudoinverse rounding. | |!}quadray\passthrough{\lstinline!|!}to\_xyz\passthrough{\lstinline!| function |!}(q,
 embedding)\passthrough{\lstinline!| Map quadray to R\^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). | |!}symbolic\passthrough{\lstinline!|!}cayley\_menger\_volume\_symbolic\passthrough{\lstinline!| function |!}(d2)\passthrough{\lstinline!| Return symbolic Euclidean tetrahedron volume from squared distances. | |!}symbolic\passthrough{\lstinline!|!}convert\_xyz\_volume\_to\_ivm\_symbolic\passthrough{\lstinline!| function |!}(V\_xyz)\passthrough{\lstinline!| Convert a symbolic Euclidean volume to IVM tetravolume via S3. | |!}visualize\passthrough{\lstinline!|!}animate\_discrete\_path\passthrough{\lstinline!| function |!}(path,
 embedding,
 save)\passthrough{\lstinline!| Animate a point moving along a discrete quadray path. | |!}visualize\passthrough{\lstinline!|!}animate\_simplex\passthrough{\lstinline!| function |!}(vertices\_list,

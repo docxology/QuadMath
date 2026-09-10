@@ -189,13 +189,15 @@ def test_fisher_information_matrix_orthogonal_gradients():
 
 
 def test_expected_free_energy_basic():
-    """Test basic expected free energy computation."""
+    """Test basic expected free energy computation (pinned value)."""
     logp = np.log(np.array([0.6, 0.4]))
     q = np.array([0.5, 0.5])
     p = np.array([0.5, 0.5])
+    # Canonical G = KL - H - E_q[log p(o|s)] - log p(o); here KL = 0 and
+    # G = 0.7135581778 - 0.6931471806 = 0.0204109973.
     G = expected_free_energy(logp, q, p)
     assert np.isfinite(G)
-    assert G > 0  # Expected free energy should be positive
+    assert abs(G - 0.020410997260129515) < 1e-12
 
 
 def test_expected_free_energy_shape_mismatch():
@@ -224,16 +226,51 @@ def test_expected_free_energy_normalization():
 
 
 def test_expected_free_energy_with_preferences():
-    """Test expected free energy with prior preferences."""
+    """Test expected free energy with prior preferences (canonical sign)."""
     logp = np.log(np.array([0.6, 0.4]))
     q = np.array([0.5, 0.5])
     p = np.array([0.5, 0.5])
-    
+
     G_no_pref = expected_free_energy(logp, q, p)
     G_with_pref = expected_free_energy(logp, q, p, log_p_o=-1.0)
-    
-    # Should differ by the preference term
-    assert np.allclose(G_with_pref - G_no_pref, -1.0, rtol=1e-10)
+
+    # Canonical G: preferred outcomes (log p(o) = -1) LOWER G by 1.
+    assert np.allclose(G_with_pref - G_no_pref, 1.0, rtol=1e-10)
+
+
+def test_expected_free_energy_pinned_nonuniform():
+    """Pinned value for the canonical G decomposition with a non-uniform prior."""
+    logp = np.log(np.array([0.9, 0.1]))
+    q = np.array([0.8, 0.2])
+    p = np.array([0.3, 0.7])
+    # ambiguity 0.5448054311 - entropy 0.5004024235 + KL 0.5341108087
+    G = expected_free_energy(logp, q, p)
+    assert abs(G - 0.5785138162971909) < 1e-12
+
+
+def test_expected_free_energy_term_signs():
+    """Each canonical term enters with its documented sign: ambiguity and KL
+    positive, posterior entropy as E_q[log q] = -H, preference negative."""
+    logp = np.log(np.array([0.9, 0.1]))
+    q = np.array([0.8, 0.2])
+    p = np.array([0.3, 0.7])
+    qn = q / np.sum(q)
+    pn = p / np.sum(p)
+    eps = 1e-15
+    ambiguity = -float(np.sum(qn * logp))
+    neg_entropy = float(np.sum(qn * np.log(qn + eps)))
+    kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
+    G = expected_free_energy(logp, q, p, log_p_o=-0.25)
+    assert np.allclose(G, ambiguity + neg_entropy + kl + 0.25, rtol=1e-10)
+
+
+def test_expected_free_energy_prior_enters_via_kl():
+    """The prior term is epistemic: G rises with KL(q || p) for fixed q, logp."""
+    logp = np.log(np.array([0.6, 0.4]))
+    q = np.array([0.8, 0.2])
+    G_close = expected_free_energy(logp, q, np.array([0.8, 0.2]))
+    G_far = expected_free_energy(logp, q, np.array([0.05, 0.95]))
+    assert G_far > G_close
 
 
 def test_active_inference_step_basic():

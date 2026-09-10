@@ -202,7 +202,7 @@
 
 \title{Quadray Analytical Details and Methods}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 05, 2026}
+\date{September 10, 2026}
 
 \begin{document}
 \maketitle
@@ -251,8 +251,10 @@ Principles}\label{key-mathematical-principles}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Integer volume quantization}: Lattice constraints ensure
-  tetrahedral volumes are exact integers in IVM units
+  \textbf{Rational volume quantization}: Lattice constraints quantize
+  tetrahedral volumes to exact quarter-unit (1/4-grain) rationals in IVM
+  units --- integral for unit-tetra tilings, e.g.~\(\tfrac14\) for the
+  primitive tetrahedron
 \item
   \textbf{Coordinate system bridges}: Linear transformations between
   Fuller.4D and Coxeter.4D preserve geometric relationships
@@ -297,7 +299,8 @@ implementation:
   system and IVM lattice impose integer constraints that enable exact
   arithmetic and discrete optimization. The synergetics unit conventions
   (regular tetrahedron volume = 1) create a quantized geometry where
-  volumes are exact integers.
+  volumes are exact rationals on the 1/4 grid --- integral for
+  tetrahedra tiling unit IVM tetras, \(\tfrac14\)-grain otherwise.
 \end{itemize}
 
 This multi-framework approach allows us to: 1. Use standard Euclidean
@@ -478,38 +481,43 @@ assert len(touch) > 0
 \subsubsection{Example vertex lists and volume checks
 (illustrative)}\label{example-vertex-lists-and-volume-checks-illustrative}
 
-The following snippets use canonical IVM neighbor points (permutations
-of \((2,1,1,0)\)) to illustrate simple decompositions consistent with
+The following snippets show executable decompositions for standard
 synergetics volumes. Each tetra volume is computed via
 \passthrough{\lstinline!ace\_tetravolume\_5x5!} and summed.
 
-Octahedron (V = 4) as four unit IVM tetras around the origin:
+Octahedron (V = 4): the octahedron with vertices \(\pm 2\hat e_i\) (edge
+\(2\sqrt2\), matching the unit IVM tetra) decomposes into eight
+origin-apex orthant tetras, each of volume \(\tfrac12\):
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
-T = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-    (Quadray(2,0,1,1), Quadray(1,2,0,1), Quadray(0,1,2,1)),  # representative variant
+axes = [
+    Quadray(1,0,0,1), Quadray(0,1,1,0),   # +x, -x
+    Quadray(1,1,0,0), Quadray(0,0,1,1),   # +y, -y
+    Quadray(1,0,1,0), Quadray(0,1,0,1),   # +z, -z
 ]
-V_oct = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in T)
+V_oct = sum(
+    ace_tetravolume_5x5(o, x, y, z)
+    for x in axes[0:2] for y in axes[2:4] for z in axes[4:6]
+)  # 8 * 1/2 = 4
 \end{lstlisting}
 
-Cube (V = 3) as three unit IVM tetras (orthant-like around the origin):
+Cube (V = 3): the cube with XYZ vertices \((\pm1,\pm1,\pm1)\) (edge 2)
+decomposes into the inscribed tetra on four alternating cube vertices (V
+= 1) plus four corner tetras (V = \(\tfrac12\) each):
 
 \begin{lstlisting}[language=Python]
 from quadray import Quadray, ace_tetravolume_5x5
 
-o = Quadray(0,0,0,0)
-triples = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-]
-V_cube = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in triples)
+inner = ace_tetravolume_5x5(
+    Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
+)  # 1
+corner = ace_tetravolume_5x5(
+    Quadray(0,1,1,1), Quadray(0,0,0,1), Quadray(0,1,0,0), Quadray(0,0,1,0),
+)  # 1/2
+V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 \end{lstlisting}
 
 Notes.
@@ -517,10 +525,9 @@ Notes.
 \begin{itemize}
 \tightlist
 \item
-  These decompositions are illustrative and use canonical IVM neighbor
-  triples that produce unit tetras under
-  \passthrough{\lstinline!ace\_tetravolume\_5x5!}. Other equivalent
-  tilings are possible.
+  The octahedron and cube decompositions above execute exactly as shown
+  (verified against \passthrough{\lstinline!ace\_tetravolume\_5x5!}).
+  Other equivalent tilings are possible.
 \item
   Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a
   tetra (projective normalization), which the 5×5 determinant respects.
@@ -1237,8 +1244,9 @@ variational free energy.
 
 \paragraph{\texorpdfstring{\texttt{expected\_free\_energy}}{expected\_free\_energy}}\label{code:expected_free_energy}
 
-Source: \passthrough{\lstinline!src/information.py!} --- expected free
-energy for Active Inference with prior preferences.
+Source: \passthrough{\lstinline!src/information.py!} --- canonical
+expected free energy \(G\) for Active Inference (epistemic KL +
+ambiguity − pragmatic; see the equations appendix).
 
 \paragraph{\texorpdfstring{\texttt{active\_inference\_step}}{active\_inference\_step}}\label{code:active_inference_step}
 

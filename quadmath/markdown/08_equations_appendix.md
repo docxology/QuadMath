@@ -175,6 +175,25 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 
 **Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
+## Expected Free Energy (Active Inference) {#eq:expected_free_energy}
+
+Background: [Active Inference (Parr, Pezzulo & Friston, MIT Press, 2022)](https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind).
+
+\begin{equation}\label{eq:expected_free_energy}
+G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; H\big[Q(s)\big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
+\end{equation}
+
+Explanation.
+
+- **Epistemic term**: the KL divergence between variational posterior and prior over states.
+- **Entropy**: the posterior entropy enters with the variational-bound sign, $\mathbb{E}_q[\log Q(s)] = -H[Q(s)]$.
+- **Ambiguity**: the negative expected log-likelihood of outcomes penalizes noisy observations.
+- **Pragmatic term**: prior preferences $P(o)$ enter negatively, so preferred outcomes lower $G$; agents minimize $G$ during action selection.
+
+See code: [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy).
+
+See `src/information.py` — canonical expected free energy (`expected_free_energy`).
+
 ## Quadray Normalization (Fuller.4D)
 
 Given $q=(a,b,c,d)$, choose $k=\min(a,b,c,d)$ and set $q' = q - (k,k,k,k)$ to enforce at least one zero with non-negative entries.

@@ -70,9 +70,15 @@ def nelder_mead_quadray(
     classical value-spread criterion. The history of simplex vertices is
     returned for downstream visualization.
 
-    Note: a degenerate (zero-volume, collinear) initial simplex stays confined
-    to its line under reflection/expansion/shrink; termination then occurs at
-    the line optimum.
+    Note: a degenerate (zero-volume, collinear or coplanar) simplex can only
+    reach the optimum of its own subspace, since every NM move is an affine
+    combination of the vertices. To escape this confinement, the algorithm
+    probes the eight axial nearest neighbors of the best vertex whenever the
+    simplex collapses (zero volume, spread below tolerance); if any neighbor
+    improves the objective, a CVP-style restart re-seeds a full-volume simplex
+    there instead of returning. Each restart strictly improves the best value,
+    and each restart consumes one iteration, so termination remains bounded by
+    `max_iter`.
     """
     assert len(initial_vertices) == 4, "Need 4 vertices for 4D (tetrahedron)"
     vertices, values = order_simplex(initial_vertices, f)
@@ -93,6 +99,47 @@ def nelder_mead_quadray(
         spreads.append(spread)
         volumes.append(vol)
         if vol == 0 and spread < tol:
+            # Lattice collapse: before accepting convergence, probe +/-1 and
+            # +/-2 steps along each quadray axis around the best vertex. A
+            # degenerate (collinear/coplanar) simplex can only reach the
+            # optimum of its own subspace, since every NM move is an affine
+            # combination of the vertices; a collapsed non-degenerate simplex
+            # may likewise sit short of a better nearby lattice point. If any
+            # probe improves the objective, the simplex was confined or
+            # premature — perform a CVP-style restart with a full-volume
+            # simplex seeded along the three most promising axes instead of
+            # returning. Each restart strictly improves the best value (the
+            # probe beat it), so restarts cannot cycle.
+            best = vertices[0]
+            axis_probes: List[Tuple[float, int]] = []
+            for axis in range(4):
+                cands = []
+                for signed in (1, -1, 2, -2):
+                    d = Quadray(*(signed if k == axis else 0 for k in range(4)))
+                    cands.append((f(project_to_lattice(best.add(d))), signed))
+                cands.sort(key=lambda t: t[0])
+                axis_probes.append(cands[0])
+            axes_by_value = sorted(range(4), key=lambda a: axis_probes[a][0])
+            if axis_probes[axes_by_value[0]][0] < values[0]:
+                # Seed the restarted simplex with the best signed probe per
+                # axis for three distinct axes. Offsets along distinct axes
+                # are linearly independent regardless of their scale, so the
+                # restarted simplex has non-zero volume and escapes the
+                # confining subspace.
+                vertices = [best] + [
+                    project_to_lattice(
+                        best.add(Quadray(
+                            *(axis_probes[j][1] if k == j else 0 for k in range(4))
+                        ))
+                    )
+                    for j in axes_by_value[:3]
+                ]
+                values = [f(v) for v in vertices]
+                vertices, values = order_simplex(vertices, f)
+                history.append(list(vertices))
+                if on_step:
+                    on_step(list(vertices))
+                continue
             return SimplexState(vertices, values, vol, history, best_values, worst_values, spreads, volumes)
 
         centroid = centroid_excluding(vertices, 3)

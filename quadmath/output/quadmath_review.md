@@ -159,7 +159,7 @@ The methods presented here rest on three interconnected mathematical frameworks.
 - **Fuller.4D**: Synergetics/Quadray coordinates with integer lattice constraints and IVM unit conventions
 
 ### Key Mathematical Principles
-- **Integer volume quantization**: Lattice constraints ensure tetrahedral volumes are exact integers in IVM units
+- **Rational volume quantization**: Lattice constraints quantize tetrahedral volumes to exact quarter-unit (1/4-grain) rationals in IVM units — integral for unit-tetra tilings, e.g. $\tfrac14$ for the primitive tetrahedron
 - **Coordinate system bridges**: Linear transformations between Fuller.4D and Coxeter.4D preserve geometric relationships
 - **Information geometry**: Fisher metric provides Riemannian structure for optimization on parameter manifolds
 - **Exact arithmetic**: Bareiss algorithm ensures determinant calculations remain exact for integer inputs
@@ -179,7 +179,7 @@ The three 4D frameworks serve distinct but complementary roles in our implementa
 
 - **Einstein.4D provides the analogy**: The Minkowski metric structure inspires our information geometry approach, where the Fisher information matrix acts as a Riemannian metric on parameter space. Natural gradient descent follows geodesics on this information manifold, analogous to how particles follow geodesics in spacetime.
 
-- **Fuller.4D provides the constraints**: The Quadray coordinate system and IVM lattice impose integer constraints that enable exact arithmetic and discrete optimization. The synergetics unit conventions (regular tetrahedron volume = 1) create a quantized geometry where volumes are exact integers.
+- **Fuller.4D provides the constraints**: The Quadray coordinate system and IVM lattice impose integer constraints that enable exact arithmetic and discrete optimization. The synergetics unit conventions (regular tetrahedron volume = 1) create a quantized geometry where volumes are exact rationals on the 1/4 grid — integral for tetrahedra tiling unit IVM tetras, $\tfrac14$-grain otherwise.
 
 This multi-framework approach allows us to:
 1. Use standard Euclidean methods for volume calculations where relevant or already in use (Coxeter.4D)
@@ -251,40 +251,42 @@ assert len(touch) > 0
 
 ### Example vertex lists and volume checks (illustrative)
 
-The following snippets use canonical IVM neighbor points (permutations of \((2,1,1,0)\)) to illustrate simple decompositions consistent with synergetics volumes. Each tetra volume is computed via `ace_tetravolume_5x5` and summed.
+The following snippets show executable decompositions for standard synergetics volumes. Each tetra volume is computed via `ace_tetravolume_5x5` and summed.
 
-Octahedron (V = 4) as four unit IVM tetras around the origin:
+Octahedron (V = 4): the octahedron with vertices $\pm 2\hat e_i$ (edge $2\sqrt2$, matching the unit IVM tetra) decomposes into eight origin-apex orthant tetras, each of volume $\tfrac12$:
 
 ```python
 from quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
-T = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-    (Quadray(2,0,1,1), Quadray(1,2,0,1), Quadray(0,1,2,1)),  # representative variant
+axes = [
+    Quadray(1,0,0,1), Quadray(0,1,1,0),   # +x, -x
+    Quadray(1,1,0,0), Quadray(0,0,1,1),   # +y, -y
+    Quadray(1,0,1,0), Quadray(0,1,0,1),   # +z, -z
 ]
-V_oct = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in T)
+V_oct = sum(
+    ace_tetravolume_5x5(o, x, y, z)
+    for x in axes[0:2] for y in axes[2:4] for z in axes[4:6]
+)  # 8 * 1/2 = 4
 ```
 
-Cube (V = 3) as three unit IVM tetras (orthant-like around the origin):
+Cube (V = 3): the cube with XYZ vertices $(\pm1,\pm1,\pm1)$ (edge 2) decomposes into the inscribed tetra on four alternating cube vertices (V = 1) plus four corner tetras (V = $\tfrac12$ each):
 
 ```python
 from quadray import Quadray, ace_tetravolume_5x5
 
-o = Quadray(0,0,0,0)
-triples = [
-    (Quadray(2,1,0,1), Quadray(2,1,1,0), Quadray(2,0,1,1)),
-    (Quadray(1,2,0,1), Quadray(1,2,1,0), Quadray(0,2,1,1)),
-    (Quadray(1,1,2,0), Quadray(1,0,2,1), Quadray(0,1,2,1)),
-]
-V_cube = sum(ace_tetravolume_5x5(o, a, b, c) for (a,b,c) in triples)
+inner = ace_tetravolume_5x5(
+    Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
+)  # 1
+corner = ace_tetravolume_5x5(
+    Quadray(0,1,1,1), Quadray(0,0,0,1), Quadray(0,1,0,0), Quadray(0,0,1,0),
+)  # 1/2
+V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 ```
 
 Notes.
 
-- These decompositions are illustrative and use canonical IVM neighbor triples that produce unit tetras under `ace_tetravolume_5x5`. Other equivalent tilings are possible.
+- The octahedron and cube decompositions above execute exactly as shown (verified against `ace_tetravolume_5x5`). Other equivalent tilings are possible.
 - Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a tetra (projective normalization), which the 5×5 determinant respects.
 
 ## Integer Volume Quantization {#sec:integer_volume}
@@ -624,7 +626,7 @@ Source: `src/information.py` — discrete-state variational free energy.
 
 #### `expected_free_energy` {#code:expected_free_energy}
 
-Source: `src/information.py` — expected free energy for Active Inference with prior preferences.
+Source: `src/information.py` — canonical expected free energy $G$ for Active Inference (epistemic KL + ambiguity − pragmatic; see the equations appendix).
 
 #### `active_inference_step` {#code:active_inference_step}
 
@@ -862,6 +864,7 @@ This section describes optimization methods adapted to the integer Quadray latti
 - **Adaptation**: standard Nelder–Mead simplex operations with projection to integer Quadray coordinates.
 - **Projection**: after each reflection/expansion/contraction, snap to nearest integer lattice point via projective normalization.
 - **Volume tracking**: monitor integer tetravolume as convergence diagnostic; discrete steps create stable plateaus.
+- **Degenerate-simplex restart**: a zero-volume (collinear/coplanar) simplex with objective spread still above tolerance cannot descend via affine NM moves, which stay on the confining line/plane. The algorithm performs a CVP-style restart, re-seeding a full-volume simplex at the best vertex plus quadray unit directions scaled by 2; each restart consumes one iteration.
 
 ### Parameters
 
@@ -875,7 +878,7 @@ References: original Nelder–Mead method and common parameterizations in optimi
 ## Volume-Level Dynamics
 
 - Simplex volume decreases in discrete integer steps, creating stable plateaus ("energy levels").
-- Termination: when volume stabilizes at a minimal level and function spread is below tolerance.
+- Termination: when volume stabilizes at a minimal level and function spread is below tolerance; a degenerate simplex with non-negligible spread instead triggers a CVP-style restart (see the Nelder–Mead section above).
 - Monitoring: track integer simplex volume and the objective spread at each iteration for convergence diagnostics.
 
 ## Quadray Lattice Optimization Pseudocode {#code:nelder_mead_on_integer_lattice}
@@ -885,8 +888,9 @@ while not converged:
   order vertices by objective
   centroid of best three
   propose reflected (then possibly expanded/contracted) point
-  project to integer quadray; renormalize with (k,k,k,k)
   accept per standard tests; else shrink toward best
+  if simplex volume is zero but spread remains above tolerance:
+    restart: re-seed full-volume simplex at best vertex (+2 in three quadray unit directions)
   update integer volume and function spread trackers
 ```
 
@@ -973,6 +977,14 @@ The following figures demonstrate the comprehensive nature of Fisher Information
 **Figure 11: Comprehensive Fisher Information Eigenspectrum with Curvature Analysis**. This detailed three-panel visualization provides comprehensive analysis of the parameter space geometry within the 4D framework context, including tetrahedral parameter space visualization.
 
 ![**Fisher Information Matrix (FIM) with 4D Framework Context**. This comprehensive three-panel visualization demonstrates the empirical Fisher information matrix and its deep connections to the three 4D mathematical frameworks through code-grounded analysis. **Left panel**: Linear regression model visualization showing the misspecified quadratic model $y = w_0 + w_1 x + w_2 x^2$ with true parameters $w_{true} = [1.0, -2.0, 0.5]$ and estimated parameters $w_{est} = [0.3, -1.2, 0.0]$. The panel displays data points, true model fit (green line), estimated model fit (red dashed line), and diagnostic information including Mean Squared Error (MSE). This visualization grounds the Fisher Information analysis in the actual model that generates the parameter gradients. **Center panel**: The 3×3 Fisher information matrix $F_{ij}$ estimated from per-sample gradients of the misspecified linear regression model, displayed as a heatmap with precise value annotations. The matrix structure reveals the local curvature of the log-likelihood surface, where brighter colors indicate higher information content. **Matrix interpretation**: Diagonal elements $F_{ii}$ quantify the sensitivity of the objective to changes in parameter $w_i$, while off-diagonal elements $F_{ij}$ capture parameter interactions and potential redundancy. **Right panel**: 3D tetrahedral visualization of the 4D framework integration, showing how Coxeter.4D (Euclidean), Einstein.4D (Minkowski), and Fuller.4D (Synergetics) frameworks connect through the tetrahedral structure. **Mathematical foundation**: The FIM is computed according to Eq. \eqref{eq:fim_empirical} where gradients are computed with respect to parameters $w_0, w_1, w_2$ from the misspecified model. **Coxeter.4D (Euclidean)**: Standard 3D parameter space with Euclidean metric $\delta_{ij}$. **Einstein.4D (Minkowski)**: Fisher metric $F_{ij}$ replaces spacetime metric; geodesics follow $\Delta w = F^{-1}\nabla L$ for optimal parameter updates. **Fuller.4D (Synergetics)**: Tetrahedral coordinate system with IVM quantization. **Information content**: Diagonal dominance shows each parameter contributes independently to the model's predictive power, while off-diagonal elements reveal parameter interactions and potential redundancy. This FIM structure guides natural gradient descent by weighting parameter updates according to local curvature, leading to more efficient convergence than standard gradient descent.](../output/figures/fisher_information_matrix.png)
+
+Note on the estimator: the matrix in the figure above is computed from
+per-sample **squared-loss** gradients (`2·x_i·r_i`) at a misspecified `w_est`
+(`information_demo.py`), i.e. a Gauss–Newton/Gram surrogate. It coincides with
+the empirical FIM of Eq. \eqref{eq:fim_empirical} only for true score functions
+— exactly at $w_{\text{true}}$ in expectation under Gaussian noise — so treat
+the displayed matrix as a curvature-scale illustration rather than a model FIM
+estimate.
 
 ![**Comprehensive Fisher Information Eigenspectrum with Curvature Analysis**. This detailed three-panel visualization provides comprehensive analysis of the parameter space geometry within the 4D framework context, including tetrahedral parameter space visualization. **Left panel**: Bar chart showing the eigenvalue decomposition of the empirical Fisher information matrix, with eigenvalues sorted in descending order and color-coded for visual clarity. Each bar is precisely annotated with its numerical value, revealing the principal curvature directions of the parameter space. **Center panel**: Comprehensive curvature analysis providing key metrics, eigenvalue interpretation, and 4D framework connections. **Key metrics**: Condition number (anisotropy measure), anisotropy index (normalized directional variation), and total curvature (trace of F). **Eigenvalue interpretation**: Each eigenvalue $\lambda_i$ represents the curvature strength in the corresponding principal direction. Large eigenvalues indicate directions of high curvature (tight constraints) where the objective function changes rapidly with parameter changes, while small eigenvalues indicate directions of low curvature (loose constraints) where the objective function is relatively flat. **Right panel**: 3D tetrahedral visualization of the parameter space structure based on the Fisher Information eigenvectors and eigenvalues. The tetrahedron vertices represent the origin and the three principal curvature directions, scaled by the square root of eigenvalues to show the anisotropic structure. **4D framework connection**: The eigenvalues reveal the anisotropic nature of the parameter space, explaining why natural gradient descent (which scales updates by $F^{-1}$) converges more efficiently than standard gradient descent. **Coxeter.4D**: The eigenvalues quantify the Euclidean geometry of parameter space in different directions. **Einstein.4D**: The Fisher metric geometry creates curved geodesics that respect the intrinsic parameter space structure. **Fuller.4D**: The tetrahedral structure provides a natural coordinate system for representing the four-fold partition of optimization problems, with the parameter space tetrahedron directly reflecting the curvature structure. **Optimization implications**: Natural gradient descent scales parameter updates by $F^{-1}$, creating anisotropic scaling that improves convergence on ill-conditioned problems. The tetrahedral visualization shows how the parameter space anisotropy creates natural directions for efficient optimization. This geometric understanding is crucial for designing effective optimization strategies and understanding model behavior in the context of information geometry.](../output/figures/fisher_information_eigenspectrum.png)
 
@@ -1139,7 +1151,7 @@ The Fisher Information Matrix (FIM) defines a Riemannian metric on parameter spa
 
 Implication: curvature-aware steps using Eq. \eqref{eq:natural_gradient} in the equations appendix adaptively scale updates by the inverse metric, improving conditioning relative to vanilla gradient descent.
 
-A curious connection unites geodesics in information geometry, the physical principle of least action, and Buckminster Fuller's tensegrity geodesic domes (Fuller.4D). On statistical manifolds, geodesics are shortest paths under the Fisher metric, and natural-gradient flows approximate least-action trajectories by minimizing an information-length functional constrained by curvature (Eqs. \eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix). In tensegrity domes, geodesic lines on triangulated spherical shells distribute stress nearly uniformly while the network balances continuous tension with discontinuous compression, attaining maximal stiffness with minimal material. Both systems exemplify constraint-balanced minimalism: an extremal path emerges by trading off cost (action or information length) against structure (metric curvature or tensegrity compatibility). The shared economy—optimal routing through low-cost directions—links geodesic shells in architecture to geodesic flows in parameter spaces; see background on tensegrity/geodesic domes @Web.
+A curious connection unites geodesics in information geometry, the physical principle of least action, and Buckminster Fuller's tensegrity geodesic domes (Fuller.4D). On statistical manifolds, geodesics are shortest paths under the Fisher metric, and natural-gradient flows trace paths that motivate gradient-weighted path-length heuristics (the `information_length` proxy in `metrics.py`) constrained by curvature (Eqs. \eqref{eq:fim}, \eqref{eq:natural_gradient} in the equations appendix). In tensegrity domes, geodesic lines on triangulated spherical shells distribute stress nearly uniformly while the network balances continuous tension with discontinuous compression, attaining maximal stiffness with minimal material. Both systems exemplify constraint-balanced minimalism: an extremal path emerges by trading off cost (action or information length) against structure (metric curvature or tensegrity compatibility). The shared economy—optimal routing through low-cost directions—links geodesic shells in architecture to geodesic flows in parameter spaces; see background on tensegrity/geodesic domes @Web.
 
 ## Quadray Coordinates and 4D Structure (Fuller.4D vs Coxeter.4D vs Einstein.4D)
 
@@ -1477,6 +1489,25 @@ See `src/information.py` — discrete-state variational free energy (`free_energ
 
 **Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
+## Expected Free Energy (Active Inference) {#eq:expected_free_energy}
+
+Background: [Active Inference (Parr, Pezzulo & Friston, MIT Press, 2022)](https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind).
+
+\begin{equation}\label{eq:expected_free_energy}
+G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; H\big[Q(s)\big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
+\end{equation}
+
+Explanation.
+
+- **Epistemic term**: the KL divergence between variational posterior and prior over states.
+- **Entropy**: the posterior entropy enters with the variational-bound sign, $\mathbb{E}_q[\log Q(s)] = -H[Q(s)]$.
+- **Ambiguity**: the negative expected log-likelihood of outcomes penalizes noisy observations.
+- **Pragmatic term**: prior preferences $P(o)$ enter negatively, so preferred outcomes lower $G$; agents minimize $G$ during action selection.
+
+See code: [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy).
+
+See `src/information.py` — canonical expected free energy (`expected_free_energy`).
+
 ## Quadray Normalization (Fuller.4D)
 
 Given $q=(a,b,c,d)$, choose $k=\min(a,b,c,d)$ and set $q' = q - (k,k,k,k)$ to enforce at least one zero with non-negative entries.
@@ -1530,6 +1561,8 @@ This appendix emphasizes relationships among: (i) the four-fold partition of Act
 ## Mathematical Formulation and Equation Callouts (Equations linkage)
 
 - Variational free energy (discrete states) — see Eq. \eqref{eq:free_energy} in the equations appendix, implemented by [`free_energy`](08_equations_appendix.md#code:free_energy).
+
+- Expected free energy (action selection) — see Eq. \eqref{eq:expected_free_energy} in the equations appendix, implemented by [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy): the canonical $G$ combines the epistemic KL to the prior, the posterior entropy with the variational-bound sign, ambiguity (negative expected log-likelihood), and pragmatic preferences that lower $G$ for preferred outcomes.
 
 - Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:fim} in the equations appendix and [`fisher_information_matrix`](08_equations_appendix.md#code:fisher_information_matrix).
 
@@ -1776,7 +1809,7 @@ The table below enumerates public symbols from `src/` modules.
 | `metrics` | `fisher_curvature_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. |
 | `metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
 | `metrics` | `fisher_rao_metric` | function | `(p, q, eps)` | Fisher–Rao geodesic distance on the probability simplex. |
-| `metrics` | `information_length` | function | `(path_gradients)` | Path length in information space via gradient-weighted arc length. |
+| `metrics` | `information_length` | function | `(path_gradients)` | Gradient-weighted proxy for informational path length (NOT the |
 | `metrics` | `jensen_shannon_divergence` | function | `(p, q, eps)` | Jensen–Shannon divergence JSD(p \|\| q) for discrete distributions. |
 | `metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence D_KL(p \|\| q) for discrete distributions. |
 | `metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
@@ -1799,7 +1832,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
 | `quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
 | `quadray` | `magnitude` | function | `(q, embedding)` | Return Euclidean magnitude \|\|q\|\| under the given embedding (vector norm). |
-| `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the nearest integer quadray lattice point. |
+| `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the quadray lattice via pseudoinverse rounding. |
 | `quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |

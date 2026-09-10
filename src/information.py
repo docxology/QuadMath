@@ -249,20 +249,28 @@ def expected_free_energy(
     log_p_o: float = 0.0
 ) -> float:
     """Expected free energy for Active Inference with prior preferences.
-    
-    Computes the expected free energy G = -E_q[log p(o|s)] - E_q[log q(s)] + log p(o),
-    which is minimized during action selection in Active Inference. The first two
-    terms combine expected surprise (negative expected log-likelihood) with the
-    entropy of the variational posterior.
-    
+
+    Computes the canonical expected free energy G (Parr, Pezzulo & Friston,
+    *Active Inference*, MIT Press, 2022):
+
+        G = KL[q(s) || p(s)] - H[q(s)] - E_q[log p(o|s)] - log p(o)
+
+    Terms: the epistemic KL divergence between posterior and prior over
+    states, the negative posterior entropy E_q[log q(s)] = -H[q(s)] (the
+    standard variational-bound sign), the ambiguity/expected-surprise term
+    (negative expected log-likelihood of outcomes), and the pragmatic
+    preference term (prior preference over outcomes enters negatively, so
+    preferred outcomes lower G). G is minimized during action selection in
+    Active Inference.
+
     This function connects to the expected free energy principle where agents
     select actions that minimize expected surprise, analogous to how geodesics
     minimize proper time in Einstein.4D spacetime.
 
     Parameters
-    - log_p_o_given_s: Log-likelihoods for each latent state.
+    - log_p_o_given_s: Log-likelihoods log p(o|s) for each latent state.
     - q: Unnormalized variational posterior over states.
-    - p: Unnormalized prior over states.
+    - p: Unnormalized prior over states (enters via the epistemic KL term).
     - log_p_o: Log of prior preference over outcomes (default: 0.0 for uniform).
 
     Returns
@@ -274,15 +282,16 @@ def expected_free_energy(
     # Normalize distributions
     qn = q / np.sum(q)
     pn = p / np.sum(p)
-    
-    # Expected log-likelihood
-    expected_ll = float(np.sum(qn * log_p_o_given_s))
-    
-    # Entropy of variational posterior
+
     eps = 1e-15
+    # Ambiguity: negative expected log-likelihood of outcomes
+    expected_nll = -float(np.sum(qn * log_p_o_given_s))
+    # Entropy of the variational posterior (penalized via -H)
     entropy = -float(np.sum(qn * np.log(qn + eps)))
-    
-    return -expected_ll + entropy + log_p_o
+    # Epistemic term: KL divergence between posterior and prior
+    kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
+
+    return expected_nll - entropy + kl - log_p_o
 
 
 def active_inference_step(
