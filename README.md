@@ -80,8 +80,16 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
   - `08_equations_appendix.md`: Mathematical equations supplement
   - `09_free_energy_active_inference.md`: Free energy and active inference
   - `10_symbols_glossary.md`: Auto-generated API glossary from source code
+  - `11_ivm_field_learning.md`: IVM field learning (shells, Laplacian-regularized fitting)
+  - `12_ivm_dynamics.md`: Dynamics and trajectory identification on the lattice
+  - `13_lattice_tooling.md`: Nearest-site queries and shell numbering
+  - `14_conversions_spec.md`: Conversions and the mathematical specification
+  - `15_learning_evaluation.md`: Training/testing methodology for the learners
+  - `16_lattice_gallery.md`: Visualization gallery for shells, fields, dynamics
 - `quadmath/scripts/`: Figure and data generation scripts that import from `src/`
 - `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
+- `lean/`: Lean 4 (core, no Mathlib) formalization mirror — zero sorries; `cd lean && lake build`
+- `SPEC.md`: mathematical specification (conventions, embedding, Gram identity, shells)
 - `docs/manuscript/MANUSCRIPT_STATUS.md`: manuscript status and canonical-layout rationale
 
 ## Test Suite and Code Connections

@@ -1,7 +1,10 @@
 # learning/ — Agent Notes
 
-Documentation for `src/ivm_field.py` and `src/ivm_dynamics.py` (landed; see
-`quadmath/markdown/12_ivm_dynamics.md` for the manuscript treatment).
+Documentation for the landed IVM learning surface: `src/ivm_field.py`,
+`src/ivm_dynamics.py`, `src/learning_eval.py` (evaluation methodology), and
+`src/vis_lattice.py` (gallery rendering primitives). Manuscript treatments:
+`quadmath/markdown/11_ivm_field_learning.md`, `12_ivm_dynamics.md`,
+`15_learning_evaluation.md`, `16_lattice_gallery.md`.
 
 ## Rules
 

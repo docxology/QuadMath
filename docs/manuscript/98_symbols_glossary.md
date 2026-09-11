@@ -137,8 +137,11 @@ The table below enumerates public symbols from `src/` modules.
 | `cayley_menger` | `tetra_circumradius` | function | `(d2)` | Circumscribed sphere radius of a tetrahedron from squared distances. |
 | `cayley_menger` | `tetra_inradius` | function | `(d2)` | Inscribed sphere radius of a tetrahedron from squared distances. |
 | `cayley_menger` | `tetra_volume_cayley_menger` | function | `(d2)` | Compute Euclidean tetrahedron volume from squared distances (Coxeter.4D). |
+| `conversions` | `embedding_basis` | function | `(M)` | Return the four embedding COLUMNS as a (4,3) basis matrix (Fuller.4D axes). |
+| `conversions` | `quadray_roundtrip` | function | `(q, M)` | Assert the exact round-trip identity recon == q for q -> XYZ -> quadray. |
 | `conversions` | `quadray_to_xyz` | function | `(q, M)` | Map a `Quadray` to Cartesian XYZ via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `conversions` | `urner_embedding` | function | `(scale)` | Return a 3x4 Urner-style symmetric embedding matrix (Fuller.4D -> Coxeter.4D slice). |
+| `conversions` | `xyz_to_quadray_canonical` | function | `(xyz, M)` | Recover the canonical integer quadray for an XYZ point in the embedding image, EXACTLY. |
 | `discrete_variational` | `DiscretePath` | class | `` | Optimization trajectory on the integer quadray lattice. |
 | `discrete_variational` | `apply_move` | function | `(q, delta)` | Apply a lattice move and normalize to the canonical representative. |
 | `discrete_variational` | `discrete_ivm_descent` | function | `(objective, start, moves=, max_iter=, on_step=)` | Greedy discrete descent over the quadray integer lattice. |
@@ -169,6 +172,44 @@ The table below enumerates public symbols from `src/` modules.
 | `information` | `mutual_information` | function | `(p_joint, eps)` | Mutual information I(X; Y) from a joint probability matrix. |
 | `information` | `natural_gradient_step` | function | `(gradient, fisher, step_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. |
 | `information` | `perception_update` | function | `(mu, derivative_operator, free_energy_fn, step_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. |
+| `ivm_dynamics` | `DynamicsParams` | class | `` | Parameters of a discrete IVM lattice dynamics run. |
+| `ivm_dynamics` | `FitResult` | class | `` | Outcome of gradient-free coupling identification. |
+| `ivm_dynamics` | `IVMLattice` | class | `` | Finite IVM lattice ball with neighbor adjacency and diffusion operators. |
+| `ivm_dynamics` | `Trajectory` | class | `` | Deterministic simulation record. |
+| `ivm_dynamics` | `ball_sites` | function | `(radius)` | Enumerate canonical quadray sites with squared IVM radius <= radius**2. |
+| `ivm_dynamics` | `fit_trajectory` | function | `(observed, grid, lattice, kind, refine_rounds)` | Identify the coupling alpha from an observed trajectory (gradient-free). |
+| `ivm_dynamics` | `heat_step` | function | `(u, lattice, alpha)` | One heat-diffusion step u <- (1 - alpha) u + alpha S u. |
+| `ivm_dynamics` | `is_nonincreasing` | function | `(values, tol)` | True iff no consecutive pair of values increases by more than tol. |
+| `ivm_dynamics` | `majority_step` | function | `(u, lattice, alpha)` | One rounded-averaging ("majority") step on integer states. |
+| `ivm_dynamics` | `make_lattice` | function | `(radius)` | Build the finite IVM lattice ball of the given radius. |
+| `ivm_dynamics` | `neighbor_shifts` | function | `()` | Return the 12 canonical IVM neighbor shifts as quadray deltas. |
+| `ivm_dynamics` | `render_dynamics_demo` | function | `(output_path, radius=, seed=, alpha=, horizon=, fit_alpha=, grid_count=, refine_rounds=)` | Render the multi-snapshot IVM dynamics demo figure; return its path. |
+| `ivm_dynamics` | `simulate` | function | `(T, params, lattice, u0)` | Simulate T updates; deterministic given `params` (fixed seed). |
+| `ivm_dynamics` | `site_radius_sq` | function | `(q)` | Integer squared IVM radius of a quadray site (squared embedding norm). |
+| `ivm_dynamics` | `step` | function | `(u, lattice, params)` | Apply one update of the dynamics in `params` to the field. |
+| `ivm_dynamics` | `sum_of_squares` | function | `(u)` | Sum of squares of a field — the observable of the heat lemma. |
+| `ivm_field` | `IVMField` | class | `` | Scalar field over an IVM lattice ball, stored on a deterministic site index. |
+| `ivm_field` | `IVM_NEIGHBOR_STEPS` | constant | `` |  |
+| `ivm_field` | `TetrahedronFit` | class | `` | Result of :func:`fit_geometry`. |
+| `ivm_field` | `_WEIGHT_FLOOR` | constant | `` |  |
+| `ivm_field` | `ball_sites` | function | `(radius)` | Enumerate the IVM lattice ball of the given shell radius, deterministically. |
+| `ivm_field` | `fit_geometry` | function | `(points, labels, embedding)` | Least-squares recovery of a tetrahedron's orientation+scale from noisy 3D points. |
+| `ivm_field` | `is_ivm_site` | function | `(q)` | Return True iff ``q`` (after normalization) is an IVM lattice site. |
+| `ivm_field` | `quadray_shell_norm` | function | `(q)` | Return the IVM shell norm of ``q``: an even integer equal to ``2k``. |
+| `ivm_field` | `shell_cardinalities` | function | `(max_shell)` | Cardinalities of shells ``0 .. max_shell`` (cuboctahedral numbers). |
+| `ivm_field` | `shell_sites` | function | `(k)` | Enumerate all IVM lattice sites with quadray shell norm ``2k``. |
+| `lattice_search` | `_EPS` | constant | `` |  |
+| `lattice_search` | `nearest` | function | `(site, R, k)` | Return the ``k`` nearest IVM lattice sites within radius ``R``. |
+| `lattice_search` | `squared_distance` | function | `(p, sites)` | Exact lattice squared distances from ``p`` to rows of ``sites``. |
+| `lattice_search` | `within_radius` | function | `(site, R)` | Return all IVM lattice sites within Euclidean radius ``R`` of ``site``. |
+| `learning_eval` | `CrossValidationResult` | class | `` | K-fold cross-validation table for the IVM field learner. |
+| `learning_eval` | `LearningCurveResult` | class | `` | Data-coverage curve for the IVM field learner. |
+| `learning_eval` | `TrajectorySplitResult` | class | `` | Outcome of a temporal train/test evaluation of dynamics identification. |
+| `learning_eval` | `cross_validate_field` | function | `(field_values, sites, k, lam_grid, seed, radius=, kernel_width=)` | Cross-validate the Laplacian-regularized field learner over k folds. |
+| `learning_eval` | `enclosing_radius` | function | `(sites)` | Return the smallest IVM ball radius containing every given site. |
+| `learning_eval` | `kfold_site_splits` | function | `(observed_sites, k, seed)` | Partition observed lattice sites into ``k`` seeded folds. |
+| `learning_eval` | `learning_curve` | function | `(values, sites, train_fracs, seed, radius=, lam=, kernel_width=)` | Trace held-out MSE as a function of the fraction of observed sites. |
+| `learning_eval` | `trajectory_train_test` | function | `(observed, split_frac, lattice, kind=, grid=, refine_rounds=)` | Identify dynamics parameters on a training prefix, score the held-out suffix. |
 | `linalg_utils` | `bareiss_determinant_int` | function | `(matrix)` | Compute an exact integer determinant using the Bareiss algorithm. |
 | `linalg_utils` | `bareiss_rank` | function | `(matrix)` | Compute the exact integer rank of a matrix via Bareiss elimination. |
 | `linalg_utils` | `integer_adjugate` | function | `(matrix)` | Compute the exact integer adjugate (classical adjoint) of a square matrix. |
@@ -187,10 +228,31 @@ The table below enumerates public symbols from `src/` modules.
 | `nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
+| `omni_numbering` | `MAX_SHELL` | constant | `` |  |
+| `omni_numbering` | `NEIGHBOR_MOVES` | constant | `` |  |
+| `omni_numbering` | `_CACHE` | constant | `` |  |
+| `omni_numbering` | `_IVM_MOVE_BASE` | constant | `` |  |
+| `omni_numbering` | `_KEY_BITS` | constant | `` |  |
+| `omni_numbering` | `cumulative_count` | function | `(k)` | Return the total number of IVM sites through shell ``k`` (inclusive). |
+| `omni_numbering` | `generate_shell` | function | `(k)` | Generate the sites of shell ``k`` of the omnidirectional close packing. |
+| `omni_numbering` | `shell_count` | function | `(k)` | Return the number of IVM sites on shell ``k`` of the close packing. |
+| `omni_numbering` | `site_at_index` | function | `(index, max_shell)` | Return the IVM site at a canonical global index. |
+| `omni_numbering` | `site_index` | function | `(site, max_shell)` | Return the canonical global index of an IVM site, or -1 if absent. |
+| `omni_numbering` | `sites_through_shell` | function | `(max_shell)` | Return all IVM sites through shell ``max_shell`` in canonical order. |
 | `paths` | `get_data_dir` | function | `()` | Return `quadmath/output/data` path and ensure it exists. |
 | `paths` | `get_figure_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. |
 | `paths` | `get_output_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. |
 | `paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
+| `pipeline` | `FieldLearner` | class | `` | Laplacian-regularized field learner over an IVM ball; satisfies :class:`Fittable`. |
+| `pipeline` | `FieldModel` | class | `` | Anything that predicts a scalar field value at a lattice site. |
+| `pipeline` | `Fittable` | class | `` | Anything that can fit a field model from data, then predict. |
+| `pipeline` | `LatticeBall` | class | `` | Immutable view of an IVM lattice ball; satisfies :class:`LatticeSource`. |
+| `pipeline` | `LatticeSource` | class | `` | Anything that can enumerate IVM lattice sites (structural). |
+| `pipeline` | `Pipeline` | class | `` | Immutable sequence of :class:`Step` objects; monoid-style composition. |
+| `pipeline` | `Step` | class | `` | A named, typed callable unit of a :class:`Pipeline`. |
+| `pipeline` | `dynamics_step` | function | `(params, T)` | Step simulating the discrete IVM dynamics in ``params`` (ignores input). |
+| `pipeline` | `learn_step` | function | `(lam, seed, radius)` | Step fitting an :class:`IVMField` by Laplacian-regularized learning. |
+| `pipeline` | `sites_step` | function | `(radius)` | Step producing the IVM ball sites of shell ``radius`` (ignores input). |
 | `quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
 | `quadray` | `Quadray` | class | `` | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
 | `quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
@@ -204,6 +266,13 @@ The table below enumerates public symbols from `src/` modules.
 | `quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |
+| `vis_lattice` | `DEFAULT_PLANE` | constant | `` |  |
+| `vis_lattice` | `GALLERY_FILES` | constant | `` |  |
+| `vis_lattice` | `_TETRA_LABELS` | constant | `` |  |
+| `vis_lattice` | `dynamics_strip` | function | `(axs, trajectory, t_indices, embedding=, cmap=, titles=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. |
+| `vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
+| `vis_lattice` | `gallery` | function | `(paths_out_dir, seed)` | Compose the three lattice-gallery figures deterministically. |
+| `vis_lattice` | `shell_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. |
 | `visualize` | `animate_discrete_path` | function | `(path, embedding, save)` | Animate a point moving along a discrete quadray path. |
 | `visualize` | `animate_simplex` | function | `(vertices_list, embedding, save)` | Animate simplex evolution across iterations. |
 | `visualize` | `plot_ivm_neighbors` | function | `(embedding, save)` | Scatter the 12 IVM neighbor points in 3D. |

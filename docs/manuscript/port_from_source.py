@@ -52,7 +52,12 @@ SECTIONS = [
     "08_equations_appendix.md",
     "09_free_energy_active_inference.md",
     "10_symbols_glossary.md",
+    "11_ivm_field_learning.md",
     "12_ivm_dynamics.md",
+    "13_lattice_tooling.md",
+    "14_conversions_spec.md",
+    "15_learning_evaluation.md",
+    "16_lattice_gallery.md",
 ]
 FIGURE_NAMES = [
     "bridging_vs_native.png",
@@ -63,6 +68,7 @@ FIGURE_NAMES = [
     "free_energy_curve.png",
     "graphical_abstract_quadray.png",
     "ivm_dynamics_demo.png",
+    "ivm_field_demo.png",
     "ivm_neighbors_edges.png",
     "natural_gradient_path.png",
     "partition_tetrahedron.png",
@@ -70,6 +76,9 @@ FIGURE_NAMES = [
     "quadray_clouds.png",
     "simplex_final.png",
     "simplex_trace.png",
+    "vis_gallery_dynamics.png",
+    "vis_gallery_field.png",
+    "vis_gallery_shell.png",
     "simplex_trace_visualization.png",
     "volumes_scale_plot.png",
 ]

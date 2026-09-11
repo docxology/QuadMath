@@ -13,10 +13,11 @@ Re-port after source edits with: `uv run python docs/manuscript/port_from_source
 | `references.bib` | built from `07_resources.md` + in-text citations | BibTeX database; `*.bib` files at manuscript top level are auto-discovered (`_bibliography.resolve_bibliography`) |
 | `01_introduction.md` … `06_discussion.md` | same-name sources, verbatim | Main sections |
 | `08_equations_appendix.md`, `09_free_energy_active_inference.md` | same-name sources, verbatim except 3 repointed links (see below) | Appendices A–B |
-| `12_ivm_dynamics.md` | same-name source, verbatim except repointed links | IVM dynamics and learning section |
+| `11_ivm_field_learning.md`, `12_ivm_dynamics.md`, `13_lattice_tooling.md` | same-name sources, verbatim | IVM lattice sections (field learning, dynamics, tooling) |
+| `14_conversions_spec.md`, `15_learning_evaluation.md`, `16_lattice_gallery.md` | same-name sources, verbatim | Conversion/specification, learning & evaluation, and the visualization gallery (embeds `figures/vis_gallery_*.png`) |
 | `98_symbols_glossary.md` | `10_symbols_glossary.md`, verbatim | Template glossary bucket (`98_*.md`); snapshot of the auto-generated source |
 | `99_resources.md` | `07_resources.md`, verbatim | Template references bucket (`99_*.md`, rendered last) |
-| `figures/` | copies of `quadmath/output/figures/*.png` (17 files) | Figure images referenced by the sections |
+| `figures/` | copies of `quadmath/output/figures/*.png` (21 files) | Figure images referenced by the sections |
 | `port_from_source.py` | new | Reproducible re-port script (copies sections/figures, applies the rewrites, closes the preamble fence, verifies links) |
 | `MANUSCRIPT_STATUS.md` | — | Fleet status tracker |
 
@@ -37,7 +38,7 @@ Re-port after source edits with: `uv run python docs/manuscript/port_from_source
   silently drop the whole preamble). The port appends the closing fence.
 
 Everything else (equations, labels, anchors, captions, tables, code blocks) is
-ported verbatim.
+ported verbatim. Sections `11`–`16` port under their own numbers.
 
 ## Relationship to the source
 

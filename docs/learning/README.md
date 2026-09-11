@@ -1,16 +1,23 @@
-# learning/ — IVM field and dynamics modules
+# learning/ — IVM learning surface
 
-Documentation for the machine-learning modules over the IVM lattice:
-`src/ivm_field.py` (static field learning) and `src/ivm_dynamics.py` (field
-dynamics + coupling identification). Both modules exist on disk;
-`tests/test_ivm_dynamics.py` is landed (40 tests, 100% branch coverage), while
-`tests/test_ivm_field.py` had not landed at last check — the corresponding
-manuscript section is `quadmath/markdown/12_ivm_dynamics.md`
-(ported to [docs/manuscript/12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md)).
+Documentation for the machine-learning modules over the IVM lattice — all
+landed on disk (checked 2026-09-10):
+
+- `src/ivm_field.py` — static field learning on the lattice
+- `src/ivm_dynamics.py` — field dynamics + coupling identification
+- `src/learning_eval.py` — training/testing methodology (honest evaluation)
+- `src/vis_lattice.py` — the matplotlib rendering primitives behind the
+  visualization gallery (see section `16_lattice_gallery.md`)
 
 Design lineage: quadray coordinates (`src/quadray.py`) → IVM lattice geometry
-→ field evolution → learning/identification, all numpy-only and
+→ field evolution → learning/identification → evaluation, all numpy-only and
 deterministic (no ML frameworks; seeded `numpy.random.default_rng`).
+
+Manuscript treatments (ported copies live under
+[manuscript/](../manuscript/)): [11_ivm_field_learning.md](../manuscript/11_ivm_field_learning.md),
+[12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md),
+[15_learning_evaluation.md](../manuscript/15_learning_evaluation.md), and
+[16_lattice_gallery.md](../manuscript/16_lattice_gallery.md).
 
 ## `src/ivm_field.py` — static field learning on the lattice
 
@@ -57,12 +64,44 @@ Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
   at machine precision (`render_dynamics_demo` produces
   `quadmath/output/figures/ivm_dynamics_demo.png`).
 
+## `src/learning_eval.py` — honest evaluation methodology
+
+Public API (`__all__`): `CrossValidationResult`, `LearningCurveResult`,
+`TrajectorySplitResult`, `cross_validate_field`, `enclosing_radius`,
+`kfold_site_splits`, `learning_curve`, `trajectory_train_test`.
+
+Principle: spatial autocorrelation makes naive resampling optimistic, and
+time-ordered dynamics data must never be shuffled — every surface here holds
+out explicit structure. Four surfaces:
+
+- **`kfold_site_splits`** — deterministic seeded k-fold partition of the
+  observed lattice sites into disjoint, exhaustive train/test pairs.
+- **`cross_validate_field`** — k-fold cross-validation of the
+  Laplacian-regularized field learner (`IVMField.learn`): the regularization
+  strength is chosen on held-out folds only and the final model is refit on
+  all observed data (honest model selection). Returns
+  `CrossValidationResult` (per-fold, pooled, and refit MSE).
+- **`trajectory_train_test`** — temporal (first-fraction) train/test split
+  for `ivm_dynamics.fit_trajectory`: identify on the training prefix, score
+  by multi-step continuation MSE on the held-out suffix plus a
+  teacher-forced one-step-ahead error (`TrajectorySplitResult`).
+- **`learning_curve`** — held-out MSE as a function of the fraction of
+  observed sites, the classic data-coverage curve on a lattice
+  (`LearningCurveResult`).
+
+All numpy-only and deterministic for fixed seeds; the split randomness is
+confined to fold/subset assignment, never to the fits themselves.
+
 ## Reading order
 
-1. [docs/manuscript/12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md) —
-   the analytical treatment (lemma, proposition, honest non-claims)
-2. This README — API map
-3. `tests/test_ivm_dynamics.py` — the contracts as executable assertions
+1. [manuscript/11_ivm_field_learning.md](../manuscript/11_ivm_field_learning.md)
+   — field learning on the lattice
+2. [manuscript/12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md) — the
+   analytical treatment (lemma, proposition, honest non-claims)
+3. [manuscript/15_learning_evaluation.md](../manuscript/15_learning_evaluation.md)
+   — the evaluation methodology this folder implements
+4. This README — API map
+5. `tests/test_ivm_field.py`, `tests/test_ivm_dynamics.py`,
+   `tests/test_learning_eval.py` — the contracts as executable assertions
    (100% coverage, fixed seeds, no mocks — see
-   [development](../development/README.md)); the `ivm_field` test file is
-   owned by its implementing agent and pending at last check.
+   [development](../development/README.md))
