@@ -95,8 +95,8 @@ Executable check of the two identities:
 
 ```python
 import numpy as np
-from conversions import urner_embedding, embedding_basis
-from lattice_search import squared_distance
+from quadmath.lattice.conversions import urner_embedding, embedding_basis
+from quadmath.lattice.lattice_search import squared_distance
 
 M = urner_embedding()
 B = embedding_basis()                              # (4, 3): rows are the columns of M
@@ -174,11 +174,11 @@ Executable check of exact recovery and round-trips:
 
 ```python
 from fractions import Fraction
-from conversions import (
+from quadmath.lattice.conversions import (
     quadray_to_xyz, xyz_to_quadray_canonical, quadray_roundtrip, urner_embedding,
 )
-from quadray import Quadray
-from omni_numbering import sites_through_shell
+from quadmath.core.quadray import Quadray
+from quadmath.lattice.omni_numbering import sites_through_shell
 
 q0 = Quadray(2, 1, 1, 0)                          # cuboctahedron vertex, shell 1
 assert xyz_to_quadray_canonical(quadray_to_xyz(q0)) == q0

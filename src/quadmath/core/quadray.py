@@ -125,7 +125,7 @@ def _to_xyz_array(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[flo
 
 
 def magnitude(q: Quadray, embedding: Iterable[Iterable[float]]) -> float:
-    """Return Euclidean magnitude ||q|| under the given embedding (vector norm).
+    """Return the Euclidean magnitude of ``q`` under the given embedding (vector norm).
 
     Parameters
     - q: Quadray vector to measure

@@ -134,7 +134,7 @@ def _signed_angle(
 
 
 def check_normalization(q: Quadray, tol: float = DEFAULT_TOLERANCE) -> ValidationReport:
-    """Verify |q| is within ``tol`` of 1 (quaternion norm of (a, b, c, d)).
+    """Verify the quaternion norm is within ``tol`` of 1 (norm of (a, b, c, d)).
 
     Parameters
     - q: Quadray read as a quaternion (w, x, y, z) = (a, b, c, d)

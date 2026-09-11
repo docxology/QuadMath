@@ -99,7 +99,7 @@ lattice average — the visually flat mid panel and right panel are the
   reproducibility).  Scope with
   `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
   tests/test_vis_lattice.py -q` and `uv run coverage report` — 100%
-  statement and branch coverage of `src/vis_lattice.py`.
+  statement and branch coverage of `src/quadmath/viz/vis_lattice.py`.
 - Figure regeneration:
   `uv run python quadmath/scripts/lattice_gallery.py` (the script sets
   `MPLBACKEND=Agg` itself); stdout is exactly the three written paths.

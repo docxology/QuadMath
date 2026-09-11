@@ -45,7 +45,7 @@ def project_to_lattice(q: Quadray) -> Quadray:
 
 
 def compute_volume(vertices: List[Quadray]) -> Fraction:
-    """Exact IVM tetra-volume (a Fraction, |det|/4) of the first four vertices."""
+    """Exact IVM tetra-volume (a Fraction, absolute determinant divided by 4) of the first four vertices."""
     return integer_tetra_volume(vertices[0], vertices[1], vertices[2], vertices[3])
 
 

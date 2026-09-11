@@ -157,8 +157,8 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
 | `quadmath.core.metrics` | `fisher_rao_metric` | function | `(p, q, eps)` | Fisher–Rao geodesic distance on the probability simplex. |
 | `quadmath.core.metrics` | `information_length` | function | `(path_gradients)` | Gradient-weighted proxy for informational path length (NOT the |
-| `quadmath.core.metrics` | `jensen_shannon_divergence` | function | `(p, q, eps)` | Jensen–Shannon divergence JSD(p \|\| q) for discrete distributions. |
-| `quadmath.core.metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence D_KL(p \|\| q) for discrete distributions. |
+| `quadmath.core.metrics` | `jensen_shannon_divergence` | function | `(p, q, eps)` | Jensen–Shannon divergence between two discrete distributions. |
+| `quadmath.core.metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence between two discrete distributions. |
 | `quadmath.core.metrics` | `quat_log_euclidean_dispersion` | function | `(quats)` | Root-mean-square chordal dispersion of quaternions about their mean. |
 | `quadmath.core.metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
 | `quadmath.core.quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
@@ -170,7 +170,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.quadray` | `distance` | function | `(q1, q2, embedding)` | Euclidean distance between two quadray points under the given embedding. |
 | `quadmath.core.quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
 | `quadmath.core.quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
-| `quadmath.core.quadray` | `magnitude` | function | `(q, embedding)` | Return Euclidean magnitude \|\|q\|\| under the given embedding (vector norm). |
+| `quadmath.core.quadray` | `magnitude` | function | `(q, embedding)` | Return the Euclidean magnitude of ``q`` under the given embedding (vector norm). |
 | `quadmath.core.quadray` | `qconjugate` | function | `(q)` | Conjugate (w, -x, -y, -z) of a quaternion in (w, x, y, z) order. |
 | `quadmath.core.quadray` | `qmul` | function | `(a, b)` | Hamilton product of two quaternions. |
 | `quadmath.core.quadray` | `qrotate` | function | `(q, v_xyz, angle)` | Rotate a 3-vector by a unit quaternion via Rodrigues (v' = q v q*). |
@@ -256,7 +256,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.optimize.discrete_variational` | `neighbor_moves_ivm` | function | `()` | Return the 12 canonical IVM neighbor moves as Quadray deltas. |
 | `quadmath.optimize.nelder_mead_quadray` | `SimplexState` | class | `` |  |
 | `quadmath.optimize.nelder_mead_quadray` | `centroid_excluding` | function | `(vertices, exclude_idx)` | Integer centroid of three vertices, excluding the specified index. |
-| `quadmath.optimize.nelder_mead_quadray` | `compute_volume` | function | `(vertices)` | Exact IVM tetra-volume (a Fraction, \|det\|/4) of the first four vertices. |
+| `quadmath.optimize.nelder_mead_quadray` | `compute_volume` | function | `(vertices)` | Exact IVM tetra-volume (a Fraction, absolute determinant divided by 4) of the first four vertices. |
 | `quadmath.optimize.nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `quadmath.optimize.nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `quadmath.optimize.nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
@@ -315,7 +315,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.validate.validate` | `check_associativity` | function | `(a, b, c, tol)` | Verify (a*b)*c == a*(b*c) within ``tol`` via the core Hamilton product. |
 | `quadmath.validate.validate` | `check_conjugate_inverse` | function | `(q, tol)` | Verify q * conj(q) equals the identity (1, 0, 0, 0) within ``tol``. |
 | `quadmath.validate.validate` | `check_double_cover` | function | `(q1, q2, tol)` | Verify the SO(3) homomorphism R(q1*q2) == R(q1) R(q2) within ``tol``. |
-| `quadmath.validate.validate` | `check_normalization` | function | `(q, tol)` | Verify \|q\| is within ``tol`` of 1 (quaternion norm of (a, b, c, d)). |
+| `quadmath.validate.validate` | `check_normalization` | function | `(q, tol)` | Verify the quaternion norm is within ``tol`` of 1 (norm of (a, b, c, d)). |
 | `quadmath.validate.validate` | `check_slerp_midpoint` | function | `(q0, q1, tol)` | Verify the shortest-arc slerp midpoint lies on the geodesic of (q0, q1). |
 | `quadmath.validate.validate` | `run_validation` | function | `(quaternions, checks)` | Run checks over ``quaternions`` and collect deterministic reports. |
 | `quadmath.viz.animations` | `Frame` | class | `` | A single animation frame. |

@@ -215,7 +215,7 @@ def fisher_quadray_comparison(
 
 
 def kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
-    """Kullback–Leibler divergence D_KL(p || q) for discrete distributions.
+    """Kullback–Leibler divergence between two discrete distributions.
 
     Measures the information lost when q is used to approximate p.  Always
     non-negative; equals zero iff p == q (up to normalization).
@@ -239,7 +239,7 @@ def kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
 
 
 def jensen_shannon_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
-    """Jensen–Shannon divergence JSD(p || q) for discrete distributions.
+    """Jensen–Shannon divergence between two discrete distributions.
 
     A symmetric, bounded divergence defined as:
         JSD(p || q) = 0.5 * D_KL(p || m) + 0.5 * D_KL(q || m)

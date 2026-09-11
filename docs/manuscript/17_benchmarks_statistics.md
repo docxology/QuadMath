@@ -4,10 +4,10 @@
 
 This section documents the measurement surface behind the preceding
 chapters.  It is split across three modules with one job each:
-`src/benchmarks.py` measures (a small `perf_counter` timing harness over
-the core numerical surfaces), `src/statistics.py` analyzes (resampling
+`src/quadmath/stats/benchmarks.py` measures (a small `perf_counter` timing harness over
+the core numerical surfaces), `src/quadmath/stats/statistics.py` analyzes (resampling
 inference, effect sizes, multiplicity correction, and scaling fits, on
-standalone numpy), and `src/vis_stats.py` renders (input-agnostic
+standalone numpy), and `src/quadmath/viz/vis_stats.py` renders (input-agnostic
 matplotlib primitives; the figures they produce are collected in
 `18_stats_gallery.md`).  The measured workloads are the four surfaces the
 manuscript already treats: quadray conversions (`quadray.py`, conventions
@@ -163,7 +163,7 @@ differ in location:
 ```python
 import numpy as np
 
-from statistics import bootstrap_ci, permutation_test
+from quadmath.stats.statistics import bootstrap_ci, permutation_test
 
 x = [2, 3, 5, 8, 13, 21, 34]
 lo, hi = bootstrap_ci(x, np.mean, iters=2000, seed=0, alpha=0.05)
@@ -207,9 +207,9 @@ correctly never reports the impossible $p = 0$.
 ## Cross-references
 
 - Timing harness, `BenchRow`, and the four benchmark constructors:
-  `src/benchmarks.py`.
+  `src/quadmath/stats/benchmarks.py`.
 - Bootstrap, permutation tests, `cohens_d`, `p_adjust_bonferroni`,
-  `scaling_fit`: `src/statistics.py`.
+  `scaling_fit`: `src/quadmath/stats/statistics.py`.
 - The figure primitives built on these results: `18_stats_gallery.md`.
 - Measured surfaces: `quadray.py` (conventions in `SPEC.md`),
   `omni_numbering.py` and `lattice_search.py` (`13_lattice_tooling.md`),

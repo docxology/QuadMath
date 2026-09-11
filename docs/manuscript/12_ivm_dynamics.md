@@ -10,7 +10,7 @@ coupling produced it? Everything here is implemented in `ivm_dynamics.py`
 `simulate`, `fit_trajectory`, `sum_of_squares`, `is_nonincreasing`) on top of
 the `Quadray` class and `to_xyz` embedding in `quadray.py`; the demo figure is
 produced by `quadmath/scripts/ivm_dynamics_demo.py` (which delegates to
-`render_dynamics_demo` in `src/ivm_dynamics.py`, per the thin-orchestrator
+`render_dynamics_demo` in `src/quadmath/lattice/ivm_dynamics.py`, per the thin-orchestrator
 contract in `quadmath/scripts/AGENTS.md`).
 
 ## Lattice sites, shells, and the 12-around-one move graph
@@ -145,7 +145,7 @@ figure is reproducible byte-for-byte up to PNG encoding.
 
 - Tests: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
   tests/test_ivm_dynamics.py -q` then `uv run coverage report` — 40 tests,
-  100% statement and branch coverage of `src/ivm_dynamics.py`, no mocks, all
+  100% statement and branch coverage of `src/quadmath/lattice/ivm_dynamics.py`, no mocks, all
   examples real numerics with fixed seeds.
 - Markdown: `uv run python quadmath/scripts/validate_markdown.py`.
 - The two provable claims (lemma \eqref{eq:ivmdyn-lemma}, the range

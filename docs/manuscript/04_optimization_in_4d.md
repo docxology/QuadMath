@@ -56,14 +56,14 @@ The full optimization trajectory is provided as an animation (MP4) in the reposi
 
 - Integer-valued descent over the IVM using the 12 neighbor moves (permutations of {2,1,1,0}), snapping to the canonical representative via projective normalization.
 - Objective can be geometric (e.g., Euclidean in an embedding) or information-theoretic (e.g., local free-energy proxy); monotone decrease is guaranteed by greedy selection.
-- API: `discrete_ivm_descent` in `src/discrete_variational.py`. Animation helper: `animate_discrete_path` in `src/visualize.py`.
+- API: `discrete_ivm_descent` in `src/quadmath/optimize/discrete_variational.py`. Animation helper: `animate_discrete_path` in `src/quadmath/viz/visualize.py`.
 
 Short snippet (paper reproducibility):
 
 ```python
-from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz
-from discrete_variational import discrete_ivm_descent
-from visualize import animate_discrete_path
+from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING, to_xyz
+from quadmath.optimize.discrete_variational import discrete_ivm_descent
+from quadmath.viz.visualize import animate_discrete_path
 
 def f(q: Quadray) -> float:
     x, y, z = to_xyz(q, DEFAULT_EMBEDDING)

@@ -36,7 +36,7 @@ A normalized integer quadray whose components sum to a multiple of 4 is a candid
 Executable check of the bookends:
 
 ```python
-from omni_numbering import (
+from quadmath.lattice.omni_numbering import (
     shell_count, cumulative_count, sites_through_shell,
     site_index, site_at_index,
 )
@@ -76,7 +76,7 @@ for a query center `c` and radius `R`: any site within `R` of `c` must live on a
 
 ```python
 import numpy as np
-from lattice_search import nearest, within_radius
+from quadmath.lattice.lattice_search import nearest, within_radius
 
 sites, d2 = nearest((0.4, -0.3, 0.9, 0.1), R=2.0, k=5)   # 5 nearest centers
 ball, ball_d2 = within_radius((2, 1, 1, 0), R=4.0)       # everything within 4

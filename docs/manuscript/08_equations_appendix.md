@@ -128,7 +128,7 @@ Notes.
 
 Figure: empirical estimate shown in the FIM heatmap figure. See code: [`fisher_information_matrix`](03_quadray_methods.md#code:fisher_information_matrix).
 
-See `src/information.py` — empirical outer-product estimator (`fisher_information_matrix`).
+See `src/quadmath/inference/information.py` — empirical outer-product estimator (`fisher_information_matrix`).
 
 ## Empirical Fisher Information Matrix
 
@@ -157,7 +157,7 @@ Explanation.
 
 See code: [`natural_gradient_step`](03_quadray_methods.md#code:natural_gradient_step).
 
-See `src/information.py` — damped inverse-Fisher step (`natural_gradient_step`).
+See `src/quadmath/inference/information.py` — damped inverse-Fisher step (`natural_gradient_step`).
 
 ## Free Energy (Active Inference) {#eq:free_energy}
 
@@ -171,7 +171,7 @@ Explanation.
 
 See code: [`free_energy`](03_quadray_methods.md#code:free_energy).
 
-See `src/information.py` — discrete-state variational free energy (`free_energy`).
+See `src/quadmath/inference/information.py` — discrete-state variational free energy (`free_energy`).
 
 **Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
@@ -192,7 +192,7 @@ Explanation.
 
 See code: [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy).
 
-See `src/information.py` — canonical expected free energy (`expected_free_energy`).
+See `src/quadmath/inference/information.py` — canonical expected free energy (`expected_free_energy`).
 
 ## Quadray Normalization (Fuller.4D)
 

@@ -88,7 +88,7 @@ Programmatic check (neighbors, equal radii, adjacency):
 
 ```python
 import numpy as np
-from examples import example_cuboctahedron_vertices_xyz
+from quadmath.core.examples import example_cuboctahedron_vertices_xyz
 
 xyz = np.array(example_cuboctahedron_vertices_xyz())
 r = np.linalg.norm(xyz[0])
@@ -111,7 +111,7 @@ The following snippets show executable decompositions for standard synergetics v
 Octahedron (V = 4): the octahedron with vertices $\pm 2\hat e_i$ (edge $2\sqrt2$, matching the unit IVM tetra) decomposes into eight origin-apex orthant tetras, each of volume $\tfrac12$:
 
 ```python
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
 axes = [
@@ -128,7 +128,7 @@ V_oct = sum(
 Cube (V = 3): the cube with XYZ vertices $(\pm1,\pm1,\pm1)$ (edge 2) decomposes into the inscribed tetra on four alternating cube vertices (V = 1) plus four corner tetras (V = $\tfrac12$ each):
 
 ```python
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 inner = ace_tetravolume_5x5(
     Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
@@ -266,7 +266,7 @@ Figure: automated comparison (native Ace 5×5 vs CM+S3) across small examples (s
 ### Short Python snippets
 
 ```python
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
 p = Quadray(2,1,0,1)
@@ -277,7 +277,7 @@ assert ace_tetravolume_5x5(o,p,q,r) == 1  # unit IVM tetra
 
 ```python
 import numpy as np
-from cayley_menger import ivm_tetra_volume_cayley_menger
+from quadmath.core.cayley_menger import ivm_tetra_volume_cayley_menger
 
 # Example: regular tetrahedron with edge length 1 (XYZ units)
 d2 = np.ones((4,4)) - np.eye(4)  # squared distances
@@ -302,7 +302,7 @@ def qvolume(q0, q1, q2, q3):
 ```python
 # Symbolic variant with SymPy (exact radicals)
 from sympy import Matrix, sqrt, simplify
-from symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
+from quadmath.core.symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
 
 d2 = Matrix([[0,1,1,1],[1,0,1,1],[1,1,0,1],[1,1,1,0]])
 V_xyz_sym = cayley_menger_volume_symbolic(d2)      # sqrt(2)/12
@@ -316,7 +316,7 @@ V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz_sym))  # 1/8
 ```python
 from itertools import permutations
 from random import choice
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 moves = [Quadray(*p) for p in set(permutations((2,1,1,0)))]
 
@@ -391,259 +391,259 @@ This workflow ensures that mathematical theory, computational implementation, an
 
 #### `Quadray` {#code:Quadray}
 
-Source: `src/quadray.py` — Quadray vector class with non-negative components and at least one zero (Fuller.4D).
+Source: `src/quadmath/core/quadray.py` — Quadray vector class with non-negative components and at least one zero (Fuller.4D).
 
 #### `DEFAULT_EMBEDDING` {#code:DEFAULT_EMBEDDING}
 
-Source: `src/quadray.py` — canonical 3×4 symmetric embedding matrix for Quadray to XYZ conversion.
+Source: `src/quadmath/core/quadray.py` — canonical 3×4 symmetric embedding matrix for Quadray to XYZ conversion.
 
 #### `to_xyz` {#code:to_xyz}
 
-Source: `src/quadray.py` — map quadray to R³ via a 3×4 embedding matrix (Fuller.4D → Coxeter.4D slice).
+Source: `src/quadmath/core/quadray.py` — map quadray to R³ via a 3×4 embedding matrix (Fuller.4D → Coxeter.4D slice).
 
 #### `magnitude` {#code:magnitude}
 
-Source: `src/quadray.py` — return Euclidean magnitude ||q|| under the given embedding (vector norm).
+Source: `src/quadmath/core/quadray.py` — return the Euclidean magnitude of `q` under the given embedding (vector norm).
 
 #### `dot` {#code:dot}
 
-Source: `src/quadray.py` — return Euclidean dot product <q1,q2> under the given embedding.
+Source: `src/quadmath/core/quadray.py` — return Euclidean dot product <q1,q2> under the given embedding.
 
 ### Volume calculations {#code:volume_calculations}
 
 #### `integer_tetra_volume` {#code:integer_tetra_volume}
 
-Source: `src/quadray.py` — exact projected $3\times3$ determinant over 4, i.e. the IVM tetravolume $|\det|/4$ as a `fractions.Fraction`.
+Source: `src/quadmath/core/quadray.py` — exact projected $3\times3$ determinant over 4, i.e. the IVM tetravolume $|\det|/4$ as a `fractions.Fraction`.
 
 #### `ace_tetravolume_5x5` {#code:ace_tetravolume_5x5}
 
-Source: `src/quadray.py` — Tom Ace 5×5 determinant in IVM units.
+Source: `src/quadmath/core/quadray.py` — Tom Ace 5×5 determinant in IVM units.
 
 #### `tetra_volume_cayley_menger` {#code:tetra_volume_cayley_menger}
 
-Source: `src/cayley_menger.py` — length-based formula (XYZ units).
+Source: `src/quadmath/core/cayley_menger.py` — length-based formula (XYZ units).
 
 #### `ivm_tetra_volume_cayley_menger` {#code:ivm_tetra_volume_cayley_menger}
 
-Source: `src/cayley_menger.py` — Cayley–Menger volume converted to IVM units.
+Source: `src/quadmath/core/cayley_menger.py` — Cayley–Menger volume converted to IVM units.
 
 ### Coordinate conversions {#code:coordinate_conversions}
 
 #### `urner_embedding` {#code:urner_embedding}
 
-Source: `src/conversions.py` — canonical XYZ embedding.
+Source: `src/quadmath/lattice/conversions.py` — canonical XYZ embedding.
 
 #### `quadray_to_xyz` {#code:quadray_to_xyz}
 
-Source: `src/conversions.py` — apply embedding matrix to map Quadray to XYZ.
+Source: `src/quadmath/lattice/conversions.py` — apply embedding matrix to map Quadray to XYZ.
 
 ### Linear algebra utilities {#code:linear_algebra}
 
 #### `bareiss_determinant_int` {#code:bareiss_determinant_int}
 
-Source: `src/linalg_utils.py` — exact integer Bareiss determinant.
+Source: `src/quadmath/core/linalg_utils.py` — exact integer Bareiss determinant.
 
 ### Optimization methods {#code:optimization}
 
 #### `nelder_mead_quadray` {#code:nelder_mead_quadray}
 
-Source: `src/nelder_mead_quadray.py` — Nelder–Mead optimization adapted to the integer quadray lattice.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — Nelder–Mead optimization adapted to the integer quadray lattice.
 
 #### `discrete_ivm_descent` {#code:discrete_ivm_descent}
 
-Source: `src/discrete_variational.py` — greedy integer-valued descent over the IVM using canonical neighbor moves; returns a `DiscretePath` with visited Quadrays and objective values.
+Source: `src/quadmath/optimize/discrete_variational.py` — greedy integer-valued descent over the IVM using canonical neighbor moves; returns a `DiscretePath` with visited Quadrays and objective values.
 
 #### `neighbor_moves_ivm` {#code:neighbor_moves_ivm}
 
-Source: `src/discrete_variational.py` — return the 12 canonical IVM neighbor moves as Quadray deltas.
+Source: `src/quadmath/optimize/discrete_variational.py` — return the 12 canonical IVM neighbor moves as Quadray deltas.
 
 #### `apply_move` {#code:apply_move}
 
-Source: `src/discrete_variational.py` — apply a lattice move and normalize to the canonical representative.
+Source: `src/quadmath/optimize/discrete_variational.py` — apply a lattice move and normalize to the canonical representative.
 
 ### Information geometry methods {#code:information_geometry}
 
 #### `fisher_information_matrix` {#code:fisher_information_matrix}
 
-Source: `src/information.py` — empirical outer-product estimator.
+Source: `src/quadmath/inference/information.py` — empirical outer-product estimator.
 
 #### `fisher_information_quadray` {#code:fisher_information_quadray}
 
-Source: `src/information.py` — compute Fisher information matrix in both Cartesian and Quadray coordinates.
+Source: `src/quadmath/inference/information.py` — compute Fisher information matrix in both Cartesian and Quadray coordinates.
 
 #### `natural_gradient_step` {#code:natural_gradient_step}
 
-Source: `src/information.py` — damped inverse-Fisher step.
+Source: `src/quadmath/inference/information.py` — damped inverse-Fisher step.
 
 #### `free_energy` {#code:free_energy}
 
-Source: `src/information.py` — discrete-state variational free energy.
+Source: `src/quadmath/inference/information.py` — discrete-state variational free energy.
 
 #### `expected_free_energy` {#code:expected_free_energy}
 
-Source: `src/information.py` — canonical expected free energy $G$ for Active Inference (epistemic KL + ambiguity − pragmatic; see the equations appendix).
+Source: `src/quadmath/inference/information.py` — canonical expected free energy $G$ for Active Inference (epistemic KL + ambiguity − pragmatic; see the equations appendix).
 
 #### `active_inference_step` {#code:active_inference_step}
 
-Source: `src/information.py` — joint perception-action update step in Active Inference.
+Source: `src/quadmath/inference/information.py` — joint perception-action update step in Active Inference.
 
 #### `information_geometric_distance` {#code:information_geometric_distance}
 
-Source: `src/information.py` — compute information-geometric distance between two points.
+Source: `src/quadmath/inference/information.py` — compute information-geometric distance between two points.
 
 #### `perception_update` {#code:perception_update}
 
-Source: `src/information.py` — continuous-time perception update: dμ/dt = D μ - dF/dμ.
+Source: `src/quadmath/inference/information.py` — continuous-time perception update: dμ/dt = D μ - dF/dμ.
 
 #### `action_update` {#code:action_update}
 
-Source: `src/information.py` — continuous-time action update: da/dt = -dF/da.
+Source: `src/quadmath/inference/information.py` — continuous-time action update: da/dt = -dF/da.
 
 #### `finite_difference_gradient` {#code:finite_difference_gradient}
 
-Source: `src/information.py` — compute numerical gradient of a scalar function via central differences.
+Source: `src/quadmath/inference/information.py` — compute numerical gradient of a scalar function via central differences.
 
 ### Metrics and analysis {#code:metrics}
 
 #### `shannon_entropy` {#code:shannon_entropy}
 
-Source: `src/metrics.py` — Shannon entropy H(p) for a discrete distribution.
+Source: `src/quadmath/core/metrics.py` — Shannon entropy H(p) for a discrete distribution.
 
 #### `information_length` {#code:information_length}
 
-Source: `src/metrics.py` — path length in information space via gradient-weighted arc length.
+Source: `src/quadmath/core/metrics.py` — path length in information space via gradient-weighted arc length.
 
 #### `fim_eigenspectrum` {#code:fim_eigenspectrum}
 
-Source: `src/metrics.py` — eigen-decomposition of a Fisher information matrix.
+Source: `src/quadmath/core/metrics.py` — eigen-decomposition of a Fisher information matrix.
 
 #### `fisher_condition_number` {#code:fisher_condition_number}
 
-Source: `src/metrics.py` — compute the condition number of the Fisher information matrix.
+Source: `src/quadmath/core/metrics.py` — compute the condition number of the Fisher information matrix.
 
 #### `fisher_curvature_analysis` {#code:fisher_curvature_analysis}
 
-Source: `src/metrics.py` — comprehensive analysis of Fisher information matrix curvature.
+Source: `src/quadmath/core/metrics.py` — comprehensive analysis of Fisher information matrix curvature.
 
 #### `fisher_quadray_comparison` {#code:fisher_quadray_comparison}
 
-Source: `src/metrics.py` — compare Fisher information matrices between coordinate systems.
+Source: `src/quadmath/core/metrics.py` — compare Fisher information matrices between coordinate systems.
 
 ### Examples and utilities {#code:examples}
 
 #### `example_ivm_neighbors` {#code:example_ivm_neighbors}
 
-Source: `src/examples.py` — return the 12 nearest IVM neighbors as permutations of {2,1,1,0} (neighbor-move-set role).
+Source: `src/quadmath/core/examples.py` — return the 12 nearest IVM neighbors as permutations of {2,1,1,0} (neighbor-move-set role).
 
 #### `example_cuboctahedron_neighbors` {#code:example_cuboctahedron_neighbors}
 
-Source: `src/examples.py` — return twelve-around-one IVM neighbors (vector-equilibrium-shell role). Same set as `example_ivm_neighbors`; both public names are documented API sharing one sorted, deterministic implementation.
+Source: `src/quadmath/core/examples.py` — return twelve-around-one IVM neighbors (vector-equilibrium-shell role). Same set as `example_ivm_neighbors`; both public names are documented API sharing one sorted, deterministic implementation.
 
 #### `example_cuboctahedron_vertices_xyz` {#code:example_cuboctahedron_vertices_xyz}
 
-Source: `src/examples.py` — return XYZ coordinates for the twelve-around-one neighbors.
+Source: `src/quadmath/core/examples.py` — return XYZ coordinates for the twelve-around-one neighbors.
 
 #### `example_partition_tetra_volume` {#code:example_partition_tetra_volume}
 
-Source: `src/examples.py` — construct a tetrahedron from the four-fold partition and return the exact IVM tetravolume (`fractions.Fraction`).
+Source: `src/quadmath/core/examples.py` — construct a tetrahedron from the four-fold partition and return the exact IVM tetravolume (`fractions.Fraction`).
 
 ### Symbolic computation {#code:symbolic}
 
 #### `cayley_menger_volume_symbolic` {#code:cayley_menger_volume_symbolic}
 
-Source: `src/symbolic.py` — return symbolic Euclidean tetrahedron volume from squared distances.
+Source: `src/quadmath/core/symbolic.py` — return symbolic Euclidean tetrahedron volume from squared distances.
 
 #### `convert_xyz_volume_to_ivm_symbolic` {#code:convert_xyz_volume_to_ivm_symbolic}
 
-Source: `src/symbolic.py` — convert a symbolic Euclidean volume to IVM tetravolume via S3.
+Source: `src/quadmath/core/symbolic.py` — convert a symbolic Euclidean volume to IVM tetravolume via S3.
 
 ### Visualization and animation {#code:visualization}
 
 #### `animate_discrete_path` {#code:animate_discrete_path}
 
-Source: `src/visualize.py` — animate a `DiscretePath` to MP4; saves CSV/NPZ trajectory to `quadmath/output/`.
+Source: `src/quadmath/viz/visualize.py` — animate a `DiscretePath` to MP4; saves CSV/NPZ trajectory to `quadmath/output/`.
 
 #### `plot_ivm_neighbors` {#code:plot_ivm_neighbors}
 
-Source: `src/visualize.py` — scatter the 12 IVM neighbor points in 3D.
+Source: `src/quadmath/viz/visualize.py` — scatter the 12 IVM neighbor points in 3D.
 
 #### `plot_partition_tetrahedron` {#code:plot_partition_tetrahedron}
 
-Source: `src/visualize.py` — plot the four-fold partition as a labeled tetrahedron in 3D.
+Source: `src/quadmath/viz/visualize.py` — plot the four-fold partition as a labeled tetrahedron in 3D.
 
 #### `animate_simplex` {#code:animate_simplex}
 
-Source: `src/visualize.py` — animate simplex evolution across iterations.
+Source: `src/quadmath/viz/visualize.py` — animate simplex evolution across iterations.
 
 #### `plot_simplex_trace` {#code:plot_simplex_trace}
 
-Source: `src/visualize.py` — plot per-iteration diagnostics for Nelder–Mead.
+Source: `src/quadmath/viz/visualize.py` — plot per-iteration diagnostics for Nelder–Mead.
 
 ### Path and file utilities {#code:utilities}
 
 #### `get_repo_root` {#code:get_repo_root}
 
-Source: `src/paths.py` — heuristically find repository root by walking up from start.
+Source: `src/quadmath/paths.py` — heuristically find repository root by walking up from start.
 
 #### `get_output_dir` {#code:get_output_dir}
 
-Source: `src/paths.py` — return `quadmath/output` path at the repo root and ensure it exists.
+Source: `src/quadmath/paths.py` — return `quadmath/output` path at the repo root and ensure it exists.
 
 #### `get_data_dir` {#code:get_data_dir}
 
-Source: `src/paths.py` — return `quadmath/output/data` path and ensure it exists.
+Source: `src/quadmath/paths.py` — return `quadmath/output/data` path and ensure it exists.
 
 #### `get_figure_dir` {#code:get_figure_dir}
 
-Source: `src/paths.py` — return `quadmath/output/figures` path and ensure it exists.
+Source: `src/quadmath/paths.py` — return `quadmath/output/figures` path and ensure it exists.
 
 ### Additional Nelder–Mead components {#code:nelder_mead_components}
 
 #### `SimplexState` {#code:SimplexState}
 
-Source: `src/nelder_mead_quadray.py` — optimization trajectory state containing vertices, values, volume, and history.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — optimization trajectory state containing vertices, values, volume, and history.
 
 #### `order_simplex` {#code:order_simplex}
 
-Source: `src/nelder_mead_quadray.py` — sort vertices by objective value ascending and return paired lists.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — sort vertices by objective value ascending and return paired lists.
 
 #### `centroid_excluding` {#code:centroid_excluding}
 
-Source: `src/nelder_mead_quadray.py` — integer centroid of three vertices, excluding the specified index.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — integer centroid of three vertices, excluding the specified index.
 
 #### `project_to_lattice` {#code:project_to_lattice}
 
-Source: `src/nelder_mead_quadray.py` — project a quadray to the canonical lattice representative via normalize.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — project a quadray to the canonical lattice representative via normalize.
 
 #### `compute_volume` {#code:compute_volume}
 
-Source: `src/nelder_mead_quadray.py` — exact IVM tetra-volume (`fractions.Fraction`, $|\det|/4$) from the first four vertices.
+Source: `src/quadmath/optimize/nelder_mead_quadray.py` — exact IVM tetra-volume (`fractions.Fraction`, $|\det|/4$) from the first four vertices.
 
 ### Discrete variational components {#code:discrete_variational}
 
 #### `DiscretePath` {#code:DiscretePath}
 
-Source: `src/discrete_variational.py` — optimization trajectory on the integer quadray lattice.
+Source: `src/quadmath/optimize/discrete_variational.py` — optimization trajectory on the integer quadray lattice.
 
 ### Glossary generation {#code:glossary}
 
 #### `build_api_index` {#code:build_api_index}
 
-Source: `src/glossary_gen.py` — build API index from source directory.
+Source: `src/quadmath/tools/glossary_gen.py` — build API index from source directory.
 
 #### `generate_markdown_table` {#code:generate_markdown_table}
 
-Source: `src/glossary_gen.py` — generate markdown table from API entries.
+Source: `src/quadmath/tools/glossary_gen.py` — generate markdown table from API entries.
 
 #### `inject_between_markers` {#code:inject_between_markers}
 
-Source: `src/glossary_gen.py` — inject payload between markers in markdown text.
+Source: `src/quadmath/tools/glossary_gen.py` — inject payload between markers in markdown text.
 
 ### Geometry utilities {#code:geometry}
 
 #### `minkowski_interval` {#code:minkowski_interval}
 
-Source: `src/geometry.py` — return the Minkowski interval squared ds² (Einstein.4D).
+Source: `src/quadmath/core/geometry.py` — return the Minkowski interval squared ds² (Einstein.4D).
 
 Relevant tests (`tests/`):
 

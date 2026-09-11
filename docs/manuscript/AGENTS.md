@@ -32,10 +32,10 @@ docxology/template render pipeline.
   (discovers top-level `NN_*.md`, extracts `preamble.md`, consumes `config.yaml`
   and `*.bib`).
 - Local pipeline: `quadmath/scripts/render_pdf.sh` (unchanged).
-- Known caveat: `discover_manuscript_files` sweeps non-excluded top-level
-  `.md` files into the "other" bucket; `MANUSCRIPT_STATUS.md` is not in the
-  template `EXCLUDE_NAMES` set, so before wiring `stage_03_render` to this
-  directory, relocate it or extend the exclusion.
+- Resolved caveat: `discover_manuscript_files` sweeps non-excluded top-level
+  `.md` files into the "other" bucket, and `MANUSCRIPT_STATUS.md` was not in
+  the template `EXCLUDE_NAMES` set — the status file now lives at
+  `docs/MANUSCRIPT_STATUS.md`, outside the render tree.
 - Validate markdown invariants of the source tree with
   `uv run python quadmath/scripts/validate_markdown.py --strict` (it checks
   `quadmath/markdown/`, not this projection).
