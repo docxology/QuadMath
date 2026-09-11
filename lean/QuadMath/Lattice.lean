@@ -39,8 +39,13 @@ theorem shellSites_omni_1 : (shellSites 1).length = omniNumber 1 := by decide
 shell 2. -/
 theorem shellSites_omni_2 : (shellSites 2).length = omniNumber 2 := by decide
 
+/-- The computable shell enumeration realizes the numbering function on
+shell 3, via the machine-checked `shellSites_card_target_3` instance. -/
+theorem shellSites_omni_3 : (shellSites 3).length = omniNumber 3 :=
+  shellSites_card_target_3
+
 -- Smoke checks (printed at build time):
-#eval (List.range 5).map omniNumber       -- [2, 12, 42, 92, 162]
+#eval (List.range 9).map omniNumber       -- [2, 12, 42, 92, 162, 252, 362, 492, 642]
 #eval (List.range 6).map cumulativeCount  -- [1, 13, 55, 147, 309, 561]
-#eval (List.range 5).all fun k => (shellSites (k + 1)).length == omniNumber (k + 1)  -- true
+#eval (List.range 8).all fun k => (shellSites (k + 1)).length == omniNumber (k + 1)  -- true
 #eval (shellSites 0).length == 1          -- true
