@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Statistics visualization gallery (thin orchestrator).
 
-Delegates to ``src/vis_stats.py::gallery`` per the thin-orchestrator
+Delegates to ``src/quadmath/viz/vis_stats.py::gallery`` per the thin-orchestrator
 contract in ``quadmath/scripts/AGENTS.md``; sets a headless backend and a
 fixed seed, writes the four statistics gallery PNGs under
 ``quadmath/output/figures/`` and prints each output path on its own line.
@@ -14,8 +14,8 @@ import os
 import sys
 
 #: Output file names of the four gallery figures, in composition order.
-#: Must equal ``src/vis_stats.py::GALLERY_FILES`` (enforced by
-#: ``tests/test_vis_stats.py``).
+#: Must equal ``src/quadmath/viz/vis_stats.py::GALLERY_FILES`` (enforced by
+#: ``tests/unit/viz/test_vis_stats.py``).
 GALLERY_FILES = (
     "stats_gallery_latency.png",
     "stats_gallery_scaling.png",
@@ -36,7 +36,7 @@ def main(out_dir: str | None = None) -> list[str]:
 
     Parameters
     - out_dir: Output directory; ``None`` resolves to
-      ``<repo>/quadmath/output/figures`` via ``src/paths.py``.
+      ``<repo>/quadmath/output/figures`` via ``src/quadmath/paths.py``.
 
     Returns
     - list[str]: The four absolute written paths, in
@@ -45,9 +45,9 @@ def main(out_dir: str | None = None) -> list[str]:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from paths import get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_figure_dir  # noqa: WPS433
 
-    from vis_stats import gallery  # noqa: WPS433
+    from quadmath.viz.vis_stats import gallery  # noqa: WPS433
 
     if out_dir is None:
         out_dir = get_figure_dir()

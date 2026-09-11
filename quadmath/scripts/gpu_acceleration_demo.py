@@ -63,7 +63,7 @@ def parallel_volume_calculation_worker(tetrahedron: np.ndarray) -> float:
     (imported from src/; no local re-implementation). Volumes are exact
     Fractions; they are returned as floats for array statistics.
     """
-    from quadray import Quadray, integer_tetra_volume
+    from quadmath.core.quadray import Quadray, integer_tetra_volume
     
     p0, p1, p2, p3 = (Quadray(*map(int, vertex)) for vertex in tetrahedron)
     return float(integer_tetra_volume(p0, p1, p2, p3))

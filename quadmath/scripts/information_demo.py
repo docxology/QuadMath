@@ -26,12 +26,12 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
-    from information import fisher_information_matrix, natural_gradient_step, free_energy  # noqa: WPS433
-    from discrete_variational import discrete_ivm_descent  # noqa: WPS433
-    from quadray import Quadray, DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
-    from visualize import animate_discrete_path  # noqa: WPS433
-    from metrics import fisher_curvature_analysis  # noqa: WPS433
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.inference.information import fisher_information_matrix, natural_gradient_step, free_energy  # noqa: WPS433
+    from quadmath.optimize.discrete_variational import discrete_ivm_descent  # noqa: WPS433
+    from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
+    from quadmath.viz.visualize import animate_discrete_path  # noqa: WPS433
+    from quadmath.core.metrics import fisher_curvature_analysis  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import matplotlib.patches as patches  # noqa: WPS433
     from mpl_toolkits.mplot3d import Axes3D  # noqa: WPS433
@@ -174,7 +174,7 @@ def main() -> None:
 
     # Enhanced Figure 11: Comprehensive Fisher Information Eigenspectrum with Curvature Analysis
     # Now with 3 panels including tetrahedral parameter space visualization
-    from metrics import fim_eigenspectrum  # noqa: WPS433
+    from quadmath.core.metrics import fim_eigenspectrum  # noqa: WPS433
     evals, evecs = fim_eigenspectrum(F)
     
     # Comprehensive curvature analysis
@@ -322,7 +322,7 @@ def main() -> None:
     )
 
     # Partition tetrahedron plot for appendix
-    from visualize import plot_partition_tetrahedron  # noqa: WPS433
+    from quadmath.viz.visualize import plot_partition_tetrahedron  # noqa: WPS433
     mu = (2, 1, 1, 0)
     s = (1, 2, 1, 0)
     a = (1, 1, 2, 0)

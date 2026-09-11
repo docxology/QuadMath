@@ -39,8 +39,8 @@ def create_4d_trajectory_visualization():
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
     
-    from paths import get_output_dir, get_data_dir, get_figure_dir
-    from information import fisher_information_matrix, natural_gradient_step
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir
+    from quadmath.inference.information import fisher_information_matrix, natural_gradient_step
     
     # Set style for professional appearance
     plt.style.use('default')
@@ -354,8 +354,8 @@ def create_free_energy_landscape():
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
     
-    from paths import get_output_dir, get_data_dir, get_figure_dir
-    from information import free_energy
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir
+    from quadmath.inference.information import free_energy
     
     # Set style for professional appearance
     plt.style.use('default')

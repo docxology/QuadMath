@@ -24,14 +24,14 @@ def _ensure_src_on_path() -> None:
 
 def _get_output_dir() -> str:
     _ensure_src_on_path()
-    from paths import get_output_dir  # noqa: WPS433
+    from quadmath.paths import get_output_dir  # noqa: WPS433
 
     return get_output_dir()
 
 
 def _get_data_dir() -> str:
     _ensure_src_on_path()
-    from paths import get_data_dir  # noqa: WPS433
+    from quadmath.paths import get_data_dir  # noqa: WPS433
 
     return get_data_dir()
 
@@ -73,6 +73,7 @@ def main() -> None:
         os.path.join(_repo_root(), "quadmath", "scripts", "ivm_dynamics_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "lattice_gallery.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "stats_gallery.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "animation_gallery.py"),
     ]
 
     all_paths: List[str] = []

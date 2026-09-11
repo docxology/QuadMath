@@ -23,10 +23,10 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
-    from discrete_variational import discrete_ivm_descent  # noqa: WPS433
-    from visualize import animate_discrete_path  # noqa: WPS433
-    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.core.quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
+    from quadmath.optimize.discrete_variational import discrete_ivm_descent  # noqa: WPS433
+    from quadmath.viz.visualize import animate_discrete_path  # noqa: WPS433
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
 
     # Simple convex objective in embedded coordinates
     def f(q: Quadray) -> float:

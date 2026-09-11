@@ -66,7 +66,7 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
 
 ## Project Structure
 
-- `src/`: Source code modules (100% test coverage required)
+- `src/quadmath/`: Factored package — `core/`, `lattice/`, `optimize/`, `inference/`, `stats/`, `learn/`, `viz/`, `validate/`, `tools/` subpackages (100% test coverage required)
 - `tests/`: Test suite (no mocks, real numerical examples)
 - `quadmath/markdown/` (numbered sections, assembled in order by `render_pdf.sh`)
   - `00_preamble.md`: LaTeX preamble source (generated from markdown)
@@ -88,7 +88,7 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
   - `16_lattice_gallery.md`: Visualization gallery for shells, fields, dynamics
   - `17_benchmarks_statistics.md`: Benchmarks and statistics (timing harness, bootstrap CIs, permutation tests, scaling fits)
   - `18_stats_gallery.md`: Deterministic statistics gallery (latency, scaling, CI bars, ECDF)
-- `quadmath/scripts/`: Figure and data generation scripts that import from `src/`
+- `quadmath/scripts/`: Figure, data, and GIF generation scripts that import from `src/quadmath/`
 - `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
 - `lean/`: Lean 4 (core, no Mathlib) formalization mirror — zero sorries; `cd lean && lake build`
 - `SPEC.md`: mathematical specification (conventions, embedding, Gram identity, shells)

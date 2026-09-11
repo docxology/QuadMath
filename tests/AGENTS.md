@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This directory contains all tests for the QuadMath `src/` modules. Tests enforce **100% coverage** and use **real numerical examples only** (no mocks).
+This directory contains all tests for the QuadMath `quadmath` package
+(`src/quadmath/`). Tests mirror the package layout (`tests/unit/<subpackage>/`),
+enforce **100% coverage**, and use **real numerical examples only** (no mocks).
 
 ## Agent Guidelines
 
@@ -18,8 +20,8 @@ This directory contains all tests for the QuadMath `src/` modules. Tests enforce
 1. **Check existing coverage**:
 
    ```bash
-   uv run coverage run -m pytest tests/test_<module>.py
-   uv run coverage report -m --include="src/<module>.py"
+   uv run coverage run -m pytest tests/unit/core/test_quadray.py
+   uv run coverage report -m --include="src/quadmath/core/quadray.py"
    ```
 
 2. **Identify uncovered branches** in the coverage report
@@ -36,7 +38,9 @@ This directory contains all tests for the QuadMath `src/` modules. Tests enforce
 
 ### File Names
 
-- `test_<module>.py` - Primary tests for `src/<module>.py`
+- `tests/unit/<subpackage>/test_<module>.py` - Primary tests for
+  `quadmath/<subpackage>/<module>.py` (package-root modules in `tests/unit/`,
+  script-module tests in `tests/tools/`)
 - `test_<module>_cov.py` - Additional coverage tests
 
 ### Function Names
@@ -71,7 +75,7 @@ class TestQuadrayOperations:
 ### Testing Quadray Operations
 
 ```python
-from quadray import Quadray, integer_tetra_volume
+from quadmath.core.quadray import Quadray, integer_tetra_volume
 
 def test_integer_tetra_volume_unit():
     """Unit tetrahedron should have volume 1."""
@@ -89,7 +93,7 @@ def test_integer_tetra_volume_unit():
 
 ```python
 import numpy as np
-from information import fisher_information_matrix
+from quadmath.inference.information import fisher_information_matrix
 
 def test_fisher_symmetric():
     """Fisher information matrix must be symmetric."""
@@ -103,8 +107,8 @@ def test_fisher_symmetric():
 ### Testing Optimization
 
 ```python
-from nelder_mead_quadray import nelder_mead_quadray
-from quadray import Quadray
+from quadmath.optimize.nelder_mead_quadray import nelder_mead_quadray
+from quadmath.core.quadray import Quadray
 
 def test_nelder_mead_improves():
     """Optimizer should improve or maintain objective."""
@@ -130,7 +134,7 @@ def test_nelder_mead_improves():
 import os
 os.environ["MPLBACKEND"] = "Agg"  # Set before importing matplotlib
 
-from visualize import plot_ivm_neighbors
+from quadmath.viz.visualize import plot_ivm_neighbors
 
 def test_plot_saves_file(tmp_path, monkeypatch):
     """Test that plotting saves a file."""
@@ -150,7 +154,7 @@ def test_plot_saves_file(tmp_path, monkeypatch):
 from unittest.mock import patch
 
 def test_with_mock():
-    with patch('quadray.bareiss_determinant_int', return_value=4):
+    with patch('quadmath.core.quadray.bareiss_determinant_int', return_value=4):
         ...
 ```
 
@@ -176,12 +180,12 @@ def test_internal():
 Available fixtures:
 
 ```python
-# conftest.py adds src/ to Python path
-# All imports from src/ modules will work
+# conftest.py adds src/ (the quadmath package) and quadmath/scripts/ to sys.path
+# Package modules import absolutely; script modules import bare
 
 # Example: Import directly
-from quadray import Quadray
-from information import fisher_information_matrix
+from quadmath.core.quadray import Quadray
+from quadmath.inference.information import fisher_information_matrix
 ```
 
 ## Coverage Requirements
@@ -200,7 +204,7 @@ If coverage drops below 100%, CI will fail.
 When adding `*_cov.py` files:
 
 ```python
-"""Additional coverage tests for src/module.py
+"""Additional coverage tests for quadmath/<subpackage>/module.py
 
 These tests cover:
 - Error handling paths
