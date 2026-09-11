@@ -26,7 +26,7 @@ importable entrypoints under `src/`.
 |--------|--------------|
 | `render_pdf.sh` | all scripts below (its `scripts` array) + `pandoc`/`xelatex` |
 | `clean_output.sh` | filesystem only |
-| `make_all_figures.py` | 9 figure scripts (subprocess); `src/paths.py` |
+| `make_all_figures.py` | 15 figure scripts (subprocess); `src/paths.py` |
 | `validate_markdown.py` | none (stdlib only) |
 | `generate_glossary.py` | `src/glossary_gen.py` |
 | `information_demo.py` | `src/information.py`, `src/discrete_variational.py`, `src/metrics.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` |
@@ -40,6 +40,10 @@ importable entrypoints under `src/`.
 | `graphical_abstract_quadray.py` | `src/quadray.py`, `src/paths.py` |
 | `sympy_formalisms.py` | `src/symbolic.py`, `src/quadray.py` |
 | `gpu_acceleration_demo.py` | `src/quadray.py` |
+| `ivm_field_demo.py` | `src/ivm_field.py`, `src/quadray.py`, `src/paths.py` |
+| `ivm_dynamics_demo.py` | `src/ivm_dynamics.py` |
+| `lattice_gallery.py` | `src/vis_lattice.py` (`gallery` composer), `src/paths.py` |
+| `stats_gallery.py` | `src/vis_stats.py` (`gallery` composer), `src/paths.py` |
 
 ## Gotchas
 
@@ -59,7 +63,7 @@ importable entrypoints under `src/`.
 - Who runs what: `render_pdf.sh` directly runs 12 scripts (including
   `graphical_abstract_quadray.py`, `polyhedra_quadray_constructions.py`,
   `generate_glossary.py`, `validate_markdown.py`, `make_all_figures.py`);
-  `make_all_figures.py` runs 9 figure scripts. `discrete_variational_demo.py`
+  `make_all_figures.py` runs 15 figure scripts. `discrete_variational_demo.py`
   and `gpu_acceleration_demo.py` are reached only via `make_all_figures.py`;
   `graphical_abstract_quadray.py` and `polyhedra_quadray_constructions.py`
   only directly in `render_pdf.sh`.
