@@ -54,7 +54,7 @@ This repository follows a unified test-driven development workflow orchestrated 
 - **No mocks allowed** - Use real numerical examples
 - **Fixed RNG seeds** - Ensure reproducibility
 - **Fast and hermetic** - Tests should not depend on external state
-- **Coverage files**: `test_<module>.py` tests `src/<module>.py`
+- **Coverage files**: `tests/unit/<sub>/test_<module>.py` tests `src/quadmath/<sub>/<module>.py`
 
 ### Documentation Standards (`quadmath/markdown/`)
 
@@ -116,6 +116,13 @@ pipeline.py ──► typed Step/Pipeline composition over the surfaces above (s
 benchmarks.py ──► quadray.py, lattice_search.py, ivm_field.py, omni_numbering.py (perf_counter timing harness)
 statistics.py ──► standalone numpy (bootstrap, permutation, scaling fits)
 vis_stats.py ──► matplotlib-only primitives (input-agnostic; no src imports)
+validate/ ──► core/quadray.py quaternion ops (property checks: normalization, conjugate-inverse,
+              double-cover, slerp midpoint, associativity; run_validation -> List[ValidationReport])
+viz/animations.py ──► core/quadray.py, lattice/ivm_field.py (deterministic frames + byte-stable GIF writer)
+viz/plots.py ──► lattice/ivm_field.py, viz/visualize.py (input-agnostic loss/shell/histogram/3D-shell builders)
+New methods extend existing modules in place: qmul/qconjugate/qrotate/slerp/rotate_about_axis (quadray.py),
+angle_error/quat_log_euclidean_dispersion (metrics.py), jackknife_ci/benjamini_hochberg/welch_t_test/
+rotation_stats (statistics.py), three_way_split/ridge_site_fit/GradientDescentTrainer (learning_eval.py).
 
 lean/ ── Lean 4 (core, no Mathlib) mirror of quadray.py + ivm_field.py lattice definitions;
         zero sorries (universal shell count stated as shellSites_card_target, machine-checked

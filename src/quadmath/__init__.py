@@ -42,6 +42,11 @@ from quadmath.core.quadray import (
     angle,
     centroid,
     quadray_from_xyz,
+    qmul,
+    qconjugate,
+    qrotate,
+    slerp,
+    rotate_about_axis,
 )
 from quadmath.core.linalg_utils import (
     bareiss_determinant_int,
@@ -71,6 +76,8 @@ from quadmath.core.metrics import (
     kl_divergence,
     jensen_shannon_divergence,
     fisher_rao_metric,
+    angle_error,
+    quat_log_euclidean_dispersion,
 )
 from quadmath.core.symbolic import (
     cayley_menger_volume_symbolic,
@@ -177,6 +184,10 @@ from quadmath.stats.statistics import (
     permutation_test,
     scaling_fit,
     summarize,
+    jackknife_ci,
+    benjamini_hochberg,
+    welch_t_test,
+    rotation_stats,
 )
 from quadmath.stats.benchmarks import (
     BENCH_DEFAULTS,
@@ -200,6 +211,10 @@ from quadmath.learn.learning_eval import (
     kfold_site_splits,
     learning_curve,
     trajectory_train_test,
+    three_way_split,
+    RidgeSiteFit,
+    ridge_site_fit,
+    GradientDescentTrainer,
 )
 
 # viz
@@ -222,6 +237,31 @@ from quadmath.viz.vis_stats import (
     plot_ecdf,
     plot_latency_hist,
     plot_scaling_loglog,
+)
+from quadmath.viz.animations import (
+    Frame,
+    GRID_SIZE,
+    diffusion_frames,
+    frames_to_gif,
+    lattice_frames,
+    simplex_frames,
+)
+from quadmath.viz.plots import (
+    plot_error_histogram,
+    plot_loss_history,
+    plot_shell_growth,
+    plot_lattice_shell_3d,
+)
+
+# validate
+from quadmath.validate import (
+    ValidationReport,
+    check_associativity,
+    check_conjugate_inverse,
+    check_double_cover,
+    check_normalization,
+    check_slerp_midpoint,
+    run_validation,
 )
 
 # pipeline
@@ -264,6 +304,11 @@ __all__ = [
     "angle",
     "centroid",
     "quadray_from_xyz",
+    "qmul",
+    "qconjugate",
+    "qrotate",
+    "slerp",
+    "rotate_about_axis",
     # core.linalg_utils
     "bareiss_determinant_int",
     "bareiss_rank",
@@ -289,6 +334,8 @@ __all__ = [
     "kl_divergence",
     "jensen_shannon_divergence",
     "fisher_rao_metric",
+    "angle_error",
+    "quat_log_euclidean_dispersion",
     # core.symbolic
     "cayley_menger_volume_symbolic",
     "convert_xyz_volume_to_ivm_symbolic",
@@ -376,6 +423,10 @@ __all__ = [
     "permutation_test",
     "scaling_fit",
     "summarize",
+    "jackknife_ci",
+    "benjamini_hochberg",
+    "welch_t_test",
+    "rotation_stats",
     # stats.benchmarks
     "BENCH_DEFAULTS",
     "BenchRow",
@@ -395,6 +446,10 @@ __all__ = [
     "kfold_site_splits",
     "learning_curve",
     "trajectory_train_test",
+    "three_way_split",
+    "RidgeSiteFit",
+    "ridge_site_fit",
+    "GradientDescentTrainer",
     # viz.visualize
     "plot_ivm_neighbors",
     "animate_simplex",
@@ -412,6 +467,26 @@ __all__ = [
     "plot_ecdf",
     "plot_latency_hist",
     "plot_scaling_loglog",
+    # viz.animations
+    "Frame",
+    "GRID_SIZE",
+    "diffusion_frames",
+    "frames_to_gif",
+    "lattice_frames",
+    "simplex_frames",
+    # viz.plots
+    "plot_error_histogram",
+    "plot_loss_history",
+    "plot_shell_growth",
+    "plot_lattice_shell_3d",
+    # validate
+    "ValidationReport",
+    "check_associativity",
+    "check_conjugate_inverse",
+    "check_double_cover",
+    "check_normalization",
+    "check_slerp_midpoint",
+    "run_validation",
     # pipeline
     "FieldLearner",
     "FieldModel",

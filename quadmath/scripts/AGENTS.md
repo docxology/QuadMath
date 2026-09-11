@@ -8,9 +8,10 @@ importable entrypoints under `src/`.
 
 - Business/data/plot/analysis logic lives in `src/` (importable, tested under
   `tests/`, 100% coverage gate). New behavior goes in `src/`, never in scripts.
-- There is NO installed `quadray` package: every script bootstraps `<repo>/src`
-  onto `sys.path` (`_repo_root()` / `_ensure_src_on_path()`) and imports
-  top-level src modules — `from quadray import ...`, `from paths import ...`.
+- There is NO installed package: every script bootstraps `<repo>/src` onto
+  `sys.path` (`_repo_root()` / `_ensure_src_on_path()`) and imports the
+  factored package — `from quadmath.core.quadray import ...`,
+  `from quadmath.paths import ...`.
 - All entry logic sits behind `if __name__ == "__main__":` — keep scripts
   import-safe (`tests/test_sympy_formalisms.py` imports
   `quadmath/scripts/sympy_formalisms.py` directly).
@@ -26,24 +27,25 @@ importable entrypoints under `src/`.
 |--------|--------------|
 | `render_pdf.sh` | all scripts below (its `scripts` array) + `pandoc`/`xelatex` |
 | `clean_output.sh` | filesystem only |
-| `make_all_figures.py` | 15 figure scripts (subprocess); `src/paths.py` |
+| `make_all_figures.py` | 16 figure scripts (subprocess); `quadmath.paths` |
 | `validate_markdown.py` | none (stdlib only) |
-| `generate_glossary.py` | `src/glossary_gen.py` |
-| `information_demo.py` | `src/information.py`, `src/discrete_variational.py`, `src/metrics.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` |
-| `active_inference_figures.py` | `src/information.py`, `src/paths.py` |
-| `simplex_animation.py` | `src/nelder_mead_quadray.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` |
-| `discrete_variational_demo.py` | `src/discrete_variational.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` |
-| `volumes_demo.py` | `src/cayley_menger.py`, `src/quadray.py`, `src/paths.py` |
-| `ivm_neighbors.py` | `src/visualize.py`, `src/quadray.py`, `src/paths.py` |
-| `quadray_clouds.py` | `src/conversions.py`, `src/quadray.py`, `src/paths.py` |
-| `polyhedra_quadray_constructions.py` | `src/paths.py` (figure construction inline) |
-| `graphical_abstract_quadray.py` | `src/quadray.py`, `src/paths.py` |
-| `sympy_formalisms.py` | `src/symbolic.py`, `src/quadray.py` |
-| `gpu_acceleration_demo.py` | `src/quadray.py` |
-| `ivm_field_demo.py` | `src/ivm_field.py`, `src/quadray.py`, `src/paths.py` |
-| `ivm_dynamics_demo.py` | `src/ivm_dynamics.py` |
-| `lattice_gallery.py` | `src/vis_lattice.py` (`gallery` composer), `src/paths.py` |
-| `stats_gallery.py` | `src/vis_stats.py` (`gallery` composer), `src/paths.py` |
+| `generate_glossary.py` | `quadmath.tools.glossary_gen` |
+| `information_demo.py` | `quadmath.inference.information`, `quadmath.optimize.discrete_variational`, `quadmath.core.metrics`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
+| `active_inference_figures.py` | `quadmath.inference.information`, `quadmath.paths` |
+| `simplex_animation.py` | `quadmath.optimize.nelder_mead_quadray`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
+| `discrete_variational_demo.py` | `quadmath.optimize.discrete_variational`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
+| `volumes_demo.py` | `quadmath.core.cayley_menger`, `quadmath.core.quadray`, `quadmath.paths` |
+| `ivm_neighbors.py` | `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
+| `quadray_clouds.py` | `quadmath.lattice.conversions`, `quadmath.core.quadray`, `quadmath.paths` |
+| `polyhedra_quadray_constructions.py` | `quadmath.paths` (figure construction inline) |
+| `graphical_abstract_quadray.py` | `quadmath.core.quadray`, `quadmath.paths` |
+| `sympy_formalisms.py` | `quadmath.core.symbolic`, `quadmath.core.quadray` |
+| `gpu_acceleration_demo.py` | `quadmath.core.quadray` |
+| `ivm_field_demo.py` | `quadmath.lattice.ivm_field`, `quadmath.core.quadray`, `quadmath.paths` |
+| `ivm_dynamics_demo.py` | `quadmath.lattice.ivm_dynamics` |
+| `lattice_gallery.py` | `quadmath.viz.vis_lattice` (`gallery` composer), `quadmath.paths` |
+| `stats_gallery.py` | `quadmath.viz.vis_stats` (`gallery` composer), `quadmath.paths` |
+| `animation_gallery.py` | `quadmath.viz.animations` (`simplex_frames`/`lattice_frames`/`diffusion_frames`/`frames_to_gif`), `quadmath.paths` |
 
 ## Gotchas
 
@@ -62,7 +64,7 @@ importable entrypoints under `src/`.
   verbosity (0 = debug, default 1 = info).
 - Who runs what: `render_pdf.sh` directly runs 3 scripts
   (`make_all_figures.py`, `generate_glossary.py`,
-  `validate_markdown.py`); all 15 figure/data generators are reached
+  `validate_markdown.py`); all 16 figure/data/GIF generators are reached
   via `make_all_figures.py`. When adding a script, update that list —
   see "Adding a script" below.
 - Never commit `__pycache__/` or `.DS_Store`; `.gitignore` covers both
