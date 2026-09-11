@@ -86,6 +86,8 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
   - `14_conversions_spec.md`: Conversions and the mathematical specification
   - `15_learning_evaluation.md`: Training/testing methodology for the learners
   - `16_lattice_gallery.md`: Visualization gallery for shells, fields, dynamics
+  - `17_benchmarks_statistics.md`: Benchmarks and statistics (timing harness, bootstrap CIs, permutation tests, scaling fits)
+  - `18_stats_gallery.md`: Deterministic statistics gallery (latency, scaling, CI bars, ECDF)
 - `quadmath/scripts/`: Figure and data generation scripts that import from `src/`
 - `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
 - `lean/`: Lean 4 (core, no Mathlib) formalization mirror — zero sorries; `cd lean && lake build`

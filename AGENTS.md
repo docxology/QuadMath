@@ -113,6 +113,9 @@ omni_numbering.py ──► standalone (layer-BFS shells, packed int64 site keys
 learning_eval.py ──► ivm_field.py, ivm_dynamics.py (k-fold CV, temporal splits, learning curves)
 vis_lattice.py ──► quadray.py, omni_numbering.py, ivm_field.py, ivm_dynamics.py (headless gallery)
 pipeline.py ──► typed Step/Pipeline composition over the surfaces above (structural protocols)
+benchmarks.py ──► quadray.py, lattice_search.py, ivm_field.py, omni_numbering.py (perf_counter timing harness)
+statistics.py ──► standalone numpy (bootstrap, permutation, scaling fits)
+vis_stats.py ──► matplotlib-only primitives (input-agnostic; no src imports)
 
 lean/ ── Lean 4 (core, no Mathlib) mirror of quadray.py + ivm_field.py lattice definitions;
         zero sorries (universal shell count stated as shellSites_card_target, machine-checked

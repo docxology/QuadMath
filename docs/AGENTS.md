@@ -10,6 +10,8 @@
   link checker (`check_links.py`).
 - `learning/` — docs for the landed IVM learning surface (`src/ivm_field.py`,
   `src/ivm_dynamics.py`, `src/learning_eval.py`, `src/vis_lattice.py`).
+- `analysis/` — docs for the landed benchmarks/statistics surface
+  (`src/benchmarks.py`, `src/statistics.py`, `src/vis_stats.py`).
 - `lean/` — docs for the landed Lean 4 formalization at `lean/` (build
   command, module map, proof status: zero sorries; universal shell count
   machine-checked through shell 8, universal distance identity proved).

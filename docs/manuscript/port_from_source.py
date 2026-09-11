@@ -58,6 +58,8 @@ SECTIONS = [
     "14_conversions_spec.md",
     "15_learning_evaluation.md",
     "16_lattice_gallery.md",
+    "17_benchmarks_statistics.md",
+    "18_stats_gallery.md",
 ]
 FIGURE_NAMES = [
     "bridging_vs_native.png",
@@ -80,6 +82,10 @@ FIGURE_NAMES = [
     "vis_gallery_field.png",
     "vis_gallery_shell.png",
     "simplex_trace_visualization.png",
+    "stats_gallery_ci.png",
+    "stats_gallery_ecdf.png",
+    "stats_gallery_latency.png",
+    "stats_gallery_scaling.png",
     "volumes_scale_plot.png",
 ]
 # Broken inherited code-anchor links (upstream defect): the {#code:*} targets

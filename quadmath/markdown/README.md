@@ -23,6 +23,8 @@ This directory contains the markdown source files for the QuadMath manuscript. T
 | `14_conversions_spec.md` | Conversions & Specification | Embedding, Gram identities, exact canonical inversion, round-trip contracts |
 | `15_learning_evaluation.md` | Learning & Evaluation | K-fold validation, temporal splits, learning curves |
 | `16_lattice_gallery.md` | Lattice Visualization Gallery | Shell, field-slice, and dynamics figure gallery |
+| `17_benchmarks_statistics.md` | Benchmarks & Statistics | Timing harness, bootstrap CIs, permutation tests, scaling fits |
+| `18_stats_gallery.md` | Statistics Gallery | Deterministic gallery: latency, scaling, CI bars, ECDF |
 
 ## Writing Guidelines
 

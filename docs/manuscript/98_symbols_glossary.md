@@ -132,6 +132,21 @@ The table below enumerates public symbols from `src/` modules.
 <!-- BEGIN: AUTO-API-GLOSSARY -->
 | Module | Symbol | Kind | Signature | Summary |
 | --- | --- | --- | --- | --- |
+| `benchmarks` | `BENCH_DEFAULTS` | constant | `` |  |
+| `benchmarks` | `BenchRow` | class | `` | One timed benchmark result. |
+| `benchmarks` | `_CONVERSION_SEED` | constant | `` |  |
+| `benchmarks` | `_FIELD_RADIUS` | constant | `` |  |
+| `benchmarks` | `_FIELD_SEED` | constant | `` |  |
+| `benchmarks` | `_SEARCH_K` | constant | `` |  |
+| `benchmarks` | `_SEARCH_RADIUS` | constant | `` |  |
+| `benchmarks` | `_SEARCH_SEED` | constant | `` |  |
+| `benchmarks` | `bench_conversions` | function | `(n, trials)` | Benchmark quadray/XYZ conversions over ``n`` deterministic samples. |
+| `benchmarks` | `bench_field_fit` | function | `(n_sites, trials)` | Benchmark ``IVMField.learn`` on a synthetic field with a fixed seed. |
+| `benchmarks` | `bench_lattice_search` | function | `(n_sites, queries, trials)` | Benchmark nearest-site queries through the ``lattice_search`` ball index. |
+| `benchmarks` | `bench_shell_enumeration` | function | `(k_max, trials)` | Benchmark shell enumeration through shell ``k_max``. |
+| `benchmarks` | `run_all` | function | `()` | Run every benchmark with the module-level :data:`BENCH_DEFAULTS`. |
+| `benchmarks` | `summary_table` | function | `(rows)` | Render aligned fixed-width ASCII rows as a table. |
+| `benchmarks` | `time_callable` | function | `(fn, trials=, warmup=)` | Time ``fn`` with ``time.perf_counter`` and return per-trial wall seconds. |
 | `cayley_menger` | `ivm_tetra_volume_cayley_menger` | function | `(d2)` | Compute IVM tetravolume from squared distances via Cayley–Menger. |
 | `cayley_menger` | `squared_distances_from_quadrays` | function | `(p0, p1, p2, p3, embedding)` | Build the 4x4 squared-distance matrix from four quadray vertices. |
 | `cayley_menger` | `tetra_circumradius` | function | `(d2)` | Circumscribed sphere radius of a tetrahedron from squared distances. |
@@ -264,6 +279,12 @@ The table below enumerates public symbols from `src/` modules.
 | `quadray` | `magnitude` | function | `(q, embedding)` | Return Euclidean magnitude \|\|q\|\| under the given embedding (vector norm). |
 | `quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the quadray lattice via pseudoinverse rounding. |
 | `quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
+| `statistics` | `bootstrap_ci` | function | `(x, stat, iters=, seed=, alpha=)` | Percentile bootstrap confidence interval for ``stat`` on ``x``. |
+| `statistics` | `cohens_d` | function | `(a, b)` | Pooled-standard-deviation Cohen's d between two samples. |
+| `statistics` | `p_adjust_bonferroni` | function | `(pvals)` | Bonferroni-adjusted p-values, elementwise ``min(1, p * m)``. |
+| `statistics` | `permutation_test` | function | `(a, b, iters=, seed=, alternative=)` | Pooled permutation test on the difference of sample means. |
+| `statistics` | `scaling_fit` | function | `(sizes, times)` | Power-law (log-log linear) fit of runtimes against input sizes. |
+| `statistics` | `summarize` | function | `(x)` | Descriptive summary of a sample. |
 | `symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |
 | `vis_lattice` | `DEFAULT_PLANE` | constant | `` |  |
@@ -273,6 +294,12 @@ The table below enumerates public symbols from `src/` modules.
 | `vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
 | `vis_lattice` | `gallery` | function | `(paths_out_dir, seed)` | Compose the three lattice-gallery figures deterministically. |
 | `vis_lattice` | `shell_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. |
+| `vis_stats` | `GALLERY_FILES` | constant | `` |  |
+| `vis_stats` | `gallery` | function | `(paths_out_dir, seed)` | Compose the four statistics-gallery figures deterministically. |
+| `vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with symmetric confidence intervals as error bars. |
+| `vis_stats` | `plot_ecdf` | function | `(values, ax, title=)` | Empirical cumulative distribution function as a sorted step plot. |
+| `vis_stats` | `plot_latency_hist` | function | `(times, ax, bins=, title=)` | Histogram of a latency sample with a dashed vertical mean line. |
+| `vis_stats` | `plot_scaling_loglog` | function | `(sizes, times, ax, title=)` | Log-log scatter of times versus sizes with the fitted power law. |
 | `visualize` | `animate_discrete_path` | function | `(path, embedding, save)` | Animate a point moving along a discrete quadray path. |
 | `visualize` | `animate_simplex` | function | `(vertices_list, embedding, save)` | Animate simplex evolution across iterations. |
 | `visualize` | `plot_ivm_neighbors` | function | `(embedding, save)` | Scatter the 12 IVM neighbor points in 3D. |
