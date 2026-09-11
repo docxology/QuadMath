@@ -8,10 +8,11 @@
   source of truth; content changes happen there and are re-ported.
 - `development/` — test/coverage workflow (`README.md`) and the docs-tree
   link checker (`check_links.py`).
-- `learning/` — DRAFT docs for the in-progress IVM field/dynamics modules;
-  intent-only until `src/ivm_field.py` / `src/ivm_dynamics.py` exist.
-- `lean/` — pointer page for the Lean formalization at `lean/` (parallel
-  work); no links to `lean/` files until they exist.
+- `learning/` — docs for the landed IVM learning surface (`src/ivm_field.py`,
+  `src/ivm_dynamics.py`, `src/learning_eval.py`, `src/vis_lattice.py`).
+- `lean/` — docs for the landed Lean 4 formalization at `lean/` (build
+  command, module map, proof status: zero sorries; universal shell count
+  machine-checked through shell 8, universal distance identity proved).
 - `overview.md` — repository tour.
 
 ## Conventions observed

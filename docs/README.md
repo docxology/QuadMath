@@ -8,13 +8,13 @@ DOI [10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
 
 | Path | Contents |
 |---|---|
-| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` … `12_ivm_dynamics.md`, 12 files) — editing source of truth |
+| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` + `01_introduction.md` … `16_lattice_gallery.md`, 17 files) — editing source of truth |
 | `quadmath/scripts/` | Render/clean scripts plus figure, data, glossary, and validation generators (17 scripts) |
 | `src/`, `tests/` | Supporting code and test suite |
 | `docs/manuscript/` | Template-layout manuscript projection for the shared docxology render pipeline (`config.yaml`, `preamble.md`, `references.bib`, sections `01…99`, `figures/`) — see its `README.md` and `MANUSCRIPT_STATUS.md` |
 | `docs/development/` | Test/coverage workflow and the docs link checker (`check_links.py`) |
-| `docs/learning/` | Draft docs for the in-progress IVM field/dynamics modules (`src/ivm_field.py`, `src/ivm_dynamics.py`) |
-| `docs/lean/` | Pointer page for the Lean formalization (`lean/`, parallel work) |
+| `docs/learning/` | Docs for the landed IVM learning surface (`src/ivm_field.py`, `src/ivm_dynamics.py`, `src/learning_eval.py`, `src/vis_lattice.py`) |
+| `docs/lean/` | Lean 4 formalization docs (`lean/` landed — core Lean 4, one open shell-count theorem) |
 | `docs/overview.md` | Repository tour |
 | `QuadMath_v1_DAF_08-16-2025.pdf` | Published version-1 PDF (not git-tracked; regenerate via `render_pdf.sh`, canonical copy on Zenodo) |
 | `run_all.sh` | Full build entry point |

@@ -71,6 +71,7 @@ def main() -> None:
         os.path.join(_repo_root(), "quadmath", "scripts", "gpu_acceleration_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "ivm_field_demo.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "ivm_dynamics_demo.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "lattice_gallery.py"),
     ]
 
     all_paths: List[str] = []

@@ -20,6 +20,9 @@ This directory contains the markdown source files for the QuadMath manuscript. T
 | `11_ivm_field_learning.md` | IVM Field Learning | Static field learning on the isotropic vector matrix |
 | `12_ivm_dynamics.md` | IVM Dynamics | Dynamic lattice fields and trajectory identification |
 | `13_lattice_tooling.md` | Lattice Tooling | Nearest-site queries and shell numbering |
+| `14_conversions_spec.md` | Conversions & Specification | Embedding, Gram identities, exact canonical inversion, round-trip contracts |
+| `15_learning_evaluation.md` | Learning & Evaluation | K-fold validation, temporal splits, learning curves |
+| `16_lattice_gallery.md` | Lattice Visualization Gallery | Shell, field-slice, and dynamics figure gallery |
 
 ## Writing Guidelines
 
