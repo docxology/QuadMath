@@ -94,8 +94,8 @@ def compare_ace_vs_cm_examples() -> str:
 
     _ensure_src_on_path()
     # Import numeric Ace and embedding from src
-    from quadray import Quadray, ace_tetravolume_5x5, DEFAULT_EMBEDDING
-    from symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
+    from quadmath.core.quadray import Quadray, ace_tetravolume_5x5, DEFAULT_EMBEDDING
+    from quadmath.core.symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
 
     # Rational entries: DEFAULT_EMBEDDING holds floats, which would poison
     # the symbolic CM determinant with float noise and make exact `simplify`
@@ -148,7 +148,7 @@ def compare_ace_vs_cm_examples() -> str:
         # bridging factor is defined in sphere-radius-1 (edge-2) units. Rescale
         # squared distances by 1/2 (embedding scale 1/sqrt(2)) before the
         # Cayley-Menger -> S3 conversion, per the convention note in
-        # src/cayley_menger.py. Without this, every comparison is off by
+        # src/quadmath/core/cayley_menger.py. Without this, every comparison is off by
         # exactly 2*sqrt(2).
         V_xyz = cayley_menger_volume_symbolic(d2 / 2)
         V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz))

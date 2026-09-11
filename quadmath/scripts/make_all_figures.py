@@ -24,14 +24,14 @@ def _ensure_src_on_path() -> None:
 
 def _get_output_dir() -> str:
     _ensure_src_on_path()
-    from paths import get_output_dir  # noqa: WPS433
+    from quadmath.paths import get_output_dir  # noqa: WPS433
 
     return get_output_dir()
 
 
 def _get_data_dir() -> str:
     _ensure_src_on_path()
-    from paths import get_data_dir  # noqa: WPS433
+    from quadmath.paths import get_data_dir  # noqa: WPS433
 
     return get_data_dir()
 

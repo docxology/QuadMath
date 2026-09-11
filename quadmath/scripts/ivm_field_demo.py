@@ -33,9 +33,9 @@ def main() -> None:
     import numpy as np  # noqa: WPS433
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401,WPS433  (registers 3d projection)
 
-    from ivm_field import IVMField, ball_sites  # noqa: WPS433
-    from quadray import DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
-    from paths import get_figure_dir  # noqa: WPS433
+    from quadmath.lattice.ivm_field import IVMField, ball_sites  # noqa: WPS433
+    from quadmath.core.quadray import DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
+    from quadmath.paths import get_figure_dir  # noqa: WPS433
 
     rng = np.random.default_rng(12)
     radius = 3

@@ -1,20 +1,21 @@
 # QuadMath Test Suite
 
-This directory contains the comprehensive test suite for QuadMath. All tests maintain **100% coverage** of the `src/` modules using real numerical examples (no mocks).
+This directory contains the comprehensive test suite for QuadMath. All tests maintain **100% coverage** of the `quadmath` package (`src/quadmath/`) using real numerical examples (no mocks).
 
 ## Test Statistics
 
 Counts drift; derive them live rather than trusting prose (verified
-2026-09-08: 23 test files on disk, 194 collected).
+2026-09-11 after the package restructure: 35 test files on disk).
 
 ```bash
-ls tests/test_*.py | wc -l                                  # test files
-grep -c "def test_" tests/test_*.py | awk -F: '{s+=$NF} END {print s}'   # test functions (approx; parametrize may vary)
+find tests/unit tests/tools -name "test_*.py" | wc -l              # test files
+grep -c "def test_" $(find tests/unit tests/tools -name "test_*.py") | awk -F: '{s+=$NF} END {print s}'   # test functions (approx; parametrize may vary)
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q --co | tail -1   # exact collected count
 ```
 
-- **Coverage**: 100% of `src/` required (statements and branches) — enforced by
-  `.coveragerc` (`fail_under = 100`). Check: `uv run coverage report`.
+- **Coverage**: 100% of the `quadmath` package (`src/quadmath/`) required
+  (statements and branches) — enforced by `.coveragerc` (`fail_under = 100`).
+  Check: `uv run coverage report`.
 
 ## Running Tests
 
@@ -27,7 +28,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q
 uv run coverage report
 
 # Run specific test file
-uv run pytest tests/test_quadray.py -v
+uv run pytest tests/unit/core/test_quadray.py -v
 
 # Run with detailed output
 uv run pytest -v --tb=short
@@ -35,39 +36,58 @@ uv run pytest -v --tb=short
 
 ## Test File Mapping
 
-| Test File | Source Module | Tests |
+Tests mirror the package layout: `tests/unit/<subpackage>/test_<module>.py`
+tests `quadmath/<subpackage>/<module>.py`; package-root modules live in
+`tests/unit/`; script modules under `quadmath/scripts/` are tested from
+`tests/tools/`.
+
+| Test File | Tested Module | Tests |
 |-----------|---------------|-------|
-| `test_quadray.py` | `quadray.py` | Core Quadray operations |
-| `test_quadray_cov.py` | `quadray.py` | Additional coverage |
-| `test_cayley_menger.py` | `cayley_menger.py` | Determinant methods |
-| `test_information.py` | `information.py` | Fisher information, free energy |
-| `test_information_cov.py` | `information.py`, `glossary_gen.py` | Additional coverage |
-| `test_metrics.py` | `metrics.py` | Entropy, eigenspectrum |
-| `test_metrics_cov.py` | `metrics.py` | Additional coverage |
-| `test_discrete_variational.py` | `discrete_variational.py` | IVM descent |
-| `test_nelder_mead_visual.py` | `nelder_mead_quadray.py` | Simplex optimization |
-| `test_visualize.py` | `visualize.py` | Plotting functions |
-| `test_visualize_cov.py` | `visualize.py` | Additional coverage |
-| `test_linalg_utils.py` | `linalg_utils.py` | Linear algebra utilities |
-| `test_conversions.py` | `conversions.py` | Coordinate conversions |
-| `test_geometry.py` | `geometry.py` | Geometric functions |
-| `test_paths.py` | `paths.py` | Path management |
-| `test_paths_cov.py` | `paths.py` | Additional coverage |
-| `test_examples.py` | `examples.py` | Example configurations |
-| `test_examples_cov.py` | `examples.py` | Additional coverage |
-| `test_symbolic.py` | `symbolic.py` | SymPy operations |
-| `test_symbolic_cov.py` | `symbolic.py` | Additional coverage |
-| `test_glossary_gen.py` | `glossary_gen.py` | API documentation |
-| `test_active_inference.py` | `information.py` | Active Inference functions |
-| `test_sympy_formalisms.py` | `quadmath/scripts/sympy_formalisms.py` | Symbolic math (script module) |
-| `test_validate_markdown.py` | `quadmath/scripts/validate_markdown.py` | Manuscript-validation contract |
+| `tests/unit/core/test_quadray.py` | `quadmath.core.quadray` | Core Quadray operations |
+| `tests/unit/core/test_quadray_cov.py` | `quadmath.core.quadray` | Additional coverage |
+| `tests/unit/core/test_cayley_menger.py` | `quadmath.core.cayley_menger` | Determinant methods |
+| `tests/unit/core/test_geometry.py` | `quadmath.core.geometry` | Geometric functions |
+| `tests/unit/core/test_linalg_utils.py` | `quadmath.core.linalg_utils` | Linear algebra utilities |
+| `tests/unit/core/test_metrics.py` | `quadmath.core.metrics` | Entropy, eigenspectrum |
+| `tests/unit/core/test_metrics_cov.py` | `quadmath.core.metrics` | Additional coverage |
+| `tests/unit/core/test_symbolic.py` | `quadmath.core.symbolic` | SymPy operations |
+| `tests/unit/core/test_symbolic_cov.py` | `quadmath.core.symbolic` | Additional coverage |
+| `tests/unit/core/test_examples.py` | `quadmath.core.examples` | Example configurations |
+| `tests/unit/core/test_examples_cov.py` | `quadmath.core.examples` | Additional coverage |
+| `tests/unit/lattice/test_conversions.py` | `quadmath.lattice.conversions` | Coordinate conversions |
+| `tests/unit/lattice/test_ivm_field.py` | `quadmath.lattice.ivm_field` | Static IVM field learning |
+| `tests/unit/lattice/test_ivm_dynamics.py` | `quadmath.lattice.ivm_dynamics` | Lattice dynamics |
+| `tests/unit/lattice/test_lattice_search.py` | `quadmath.lattice.lattice_search` | Nearest-site queries |
+| `tests/unit/lattice/test_omni_numbering.py` | `quadmath.lattice.omni_numbering` | Shell enumeration |
+| `tests/unit/lattice/test_spec_examples.py` | `quadmath.lattice.*` | SPEC.md claim transcription |
+| `tests/unit/optimize/test_discrete_variational.py` | `quadmath.optimize.discrete_variational` | IVM descent |
+| `tests/unit/optimize/test_nelder_mead_visual.py` | `quadmath.optimize.nelder_mead_quadray` | Simplex optimization |
+| `tests/unit/inference/test_information.py` | `quadmath.inference.information` | Fisher information, free energy |
+| `tests/unit/inference/test_information_cov.py` | `quadmath.inference.information`, `quadmath.tools.glossary_gen` | Additional coverage |
+| `tests/unit/inference/test_active_inference.py` | `quadmath.inference.information` | Active Inference functions |
+| `tests/unit/stats/test_statistics.py` | `quadmath.stats.statistics` | Deterministic statistics toolkit |
+| `tests/unit/stats/test_benchmarks.py` | `quadmath.stats.benchmarks` | Timing harness |
+| `tests/unit/learn/test_learning_eval.py` | `quadmath.learn.learning_eval` | Train/test methodology |
+| `tests/unit/viz/test_visualize.py` | `quadmath.viz.visualize` | Plotting functions |
+| `tests/unit/viz/test_visualize_cov.py` | `quadmath.viz.visualize` | Additional coverage |
+| `tests/unit/viz/test_vis_lattice.py` | `quadmath.viz.vis_lattice` | Lattice gallery |
+| `tests/unit/viz/test_vis_stats.py` | `quadmath.viz.vis_stats` | Statistics gallery |
+| `tests/unit/tools/test_glossary_gen.py` | `quadmath.tools.glossary_gen` | API documentation |
+| `tests/unit/test_paths.py` | `quadmath.paths` | Path management |
+| `tests/unit/test_paths_cov.py` | `quadmath.paths` | Additional coverage |
+| `tests/unit/test_pipeline.py` | `quadmath.pipeline` | Typed pipeline composition |
+| `tests/tools/test_sympy_formalisms.py` | `quadmath/scripts/sympy_formalisms.py` | Symbolic math (script module) |
+| `tests/tools/test_validate_markdown.py` | `quadmath/scripts/validate_markdown.py` | Manuscript-validation contract |
 
 ## Test Configuration
 
 ### `conftest.py`
 
-Forces the headless Matplotlib backend and puts `src/` (plus
-`quadmath/scripts/` for script-module tests) on `sys.path`:
+Forces the headless Matplotlib backend and puts `src/` (so the `quadmath`
+package is importable) plus `quadmath/scripts/` for script-module tests on
+`sys.path`. Test imports are absolute package imports
+(`from quadmath.core.quadray import ...`); script modules stay bare
+(`from validate_markdown import ...`).
 
 ```python
 import os
@@ -171,18 +191,21 @@ Some modules have additional `test_<module>_cov.py` files that:
 When adding tests for new functionality:
 
 1. **Match naming convention**: `test_<module>.py`
-2. **Import from src directly**: Tests assume `conftest.py` adds `src/` to path
+2. **Mirror the package layout**: put the file in `tests/unit/<subpackage>/`
+   (or `tests/unit/` for package-root modules, `tests/tools/` for script
+   modules) and use absolute package imports, e.g.
+   `from quadmath.core.quadray import Quadray`
 3. **Use real examples**: No mocking of internal functions
 4. **Set random seeds**: Use `np.random.seed(42)` or similar
 5. **Test edge cases**: Empty inputs, boundary values, error conditions
 
 ```python
 # Template for new test file
-"""Tests for src/new_module.py"""
+"""Tests for quadmath/<subpackage>/new_module.py"""
 
 import numpy as np
 import pytest
-from new_module import new_function
+from quadmath.<subpackage>.new_module import new_function
 
 
 class TestNewFunction:

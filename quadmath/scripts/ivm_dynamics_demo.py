@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the IVM lattice dynamics demo figure (multi-snapshot).
 
-Delegates to `render_dynamics_demo` in `src/ivm_dynamics.py` (thin
+Delegates to `render_dynamics_demo` in `src/quadmath/lattice/ivm_dynamics.py` (thin
 orchestrator contract) and prints the saved PNG path.
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from ivm_dynamics import render_dynamics_demo  # noqa: E402  (deferred import)
+    from quadmath.lattice.ivm_dynamics import render_dynamics_demo  # noqa: E402  (deferred import)
 
     print(render_dynamics_demo())
 

@@ -146,7 +146,7 @@ def main() -> None:
 
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
-    from paths import get_figure_dir
+    from quadmath.paths import get_figure_dir
 
     # Create figure with 3D polyhedra and network diagram
     fig = plt.figure(figsize=(16, 10))

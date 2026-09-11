@@ -21,9 +21,9 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from quadray import Quadray, integer_tetra_volume  # noqa: WPS433
-    from cayley_menger import tetra_volume_cayley_menger, ivm_tetra_volume_cayley_menger  # noqa: WPS433
-    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.core.quadray import Quadray, integer_tetra_volume  # noqa: WPS433
+    from quadmath.core.cayley_menger import tetra_volume_cayley_menger, ivm_tetra_volume_cayley_menger  # noqa: WPS433
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import csv  # noqa: WPS433
 

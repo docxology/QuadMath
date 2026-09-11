@@ -25,8 +25,8 @@ def main() -> None:
 
     import numpy as np  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
-    from paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
-    from quadray import DEFAULT_EMBEDDING  # noqa: WPS433
+    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.core.quadray import DEFAULT_EMBEDDING  # noqa: WPS433
 
     # Axes in Quadray units (one-step spokes); embed to XYZ
     A = np.array([1, 0, 0, 0], dtype=float)

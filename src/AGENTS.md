@@ -2,23 +2,44 @@
 
 ## Purpose
 
-This directory contains the core Python implementation of QuadMath. All modules here must maintain **100% test coverage** and follow strict quality standards.
+This directory contains the core Python implementation of QuadMath, packaged
+as `src/quadmath/`. All modules here must maintain **100% test coverage** and
+follow strict quality standards.
+
+## Package Layout
+
+```
+src/quadmath/
+├── __init__.py        # re-exports the historical top-level public API
+├── paths.py           # output-directory helpers
+├── pipeline.py        # typed, composable pipeline layer
+├── core/              # quadray, linalg_utils, cayley_menger, geometry,
+│                      # metrics, symbolic, examples
+├── lattice/           # omni_numbering, ivm_field, ivm_dynamics,
+│                      # lattice_search, conversions
+├── optimize/          # nelder_mead_quadray, discrete_variational
+├── inference/         # information (Fisher, free energy, Active Inference)
+├── stats/             # statistics, benchmarks
+├── learn/             # learning_eval
+├── viz/               # visualize, vis_lattice, vis_stats
+└── tools/             # glossary_gen
+```
 
 ## Agent Guidelines
 
 ### Before Modifying Any Module
 
-1. **Run the test for that module first**:
+1. **Run the test for that module first** (tests mirror the package tree):
 
    ```bash
-   uv run pytest tests/test_<module>.py -v
+   uv run pytest tests/unit/core/test_quadray.py -v
    ```
 
 2. **Check current coverage**:
 
    ```bash
-   uv run coverage run -m pytest tests/test_<module>.py
-   uv run coverage report -m --include="src/<module>.py"
+   uv run coverage run -m pytest tests/unit/core/test_quadray.py
+   uv run coverage report -m --include="src/quadmath/core/quadray.py"
    ```
 
 3. **Understand the module's role** in the dependency graph (see below)
@@ -74,10 +95,29 @@ from typing import Callable, List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Local
-from quadray import Quadray
-from paths import get_output_dir
+# Local - absolute package imports only (never bare module names)
+from quadmath.core.quadray import Quadray
+from quadmath.paths import get_output_dir
 ```
+
+All intra-package imports use the absolute form
+`from quadmath.<sub>.<mod> import ...` — even within the same subpackage.
+There are no relative imports and no compatibility shims at the old flat
+paths (`src/quadray.py` and friends no longer exist).
+
+### Subpackage Re-Exports
+
+Each subpackage `__init__.py` star-re-exports its modules
+(`from .<mod> import *`). Before adding a module to a subpackage, check its
+public names against the sibling modules: if two modules in the same
+subpackage export the same top-level name, import the colliding modules
+explicitly in that `__init__` instead of star-importing both. Known
+collisions (already handled): `ball_sites` (`lattice.ivm_field` vs
+`lattice.ivm_dynamics`), `MAX_SHELL` (`lattice.omni_numbering` vs
+`lattice.lattice_search`), `gallery`/`GALLERY_FILES`
+(`viz.vis_lattice` vs `viz.vis_stats`). New public names in a module must be
+added to the re-export list in `src/quadmath/__init__.py` (and its
+`__all__`) if they belong to the top-level API.
 
 ### No Mocks in Tests
 
@@ -93,60 +133,78 @@ def test_volume():
 
 # ❌ Wrong - mocking
 def test_volume():
-    with patch('quadray.bareiss_determinant_int', return_value=4):
+    with patch('quadmath.core.quadray.bareiss_determinant_int', return_value=4):
         ...
 ```
 
 ## Module Categories
 
-### Core Mathematical Modules
+### Core Mathematical Modules (`quadmath/core/`)
 
 - `quadray.py` - Quadray vector class and operations
 - `linalg_utils.py` - Exact integer linear algebra
 - `cayley_menger.py` - Cayley-Menger determinants
+- `geometry.py` - Minkowski/Lorentz helpers
+- `metrics.py` - Entropy and Fisher-matrix diagnostics
+- `symbolic.py` - SymPy integration
+- `examples.py` - Pre-built examples
 
-### Optimization Modules
+### Lattice Modules (`quadmath/lattice/`)
+
+- `omni_numbering.py` - Shell enumeration and site indexing
+- `ivm_field.py` - Field learning on the lattice
+- `ivm_dynamics.py` - Dynamics and trajectory identification
+- `lattice_search.py` - Fast nearest-site queries
+- `conversions.py` - Coordinate system conversions
+
+### Optimization Modules (`quadmath/optimize/`)
 
 - `nelder_mead_quadray.py` - Simplex method on lattice
 - `discrete_variational.py` - Greedy IVM descent
 
-### Information Geometry Modules
+### Information Geometry Modules (`quadmath/inference/`, `quadmath/stats/`)
 
 - `information.py` - Fisher information, free energy, Active Inference
-- `metrics.py` - Entropy, eigenspectrum analysis
+- `statistics.py` / `benchmarks.py` - Deterministic statistics and timing
 
-### Visualization Modules
+### Learning Evaluation (`quadmath/learn/`)
+
+- `learning_eval.py` - k-fold, temporal splits, learning curves
+
+### Visualization Modules (`quadmath/viz/`)
 
 - `visualize.py` - 3D plotting and animation
-- `paths.py` - Output path management
+- `vis_lattice.py` - Lattice gallery figures
+- `vis_stats.py` - Statistics gallery figures
+- `paths.py` (top level) - Output path management
 
-### Utility Modules
+### Utility Modules (`quadmath/tools/`, top level)
 
-- `conversions.py` - Coordinate system conversions
-- `geometry.py` - Basic geometric functions
-- `examples.py` - Pre-built examples
-- `symbolic.py` - SymPy integration
 - `glossary_gen.py` - API documentation generation
+- `pipeline.py` (top level) - Typed composable pipeline layer
 
 ## Dependency Graph
 
 ```
-linalg_utils.py
+quadmath/core/linalg_utils.py
       │
       ▼
-quadray.py ──────────────────────────────┐
-      │                                  │
-      ├──► nelder_mead_quadray.py        │
-      │                                  │
-      └──► discrete_variational.py       │
-                   │                     │
-                   ▼                     ▼
-              visualize.py ◄──────── paths.py
+quadmath/core/quadray.py ──────────────────────────────┐
+      │                                                │
+      ├──► quadmath/optimize/nelder_mead_quadray.py    │
+      │                                                │
+      └──► quadmath/optimize/discrete_variational.py   │
+                   │                                   │
+                   ▼                                   ▼
+              quadmath/viz/visualize.py ◄──────── quadmath/paths.py
 
-cayley_menger.py ◄── linalg_utils.py
-
-information.py (standalone)
-metrics.py (standalone)
+quadmath/core/cayley_menger.py (standalone, lazy to_xyz import)
+quadmath/inference/information.py ──► quadmath/core/quadray.py
+quadmath/core/metrics.py (standalone)
+quadmath/lattice/omni_numbering.py ──► quadmath/core/quadray.py
+quadmath/lattice/{ivm_field,ivm_dynamics}.py ──► quadmath/core/quadray.py
+quadmath/lattice/lattice_search.py ──► quadmath/lattice/omni_numbering.py
+quadmath/{stats/benchmarks,learn/learning_eval,pipeline}.py ──► lattice layer
 ```
 
 ## Common Patterns
@@ -154,7 +212,7 @@ metrics.py (standalone)
 ### Creating New Quadray Functions
 
 ```python
-from quadray import Quadray
+from quadmath.core.quadray import Quadray
 
 def new_quadray_operation(q: Quadray) -> Quadray:
     """One-line description.
@@ -172,8 +230,10 @@ def new_quadray_operation(q: Quadray) -> Quadray:
 ### Adding Visualization Functions
 
 ```python
-from visualize import _set_axes_equal
-from paths import get_figure_dir
+import os
+
+from quadmath.viz.visualize import _set_axes_equal
+from quadmath.paths import get_figure_dir
 import matplotlib.pyplot as plt
 
 def plot_new_visualization(data, save: bool = True) -> str:
@@ -186,7 +246,7 @@ def plot_new_visualization(data, save: bool = True) -> str:
     # ... plotting code ...
     
     if save:
-        out_path = get_figure_dir() / "new_viz.png"
+        out_path = os.path.join(get_figure_dir(), "new_viz.png")
         fig.savefig(out_path, dpi=150, bbox_inches="tight")
         plt.close(fig)
         return str(out_path)
@@ -205,3 +265,5 @@ Before committing changes to any module:
 - [ ] Docstrings are present and accurate
 - [ ] No circular imports introduced
 - [ ] `__all__` exports updated if adding public functions
+- [ ] New module registered in its subpackage `__init__.py` (and in
+      `src/quadmath/__init__.py` if it belongs to the top-level API)

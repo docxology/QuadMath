@@ -15,7 +15,7 @@ def main() -> None:
     glossary_md = os.path.join(repo, "quadmath", "markdown", "10_symbols_glossary.md")
 
     sys.path.insert(0, src_dir)
-    from glossary_gen import build_api_index, generate_markdown_table, inject_between_markers  # type: ignore
+    from quadmath.tools.glossary_gen import build_api_index, generate_markdown_table, inject_between_markers  # type: ignore
 
     with open(glossary_md, "r", encoding="utf-8") as fh:
         text = fh.read()

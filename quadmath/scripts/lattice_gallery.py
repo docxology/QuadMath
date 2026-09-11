@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lattice visualization gallery (thin orchestrator).
 
-Delegates to ``src/vis_lattice.py::gallery`` per the thin-orchestrator
+Delegates to ``src/quadmath/viz/vis_lattice.py::gallery`` per the thin-orchestrator
 contract in ``quadmath/scripts/AGENTS.md``; sets a headless backend and a
 fixed seed, writes the three gallery PNGs under ``quadmath/output/figures/``
 and prints each output path on its own line.  The stdout path lines are the
@@ -24,9 +24,9 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from paths import get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_figure_dir  # noqa: WPS433
 
-    from vis_lattice import gallery  # noqa: WPS433
+    from quadmath.viz.vis_lattice import gallery  # noqa: WPS433
 
     for out_path in gallery(get_figure_dir()):
         print(out_path)
