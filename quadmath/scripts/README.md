@@ -78,9 +78,9 @@ def main() -> None:
     import numpy as np  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
 
-    # Import top-level src/ modules (there is no installed quadray package)
-    from quadray import Quadray, to_xyz  # noqa: WPS433
-    from paths import get_figure_dir, get_data_dir  # noqa: WPS433
+    # Import the factored src/ package (there is no installed distribution)
+    from quadmath.core.quadray import Quadray, to_xyz  # noqa: WPS433
+    from quadmath.paths import get_figure_dir, get_data_dir  # noqa: WPS433
 
     np.random.seed(42)  # deterministic
 
@@ -106,8 +106,8 @@ if __name__ == "__main__":
 1. **Thin orchestrator**: bootstrap + environment setup + delegated call into
    `src/` entrypoints; logic belongs in `src/` (tested there, 100% coverage gate)
 2. **Path bootstrap**: `_ensure_src_on_path()` inserting `<repo>/src`, then
-   import top-level `src/` modules — `from quadray import ...`,
-   `from paths import ...` — NOT installed-package style
+   import the factored package — `from quadmath.core.quadray import ...`,
+   `from quadmath.paths import ...` — NOT installed-package style
 3. **Headless mode**: `MPLBACKEND=Agg` before importing matplotlib
 4. **Fixed seeds**: `np.random.seed(42)` for reproducibility
 5. **Print outputs**: print every generated path; stdout lines ending in
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 ## Output Locations
 
 ```python
-from paths import get_figure_dir, get_data_dir, get_output_dir  # after bootstrap
+from quadmath.paths import get_figure_dir, get_data_dir, get_output_dir  # after bootstrap
 
 get_figure_dir()  # -> quadmath/output/figures/
 get_data_dir()    # -> quadmath/output/data/
