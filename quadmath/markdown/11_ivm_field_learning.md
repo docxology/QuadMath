@@ -86,7 +86,7 @@ hops with width $\tau$ (`kernel_width`) is:
 K(d) \;=\; \exp\!\bigl( -(d/\tau)^2 \bigr), \qquad d(i,j) = \text{hop distance}.
 \end{equation}
 
-`IVMField.learn()` minimizes a two-regime objective over the ball:
+`IVMField.learn()` minimizes a two-regime objective over the ball, with Laplacian regularization weight $\lambda \geq 0$:
 
 \begin{equation}
 \label{eq:ivm-objective}
@@ -106,8 +106,8 @@ c_i \;=\; \max\bigl( K\bigl(\min_{j \in \Omega} d(i,j)\bigr),\ \varepsilon \bigr
 t_i \;=\; \frac{\sum_{j \in \Omega} K(d(i,j))\, y_j}{\sum_{j \in \Omega} K(d(i,j))},
 \end{equation}
 
-where $\varepsilon$ is a numerical floor keeping the system positive
-definite. The normal equations of \eqref{eq:ivm-objective} are
+where $\varepsilon$ — the `_WEIGHT_FLOOR` constant, $10^{-12}$, in `ivm_field.py` — is a numerical floor keeping the normal-equation matrix of \eqref{eq:ivm-objective} positive definite on the connected lattice ball.
+The normal equations of \eqref{eq:ivm-objective} are
 
 \begin{equation}
 \label{eq:ivm-normal-equations}
@@ -142,16 +142,16 @@ the quantity returned by `IVMField.score()`.
 
 `fit_geometry()` recovers the orientation and scale of a tetrahedron from
 noisy 3D point clouds, using the quadray basis of `quadray.py`. The four
-canonical vertices are the images $t_i = \texttt{to\_xyz}(e_i)$ of the unit
-quadray axes $e_i$ under the embedding matrix (columns of the 3$\times$4
-basis image). Given labeled observations $p^{(i)}_m \approx R\, t_i + o$
-(noisy samples of vertex $i$), vertex centroids $c_i$ are formed and the
-linear map $G$ is fit in closed form:
+canonical vertex images are $v_i = \texttt{to\_xyz}(e_i)$, where $e_i$ are
+the unit quadray axes mapped through the 3$\times$4 embedding matrix of
+`quadray.py`. Given labeled observations $p^{(i)}_m \approx R\, v_i + o$
+(noisy samples of vertex $i$ under rotation $R$ and offset $o$), vertex
+centroids $c_i$ are formed and the linear map $G$ is fit in closed form:
 
 \begin{equation}
 \label{eq:ivm-fit}
 G \;=\; \arg\min_{M \in \mathbb{R}^{3\times 3}} \sum_{i=1}^{4}
-\bigl\| M t_i - c_i \bigr\|^2 ,
+\bigl\| M v_i - c_i \bigr\|^2 ,
 \qquad
 \text{scale} \;=\; \operatorname{sign}\bigl(\det G\bigr)\, \bigl|\det G\bigr|^{1/3}.
 \end{equation}
@@ -167,12 +167,13 @@ recovered matrix — orientation and scale separate cleanly.
 ## Demonstration
 
 The script `quadmath/scripts/ivm_field_demo.py` (run with `MPLBACKEND=Agg`,
-seed 12) renders the pipeline on the radius-3 ball: the synthetic field
-(a harmonic linear part plus a weak quadratic bowl), the noisy observations
-at half the sites, and the learned field. The learned reconstruction beats
-the raw observation noise:
+seed 12) renders the pipeline on the radius-3 ball (147 lattice sites): the
+synthetic field (a harmonic linear part plus a weak quadratic bowl), the
+noisy observations at 74 of the 147 sites, and the learned field. The learned
+reconstruction beats the raw observation noise (reconstruction MSE 0.0558
+against observation-noise MSE 0.0720, printed by the demo):
 
-![Static IVM field learning on the IVM lattice ball of radius 3: synthetic field (left), noisy observations at half the sites (center), and the learned field (right) with reconstruction MSE 0.0558 against observation noise MSE 0.0720.](../output/figures/ivm_field_demo.png)
+![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](../output/figures/ivm_field_demo.png)
 
 ## Cross-References
 

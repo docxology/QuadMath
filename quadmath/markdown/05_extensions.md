@@ -4,8 +4,9 @@ Here we review some extensions of the Quadray 4D framework, including multi-obje
 
 ## Multi-Objective Optimization
 
-- Simplex faces encode trade-offs; integer volume measures solution diversity.
-- Pareto front exploration via tetrahedral traversal.
+- A candidate $\mathbf{q}$ Pareto-dominates $\mathbf{q}'$ when $f_k(\mathbf{q}) \le f_k(\mathbf{q}')$ for every objective $k$, with strict inequality for at least one; the Pareto front is the set of undominated candidates. Simplex faces of a candidate vertex set encode these trade-offs, each face selecting one non-dominated combination.
+- Pareto front exploration via tetrahedral traversal: walking edge-adjacent simplices over the candidate set enumerates neighboring non-dominated combinations without a continuous relaxation.
+- Integer tetravolume of the solution simplex serves as a discrete diversity measure: larger volume corresponds to more mutually separated trade-off points.
 
 ## Machine Learning and Robustness
 
@@ -30,7 +31,7 @@ References: GPU-accelerated geometry processing techniques ([arxiv.org](https://
 - Free energy $\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]$ (see Eq. \eqref{eq:free_energy} in the equations appendix); background: [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and overviews connecting to predictive coding and control.
 - Belief updates follow steepest descent in Fisher geometry using the natural gradient (see Eq. \eqref{eq:natural_gradient} in the equations appendix); quadray constraints improve stability/interpretability.
 - Links to metabolic efficiency and biologically plausible computation.
-- For more information, see the Appendix: The Free Energy Principle and Active Inference.
+- For the full treatment, see `09_free_energy_active_inference.md` (Appendix: The Free Energy Principle and Active Inference).
 
 ## Complex Systems and Collective Intelligence
 
@@ -58,8 +59,8 @@ Kirby Urner's comprehensive [4dsolutions ecosystem](https://github.com/4dsolutio
 
 ## Higher Dimensions and Decompositions
 
-- Decompose higher-dimensional simplexes into tetrahedra; sum integer volumes to maintain quantization.
-- Tessellations support parallel/distributed implementations.
+- Decompose an $n$-simplex ($n > 3$) into tetrahedra and sum their signed integer volumes; the sum extends the quantized tetravolume of Section 3 to higher-dimensional content.
+- Tessellations support parallel and distributed implementations (cells processed independently).
 
 ## Limitations and Future Work
 

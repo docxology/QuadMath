@@ -87,6 +87,10 @@ FIGURE_NAMES = [
     "stats_gallery_latency.png",
     "stats_gallery_scaling.png",
     "volumes_scale_plot.png",
+    "quaternion_slerp_path.png",
+    "learn_loss_history.png",
+    "animation_frames_strip.png",
+    "stats_ci_comparison.png",
 ]
 # Broken inherited code-anchor links (upstream defect): the {#code:*} targets
 # live in 03_quadray_methods.md, not 08_equations_appendix.md.

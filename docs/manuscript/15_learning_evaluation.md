@@ -205,21 +205,22 @@ that are pure deterministic functions of their inputs.
 three contiguous blocks: the first $m_{train} =
 \operatorname{round}(\mathrm{train\_frac} \cdot n)$ indices train, the next
 $m_{val} = \operatorname{round}(\mathrm{val\_frac} \cdot n)$ validate, and
-the remainder test. Each returned list is sorted, the three lists are
-pairwise disjoint, and their union is exactly `range(n)`, so the split is a
-deterministic function of $(n, \mathrm{train\_frac}, \mathrm{val\_frac},
-seed)$ — the same deterministic-permutation contract as the k-fold site
-splits above, applied to a plain index range rather than observed lattice
-sites.
+the remainder test. Each returned list is sorted, the three are pairwise
+disjoint with union exactly `range(n)`, and the split is a deterministic
+function of $(n, \mathrm{train\_frac}, \mathrm{val\_frac}, seed)$ — the same
+deterministic-permutation contract as the k-fold site splits above, applied
+to a plain index range rather than observed lattice sites.
 Rounding is unguarded at the tails: for small $n$ a trailing block may come
 back empty ($n = 3$ under the default fractions leaves the test list empty),
 and a `ValueError` is raised when either fraction is not strictly positive
 or their sum reaches $1$ — a split with no held-out rows at all cannot be
 honest.
 
-`ridge_site_fit(features, values, lam=1e-3)` fits a single linear site
-model in closed form. Features and values are centered to zero mean, and
-the ridge normal equations are solved exactly for the slope vector $w$:
+`ridge_site_fit(features, values, lam=1e-3)` fits a single linear site model
+in closed form. With $X_c$ the mean-centered design matrix, $y_c$ the
+mean-centered target, and $\bar{x}$, $\bar{y}$ the feature-column means and
+target mean, the ridge normal equations are solved exactly for the slope
+vector $w$:
 
 \begin{equation}
 \label{eq:learn-ridge}
@@ -229,21 +230,20 @@ the ridge normal equations are solved exactly for the slope vector $w$:
 with $b$ the intercept recovered from the centered solve; $\lambda \geq 0$
 penalizes the centered coefficient norm, shrinking $w$ toward zero, and
 $\lambda = 0$ recovers the exact least-squares solve. The returned
-`RidgeSiteFit`
-carries `coefficients`, `intercept`, and the in-sample `train_mse`, and the
-fit is a deterministic function of `(features, values, lam)` — a
-`numpy.linalg.solve`, not an iterative optimizer, so repeated calls on the
-same inputs reproduce it bit for bit. Validation is explicit: a negative
-$\lambda$, a non-2-D design matrix, a non-1-D target, disagreeing sample
-counts, or zero rows each raise before any linear algebra runs.
+`RidgeSiteFit` carries `coefficients`, `intercept`, and the in-sample
+`train_mse`, and the fit is a deterministic function of `(features, values,
+lam)` — a `numpy.linalg.solve`, not an iterative optimizer, so repeated
+calls on the same inputs reproduce it bit for bit. Validation is explicit: a
+negative $\lambda$, a non-2-D design matrix, a non-1-D target, disagreeing
+sample counts, or zero rows each raise before any linear algebra runs.
 
-`GradientDescentTrainer(lr=0.05, max_iters=300, tol=1e-9)` is the
-iterative counterpart, useful where the closed form is deliberately being
-compared against: a full-batch gradient-descent fit of the same linear
-model. `fit` standardizes the feature columns internally (per-column zero
-mean and unit standard deviation, with constant columns passing through at
-standard deviation $1$), then runs at most `max_iters` full-batch updates
-on the mean-squared-error loss,
+`GradientDescentTrainer(lr=0.05, max_iters=300, tol=1e-9)` is the iterative
+counterpart, useful where the closed form is deliberately being compared
+against: a full-batch gradient-descent fit of the same linear model. `fit`
+standardizes the feature columns internally (per-column zero mean and unit
+standard deviation, with constant columns passing through at standard
+deviation $1$), then runs at most `max_iters` full-batch updates on the
+mean-squared-error loss,
 
 \begin{equation}
 \label{eq:learn-gd}
@@ -252,21 +252,33 @@ on the mean-squared-error loss,
 \qquad e \;=\; X_s w + b - y,
 \end{equation}
 
-where $X_s$ is the standardized design, $m$ the row count, and $\eta$ the
-learning rate. The MSE at the top of each executed iteration is appended to
+where $X_s$ is the standardized design, $m$ the row count, $\eta$ the
+learning rate, $w$ and $b$ the coefficient vector and bias, and $y$ the
+target. The MSE at the top of each executed iteration is appended to
 `loss_history` — one float per iteration, recorded before the update it
-describes — and training stops early with `converged_ = True` as soon as
-two consecutive losses differ by less than `tol`. The fit exposes `coef_`
+describes — and training stops early with `converged_ = True` as soon as two
+consecutive losses differ by less than `tol`. The fit exposes `coef_`
 expressed against the standardized features and `intercept_` in original
 target units, together with the stored `mean_` and `std_` it used, so
 `predict` re-applies the recorded standardization before the linear map and
-thus scores consistently across training, validation, and test blocks of a
+thus scores consistently across the train, validation, and test blocks of a
 `three_way_split`. Like `ridge_site_fit` the trainer draws no randomness of
 its own — no shuffling, no stochastic gradient — so its entire loss history
 is deterministic for fixed inputs: the same rows and hyperparameters replay
 the same loss curve to the last float, and the per-iteration record doubles
 as the divergence/plateau diagnostic that a scalar final loss cannot
 provide.
+
+![**Convergence of the full-batch gradient-descent trainer.** Per-iteration
+training loss (mean squared error, linear $y$-axis) of
+`GradientDescentTrainer` on a deterministic synthetic linear problem: a
+$40 \times 3$ standard-normal design matrix with true coefficients
+$(1.5, -2.0, 0.75)$, intercept $0.5$, and Gaussian target noise
+$\sigma = 0.05$ (seed $0$). Fitted with `lr = 0.05`, `max_iters = 300`,
+`tol = 1e-9`; the loss falls from $6.23$ at iteration $0$ to the
+noise-floor scale $\sigma^2 = 2.5\times 10^{-3}$, flagged as converged
+after $126$ iterations. Regenerate with
+`quadmath/scripts/learning_gallery.py`.](figures/learn_loss_history.png)
 
 ## Verification
 

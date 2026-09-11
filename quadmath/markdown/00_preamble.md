@@ -12,6 +12,10 @@ This file contains LaTeX preamble commands that will be inserted at the beginnin
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}

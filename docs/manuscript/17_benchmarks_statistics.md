@@ -333,6 +333,57 @@ illustrates the convention rather than a typical run: with any other seed
 the same call reproduces the floor value, and in either case the test
 correctly never reports the impossible $p = 0$.
 
+The two interval families meet on common ground in a second example.
+Two synthetic lattice-error samples with a planted mean shift are drawn
+once from a seeded generator: routine A contributes $n = 64$ error
+residuals centered on $0.0$ and routine B $64$ residuals whose population
+mean sits $0.08$ higher, both with scale $0.15$ — the unit being whatever
+the error residual measures.  For each sample mean, the 95% percentile
+bootstrap interval of \eqref{eq:stat-bootstrap} ($B = 2000$ resamples,
+re-seeded at 17) and the jackknife interval of \eqref{eq:stat-jackknife}
+(which consumes no randomness at all) are computed, and the script
+`quadmath/scripts/stats_diagnostics_gallery.py` draws all four intervals
+in a single `plot_ci_bars` call:
+
+```python
+import numpy as np
+
+from quadmath.stats.statistics import bootstrap_ci, jackknife_ci
+
+rng = np.random.default_rng(17)
+a = rng.normal(0.0, 0.15, size=64)
+b = rng.normal(0.08, 0.15, size=64)
+bootstrap_ci(a, np.mean, iters=2000, seed=17, alpha=0.05)
+# (-0.07609532416913227, -0.0004865391750512773)
+jackknife_ci(a, np.mean, alpha=0.05)[:2]
+# (-0.07682589122849623, 0.0013292867175937334)
+```
+
+What the two families assume is where they differ.  The percentile
+bootstrap needs no shape assumption at all — only that the empirical
+resampling distribution of \eqref{eq:stat-bootstrap} approximates the
+sampling distribution of $\hat{\theta}$ — while the jackknife interval is
+the normal approximation $\hat{\theta} \pm
+z_{1-\alpha/2}\,\mathrm{se}_{\text{jack}}$ built from the $n$
+leave-one-out scores of \eqref{eq:stat-jackknife}.  On the sample mean
+with $n = 64$ the two agree to within a whisker: routine A's bootstrap
+interval is $[-0.076095,\,-0.000487]$ against the jackknife's
+$[-0.076826,\,0.001329]$, and routine B's is $[0.056788,\,0.132418]$
+against $[0.056011,\,0.130639]$ (sample means $-0.037748$ and $0.093325$;
+the jackknife bias estimates sit at floating-point zero, as
+\eqref{eq:stat-jackknife} predicts for a linear statistic).  The figure
+records the comparison: routine B's planted shift shows up as both of its
+intervals clearing the dashed zero line, while routine A hugs the line so
+tightly that the bootstrap upper endpoint stops $0.0005$ short of it and
+the jackknife upper endpoint crosses it by $0.0013$ — a hair-width
+disagreement that is the honest lesson of the panel.  Coverage verdicts
+this close to the boundary are method-sensitive; a Welch test on the same
+samples reports $t \approx -4.75$ with $p \approx 5.4 \times 10^{-6}$
+(\eqref{eq:stat-welch}), in agreement with the shift both interval
+families detect.
+
+![**Bootstrap versus jackknife 95% confidence intervals for two lattice-error samples.** Sample means (dots) of two seeded synthetic error samples — $n = 64$ per group from `numpy.random.default_rng(17)`, scale 0.15, planted mean shift 0.08 in the B population — each carrying a 95% percentile bootstrap interval (`bootstrap_ci`, 2000 resamples, seed 17, $\alpha = 0.05$) and a deterministic normal-approximation jackknife interval (`jackknife_ci`, $\alpha = 0.05$), drawn together in one `plot_ci_bars` call; the dashed line marks the unbiased population mean 0.0. Routine B's intervals exclude 0 while routine A's straddle it, and the two CI families agree within whisker width on both samples. Regenerate: `uv run python quadmath/scripts/stats_diagnostics_gallery.py`.](figures/stats_ci_comparison.png)
+
 ## Cross-references
 
 - Timing harness, `BenchRow`, and the four benchmark constructors:
@@ -340,6 +391,9 @@ correctly never reports the impossible $p = 0$.
 - Bootstrap, permutation tests, `cohens_d`, `p_adjust_bonferroni`,
   `scaling_fit`: `src/quadmath/stats/statistics.py`.
 - The figure primitives built on these results: `18_stats_gallery.md`.
+- The interval-comparison script and figure behind the second example:
+  `quadmath/scripts/stats_diagnostics_gallery.py`
+  (`quadmath/output/figures/stats_ci_comparison.png`).
 - Measured surfaces: `quadray.py` (conventions in `SPEC.md`),
   `omni_numbering.py` and `lattice_search.py` (`13_lattice_tooling.md`),
   `ivm_field.py` (`11_ivm_field_learning.md`).

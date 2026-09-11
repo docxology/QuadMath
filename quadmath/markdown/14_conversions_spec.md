@@ -127,7 +127,8 @@ require every row of `M` to sum to exactly zero, so that normalization preserves
 \eqref{eq:conv-fiber}; (2) because $C_3 = -(C_0 + C_1 + C_2)$, rank $M = 3$ is equivalent to
 $\det\,[\,C_0\; C_1\; C_2\,] \neq 0$ (a `ValueError` otherwise); (3) solve the $3 \times 3$ system
 on columns 0–2 by Cramer's rule for the particular preimage $y = (x_1, x_2, x_3, 0)$ of
-\eqref{eq:conv-canonical}; (4) `xyz` lies in the lattice image if and only if $x_1, x_2, x_3$ are
+\eqref{eq:conv-canonical}; (4) the embedded point lies in the image of the integer lattice
+$\{\,M\,q : q \in \mathbb{Z}^{4}\,\}$ if and only if $x_1, x_2, x_3$ are
 all integers — then every integer preimage is $y + t\,\mathbf{1}$, and the min-0 representative
 `Quadray(x1, x2, x3, 0).normalize()` is the unique deterministic tie-break on the fiber
 \eqref{eq:conv-fiber} (the same rule as `Quadray.normalize`); a non-integral preimage
@@ -141,10 +142,13 @@ shape; any row sum different from zero; $\det = 0$ (rank below 3); a non-integra
 rather than snapping to a neighbor.
 
 The float-valued inverse `quadray.quadray_from_xyz` is a different, deliberately fuzzier contract:
-it applies the pseudoinverse $M^{+} = M^{\mathsf{T}}(MM^{\mathsf{T}})^{-1}$ and rounds half-up
-(see its docstring argument for why round-half-up preserves the $(1,1,1,1)$-coset). For points on
+it applies the pseudoinverse $M^{+} = M^{\mathsf{T}}(MM^{\mathsf{T}})^{-1}$ and rounds each component
+half-up (`floor(v + 0.5)`, not banker's rounding — its docstring argument shows why half-up provably
+stays in the $\mathbf{1}$-coset of the exact preimage, where per-component round-half-even can leave
+it). For points on
 the lattice it round-trips exactly; for general $\mathbb{R}^3$ points it returns the nearest lattice
-point in quadray coordinates, which is a snapping operation, not an inverse. `quadray_roundtrip(q,
+point in quadray coordinates (component-wise — not always nearest in embedded XYZ distance), which
+is a snapping operation, not an inverse. `quadray_roundtrip(q,
 M=None)` pins the round-trip contract
 
 \begin{equation}
@@ -199,8 +203,8 @@ octahedral and tetrahedral voids of the packing. The radial observable is the sh
 
 \begin{equation}
 \label{eq:conv-shell}
-N(q) \;=\; \sum_{i} \Bigl|\, q_i \;-\; s/4 \,\Bigr| \;=\; 2k,
-\qquad s \;=\; \sum_{i} q_i ,
+N(q) \;=\; \sum_{i} \Bigl|\, q_i \;-\; \sigma/4 \,\Bigr| \;=\; 2k,
+\qquad \sigma \;=\; \sum_{i} q_i ,
 \end{equation}
 
 computed by `quadray_shell_norm`: shell $k$ is the set of sites with $N(q) = 2k$, populated by

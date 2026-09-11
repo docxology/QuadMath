@@ -27,7 +27,7 @@ importable entrypoints under `src/`.
 |--------|--------------|
 | `render_pdf.sh` | all scripts below (its `scripts` array) + `pandoc`/`xelatex` |
 | `clean_output.sh` | filesystem only |
-| `make_all_figures.py` | 16 figure scripts (subprocess); `quadmath.paths` |
+| `make_all_figures.py` | 20 figure scripts (subprocess); `quadmath.paths` |
 | `validate_markdown.py` | none (stdlib only) |
 | `generate_glossary.py` | `quadmath.tools.glossary_gen` |
 | `information_demo.py` | `quadmath.inference.information`, `quadmath.optimize.discrete_variational`, `quadmath.core.metrics`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
@@ -46,6 +46,10 @@ importable entrypoints under `src/`.
 | `lattice_gallery.py` | `quadmath.viz.vis_lattice` (`gallery` composer), `quadmath.paths` |
 | `stats_gallery.py` | `quadmath.viz.vis_stats` (`gallery` composer), `quadmath.paths` |
 | `animation_gallery.py` | `quadmath.viz.animations` (`simplex_frames`/`lattice_frames`/`diffusion_frames`/`frames_to_gif`), `quadmath.paths` |
+| `learning_gallery.py` | `quadmath.learn.learning_eval` (`GradientDescentTrainer`), `quadmath.viz.plots` (`plot_loss_history`), `quadmath.paths` |
+| `quaternion_gallery.py` | `quadmath.viz.plots` (`plot_slerp_path`), `quadmath.core.quadray`, `quadmath.paths` |
+| `animation_stills.py` | `quadmath.viz.animations` (`frames_strip` + frame builders), `quadmath.paths` |
+| `stats_diagnostics_gallery.py` | `quadmath.viz.vis_stats` (`plot_ci_bars`), `quadmath.stats.statistics` (CI families), `quadmath.paths` |
 
 ## Gotchas
 
@@ -64,7 +68,7 @@ importable entrypoints under `src/`.
   verbosity (0 = debug, default 1 = info).
 - Who runs what: `render_pdf.sh` directly runs 3 scripts
   (`make_all_figures.py`, `generate_glossary.py`,
-  `validate_markdown.py`); all 16 figure/data/GIF generators are reached
+  `validate_markdown.py`); all 20 figure/data/GIF generators are reached
   via `make_all_figures.py`. When adding a script, update that list —
   see "Adding a script" below.
 - Never commit `__pycache__/` or `.DS_Store`; `.gitignore` covers both

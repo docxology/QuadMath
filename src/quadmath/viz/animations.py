@@ -18,17 +18,20 @@ radius-3 IVM ball (max embedded norm 6) even while pulsing, with margin.
 from __future__ import annotations
 
 import math
+import os
 from dataclasses import dataclass
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 import numpy as np
 
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
 from quadmath.lattice.ivm_field import IVM_NEIGHBOR_STEPS, ball_sites, quadray_shell_norm
+from quadmath.paths import get_figure_dir
 
 __all__ = [
     "Frame",
     "diffusion_frames",
+    "frames_strip",
     "frames_to_gif",
     "lattice_frames",
     "simplex_frames",
@@ -49,6 +52,17 @@ _DIFFUSION_ALPHA = 0.25
 #: Pulse amplitude of :func:`lattice_frames`: radius oscillates in
 #: ``[1 - _PULSE_AMP, 1 + _PULSE_AMP]`` relative to the shell radius.
 _PULSE_AMP = 0.25
+
+#: Width, in inches, of one ``frames_strip`` panel; strip height is one
+#: panel plus the title band, and the figure width is ``_STRIP_PANEL_IN``
+#: times the panel count.
+_STRIP_PANEL_IN = 2.4
+
+#: Extra figure height, in inches, reserved above the panels for titles.
+_STRIP_TITLE_IN = 0.4
+
+#: DPI of the PNG written by :func:`frames_strip`.
+_STRIP_DPI = 160
 
 
 @dataclass(frozen=True)
@@ -333,6 +347,83 @@ def diffusion_frames(n_steps: int = 12, seed: int = 0) -> List[Frame]:
         grid = _project_to_grid(xyz, heat / float(heat.max()))
         frames.append(Frame(grid, f"diffusion step {step_i}"))
     return frames
+
+
+def frames_strip(
+    frames: Sequence[Frame],
+    out_path: Optional[str] = None,
+    labels: Optional[Sequence[str]] = None,
+    save: bool = True,
+) -> str:
+    """Render frames as a single-row matplotlib strip, one panel per frame.
+
+    Panels appear in sequence order on one row; the figure width is
+    ``_STRIP_PANEL_IN`` times the panel count while the height stays one
+    panel plus the title band.  Every panel is a grayscale ``imshow`` of the
+    frame pinned to the unit brightness interval (``vmin = 0``, ``vmax =
+    1``; ``uint8`` frames are mapped by ``v / 255`` first, so both
+    :class:`Frame` dtypes share the gray-level convention of
+    :func:`frames_to_gif`).  Panel titles come from ``labels`` when given,
+    otherwise from each frame's ``title``; axes are switched off and
+    inter-panel spacing is zero, so consecutive panels butt together.  The
+    deterministic render uses no RNG and no wall clock; matplotlib is
+    imported lazily inside the function and the caller is responsible for a
+    headless backend (``MPLBACKEND=Agg``).
+
+    Parameters
+    - frames: Non-empty sequence of :class:`Frame`.
+    - out_path: Destination PNG.  A bare file name is resolved under
+      ``quadmath/output/figures/`` via :func:`quadmath.paths.get_figure_dir`;
+      a path containing a directory component is used verbatim.
+    - labels: Optional per-panel titles; when given, its length must equal
+      ``len(frames)``, otherwise panel titles fall back to the frames' own
+      ``title`` values.
+    - save: When True and ``out_path`` is given, write the PNG and return
+      its path; otherwise render only.
+
+    Returns
+    - str: The written path when saved, else ``""``.
+
+    Raises
+    - ValueError: If ``frames`` is empty or ``labels`` length mismatches
+      ``len(frames)``.
+    """
+    if len(frames) == 0:
+        raise ValueError("frames must not be empty")
+    if labels is not None and len(labels) != len(frames):
+        raise ValueError(
+            f"labels length {len(labels)} does not match frames length {len(frames)}"
+        )
+
+    import matplotlib.pyplot as plt  # noqa: WPS433  (lazy import; Agg via MPLBACKEND)
+
+    titles = list(labels) if labels is not None else [f.title for f in frames]
+    fig, axs = plt.subplots(
+        1,
+        len(frames),
+        figsize=(_STRIP_PANEL_IN * len(frames), _STRIP_PANEL_IN + _STRIP_TITLE_IN),
+        squeeze=False,
+    )
+    for ax, frame, title in zip(axs[0], frames, titles):
+        arr = frame.array
+        if arr.dtype == np.uint8:
+            arr = arr / 255.0
+        ax.imshow(arr, cmap="gray", vmin=0.0, vmax=1.0, interpolation="nearest")
+        if title:
+            ax.set_title(title, fontsize=9)
+        ax.set_axis_off()
+    fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.9, wspace=0.0, hspace=0.0)
+
+    outpath = ""
+    if save and out_path:
+        if os.path.dirname(out_path):
+            target = out_path
+        else:
+            target = os.path.join(get_figure_dir(), out_path)
+        fig.savefig(target, dpi=_STRIP_DPI, bbox_inches="tight")
+        outpath = target
+    plt.close(fig)
+    return outpath
 
 
 def frames_to_gif(

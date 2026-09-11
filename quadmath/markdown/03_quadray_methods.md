@@ -154,7 +154,7 @@ For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice (Fulle
 Notes.
 
 - $P_0,\ldots,P_3$ are tetrahedron vertices in Quadray coordinates.
-- $V$ in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ) volume; converting it to IVM tetra-units requires the synergetics scale factor $S3=\sqrt{9/8}$ in sphere-radius units (Eq. \eqref{eq:xyz_det}). For lattice tetrahedra, the direct quadray formula Eq. \eqref{eq:gdj} yields the IVM volume exactly, without unit conversion.
+- $V_{xyz}$ in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ) volume; converting it to IVM tetra-units requires the synergetics scale factor $S3=\sqrt{9/8}$ in sphere-radius units (Eq. \eqref{eq:xyz_det}). For lattice tetrahedra, the direct quadray formula Eq. \eqref{eq:gdj} yields the IVM volume exactly, without unit conversion.
 - Background and variations are discussed under Tetrahedron volume formulas: [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
 
 Tom Ace 5×5 determinant (tetravolume directly from quadrays), see Eq. \eqref{eq:ace5x5} in the equations appendix.
@@ -210,7 +210,7 @@ Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See 
 
   In Quadray coordinates, one convenient native form uses edge-vector differences and an integer-preserving determinant (agreeing with Ace 5×5):
 
-  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected to a 3D slice consistent with the synergetics convention; integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong's Quadray notes and Urner's implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
+  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected via $\pi(P) = (a - d,\, b - d,\, c - d)$ to the synergetics 3D slice (matching `integer_tetra_volume`); integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong's Quadray notes and Urner's implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
 
 - Euclidean embedding distance via appropriate linear map from quadray to R³.
 - Information geometry metric: Fisher Information Matrix (FIM)
@@ -246,7 +246,7 @@ Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See 
 
 
 
-  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected to a 3D slice consistent with the synergetics convention; integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong’s Quadray notes and Urner’s implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
+  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected via $\pi(P) = (a - d,\, b - d,\, c - d)$ to the synergetics 3D slice (matching `integer_tetra_volume`); integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong’s Quadray notes and Urner’s implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
 
 ### Bridging and native tetravolume formulas 
 
@@ -417,21 +417,23 @@ Source: `src/quadmath/core/quadray.py` — Hamilton product of two quaternions i
 
 #### `qconjugate` {#code:qconjugate}
 
-Source: `src/quadmath/core/quadray.py` — conjugate $(w, -x, -y, -z)$ of a quaternion in $(w, x, y, z)$ order; for a unit quaternion the conjugate is the multiplicative inverse, so `q * qconjugate(q)` equals $(1, 0, 0, 0)$ up to floating-point error.
+Source: `src/quadmath/core/quadray.py` — conjugate $(w, -x, -y, -z)$ of a quaternion; for a unit quaternion the conjugate is the multiplicative inverse, so `q * qconjugate(q)` equals $(1, 0, 0, 0)$ up to floating-point error.
 
 #### `qrotate` {#code:qrotate}
 
-Source: `src/quadmath/core/quadray.py` — Rodrigues rotation of a 3-vector by a unit quaternion via $v' = q\,(0, v)\,q^*$, composed with `qmul` and `qconjugate`; `q` must be unit (within 1e-9) and the rotation magnitude it encodes, $2\,\mathrm{atan2}(\|(x, y, z)\|, w)$, must match $|\mathrm{angle}|$ modulo $2\pi$ within 1e-9, so a mismatched (q, angle) pair raises instead of silently rotating by the wrong amount.
+Source: `src/quadmath/core/quadray.py` — Rodrigues rotation of a 3-vector by a unit quaternion via $v' = q\,(0, v)\,q^*$, composed with `qmul` and `qconjugate`; `q` must be unit (within 1e-9) and the rotation magnitude it encodes, $2\,\mathrm{atan2}(\lVert (x, y, z) \rVert, w)$, must match $|\mathrm{angle}|$ modulo $2\pi$ within 1e-9, so a mismatched (q, angle) pair raises instead of silently rotating by the wrong amount.
 
 #### `slerp` {#code:slerp}
 
-Source: `src/quadmath/core/quadray.py` — shortest-arc spherical linear interpolation between unit quaternions: when $\langle q_a, q_b\rangle < 0$ the second quaternion is negated first ($q$ and $-q$ encode the same rotation) so the path always takes the shorter arc on the rotation sphere; nearly parallel inputs (including exactly antipodal pairs after sign alignment) fall back to normalized lerp to avoid dividing by $\sin\theta \approx 0$, and the endpoints are exact.
+Source: `src/quadmath/core/quadray.py` — shortest-arc spherical linear interpolation between unit quaternions: when $\langle q_a, q_b\rangle < 0$ the second quaternion is negated first ($q$ and $-q$ encode the same rotation) so the path always takes the shorter arc on the rotation sphere; nearly parallel inputs (including exactly antipodal pairs after sign alignment) fall back to normalized lerp to avoid dividing by $\sin\theta \approx 0$, and the endpoints are exact. The site path traced by these interpolations is visualized by `plot_slerp_path` in `src/quadmath/viz/plots.py` (figure below).
 
 #### `rotate_about_axis` {#code:rotate_about_axis}
 
 Source: `src/quadmath/core/quadray.py` — axis-angle convenience wrapper: builds the unit quaternion $q = (\cos(\theta/2),\, \sin(\theta/2)\,\hat{u})$ from the normalized rotation axis (any non-zero scale accepted; the zero vector is rejected) and delegates to `qrotate`, reducing the angle to $(-\pi, \pi]$ first so rotation is right-handed about the axis and `qrotate`'s encoded-angle validation stays exact.
 
 The property checks in `src/quadmath/validate/validate.py` — normalization, conjugate-inverse, double cover, slerp midpoint, and associativity — consume these operations over quaternion sequences via `run_validation`, which collects the resulting deterministic validation reports.
+
+![**Shortest-arc slerp geodesic from the identity to a $\pi/2$ rotation about the $z$ axis.** The path traced by the canonical $(2, 0, 0, 0)$ quadray axis point (embedded at $(2, 2, 2)$ under `DEFAULT_EMBEDDING`) as the rotation quaternion is interpolated from the identity $(1, 0, 0, 0)$ to $(\cos\frac{\pi}{4}, 0, 0, \sin\frac{\pi}{4})$ — a right-handed $\pi/2$ rotation about the $z$ axis — over 16 samples of $t \in [0, 1]$, rendered by `plot_slerp_path` in `src/quadmath/viz/plots.py` via the script `quadmath/scripts/quaternion_gallery.py`. Because `slerp` negates the second quaternion whenever $\langle q_0, q_1 \rangle < 0$, the interpolation always follows the shorter arc of the geodesic on the rotation sphere: the rotation angle grows linearly from $0$ to $\pi/2$, so the site sweeps the quarter circle of radius $2\sqrt{2}$ about the $z$ axis at constant height $z = 2$ (blue line), from the start marker at $t = 0$ (green) to the end marker at $t = 1$ (red). Reproduce with `uv run python quadmath/scripts/quaternion_gallery.py`.](../output/figures/quaternion_slerp_path.png)
 
 ### Quaternion metrics {#code:quaternion_metrics}
 

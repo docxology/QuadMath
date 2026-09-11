@@ -14,12 +14,14 @@ import numpy as np
 import pytest
 
 import quadmath.viz.plots as plots_module
+from quadmath.core.quadray import Quadray
 from quadmath.lattice.ivm_field import shell_cardinalities, shell_sites
 from quadmath.viz.plots import (
     plot_error_histogram,
     plot_lattice_shell_3d,
     plot_loss_history,
     plot_shell_growth,
+    plot_slerp_path,
 )
 
 
@@ -182,3 +184,73 @@ def test_lattice_shell_3d_is_byte_reproducible(tmp_path, monkeypatch):
 def test_lattice_shell_3d_rejects_negative_shell():
     with pytest.raises(ValueError):
         plot_lattice_shell_3d(-2)
+
+
+# ---------------------------------------------------------------------------
+# plot_slerp_path
+# ---------------------------------------------------------------------------
+
+
+#: Identity quaternion and the unit quaternion for a right-handed pi/2
+#: rotation about z (the half-angle form rotate_about_axis builds).
+_Q0 = (1.0, 0.0, 0.0, 0.0)
+_Q1 = (np.cos(np.pi / 4), 0.0, 0.0, np.sin(np.pi / 4))
+
+
+def test_slerp_path_saves_png_and_returns_path(_figures_dir):
+    outpath = plot_slerp_path(_Q0, _Q1)
+    assert outpath == str(_figures_dir / "quaternion_slerp_path.png")
+    assert os.path.isfile(outpath)
+    assert os.path.getsize(outpath) > 0
+
+
+def test_slerp_path_traces_default_site_with_exact_endpoints():
+    plot_slerp_path(_Q0, _Q1, n_frames=9, save=False)
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == "Slerp rotation path of site (2, 0, 0, 0)"
+    assert len(ax.lines) == 1 and len(ax.collections) == 2
+    xs, ys, zs = ax.lines[0].get_data_3d()
+    assert len(xs) == 9
+    # The default (2, 0, 0, 0) site starts at its embedded position (2, 2, 2)
+    # and ends rotated by pi/2 about z at (-2, 2, 2); z stays constant because
+    # the interpolated quaternions all rotate about the z axis.
+    assert (xs[0], ys[0], zs[0]) == (2.0, 2.0, 2.0)
+    assert (xs[-1], ys[-1], zs[-1]) == pytest.approx((-2.0, 2.0, 2.0))
+    assert all(z == pytest.approx(2.0) for z in zs)
+    assert len(ax.collections[0]._offsets3d[0]) == 1  # start marker
+    assert len(ax.collections[1]._offsets3d[0]) == 1  # end marker
+
+
+def test_slerp_path_accepts_explicit_site():
+    plot_slerp_path(_Q0, _Q1, n_frames=5, site=Quadray(1, 0, 0, 0), save=False)
+    ax = plt.gcf().axes[0]
+    assert ax.get_title() == "Slerp rotation path of site (1, 0, 0, 0)"
+    xs, ys, zs = ax.lines[0].get_data_3d()
+    assert (xs[0], ys[0], zs[0]) == (1.0, 1.0, 1.0)
+    assert (xs[-1], ys[-1], zs[-1]) == pytest.approx((-1.0, 1.0, 1.0))
+
+
+def test_slerp_path_is_byte_reproducible(tmp_path, monkeypatch):
+    (tmp_path / "a").mkdir()
+    monkeypatch.setattr(plots_module, "get_figure_dir", lambda: str(tmp_path / "a"))
+    path_a = plot_slerp_path(_Q0, _Q1)
+    (tmp_path / "b").mkdir()
+    monkeypatch.setattr(plots_module, "get_figure_dir", lambda: str(tmp_path / "b"))
+    path_b = plot_slerp_path(_Q0, _Q1)
+    with open(path_a, "rb") as fh_a, open(path_b, "rb") as fh_b:
+        assert fh_a.read() == fh_b.read()
+
+
+def test_slerp_path_rejects_non_unit_q0():
+    with pytest.raises(ValueError):
+        plot_slerp_path((2.0, 0.0, 0.0, 0.0), _Q1)
+
+
+def test_slerp_path_rejects_non_unit_q1():
+    with pytest.raises(ValueError):
+        plot_slerp_path(_Q0, (1.0, 1.0, 0.0, 0.0))
+
+
+def test_slerp_path_rejects_too_few_frames():
+    with pytest.raises(ValueError):
+        plot_slerp_path(_Q0, _Q1, n_frames=1)

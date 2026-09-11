@@ -74,6 +74,10 @@ def main() -> None:
         os.path.join(_repo_root(), "quadmath", "scripts", "lattice_gallery.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "stats_gallery.py"),
         os.path.join(_repo_root(), "quadmath", "scripts", "animation_gallery.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "learning_gallery.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "quaternion_gallery.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "animation_stills.py"),
+        os.path.join(_repo_root(), "quadmath", "scripts", "stats_diagnostics_gallery.py"),
     ]
 
     all_paths: List[str] = []

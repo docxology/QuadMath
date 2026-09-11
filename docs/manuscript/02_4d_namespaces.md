@@ -1,20 +1,20 @@
 # 4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D
 
-This section provides the definitive reference for the three 4D frameworks used throughout this manuscript. Each namespace represents a distinct mathematical framework with specific applications in our quadray-based computational system.
+This section provides the definitive reference for the three 4D frameworks used throughout this manuscript. Each namespace represents a distinct mathematical framework with specific applications in our Quadray-based computational system.
 
 ## Coxeter.4D (Euclidean E⁴)
 
-**Definition**: Standard E⁴ with orthogonal axes and Euclidean metric; the proper setting for classical regular polytopes. As Coxeter notes (Regular Polytopes, Dover ed., p. 119), this Euclidean 4D is not spacetime. Lattice/packing discussions connect to Conway & Sloane's systematic treatment of higher-dimensional sphere packings and lattices ([Sphere Packings, Lattices and Groups (Springer)](https://link.springer.com/book/10.1007/978-1-4757-6568-7)).
+**Definition**: Four-dimensional Euclidean space E⁴ with mutually orthogonal axes and a positive-definite metric — the native setting of classical regular polytopes, and, per Coxeter (Regular Polytopes, Dover ed., p. 119), explicitly not spacetime. Lattice/packing discussions connect to Conway & Sloane's systematic treatment of higher-dimensional sphere packings and lattices ([Sphere Packings, Lattices and Groups (Springer)](https://link.springer.com/book/10.1007/978-1-4757-6568-7)).
 
 **Usage**: Embed Quadray configurations or compare alternative parameterizations when a strictly Euclidean 4D setting is desired.
 
 **Simplexes**: Simplex structures extend naturally to 4D and beyond (e.g., pentachora).
 
-**Mathematical context**: This framework is appropriate for standard Euclidean geometry, including the Cayley-Menger determinant for computing volumes from edge lengths.
+**Mathematical context**: This framework is appropriate for standard Euclidean geometry, including the Cayley–Menger determinant for computing volumes from edge lengths.
 
 ## Einstein.4D (Relativistic spacetime)
 
-**Definition**: Minkowski spacetime with indefinite metric signature, representing the geometric framework for special relativity. This namespace provides the mathematical foundation for understanding space-time relationships and relativistic phenomena.
+**Definition**: Minkowski spacetime — three space dimensions joined to one time dimension by an indefinite metric of signature $(-,+,+,+)$ (mostly-plus convention) — the geometric arena of special relativity; the sign of the squared line element classifies separations as timelike, lightlike, or spacelike.
 
 **Spacetime**: Minkowski metric signature.
 
@@ -26,7 +26,7 @@ This section provides the definitive reference for the three 4D frameworks used 
 
 ## Fuller.4D (Synergetics / Quadrays)
 
-**Definition**: Tetrahedral coordinate system based on four non-negative components representing directions to the vertices of a regular tetrahedron from its center. This namespace embodies the synergetic approach to geometry, emphasizing shape relationships and integer tetravolumes within the IVM framework.
+**Definition**: The synergetic account of space built on Quadray coordinates — four non-negative components (A, B, C, D) giving directions from the center of a reference regular tetrahedron to its vertices — together with the IVM = CCP = FCC lattice correspondence, the regular tetrahedron as the unit of volume, and exact integer tetravolumes for lattice tetrahedra; it tracks shape and angle relations among containers, independent of time and energy.
 
 **Basis**: Four non-negative components A,B,C,D with at least one zero post-normalization, treated as a vector (direction and magnitude), not merely a point. Overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
 

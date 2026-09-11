@@ -28,7 +28,7 @@ vertices of a regular tetrahedron (pairwise dot product \(-1\), edge
 length \(2\sqrt{2}\); see [Quadray Methods](03_quadray_methods.md)).  The
 hints make the tetrahedral axis frame of the lattice readable in print.
 
-![**Frequency shells of the omnidirectional close packing.** Shell 1 (12 sites) and shell 2 (42 sites) of the IVM lattice under `DEFAULT_EMBEDDING`, rendered by `shell_scatter`; dashed rays mark the four tetrahedral quadray axes labeled A, B, C, D.](../output/figures/vis_gallery_shell.png)
+![**Frequency shells of the omnidirectional close packing.** Shell 1 (12 sites) and shell 2 (42 sites) of the IVM lattice embedded via `DEFAULT_EMBEDDING` and scattered by `shell_scatter` as 3D point clouds in the \(x, y, z\) embedding coordinates; dashed gray rays mark the four tetrahedral quadray axes, labeled A, B, C, D, pointing toward the embedding-matrix columns.  Reproduced with `uv run python quadmath/scripts/lattice_gallery.py` (fixed seed 12).](../output/figures/vis_gallery_shell.png)
 
 ## Lattice-plane slices
 
@@ -66,7 +66,7 @@ slices it through the default plane
 planar lattice, with masked tiles where the ball ends.  Field learning
 itself is the subject of [Static IVM Field Learning](11_ivm_field_learning.md).
 
-![**Learned scalar field sliced along a lattice plane.** Heatmap of a Laplacian-regularized `IVMField` over the radius-3 ball, restricted by `field_slice` to the plane spanned by the neighbor moves u = (2,1,1,0) and v = (1,2,1,0); masked tiles mark plane cells outside the ball.](../output/figures/vis_gallery_field.png)
+![**Learned scalar field sliced along a lattice plane.** Heatmap of a Laplacian-regularized `IVMField` over the radius-3 ball, restricted by `field_slice` to the plane spanned by the neighbor moves u = (2,1,1,0) and v = (1,2,1,0): a `viridis` heatmap whose axes are the integer plane indices \(i\) (steps along u) and \(j\) (steps along v), with the colorbar reporting the field value and light-gray masked tiles marking plane cells outside the ball.  Reproduced with `uv run python quadmath/scripts/lattice_gallery.py` (fixed seed 12).](../output/figures/vis_gallery_field.png)
 
 ## Dynamics strips
 
@@ -82,7 +82,7 @@ at \(t = 0, 10, 20\): the seeded random initial field relaxes toward its
 lattice average — the visually flat mid panel and right panel are the
 \(L_2\)-monotone decay of the heat lemma in action.
 
-![**Heat-diffusion evolution strip.** Snapshots of a seeded heat run at t = 0, 10, 20 on the radius-3 IVM lattice, rendered by `dynamics_strip` on one shared symmetric color scale; the field visibly relaxes as the sum of squares decays monotonically.](../output/figures/vis_gallery_dynamics.png)
+![**Heat-diffusion evolution strip.** Snapshots of a seeded heat run at t = 0, 10, 20 on the radius-3 IVM lattice (27 sites), rendered by `dynamics_strip` as 3D scatter panels on one shared symmetric `coolwarm` scale \([-v_{\max}, v_{\max}]\) with \(v_{\max} = \max_t |u_t|\) over the selected snapshots; the field visibly relaxes as the sum of squares decays monotonically.  Reproduced with `uv run python quadmath/scripts/lattice_gallery.py` (fixed seed 12).](../output/figures/vis_gallery_dynamics.png)
 
 ## Deterministic animations and gallery plots {#sec:animation_frames}
 
@@ -98,7 +98,11 @@ The companion module `src/quadmath/viz/plots.py` supplies standalone figure buil
 
 `frames_to_gif(frames, out_path, fps=8, scale=8)` assembles a frame sequence into an animated GIF: float frames are quantized to `uint8` gray levels by rounding \(255\,v\), each frame is upscaled by the integer factor `scale` with nearest-neighbor resampling, and the sequence is saved with per-frame duration \(1000\,/\,\texttt{fps}\) milliseconds and infinite looping.  PIL is imported lazily inside the function (Pillow stays optional at import time), and because the PIL GIF encoder is deterministic and embeds no timestamps, identical `(frames, fps, scale)` inputs render byte-identical GIF files — the same byte-stability contract the PNG gallery asserts.
 
-The command-line surface is `quadmath/scripts/animation_gallery.py` — a thin orchestrator in the `quadmath/scripts/AGENTS.md` contract that sets the headless `Agg` backend and renders three GIFs via `frames_to_gif`: `animation_lattice.gif` (pulsing radius-3 ball, 12 frames), `animation_simplex.gif` (slerp from the identity to a 45-degree rotation about \(z\), 16 frames), and `animation_diffusion.gif` (12 diffusion steps from seed 0), writing each into `quadmath/output/figures/` and printing each path on its own line.  The script is registered in `quadmath/scripts/make_all_figures.py` alongside the other galleries, so the manifest contract of the Overview applies unchanged: only path lines on stdout, byte-identical re-renders for identical inputs.
+`frames_strip(frames, out_path=None, labels=None, save=True)` renders the print still-counterpart of `frames_to_gif`: a single-row matplotlib strip with one grayscale `imshow` panel per `Frame`, figure width scaling with the panel count while the height stays one panel plus the title band, each panel pinned to the unit brightness interval (`vmin = 0`, `vmax = 1`; `uint8` frames are first mapped by \(v/255\), so both `Frame` dtypes share the GIF's gray-level convention), per-panel titles taken from `labels` or, by default, from each frame's own `title`, and axes switched off with zero inter-panel spacing so consecutive panels butt together.  Matplotlib is imported lazily inside the function (the module stays matplotlib-free at import time), and saving follows the `plots.py` convention: a bare `out_path` name is written into `quadmath/output/figures/` via `quadmath.paths.get_figure_dir`, a path carrying a directory component is used verbatim, and the returned string is the written path (`""` when `save` is off or no name is given).  An empty `frames` sequence or a `labels` length mismatch raises `ValueError`; the render has no RNG and no wall-clock input, so identical inputs give byte-identical PNGs — the test suite asserts the byte stability, the full \([0, 1]\) grayscale excursion, the uint8/float equivalence, and the panel-count scaling.
+
+![**Three animation stills in one strip.** Single-row `frames_strip` composition of one evenly spaced still from each 6-frame animation: left, the pulsing radius-2 IVM ball sampled at the quarter-pulse fraction (`lattice_frames`, radial-shell brightness, brightest at the center); center, the quaternion-slerp rotation of the radius-1 ball in the midpoint region of the arc (\(t = 0.4\) on the way from the identity to a 90-degree rotation about \(z\), `simplex_frames`); right, the final state of seeded heat diffusion on the radius-3 ball (`diffusion_frames`, brightness normalized by the frame's maximum heat).  All panels are 48×48 orthographic projections under the fixed \(+z\) camera with brightness in \([0, 1]\); reproduced with `uv run python quadmath/scripts/animation_stills.py`.](../output/figures/animation_frames_strip.png)
+
+The command-line surface is `quadmath/scripts/animation_gallery.py` — a thin orchestrator in the `quadmath/scripts/AGENTS.md` contract that sets the headless `Agg` backend and renders three GIFs via `frames_to_gif`: `animation_lattice.gif` (pulsing radius-3 ball, 12 frames), `animation_simplex.gif` (slerp from the identity to a 90-degree rotation about the \(x\) axis, 16 frames), and `animation_diffusion.gif` (12 diffusion steps from seed 0), writing each into `quadmath/output/figures/` and printing each path on its own line.  The script is registered in `quadmath/scripts/make_all_figures.py` alongside the other galleries, so the manifest contract of the Overview applies unchanged: only path lines on stdout, byte-identical re-renders for identical inputs.  The companion `quadmath/scripts/animation_stills.py` follows the same thin-orchestrator contract for print stills: it renders the three 6-frame sequences of the module — `lattice_frames` at radius 2, `simplex_frames` from the identity to a 90-degree rotation about \(z\) with the endpoint quaternion derived from `rotate_about_axis`, and `diffusion_frames` at seed 0 — samples each at an evenly spaced fraction (quarter-pulse, slerp midpoint region, final diffusion step), composes the three stills with `frames_strip` into `animation_frames_strip.png`, and prints the written path on its own line.
 
 ## Reproducibility and test contract
 
@@ -116,9 +120,19 @@ The command-line surface is `quadmath/scripts/animation_gallery.py` — a thin o
   `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
   tests/test_vis_lattice.py -q` and `uv run coverage report` — 100%
   statement and branch coverage of `src/quadmath/viz/vis_lattice.py`.
+- Tests: `tests/unit/viz/test_animations.py` covers the frame module
+  (`Frame` validation, the three renderers, `frames_to_gif`) and the strip
+  renderer — `frames_strip` label and emptiness validation, byte-identical
+  re-renders in temporary directories, uint8/float equivalence, the full
+  grayscale excursion, and panel-count scaling — headless via
+  `MPLBACKEND=Agg` (set in `tests/conftest.py`).
 - Figure regeneration:
   `uv run python quadmath/scripts/lattice_gallery.py` (the script sets
   `MPLBACKEND=Agg` itself); stdout is exactly the three written paths.
+- Still-strip regeneration:
+  `uv run python quadmath/scripts/animation_stills.py` (the script sets
+  `MPLBACKEND=Agg` itself); stdout is exactly the one written strip path,
+  `quadmath/output/figures/animation_frames_strip.png`.
 - Markdown: `uv run python quadmath/scripts/validate_markdown.py`.
 
 ## Cross-references

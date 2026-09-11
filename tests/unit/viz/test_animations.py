@@ -1,12 +1,14 @@
 import numpy as np
 import pytest
 
+import quadmath.viz.animations as animations_module
 from quadmath.viz.animations import (
     GRID_SIZE,
     Frame,
     _project_to_grid,
     _slerp,
     diffusion_frames,
+    frames_strip,
     frames_to_gif,
     lattice_frames,
     simplex_frames,
@@ -259,3 +261,98 @@ def test_project_to_grid_clamps_out_of_window_points():
     # Origin maps to the center pixel of an even grid (rounded).
     assert int(np.count_nonzero(grid)) >= 1
     assert grid.max() == 0.8
+
+
+# --------------------------------------------------------- frames_strip ----
+
+def test_frames_strip_is_byte_reproducible(tmp_path):
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    frames = diffusion_frames(n_steps=4, seed=0)
+    first = frames_strip(frames, str(tmp_path / "a" / "strip.png"))
+    second = frames_strip(frames, str(tmp_path / "b" / "strip.png"))
+    assert first == str(tmp_path / "a" / "strip.png")
+    with open(first, "rb") as fa:
+        with open(second, "rb") as fb:
+            assert fa.read() == fb.read()
+
+
+def test_frames_strip_dimensions_scale_with_panel_count(tmp_path):
+    from PIL import Image
+
+    frames = lattice_frames(shells=1, n=2)
+    out2 = frames_strip(frames, str(tmp_path / "two.png"), labels=["a", "b"])
+    out4 = frames_strip(
+        frames + frames, str(tmp_path / "four.png"), labels=["a", "b", "c", "d"]
+    )
+    with Image.open(out2) as img2, Image.open(out4) as img4:
+        w2, h2 = img2.size
+        w4, h4 = img4.size
+    assert w4 > w2 > 0
+    assert h2 == h4
+    assert w2 > h2
+
+
+def test_frames_strip_grayscale_value_range(tmp_path):
+    from PIL import Image
+
+    ramp = np.linspace(0.0, 1.0, 5).reshape(1, 5)
+    out = frames_strip([Frame(ramp)], str(tmp_path / "ramp.png"))
+    assert out == str(tmp_path / "ramp.png")
+    with Image.open(out) as src:
+        gray = np.asarray(src.convert("L"))
+    levels = sorted(int(v) for v in np.unique(gray))
+    assert levels[0] == 0
+    assert levels[-1] == 255
+    # Untitled frame: the only artists are the image stripes on the white
+    # figure background, so min == 0 pins vmin = 0 and the 0.5 midtone near
+    # mid-gray pins vmax = 1 (the white facecolor alone would satisfy
+    # levels[-1] == 255).
+    assert any(115 <= v <= 140 for v in levels)
+    assert len(levels) >= 4
+
+
+def test_frames_strip_maps_uint8_like_float_frames(tmp_path):
+    uint8_out = frames_strip(
+        [Frame(np.array([[0, 255]], dtype=np.uint8))], str(tmp_path / "u8.png")
+    )
+    float_out = frames_strip([Frame(np.array([[0.0, 1.0]]))], str(tmp_path / "f32.png"))
+    with open(uint8_out, "rb") as fa:
+        with open(float_out, "rb") as fb:
+            assert fa.read() == fb.read()
+
+
+def test_frames_strip_rejects_empty_frames_and_label_mismatch():
+    with pytest.raises(ValueError):
+        frames_strip([])
+    frames = lattice_frames(shells=1, n=3)
+    with pytest.raises(ValueError):
+        frames_strip(frames, labels=["only", "two"])
+    with pytest.raises(ValueError):
+        frames_strip(frames, labels=["a", "b", "c", "d"])
+
+
+def test_frames_strip_renders_without_saving(tmp_path):
+    frames = lattice_frames(shells=1, n=2)
+    assert frames_strip(frames, labels=["a", "b"]) == ""
+    assert frames_strip(frames, out_path=None, save=True) == ""
+    assert frames_strip(frames, str(tmp_path / "ignored.png"), save=False) == ""
+    assert not (tmp_path / "ignored.png").exists()
+
+
+def test_frames_strip_saves_labeled_strip(tmp_path):
+    frames = lattice_frames(shells=1, n=2)
+    target = str(tmp_path / "labeled.png")
+    out = frames_strip(frames, target, labels=["a", "b"])
+    assert out == target
+    assert (tmp_path / "labeled.png").stat().st_size > 0
+
+
+def test_frames_strip_resolves_bare_names_in_figure_dir(tmp_path, monkeypatch):
+    figures_dir = tmp_path / "figures"
+    figures_dir.mkdir()
+    monkeypatch.setattr(animations_module, "get_figure_dir", lambda: str(figures_dir))
+    frames = diffusion_frames(n_steps=2, seed=0)
+    out = frames_strip(frames, "animation_still.png")
+    assert out == str(figures_dir / "animation_still.png")
+    assert (figures_dir / "animation_still.png").stat().st_size > 0

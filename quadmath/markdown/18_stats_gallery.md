@@ -28,10 +28,13 @@ distribution of per-call wall-clock durations measured by
 axes.  The shape of the distribution carries what the mean alone hides: a
 tight spike means the harness saw a stable workload, while a heavy right
 tail is exactly what the `median_s` / `p95_s` fields of `BenchRow` are
-there to expose.  The gallery panel times a representative benchmark
-constructor and histograms its per-trial durations.
+there to expose.  The gallery panel histograms a deterministic synthetic
+stand-in for such a sample: 256 draws of a lognormal distribution (mean 0,
+$\sigma = 0.6$, clipped to $[0.05, 5.0]$ in seconds-scale units) taken from the
+single fixed-seed `numpy.random.default_rng(32)` generator, so re-renders are
+byte-identical.
 
-![**Latency distribution of a timed benchmark.** Histogram of per-call wall-clock times measured with `time.perf_counter` (one warmup call discarded), rendered by `plot_latency_hist`; the spread and right tail complement the `mean_s`, `median_s`, and `p95_s` fields of `BenchRow`.](../output/figures/stats_gallery_latency.png)
+![**Latency distribution.** Histogram (20 bins) of a synthetic 256-draw lognormal latency sample (mean 0, $\sigma = 0.6$) clipped to [0.05, 5.0] in seconds-scale units, drawn from the fixed-seed `numpy.random.default_rng(32)` generator of `stats_gallery.py`; the dashed line marks the sample mean. Rendered by `plot_latency_hist`; reproduced by `uv run python quadmath/scripts/stats_gallery.py`. The spread and right tail complement the `mean_s`, `median_s`, and `p95_s` fields of `BenchRow`, whose per-call times `time_callable` measures with `time.perf_counter` after one discarded warmup call.](../output/figures/stats_gallery_latency.png)
 
 ## Scaling fit
 
@@ -42,9 +45,13 @@ the empirical complexity exponent $\beta_1$ of \eqref{eq:stat-scaling}.
 On log-log axes a power law is a straight line, so the panel shows at a
 glance whether a lattice routine scales linearly, quadratically, or worse,
 and how tightly the data follow the law ($r^2$).  The gallery panel fits a
-representative size sweep from the benchmark suite.
+synthetic sweep with known ground truth: durations $t \approx 3\,n^{1.35}\,(1 + \varepsilon)$
+with $\varepsilon \sim \mathcal{N}(0, 0.02^{2})$ relative noise over sizes
+$n \in \{8, 16, 32, 64, 128, 256\}$, drawn from the same fixed-seed generator
+(times rounded to four decimals for byte stability), so the fit should
+recover the planted exponent 1.35.
 
-![**Log-log scaling fit.** Measured durations against workload sizes with the least-squares power law from `scaling_fit` overlaid, rendered by `plot_scaling_loglog`; the fitted slope is the empirical complexity exponent.](../output/figures/stats_gallery_scaling.png)
+![**Log-log scaling fit.** Workload sizes $n \in \{8, 16, 32, 64, 128, 256\}$ (dimensionless units) against synthetic durations $t \approx 3\,n^{1.35}\,(1 + \varepsilon)$ with $\varepsilon \sim \mathcal{N}(0, 0.02^{2})$ relative noise, times rounded to four decimals, all drawn from the fixed-seed `numpy.random.default_rng(32)` generator; the least-squares power law from `scaling_fit` is overlaid by `plot_scaling_loglog`, and its fitted slope — annotated in the legend — should recover the planted exponent 1.35, the empirical complexity exponent $\beta_1$ of \eqref{eq:stat-scaling}.](../output/figures/stats_gallery_scaling.png)
 
 ## Confidence intervals
 
@@ -55,11 +62,15 @@ percentile bootstrap interval `src/quadmath/stats/statistics.py::bootstrap_ci`
 (\eqref{eq:stat-bootstrap}).  Overlapping intervals visually encode the
 same information a permutation test quantifies
 (\eqref{eq:stat-permutation}): two conditions whose intervals do not
-overlap are the ones the pooled test flags.  The gallery panel shows
-bootstrap intervals for several resampling conditions computed at
-deterministic seeds.
+overlap are the ones the pooled test flags.  The gallery panel shows three
+benchmark estimates (`to_xyz`, `quadray_from_xyz`, `shell_enum`) with
+symmetric intervals whose half-widths are seeded uniform draws on
+$[0.05, 0.25]$ from the same fixed-seed `numpy.random.default_rng(32)`
+generator: the primitive renders whatever `lows` / `highs` it is given, and
+in a measured analysis those bounds are the percentile endpoints
+`bootstrap_ci` returns (\eqref{eq:stat-bootstrap}).
 
-![**Bootstrap confidence intervals by condition.** Point estimates with 95% percentile bootstrap intervals computed by `bootstrap_ci` (seeded, 2000 resamples), rendered by `plot_ci_bars`; non-overlapping intervals mark the conditions a permutation test would separate.](../output/figures/stats_gallery_ci.png)
+![**Point estimates with confidence intervals by condition.** Three benchmark estimates (`to_xyz`, `quadray_from_xyz`, `shell_enum`) in synthetic estimate units, rendered by `plot_ci_bars` as points with symmetric error bars whose half-widths are uniform draws on [0.05, 0.25] from the fixed-seed `numpy.random.default_rng(32)` generator; in a measured analysis the bar ends would be the 95% percentile bootstrap endpoints from `bootstrap_ci` (2000 resamples, \eqref{eq:stat-bootstrap}), whose non-overlap is the visual cue the permutation test of \eqref{eq:stat-permutation} quantifies.](../output/figures/stats_gallery_ci.png)
 
 ## Empirical CDF
 
@@ -77,10 +88,11 @@ the exact distribution of the sample, with no binning choices at all.  For
 timing data the ECDF answers directly what a percentile summary rounds
 off: the curve passes through the empirical median at height $0.5$ and
 through the 95th percentile at height $0.95$, so `median_s` and `p95_s`
-are readable off the plot.  The gallery panel draws the ECDF of a seeded
-timing sample next to the same information as the histogram panel above.
+are readable off the plot.  The gallery panel draws the ECDF of the same
+256-draw clipped lognormal latency sample as the histogram panel above, so
+the two panels read as one distribution in two renderings.
 
-![**Empirical cumulative distribution of measured times.** Exact step-function ECDF $\hat{F}(t)$ of a seeded per-call timing sample, rendered by `plot_ecdf`; the empirical median (height 0.5) and 95th percentile (height 0.95) are read directly off the curve.](../output/figures/stats_gallery_ecdf.png)
+![**Empirical cumulative distribution of the latency sample.** Exact step-function ECDF $\hat{F}(t)$ of the same 256-draw clipped lognormal sample as the histogram panel above (fixed seed 32, latency in seconds-scale units), rendered by `plot_ecdf`; the empirical median (height 0.5) and 95th percentile (height 0.95) are read directly off the curve.](../output/figures/stats_gallery_ecdf.png)
 
 ## Reproducibility and test contract
 
