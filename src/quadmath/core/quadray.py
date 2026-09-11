@@ -267,6 +267,186 @@ def quadray_from_xyz(
     return Quadray(q_int[0], q_int[1], q_int[2], q_int[3]).normalize()
 
 
+# --------------- Quaternion helpers ---------------
+#
+# Component order convention: quaternions are (w, x, y, z) sequences,
+# scalar first: q = w + x*i + y*j + z*k.  This is an independent
+# representation from the Quadray lattice components (a, b, c, d) and from
+# the XYZ triples returned by to_xyz.
+
+_QUAT_UNIT_TOL = 1e-9
+
+
+def qmul(a: Iterable[float], b: Iterable[float]) -> Tuple[float, float, float, float]:
+    """Hamilton product of two quaternions.
+
+    Component order convention: inputs and output are scalar-first
+    (w, x, y, z), i.e. q = w + x*i + y*j + z*k.  This is independent of the
+    Quadray lattice storage (a, b, c, d) and of the XYZ triples produced by
+    to_xyz.
+
+    Parameters
+    - a, b: Quaternions as (w, x, y, z) sequences of four numbers
+
+    Returns
+    - Tuple[float, float, float, float]: Hamilton product a*b in (w, x, y, z) order
+    """
+    aw, ax, ay, az = (float(c) for c in a)
+    bw, bx, by, bz = (float(c) for c in b)
+    return (
+        aw * bw - ax * bx - ay * by - az * bz,
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+    )
+
+
+def qconjugate(q: Iterable[float]) -> Tuple[float, float, float, float]:
+    """Conjugate (w, -x, -y, -z) of a quaternion in (w, x, y, z) order.
+
+    For a unit quaternion the conjugate is the multiplicative inverse, so
+    q * qconjugate(q) == (1, 0, 0, 0) up to floating-point error.
+
+    Parameters
+    - q: Quaternion as (w, x, y, z) sequence of four numbers
+
+    Returns
+    - Tuple[float, float, float, float]: (w, -x, -y, -z)
+    """
+    w, x, y, z = (float(c) for c in q)
+    return (w, -x, -y, -z)
+
+
+def qrotate(q: Iterable[float], v_xyz: Iterable[float],
+            angle: float) -> Tuple[float, float, float]:
+    """Rotate a 3-vector by a unit quaternion via Rodrigues (v' = q v q*).
+
+    The rotated vector is computed as q * (0, v) * qconjugate(q) using
+    :func:`qmul` and :func:`qconjugate`.  ``q`` must be a unit quaternion
+    that encodes a rotation of ``angle`` radians: the ``angle`` argument is
+    validated against the rotation magnitude q encodes,
+    2*atan2(||(x, y, z)||, w), compared to |angle| modulo 2*pi within 1e-9,
+    so a mismatched (q, angle) pair raises instead of silently rotating by
+    the wrong amount.  The validation is exact for |angle| <= 2*pi (which
+    covers :func:`rotate_about_axis`, which reduces angles to (-pi, pi]
+    before delegating).
+
+    Parameters
+    - q: Unit quaternion (w, x, y, z) encoding the rotation
+    - v_xyz: 3-vector (x, y, z) to rotate
+    - angle: Rotation angle in radians that q is asserted to represent
+
+    Returns
+    - Tuple[float, float, float]: Rotated vector (x, y, z), same
+      convention as to_xyz
+
+    Raises
+    - ValueError: If q is not a unit quaternion (|q| = 1 within 1e-9) or
+      the rotation magnitude it encodes differs from |angle| (modulo 2*pi,
+      tolerance 1e-9)
+    """
+    qw, qx, qy, qz = (float(c) for c in q)
+    n = math.sqrt(qw * qw + qx * qx + qy * qy + qz * qz)
+    if abs(n - 1.0) > _QUAT_UNIT_TOL:
+        raise ValueError("q must be a unit quaternion (|q| = 1 within 1e-9)")
+    qw, qx, qy, qz = qw / n, qx / n, qy / n, qz / n
+    two_pi = 2.0 * math.pi
+    theta_q = 2.0 * math.atan2(math.sqrt(qx * qx + qy * qy + qz * qz), qw)
+    expected = abs(angle) % two_pi
+    diff = (theta_q - expected) % two_pi
+    if min(diff, two_pi - diff) > _QUAT_UNIT_TOL:
+        raise ValueError(
+            "angle does not match the rotation encoded by q "
+            "(compared modulo 2*pi within 1e-9)"
+        )
+    qn = (qw, qx, qy, qz)
+    rotated = qmul(qmul(qn, (0.0, float(v_xyz[0]), float(v_xyz[1]), float(v_xyz[2]))),
+                   qconjugate(qn))
+    return (rotated[1], rotated[2], rotated[3])
+
+
+def slerp(qa: Iterable[float], qb: Iterable[float],
+          t: float) -> Tuple[float, float, float, float]:
+    """Shortest-arc spherical linear interpolation between unit quaternions.
+
+    If <qa, qb> < 0 the second quaternion is negated first (q and -q
+    represent the same rotation), so the path always takes the shorter arc
+    on the rotation sphere.  For exactly antipodal inputs (qb == -qa) the
+    rotation axis is undefined; after sign alignment the endpoints coincide
+    and the result is qa for every t.  Endpoints are exact: slerp(qa, qb, 0)
+    returns qa and slerp(qa, qb, 1) returns the sign-aligned qb.
+
+    Parameters
+    - qa, qb: Unit quaternions (w, x, y, z)
+    - t: Interpolation parameter in [0, 1]
+
+    Returns
+    - Tuple[float, float, float, float]: Interpolated unit quaternion (w, x, y, z)
+
+    Raises
+    - ValueError: If qa or qb is not a unit quaternion (|q| = 1 within
+      1e-9), or t lies outside [0, 1]
+    """
+    if not (0.0 <= t <= 1.0):
+        raise ValueError("t must lie in [0, 1]")
+    qa4 = tuple(float(c) for c in qa)
+    qb4 = tuple(float(c) for c in qb)
+    na = math.sqrt(sum(c * c for c in qa4))
+    nb = math.sqrt(sum(c * c for c in qb4))
+    if abs(na - 1.0) > _QUAT_UNIT_TOL or abs(nb - 1.0) > _QUAT_UNIT_TOL:
+        raise ValueError("qa and qb must be unit quaternions (|q| = 1 within 1e-9)")
+    dot = sum(a * b for a, b in zip(qa4, qb4))
+    if dot < 0.0:
+        qb4 = tuple(-c for c in qb4)
+        dot = -dot
+    dot = max(-1.0, min(1.0, dot))
+    if dot > 1.0 - 1e-12:
+        # Nearly parallel (includes exactly antipodal after sign alignment):
+        # fall back to normalized lerp to avoid dividing by sin(theta) ~ 0.
+        blended = tuple((1.0 - t) * a + t * b for a, b in zip(qa4, qb4))
+        norm = math.sqrt(sum(c * c for c in blended))
+        return tuple(c / norm for c in blended)
+    theta = math.acos(dot)
+    wa = math.sin((1.0 - t) * theta) / math.sin(theta)
+    wb = math.sin(t * theta) / math.sin(theta)
+    return tuple(wa * a + wb * b for a, b in zip(qa4, qb4))
+
+
+def rotate_about_axis(v_xyz: Iterable[float], axis_xyz: Iterable[float],
+                      angle: float) -> Tuple[float, float, float]:
+    """Rotate a 3-vector about an axis by an angle (axis-angle convenience).
+
+    Builds the unit quaternion q = (cos(angle/2), sin(angle/2) * axis_hat)
+    from the normalized axis and delegates to :func:`qrotate`.  The axis is
+    normalized internally, so any non-zero scale of the direction is
+    accepted.  Rotation is right-handed about the axis.  The angle is
+    reduced to (-pi, pi] first — rotation by ``angle`` is identical to
+    rotation by the reduced angle, and the reduction keeps
+    :func:`qrotate`'s encoded-angle validation exact.
+
+    Parameters
+    - v_xyz: 3-vector (x, y, z) to rotate
+    - axis_xyz: Non-zero rotation axis (any scale; normalized internally)
+    - angle: Rotation angle in radians
+
+    Returns
+    - Tuple[float, float, float]: Rotated vector (x, y, z), same
+      convention as to_xyz
+
+    Raises
+    - ValueError: If axis_xyz is the zero vector
+    """
+    ax, ay, az = (float(c) for c in axis_xyz)
+    n = math.sqrt(ax * ax + ay * ay + az * az)
+    if n == 0.0:
+        raise ValueError("axis must be a non-zero vector")
+    angle = math.atan2(math.sin(angle), math.cos(angle))
+    half = 0.5 * angle
+    sin_half = math.sin(half)
+    q = (math.cos(half), sin_half * ax / n, sin_half * ay / n, sin_half * az / n)
+    return qrotate(q, v_xyz, angle)
+
+
 __all__ = [
     "Quadray",
     "to_xyz",
@@ -279,4 +459,9 @@ __all__ = [
     "angle",
     "centroid",
     "quadray_from_xyz",
+    "qmul",
+    "qconjugate",
+    "qrotate",
+    "slerp",
+    "rotate_about_axis",
 ]

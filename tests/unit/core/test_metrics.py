@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
+import math
 
-from quadmath.core.metrics import shannon_entropy, information_length, fim_eigenspectrum, fisher_condition_number, fisher_curvature_analysis, fisher_quadray_comparison, kl_divergence, jensen_shannon_divergence, fisher_rao_metric
+from quadmath.core.metrics import shannon_entropy, information_length, fim_eigenspectrum, fisher_condition_number, fisher_curvature_analysis, fisher_quadray_comparison, kl_divergence, jensen_shannon_divergence, fisher_rao_metric, angle_error, quat_log_euclidean_dispersion
 
 
 def test_shannon_entropy_basic():
@@ -362,3 +363,129 @@ def test_fisher_rao_symmetric():
     p = np.array([0.7, 0.3])
     q = np.array([0.2, 0.8])
     assert np.isclose(fisher_rao_metric(p, q), fisher_rao_metric(q, p))
+
+
+# --------------- Quaternion metric tests ---------------
+
+
+def test_angle_error_self_zero():
+    q = (0.5, 0.5, 0.5, 0.5)
+    assert np.isclose(angle_error(q, q), 0.0, atol=1e-12)
+
+
+def test_angle_error_antipodal_zero():
+    q = (1.0, 0.0, 0.0, 0.0)
+    assert np.isclose(angle_error(q, (-1.0, 0.0, 0.0, 0.0)), 0.0, atol=1e-12)
+
+
+def test_angle_error_known_quarter_turn():
+    # 45-degree quaternion separation encodes a 90-degree rotation difference
+    q1 = (1.0, 0.0, 0.0, 0.0)
+    q2 = (math.cos(math.pi / 4.0), math.sin(math.pi / 4.0), 0.0, 0.0)
+    assert np.isclose(angle_error(q1, q2), math.pi / 2.0, atol=1e-12)
+
+
+def test_angle_error_orthogonal_is_pi():
+    # 4D-orthogonal unit quaternions encode opposite rotations
+    q1 = (1.0, 0.0, 0.0, 0.0)
+    q2 = (0.0, 1.0, 0.0, 0.0)
+    assert np.isclose(angle_error(q1, q2), math.pi, atol=1e-12)
+
+
+def test_angle_error_symmetric():
+    q1 = (math.cos(0.3), math.sin(0.3), 0.0, 0.0)
+    q2 = (math.cos(1.1), 0.0, math.sin(1.1), 0.0)
+    assert np.isclose(angle_error(q1, q2), angle_error(q2, q1), rtol=1e-12, atol=1e-12)
+
+
+def test_angle_error_range_and_determinism():
+    qs = [
+        (1.0, 0.0, 0.0, 0.0),
+        (math.cos(0.7), math.sin(0.7), 0.0, 0.0),
+        (0.5, 0.5, 0.5, 0.5),
+        (math.cos(2.0), 0.0, 0.0, math.sin(2.0)),
+    ]
+    for q1 in qs:
+        for q2 in qs:
+            e1 = angle_error(q1, q2)
+            assert e1 == angle_error(q1, q2)  # repeat call identical
+            assert 0.0 <= e1 <= math.pi + 1e-12
+
+
+def test_angle_error_normalizes_inputs():
+    # Non-unit (non-zero) quaternions are normalized internally
+    q1 = (1.0, 0.0, 0.0, 0.0)
+    q2 = (math.cos(math.pi / 4.0), math.sin(math.pi / 4.0), 0.0, 0.0)
+    scaled = tuple(3.0 * c for c in q2)
+    assert np.isclose(angle_error(q1, scaled), math.pi / 2.0, atol=1e-12)
+
+
+def test_angle_error_zero_norm_raises():
+    with pytest.raises(ValueError):
+        angle_error((0.0, 0.0, 0.0, 0.0), (1.0, 0.0, 0.0, 0.0))
+
+
+def test_angle_error_shape_mismatch_raises():
+    with pytest.raises(ValueError):
+        angle_error((1.0, 0.0, 0.0), (1.0, 0.0, 0.0, 0.0))
+
+
+def test_quat_dispersion_identical_zero():
+    qs = [(0.5, 0.5, 0.5, 0.5)] * 3
+    assert np.isclose(quat_log_euclidean_dispersion(qs), 0.0, atol=1e-12)
+
+
+def test_quat_dispersion_single_zero():
+    assert np.isclose(quat_log_euclidean_dispersion([(1.0, 0.0, 0.0, 0.0)]), 0.0, atol=1e-12)
+
+
+def test_quat_dispersion_positive_and_exact():
+    qs = [
+        (1.0, 0.0, 0.0, 0.0),
+        (math.cos(0.1), math.sin(0.1), 0.0, 0.0),
+    ]
+    d = quat_log_euclidean_dispersion(qs)
+    assert d > 0.0
+    # The normalized mean is the halfway quaternion; each point sits at
+    # chord distance sqrt(2 - 2*cos(0.05)) = 2*sin(0.025) from it
+    assert np.isclose(d, 2.0 * math.sin(0.025), atol=1e-12)
+
+
+def test_quat_dispersion_sign_alignment():
+    # q and -q encode the same rotation: aligned dispersion must vanish
+    q = (0.5, 0.5, 0.5, 0.5)
+    assert np.isclose(quat_log_euclidean_dispersion([q, (-0.5, -0.5, -0.5, -0.5)]), 0.0, atol=1e-12)
+
+
+def test_quat_dispersion_empty_raises():
+    with pytest.raises(ValueError):
+        quat_log_euclidean_dispersion([])
+
+
+def test_quat_dispersion_bad_shape_raises():
+    with pytest.raises(ValueError):
+        quat_log_euclidean_dispersion([(1.0, 0.0, 0.0)])
+
+
+def test_quat_dispersion_degenerate_mean_raises():
+    # With a non-zero first (reference) quaternion the aligned mean can
+    # never vanish (mean . ref = mean_i |<q_i, q_0>| / n > 0), so the
+    # zero-mean branch is reachable only from a zero first quaternion:
+    # every dot product is 0, nothing is sign-flipped, and the mean is
+    # exactly the zero vector.
+    qs = [
+        (0.0, 0.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0, 0.0),
+        (0.0, -1.0, 0.0, 0.0),
+    ]
+    with pytest.raises(ValueError):
+        quat_log_euclidean_dispersion(qs)
+
+
+def test_quat_dispersion_deterministic():
+    qs = [
+        (1.0, 0.0, 0.0, 0.0),
+        (math.cos(0.2), math.sin(0.2), 0.0, 0.0),
+        (math.cos(0.2), 0.0, math.sin(0.2), 0.0),
+    ]
+    assert quat_log_euclidean_dispersion(qs) == quat_log_euclidean_dispersion(qs)

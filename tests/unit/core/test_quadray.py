@@ -12,6 +12,11 @@ from quadmath.core.quadray import (
     angle,
     centroid,
     quadray_from_xyz,
+    qmul,
+    qconjugate,
+    qrotate,
+    slerp,
+    rotate_about_axis,
 )
 import math
 
@@ -192,3 +197,162 @@ def test_quadray_from_xyz_roundtrip_half_integer_ties():
 def test_quadray_from_xyz_origin():
     q = quadray_from_xyz(0.0, 0.0, 0.0, DEFAULT_EMBEDDING)
     assert q == Quadray(0, 0, 0, 0)
+
+
+# --------------- Quaternion rotation tests ---------------
+
+
+def test_qmul_associative():
+    # Integer-valued components keep every intermediate exact in fp
+    a = (1.0, 2.0, -1.0, 3.0)
+    b = (0.0, 1.0, 1.0, 2.0)
+    c = (2.0, -1.0, 0.0, 1.0)
+    assert qmul(qmul(a, b), c) == qmul(a, qmul(b, c))
+
+
+def test_qmul_identity():
+    q = (0.5, -1.0, 2.0, 3.0)
+    ident = (1.0, 0.0, 0.0, 0.0)
+    assert qmul(q, ident) == q
+    assert qmul(ident, q) == q
+
+
+def test_qmul_conjugate_inverse():
+    q = (0.5, 0.5, 0.5, 0.5)  # unit quaternion
+    assert qmul(q, qconjugate(q)) == (1.0, 0.0, 0.0, 0.0)
+    assert qmul(qconjugate(q), q) == (1.0, 0.0, 0.0, 0.0)
+
+
+def test_qrotate_ninety_degrees_about_z():
+    qz90 = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    x, y, z = qrotate(qz90, (1.0, 0.0, 0.0), math.pi / 2.0)
+    assert abs(x - 0.0) < 1e-12
+    assert abs(y - 1.0) < 1e-12
+    assert abs(z - 0.0) < 1e-12
+
+
+def test_qrotate_preserves_norm_and_angle():
+    qz90 = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    v1 = (1.0, 0.0, 0.0)
+    v2 = (0.0, 1.0, 1.0)
+    r1 = qrotate(qz90, v1, math.pi / 2.0)
+    r2 = qrotate(qz90, v2, math.pi / 2.0)
+    n1 = math.sqrt(sum(c * c for c in r1))
+    n2 = math.sqrt(sum(c * c for c in r2))
+    assert abs(n1 - 1.0) < 1e-12
+    assert abs(n2 - math.sqrt(2.0)) < 1e-12
+
+    def cos_between(u, w):
+        nu = math.sqrt(sum(c * c for c in u))
+        nw = math.sqrt(sum(c * c for c in w))
+        return (u[0] * w[0] + u[1] * w[1] + u[2] * w[2]) / (nu * nw)
+
+    assert abs(cos_between(r1, r2) - cos_between(v1, v2)) < 1e-12
+
+
+def test_qrotate_angle_mismatch_raises():
+    qz90 = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    try:
+        qrotate(qz90, (1.0, 0.0, 0.0), 1.0)  # not the pi/2 that qz90 encodes
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_qrotate_non_unit_raises():
+    try:
+        qrotate((1.0, 1.0, 0.0, 0.0), (1.0, 0.0, 0.0), math.pi / 2.0)
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_slerp_endpoints_exact():
+    qa = (1.0, 0.0, 0.0, 0.0)
+    qb = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    assert slerp(qa, qb, 0.0) == qa
+    assert slerp(qa, qb, 1.0) == qb
+
+
+def test_slerp_midpoint():
+    qa = (1.0, 0.0, 0.0, 0.0)
+    qb = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    mid = slerp(qa, qb, 0.5)
+    expected = (math.cos(math.pi / 8.0), 0.0, 0.0, math.sin(math.pi / 8.0))
+    for got, want in zip(mid, expected):
+        assert abs(got - want) < 1e-12
+
+
+def test_slerp_negative_dot_negates_second():
+    qa = (1.0, 0.0, 0.0, 0.0)
+    qb = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    # dot(qa, -qb) < 0: the negated path must land on the direct path
+    assert slerp(qa, tuple(-c for c in qb), 0.3) == slerp(qa, qb, 0.3)
+
+
+def test_slerp_exactly_antipodal_returns_endpoint():
+    q = (0.5, 0.5, 0.5, 0.5)
+    mid = slerp(q, tuple(-c for c in q), 0.5)
+    # After sign alignment the endpoints coincide: result is q for every t
+    for got, want in zip(mid, q):
+        assert abs(got - want) < 1e-12
+
+
+def test_slerp_non_unit_raises():
+    try:
+        slerp((1.0, 1.0, 0.0, 0.0), (1.0, 0.0, 0.0, 0.0), 0.5)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        slerp((1.0, 0.0, 0.0, 0.0), (2.0, 0.0, 0.0, 0.0), 0.5)
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_slerp_t_out_of_range_raises():
+    qa = (1.0, 0.0, 0.0, 0.0)
+    qb = (0.0, 1.0, 0.0, 0.0)
+    try:
+        slerp(qa, qb, -0.1)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        slerp(qa, qb, 1.1)
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_rotate_about_axis_known_case():
+    x, y, z = rotate_about_axis((1.0, 0.0, 0.0), (0.0, 0.0, 1.0), math.pi / 2.0)
+    assert abs(x - 0.0) < 1e-12
+    assert abs(y - 1.0) < 1e-12
+    assert abs(z - 0.0) < 1e-12
+
+
+def test_rotate_about_axis_normalizes_axis_and_matches_qrotate():
+    angle = math.pi / 2.0
+    v = (1.0, 0.0, 0.0)
+    got = rotate_about_axis(v, (0.0, 0.0, 2.0), angle)  # unnormalized axis
+    sin_half = math.sin(angle / 2.0)
+    q = (math.cos(angle / 2.0), 0.0, 0.0, sin_half)
+    assert got == qrotate(q, v, angle)
+
+
+def test_rotate_about_axis_zero_axis_raises():
+    try:
+        rotate_about_axis((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), math.pi / 2.0)
+        assert False
+    except ValueError:
+        assert True
+
+
+def test_quaternion_helpers_deterministic():
+    qz90 = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    v = (1.0, 2.0, 3.0)
+    assert qrotate(qz90, v, math.pi / 2.0) == qrotate(qz90, v, math.pi / 2.0)
+    assert slerp((1.0, 0.0, 0.0, 0.0), qz90, 0.25) == slerp((1.0, 0.0, 0.0, 0.0), qz90, 0.25)
+    assert rotate_about_axis(v, (0.0, 1.0, 0.0), 0.7) == rotate_about_axis(v, (0.0, 1.0, 0.0), 0.7)

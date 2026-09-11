@@ -3,8 +3,9 @@
 Honest skill assessment for machine learning on a lattice requires
 explicit held-out structure: spatial autocorrelation makes naive
 resampling optimistic, and time-ordered dynamics data must never be
-shuffled.  This module provides the four standard evaluation surfaces for
-the learners of :mod:`quadmath.lattice.ivm_field` and :mod:`quadmath.lattice.ivm_dynamics`:
+shuffled.  This module provides the four standard lattice evaluation
+surfaces for the learners of :mod:`quadmath.lattice.ivm_field` and
+:mod:`quadmath.lattice.ivm_dynamics`:
 
 - :func:`kfold_site_splits` — deterministic seeded k-fold partition of
   observed lattice sites into disjoint, exhaustive train/test pairs.
@@ -19,10 +20,19 @@ the learners of :mod:`quadmath.lattice.ivm_field` and :mod:`quadmath.lattice.ivm
 - :func:`learning_curve` — held-out MSE as a function of the fraction of
   observed sites, the classic data-coverage curve on a lattice.
 
+A plain tabular training surface complements the lattice workflows:
+
+- :func:`three_way_split` — seeded, disjoint train/val/test partition of
+  a plain index range.
+- :func:`ridge_site_fit` — closed-form ridge regression with intercept,
+  solved exactly via centered normal equations.
+- :class:`GradientDescentTrainer` — full-batch gradient descent on
+  standardized features with a per-iteration loss history.
+
 Everything is ``numpy`` only (no ML frameworks) and fully deterministic
-for fixed seeds; the split randomness is confined to :func:`kfold_site_splits`
-and :func:`learning_curve` (fold/subset assignment), never to the fits
-themselves.
+for fixed seeds; the split randomness is confined to :func:`kfold_site_splits`,
+:func:`learning_curve`, and :func:`three_way_split` (fold/subset
+assignment), never to the fits themselves.
 """
 from __future__ import annotations
 
@@ -37,12 +47,16 @@ from quadmath.core.quadray import Quadray
 
 __all__ = [
     "CrossValidationResult",
+    "GradientDescentTrainer",
     "LearningCurveResult",
+    "RidgeSiteFit",
     "TrajectorySplitResult",
     "cross_validate_field",
     "enclosing_radius",
     "kfold_site_splits",
     "learning_curve",
+    "ridge_site_fit",
+    "three_way_split",
     "trajectory_train_test",
 ]
 
@@ -110,6 +124,20 @@ class LearningCurveResult:
     train_sizes: Tuple[int, ...]
     train_mse: Tuple[float, ...]
     test_mse: Tuple[float, ...]
+
+
+@dataclass(frozen=True)
+class RidgeSiteFit:
+    """Closed-form ridge fit of a single linear site model.
+
+    - coefficients: fitted slope vector, one entry per feature column.
+    - intercept: fitted bias term, recovered from the centered solve.
+    - train_mse: in-sample mean squared error over the training rows.
+    """
+
+    coefficients: np.ndarray
+    intercept: float
+    train_mse: float
 
 
 def enclosing_radius(sites: Sequence[Quadray]) -> int:
@@ -451,3 +479,243 @@ def learning_curve(
         train_mse=tuple(train_mse),
         test_mse=tuple(test_mse),
     )
+
+
+def three_way_split(
+    n: int,
+    train_frac: float = 0.6,
+    val_frac: float = 0.2,
+    seed: int = 0,
+) -> Tuple[List[int], List[int], List[int]]:
+    """Split ``range(n)`` into seeded, disjoint train/val/test index lists.
+
+    One seeded ``numpy.random.default_rng`` permutation of ``range(n)`` is
+    drawn and cut into three contiguous blocks: the first
+    ``round(train_frac * n)`` indices train, the next ``round(val_frac *
+    n)`` validate, and the remainder test.  The returned lists are each
+    sorted, pairwise disjoint, and cover ``range(n)`` exactly once, so
+    the split is a deterministic function of ``(n, train_frac, val_frac,
+    seed)``.  For small ``n`` rounding may empty the trailing blocks
+    (e.g. ``n = 3`` with the default fractions leaves the test list
+    empty).
+
+    Parameters
+    - n: Number of indices to partition (``n >= 0``).
+    - train_frac: Training fraction, strictly between 0 and 1.
+    - val_frac: Validation fraction, strictly between 0 and 1.
+    - seed: RNG seed controlling the index permutation.
+
+    Returns
+    - (train_indices, val_indices, test_indices) tuple of sorted, pairwise
+      disjoint lists whose union is exactly ``range(n)``.
+
+    Raises
+    - ValueError: If ``train_frac`` or ``val_frac`` is not strictly
+      positive, or ``train_frac + val_frac`` is not below 1.
+    """
+    if not 0.0 < train_frac:
+        raise ValueError(f"train_frac must be strictly positive, got {train_frac}")
+    if not 0.0 < val_frac:
+        raise ValueError(f"val_frac must be strictly positive, got {val_frac}")
+    if train_frac + val_frac >= 1.0:
+        raise ValueError(
+            f"train_frac + val_frac ({train_frac + val_frac}) must stay below 1"
+        )
+    permutation = np.random.default_rng(seed).permutation(n)
+    m_train = int(round(train_frac * n))
+    m_val = int(round(val_frac * n))
+    train_idx = sorted(int(i) for i in permutation[:m_train])
+    val_idx = sorted(int(i) for i in permutation[m_train:m_train + m_val])
+    test_idx = sorted(int(i) for i in permutation[m_train + m_val:])
+    return train_idx, val_idx, test_idx
+
+
+def ridge_site_fit(
+    features: np.ndarray,
+    values: np.ndarray,
+    lam: float = 1e-3,
+) -> RidgeSiteFit:
+    """Fit a closed-form ridge regression with intercept on tabular rows.
+
+    Features and values are centered to zero mean; the ridge normal
+    equations ``(Xc^T Xc + lam * I) w = Xc^T yc`` are solved exactly for
+    the slope vector ``w``, and the intercept is recovered as
+    ``y_mean - x_mean @ w``.  The fit is a deterministic function of
+    ``(features, values, lam)``.
+
+    Parameters
+    - features: Design matrix of shape ``(n_samples, n_features)``.
+    - values: Target vector of shape ``(n_samples,)``.
+    - lam: Non-negative ridge penalty on the (centered) coefficients.
+
+    Returns
+    - RidgeSiteFit: coefficients, intercept, and in-sample train MSE.
+
+    Raises
+    - ValueError: If ``lam`` is negative, ``features`` is not 2-D,
+      ``values`` is not 1-D, their sample counts disagree, or no sample
+      rows are given.
+    """
+    X = np.asarray(features, dtype=float)
+    y = np.asarray(values, dtype=float)
+    if lam < 0.0:
+        raise ValueError(f"lam must be non-negative, got {lam}")
+    if X.ndim != 2:
+        raise ValueError(
+            f"features must be 2-D (n_samples, n_features), got ndim={X.ndim}"
+        )
+    if y.ndim != 1:
+        raise ValueError(f"values must be 1-D (n_samples,), got ndim={y.ndim}")
+    if X.shape[0] != y.shape[0]:
+        raise ValueError(
+            f"features has {X.shape[0]} rows but values has {y.shape[0]} entries"
+        )
+    if X.shape[0] == 0:
+        raise ValueError("ridge_site_fit needs at least one sample row")
+    x_mean = X.mean(axis=0)
+    y_mean = float(y.mean())
+    centered = X - x_mean
+    centered_values = y - y_mean
+    width = X.shape[1]
+    coefficients = np.linalg.solve(
+        centered.T @ centered + lam * np.eye(width),
+        centered.T @ centered_values,
+    )
+    intercept = y_mean - float(x_mean @ coefficients)
+    residuals = X @ coefficients + intercept - y
+    train_mse = float(np.mean(residuals ** 2))
+    return RidgeSiteFit(
+        coefficients=coefficients, intercept=intercept, train_mse=train_mse
+    )
+
+
+class GradientDescentTrainer:
+    """Full-batch gradient-descent fit of a linear model on standardized features.
+
+    ``fit`` standardizes the feature columns internally (per-column zero
+    mean, unit standard deviation; constant columns pass through with
+    standard deviation 1), then runs at most ``max_iters`` full-batch
+    gradient updates on the mean-squared-error loss.  The MSE at the top
+    of each executed iteration is appended to ``loss_history``; training
+    stops early with ``converged_ = True`` as soon as two consecutive
+    losses differ by less than ``tol``.  ``coef_`` is expressed against
+    the standardized features, and ``predict`` re-applies the stored
+    standardization before the linear map.
+
+    Attributes
+    - lr: Learning rate (strictly positive).
+    - max_iters: Update-iteration budget (at least 1).
+    - tol: Convergence threshold on consecutive per-iteration MSE.
+    - coef_: Standardized-space coefficient vector (set by ``fit``).
+    - intercept_: Bias term in original target units (set by ``fit``).
+    - loss_history: Per-iteration MSE, one float per executed iteration.
+    - converged_: Whether the early-stopping tolerance was reached.
+    - mean_: Per-column feature means used for standardization.
+    - std_: Per-column feature standard deviations (constant columns
+      pass through with standard deviation 1).
+    """
+
+    def __init__(
+        self, lr: float = 0.05, max_iters: int = 300, tol: float = 1e-9
+    ) -> None:
+        if lr <= 0.0:
+            raise ValueError(f"lr must be strictly positive, got {lr}")
+        if max_iters < 1:
+            raise ValueError(f"max_iters must be at least 1, got {max_iters}")
+        self.lr = float(lr)
+        self.max_iters = int(max_iters)
+        self.tol = float(tol)
+        self.coef_: Optional[np.ndarray] = None
+        self.intercept_: float = 0.0
+        self.loss_history: List[float] = []
+        self.converged_: bool = False
+        self.mean_: Optional[np.ndarray] = None
+        self.std_: Optional[np.ndarray] = None
+
+    def fit(
+        self, features: np.ndarray, target: np.ndarray
+    ) -> "GradientDescentTrainer":
+        """Fit the linear model by full-batch gradient descent.
+
+        Parameters
+        - features: Design matrix of shape ``(n_samples, n_features)``.
+        - target: Target vector of shape ``(n_samples,)``.
+
+        Returns
+        - self, with ``coef_``, ``intercept_``, ``loss_history``,
+          ``converged_``, ``mean_``, and ``std_`` populated.
+
+        Raises
+        - ValueError: If ``features`` is not 2-D, ``target`` is not 1-D,
+          their sample counts disagree, or no sample rows are given.
+        """
+        X = np.asarray(features, dtype=float)
+        y = np.asarray(target, dtype=float)
+        if X.ndim != 2:
+            raise ValueError(
+                f"features must be 2-D (n_samples, n_features), got ndim={X.ndim}"
+            )
+        if y.ndim != 1:
+            raise ValueError(f"target must be 1-D (n_samples,), got ndim={y.ndim}")
+        if X.shape[0] != y.shape[0]:
+            raise ValueError(
+                f"features has {X.shape[0]} rows but target has {y.shape[0]} entries"
+            )
+        if X.shape[0] == 0:
+            raise ValueError("fit needs at least one sample row")
+        mean = X.mean(axis=0)
+        std = X.std(axis=0)
+        std = np.where(std == 0.0, 1.0, std)
+        standardized = (X - mean) / std
+        n_samples, n_features = X.shape
+        coef = np.zeros(n_features, dtype=float)
+        intercept = 0.0
+        loss_history: List[float] = []
+        converged = False
+        previous: Optional[float] = None
+        for _ in range(self.max_iters):
+            errors = standardized @ coef + intercept - y
+            loss = float(np.mean(errors ** 2))
+            loss_history.append(loss)
+            if previous is not None and abs(loss - previous) < self.tol:
+                converged = True
+                break
+            coef -= self.lr * (2.0 / n_samples) * (standardized.T @ errors)
+            intercept -= self.lr * (2.0 / n_samples) * float(np.sum(errors))
+            previous = loss
+        self.mean_ = mean
+        self.std_ = std
+        self.coef_ = coef
+        self.intercept_ = intercept
+        self.loss_history = loss_history
+        self.converged_ = converged
+        return self
+
+    def predict(self, features: np.ndarray) -> np.ndarray:
+        """Predict target values with the fitted linear model.
+
+        Parameters
+        - features: Design matrix of shape ``(n_samples, n_features)``;
+          the second dimension must match the fitted feature count.
+
+        Returns
+        - Predicted values of shape ``(n_samples,)``.
+
+        Raises
+        - ValueError: If ``fit`` has not been called yet, or ``features``
+          is not 2-D with the fitted number of feature columns.
+        """
+        if self.coef_ is None or self.mean_ is None or self.std_ is None:
+            raise ValueError("predict requires a prior call to fit")
+        X = np.asarray(features, dtype=float)
+        if X.ndim != 2:
+            raise ValueError(
+                f"features must be 2-D (n_samples, n_features), got ndim={X.ndim}"
+            )
+        n_features = self.coef_.shape[0]
+        if X.shape[1] != n_features:
+            raise ValueError(
+                f"features must have {n_features} feature columns, got {X.shape[1]}"
+            )
+        standardized = (X - self.mean_) / self.std_
+        return standardized @ self.coef_ + self.intercept_

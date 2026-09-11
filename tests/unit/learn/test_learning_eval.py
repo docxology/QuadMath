@@ -12,10 +12,14 @@ import pytest
 from quadmath.lattice.ivm_dynamics import DynamicsParams, make_lattice, simulate, step
 from quadmath.lattice.ivm_field import IVMField, ball_sites
 from quadmath.learn.learning_eval import (
+    GradientDescentTrainer,
+    RidgeSiteFit,
     cross_validate_field,
     enclosing_radius,
     kfold_site_splits,
     learning_curve,
+    ridge_site_fit,
+    three_way_split,
     trajectory_train_test,
 )
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray
@@ -356,3 +360,160 @@ def test_learning_curve_rejects_invalid_inputs():
         learning_curve(values, sites, (0.0,), seed=0)
     with pytest.raises(ValueError, match="strictly between 0 and 1"):
         learning_curve(values, sites, (1.0, 0.5), seed=0)
+
+
+# --------------- three-way split ---------------
+
+
+def test_three_way_split_disjoint_and_exhaustive():
+    train, val, test = three_way_split(50, 0.6, 0.2, seed=0)
+    assert sorted(train + val + test) == list(range(50))
+    assert len(set(train) | set(val) | set(test)) == 50
+    # realized sizes follow the rounded fractions
+    assert (len(train), len(val), len(test)) == (30, 10, 10)
+
+
+def test_three_way_split_seed_reproducible_and_sensitive():
+    a = three_way_split(20, seed=0)
+    b = three_way_split(20, seed=0)
+    c = three_way_split(20, seed=1)
+    assert a == b
+    assert a != c
+
+
+def test_three_way_split_defaults_and_small_n_tail():
+    assert three_way_split(10) == three_way_split(10, 0.6, 0.2, 0)
+    # rounding may empty the trailing test block for tiny n
+    train, val, test = three_way_split(3)
+    assert (len(train), len(val), len(test)) == (2, 1, 0)
+
+
+def test_three_way_split_rejects_invalid_fractions():
+    with pytest.raises(ValueError, match="train_frac must be strictly positive"):
+        three_way_split(10, 0.0, 0.2)
+    with pytest.raises(ValueError, match="val_frac must be strictly positive"):
+        three_way_split(10, 0.6, 0.0)
+    with pytest.raises(ValueError, match="must stay below 1"):
+        three_way_split(10, 0.6, 0.4)
+    with pytest.raises(ValueError, match="must stay below 1"):
+        three_way_split(10, 0.8, 0.5)
+
+
+# --------------- ridge site fit ---------------
+
+
+def test_ridge_site_fit_recovers_linear_relation():
+    rng = np.random.default_rng(3)
+    X = rng.normal(size=(40, 3))
+    y = X @ np.array([1.5, -2.0, 0.5]) + 4.0 + rng.normal(scale=0.01, size=40)
+    fit = ridge_site_fit(X, y, lam=1e-3)
+    assert isinstance(fit, RidgeSiteFit)
+    assert np.allclose(fit.coefficients, [1.5, -2.0, 0.5], atol=1e-2)
+    assert abs(fit.intercept - 4.0) < 1e-2
+    assert fit.train_mse < 1e-3
+
+
+def test_ridge_site_fit_zero_lambda_matches_ols():
+    # Noiseless, well-conditioned rows: lam = 0 must reproduce the exact
+    # ordinary-least-squares solution (coefficients, intercept, train MSE).
+    rng = np.random.default_rng(5)
+    X = rng.normal(size=(30, 2))
+    y = X @ np.array([2.0, -1.0]) + 1.0
+    fit = ridge_site_fit(X, y, lam=0.0)
+    design = np.hstack([X, np.ones((X.shape[0], 1))])
+    w_ols, *_ = np.linalg.lstsq(design, y, rcond=None)
+    assert np.allclose(fit.coefficients, w_ols[:-1])
+    assert np.isclose(fit.intercept, w_ols[-1])
+    resid = design @ w_ols - y
+    assert np.isclose(fit.train_mse, float(np.mean(resid ** 2)))
+    # deterministic: identical inputs give identical results
+    again = ridge_site_fit(X, y, lam=0.0)
+    assert np.array_equal(fit.coefficients, again.coefficients)
+    assert fit.intercept == again.intercept
+    assert fit.train_mse == again.train_mse
+
+
+def test_ridge_site_fit_rejects_invalid_inputs():
+    X = np.arange(20.0).reshape(10, 2)
+    y = np.arange(10.0)
+    with pytest.raises(ValueError, match="lam must be non-negative"):
+        ridge_site_fit(X, y, lam=-1e-3)
+    with pytest.raises(ValueError, match="features must be 2-D"):
+        ridge_site_fit(np.arange(10.0), y)
+    with pytest.raises(ValueError, match="values must be 1-D"):
+        ridge_site_fit(X, y.reshape(-1, 1))
+    with pytest.raises(ValueError, match="rows but values has"):
+        ridge_site_fit(X, y[:-1])
+    with pytest.raises(ValueError, match="at least one sample row"):
+        ridge_site_fit(np.zeros((0, 2)), np.zeros(0))
+
+
+# --------------- gradient descent trainer ---------------
+
+
+def test_gradient_descent_converges_on_linear_data():
+    rng = np.random.default_rng(7)
+    X = rng.normal(size=(60, 2))
+    y = X @ np.array([3.0, -1.0]) + 2.0
+    trainer = GradientDescentTrainer(lr=0.1, max_iters=300, tol=1e-9).fit(X, y)
+    assert trainer.converged_ is True
+    assert trainer.loss_history[-1] < 1e-6
+    losses = np.asarray(trainer.loss_history)
+    assert np.all(np.diff(losses) <= 1e-12)  # non-increasing up to fp noise
+    assert losses[0] > losses[-1]
+    predictions = trainer.predict(X)
+    assert predictions.shape == (60,)
+    assert np.allclose(predictions, y, atol=1e-3)
+    # generalizes to fresh rows through the stored standardization
+    X_new = rng.normal(size=(10, 2))
+    assert np.allclose(
+        trainer.predict(X_new), X_new @ np.array([3.0, -1.0]) + 2.0, atol=1e-3
+    )
+
+
+def test_gradient_descent_handles_constant_column():
+    # A constant feature column standardizes to zeros (std clamped to 1):
+    # training must still converge and predict in original units.
+    rng = np.random.default_rng(13)
+    column = rng.normal(size=(30, 1))
+    X = np.hstack([column, np.full((30, 1), 5.0)])
+    y = 2.0 * column[:, 0] + 1.0
+    trainer = GradientDescentTrainer(lr=0.2, max_iters=300).fit(X, y)
+    assert trainer.converged_ is True
+    assert trainer.std_[1] == 1.0
+    assert np.allclose(trainer.predict(X), y, atol=1e-6)
+
+
+def test_gradient_descent_max_iters_one_does_not_converge():
+    rng = np.random.default_rng(11)
+    X = rng.normal(size=(20, 2))
+    y = X @ np.array([1.0, 2.0])
+    trainer = GradientDescentTrainer(lr=0.05, max_iters=1, tol=1e-9).fit(X, y)
+    assert trainer.converged_ is False
+    assert len(trainer.loss_history) == 1
+
+
+def test_gradient_descent_rejects_invalid_inputs():
+    X = np.arange(20.0).reshape(10, 2)
+    y = np.arange(10.0)
+    with pytest.raises(ValueError, match="lr must be strictly positive"):
+        GradientDescentTrainer(lr=0.0)
+    with pytest.raises(ValueError, match="lr must be strictly positive"):
+        GradientDescentTrainer(lr=-0.5)
+    with pytest.raises(ValueError, match="max_iters must be at least 1"):
+        GradientDescentTrainer(max_iters=0)
+    trainer = GradientDescentTrainer().fit(X, y)
+    with pytest.raises(ValueError, match="features must be 2-D"):
+        trainer.fit(np.arange(10.0), y)
+    with pytest.raises(ValueError, match="target must be 1-D"):
+        trainer.fit(X, y.reshape(-1, 1))
+    with pytest.raises(ValueError, match="rows but target has"):
+        trainer.fit(X, y[:-1])
+    with pytest.raises(ValueError, match="at least one sample row"):
+        trainer.fit(np.zeros((0, 2)), np.zeros(0))
+    with pytest.raises(ValueError, match="predict requires a prior call to fit"):
+        GradientDescentTrainer().predict(X)
+    with pytest.raises(ValueError, match="features must be 2-D"):
+        trainer.predict(np.arange(4.0))
+    with pytest.raises(ValueError, match="feature columns"):
+        trainer.predict(np.zeros((3, 3)))

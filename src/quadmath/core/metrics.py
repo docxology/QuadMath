@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, Sequence
 import numpy as np
 
 
@@ -296,3 +296,95 @@ def fisher_rao_metric(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float
     # Clamp for numerical safety
     bc = max(-1.0, min(1.0, bc))
     return float(2.0 * np.arccos(bc))
+
+
+def angle_error(q1: Sequence[float], q2: Sequence[float]) -> float:
+    """Geodesic rotation angle between two quaternions, in radians.
+
+    Computes 2*acos(|<q1, q2>|) — the geodesic distance on SO(3) up to the
+    quaternion double cover — with the acos argument clamped for numerical
+    safety, so the result lies in [0, pi].  Inputs are normalized
+    internally (module style, cf. shannon_entropy), so non-unit but
+    non-zero quaternions are accepted.  The metric is invariant under
+    q -> -q and symmetric in its arguments.  Component order matches the
+    (w, x, y, z) convention of the quadmath.core.quadray quaternion helpers.
+
+    Parameters
+    - q1, q2: Quaternions as 4-component (w, x, y, z) sequences
+
+    Returns
+    - float: Rotation angle in radians, in [0, pi]
+
+    Raises
+    - ValueError: If the quaternions are not 4-component sequences of the
+      same shape, or either has zero norm
+    """
+    a = np.asarray(q1, dtype=float)
+    b = np.asarray(q2, dtype=float)
+    if a.ndim != 1 or a.shape != b.shape or a.size != 4:
+        raise ValueError("q1 and q2 must be 4-component quaternions of the same shape")
+    norm_a = float(np.linalg.norm(a))
+    norm_b = float(np.linalg.norm(b))
+    if norm_a == 0.0 or norm_b == 0.0:
+        raise ValueError("quaternions must be non-zero")
+    cos_half = abs(float(np.dot(a, b))) / (norm_a * norm_b)
+    cos_half = max(-1.0, min(1.0, cos_half))
+    return float(2.0 * np.arccos(cos_half))
+
+
+def quat_log_euclidean_dispersion(quats: Sequence[Sequence[float]]) -> float:
+    """Root-mean-square chordal dispersion of quaternions about their mean.
+
+    Computes sqrt(mean_i ||q_i - m||^2), where m is the normalized
+    component-wise mean of the inputs and ||.|| the Euclidean (chordal)
+    norm in R^4.  Signs are aligned to the first quaternion before
+    averaging (each q_i with <q_i, q_0> < 0 is negated) because q and -q
+    encode the same rotation; without this the mean of antipodally written
+    identical rotations would cancel.  The alignment is deterministic.  The
+    component order matches the (w, x, y, z) convention of the
+    quadmath.core.quadray quaternion helpers.
+
+    Parameters
+    - quats: Non-empty sequence of quaternions, each a 4-component
+      (w, x, y, z) sequence
+
+    Returns
+    - float: Root-mean-square chord distance to the normalized mean
+      quaternion (>= 0); 0 for a single quaternion
+
+    Raises
+    - ValueError: If quats is empty, an entry is not 4-component, or the
+      sign-aligned mean vanishes (possible only when the first quaternion
+      has zero norm, since a non-zero reference forces
+      mean . reference = mean_i |<q_i, q_0>| / n > 0)
+    """
+    arr = np.asarray(quats, dtype=float)
+    if arr.size == 0:
+        raise ValueError("quats must be non-empty")
+    if arr.ndim != 2 or arr.shape[1] != 4:
+        raise ValueError("quats must be a sequence of 4-component quaternions")
+    reference = arr[0]
+    signs = np.where(np.dot(arr, reference) < 0.0, -1.0, 1.0)
+    aligned = arr * signs[:, None]
+    mean = aligned.mean(axis=0)
+    norm = float(np.linalg.norm(mean))
+    if norm == 0.0:
+        raise ValueError("sign-aligned mean quaternion vanishes; inputs are pathologically spread")
+    mean_unit = mean / norm
+    diffs = aligned - mean_unit
+    return float(np.sqrt(np.mean(np.sum(diffs * diffs, axis=1))))
+
+
+__all__ = [
+    "shannon_entropy",
+    "information_length",
+    "fim_eigenspectrum",
+    "fisher_condition_number",
+    "fisher_curvature_analysis",
+    "fisher_quadray_comparison",
+    "kl_divergence",
+    "jensen_shannon_divergence",
+    "fisher_rao_metric",
+    "angle_error",
+    "quat_log_euclidean_dispersion",
+]

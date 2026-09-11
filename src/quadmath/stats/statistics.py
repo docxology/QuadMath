@@ -1,7 +1,8 @@
 """Deterministic descriptive statistics and resampling toolkit.
 
-Small, dependency-free (``numpy`` only) statistical utilities used by the
-benchmarking and visualization layers of QuadMath.  Every function is a
+Small, dependency-free (``numpy`` plus the standard ``math`` module)
+statistical utilities used by the benchmarking and visualization layers
+of QuadMath.  Every function is a
 pure computation over array-likes: inputs are converted with
 ``np.asarray(..., dtype=float)``, validated to be non-empty (an empty
 sample would silently produce ``nan``), and no randomness is consumed
@@ -20,20 +21,33 @@ no module state; results are plain Python floats / numpy arrays.
   cap at 1.0.
 - :func:`scaling_fit` — ordinary least squares on log-log data returning
   the power-law exponent (slope), intercept, and R^2.
+- :func:`jackknife_ci` — leave-one-out jackknife confidence interval and
+  bias estimate for an arbitrary statistic.
+- :func:`benjamini_hochberg` — Benjamini-Hochberg FDR step-up adjusted
+  p-values, monotone and capped at 1.0.
+- :func:`welch_t_test` — Welch's unequal-variance t test with exact
+  Student-t p-values from a continued-fraction incomplete beta function.
+- :func:`rotation_stats` — circular mean, mean resultant length, and
+  circular variance of angles in radians.
 """
 from __future__ import annotations
 
-from typing import Callable, Dict
+import math
+from typing import Callable, Dict, Tuple
 
 import numpy as np
 
 __all__ = [
+    "benjamini_hochberg",
     "bootstrap_ci",
     "cohens_d",
+    "jackknife_ci",
     "p_adjust_bonferroni",
     "permutation_test",
+    "rotation_stats",
     "scaling_fit",
     "summarize",
+    "welch_t_test",
 ]
 
 
@@ -223,3 +237,298 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     ss_tot = float(np.sum((observed - np.mean(observed)) ** 2))
     r2 = 1.0 - ss_res / ss_tot
     return float(slope), float(intercept), float(r2)
+
+
+_SQRT2 = math.sqrt(2.0)
+_FPMIN = 1e-300
+_BETA_EPS = 1e-14
+_BETA_MAX_ITERS = 200
+
+
+def _as_finite_float_array(x, name: str) -> np.ndarray:
+    """Convert an array-like to a float array, rejecting empty or non-finite input."""
+    arr = _as_float_array(x, name)
+    if not np.all(np.isfinite(arr)):
+        raise ValueError(f"{name} must contain only finite values")
+    return arr
+
+
+def _normal_z_from_two_sided_alpha(alpha: float) -> float:
+    """Normal quantile ``z`` with ``P(|Z| > z) = alpha``.
+
+    ``math.erfc(z / sqrt(2))`` decreases monotonically from 2 to 0 as
+    ``z`` runs from ``-inf`` to ``inf``, so bisecting that single
+    expression pins ``z`` to double precision deterministically, with no
+    seed and no lookup table.
+    """
+    lo, hi = -40.0, 40.0
+    for _ in range(100):
+        mid = 0.5 * (lo + hi)
+        if math.erfc(mid / _SQRT2) > alpha:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
+def _reg_inc_beta(x: float, a: float, b: float) -> float:
+    """Regularized incomplete beta function ``I_x(a, b)`` on ``[0, 1]``.
+
+    Lentz's modified continued fraction (Numerical Recipes) with the
+    standard symmetry swap above ``x = (a + 1) / (a + b + 2)``; pure
+    ``math``, so p-values never require ``scipy``.
+    """
+    if x <= 0.0:
+        return 0.0
+    if x >= 1.0:
+        return 1.0
+    if x > (a + 1.0) / (a + b + 2.0):
+        return 1.0 - _reg_inc_beta(1.0 - x, b, a)
+    log_front = (
+        a * math.log(x)
+        + b * math.log(1.0 - x)
+        - (math.lgamma(a) + math.lgamma(b) - math.lgamma(a + b))
+    )
+    front = math.exp(log_front)
+    d = 1.0 - (a + b) * x / (a + 1.0)
+    d = math.copysign(max(abs(d), _FPMIN), d)
+    d = 1.0 / d
+    f = d
+    c = 1.0
+    delta = 0.0
+    m = 0
+    while m < _BETA_MAX_ITERS and abs(delta - 1.0) >= _BETA_EPS:
+        m += 1
+        num = m * (b - m) * x / ((a - 1.0 + 2.0 * m) * (a + 2.0 * m))
+        val = 1.0 + num * d
+        d = math.copysign(max(abs(val), _FPMIN), val)
+        val = 1.0 + num / c
+        c = math.copysign(max(abs(val), _FPMIN), val)
+        d = 1.0 / d
+        f *= d * c
+        num = -(a + m) * (a + b + m) * x / ((a + 2.0 * m) * (a + 1.0 + 2.0 * m))
+        val = 1.0 + num * d
+        d = math.copysign(max(abs(val), _FPMIN), val)
+        val = 1.0 + num / c
+        c = math.copysign(max(abs(val), _FPMIN), val)
+        d = 1.0 / d
+        delta = d * c
+        f *= delta
+    return front * f / a
+
+
+def _t_two_sided_tail(t: float, df: float) -> float:
+    """Two-sided tail probability ``P(|T| >= |t|)`` of Student's t.
+
+    Uses the exact identity ``P(|T| >= t) = I_x(df/2, 1/2)`` with
+    ``x = df / (df + t**2)``.
+    """
+    return _reg_inc_beta(df / (df + t * t), 0.5 * df, 0.5)
+
+
+def _t_sf(t: float, df: float) -> float:
+    """Survival function ``P(T > t)`` of Student's t with ``df`` dof."""
+    if t > 0.0:
+        return 0.5 * _t_two_sided_tail(t, df)
+    if t < 0.0:
+        return 1.0 - 0.5 * _t_two_sided_tail(t, df)
+    return 0.5
+
+
+def jackknife_ci(
+    x: np.ndarray,
+    stat: Callable = np.mean,
+    alpha: float = 0.05,
+) -> Tuple[float, float, float]:
+    """Leave-one-out jackknife interval and bias estimate for ``stat``.
+
+    Each of the ``n`` leave-one-out samples is scored with ``stat``; the
+    returned triple is ``(low, high, bias)``.  The interval is the normal
+    approximation ``theta_hat +/- z_(1 - alpha/2) * se_jack`` centered on
+    the full-sample statistic, where ``se_jack`` is the jackknife
+    standard error ``sqrt((n - 1) / n * sum((theta_i -
+    mean(theta_i))**2))``.  ``bias`` is the jackknife bias estimate
+    ``(n - 1) * (mean(theta_i) - theta_hat)``; subtracting it from
+    ``theta_hat`` gives the bias-corrected jackknife estimate.  The
+    quantile ``z`` comes from a deterministic erfc bisection, so the
+    routine consumes no randomness and repeated calls return
+    bit-identical results.  ``stat`` must accept a 1-D float array and
+    return a scalar.
+
+    Parameters
+    ----------
+    x:
+        Sample values; at least two finite observations are required.
+    stat:
+        Scalar-valued statistic applied to each leave-one-out sample.
+    alpha:
+        Tail probability in ``(0, 1)``; the interval covers ``1 - alpha``.
+
+    Returns
+    -------
+    Tuple[float, float, float]
+        ``(low, high, bias)`` as plain Python floats.
+
+    Raises
+    ------
+    ValueError
+        If ``x`` is empty, contains non-finite values, has fewer than
+        two observations, or ``alpha`` is outside ``(0, 1)``.
+    """
+    x = _as_finite_float_array(x, "x")
+    if x.size < 2:
+        raise ValueError("jackknife requires at least two values")
+    if not 0.0 < alpha < 1.0:
+        raise ValueError(f"alpha must lie strictly between 0 and 1, got {alpha!r}")
+    n = x.size
+    theta_hat = float(stat(x))
+    loo = np.array([float(stat(np.delete(x, i))) for i in range(n)], dtype=float)
+    loo_mean = float(np.mean(loo))
+    bias = (n - 1) * (loo_mean - theta_hat)
+    se = math.sqrt((n - 1) / n * float(np.sum((loo - loo_mean) ** 2)))
+    z = _normal_z_from_two_sided_alpha(alpha)
+    return theta_hat - z * se, theta_hat + z * se, bias
+
+
+def benjamini_hochberg(pvals: np.ndarray) -> np.ndarray:
+    """Benjamini-Hochberg FDR-adjusted p-values (step-up procedure).
+
+    Ranks the ``m`` p-values in ascending order, forms the raw values
+    ``m * p_(i) / i`` for ranks ``i = 1..m``, enforces monotonicity with
+    a running minimum taken from the largest rank backwards, maps the
+    adjusted values back to the input order, and caps at 1.0.  The
+    result is monotone non-decreasing in the sorted p-values and never
+    exceeds the largest raw p-value.
+
+    Parameters
+    ----------
+    pvals:
+        Raw p-values, every element in ``[0, 1]``.
+
+    Returns
+    -------
+    np.ndarray
+        Adjusted p-values in the original input order.
+
+    Raises
+    ------
+    ValueError
+        If ``pvals`` is empty or any value lies outside ``[0, 1]`` (NaN
+        and infinity fail the range check).
+    """
+    p = _as_float_array(pvals, "pvals")
+    if not np.all((p >= 0.0) & (p <= 1.0)):
+        raise ValueError("pvals must all lie in [0, 1]")
+    m = p.size
+    order = np.argsort(p, kind="stable")
+    ranked = np.minimum(1.0, m * p[order] / np.arange(1, m + 1))
+    stepped = np.minimum.accumulate(ranked[::-1])[::-1]
+    adj = np.empty(m, dtype=float)
+    adj[order] = stepped
+    return adj
+
+
+def welch_t_test(
+    a: np.ndarray,
+    b: np.ndarray,
+    alternative: str = "two-sided",
+) -> Tuple[float, float]:
+    """Welch's unequal-variance two-sample t test.
+
+    Returns the Welch t statistic and its p-value under Student's t with
+    the Welch-Satterthwaite degrees of freedom
+    ``(va/na + vb/nb)**2 / ((va/na)**2/(na-1) + (vb/nb)**2/(nb-1))``.
+    The p-value is evaluated from the exact Student-t survival function
+    via a continued-fraction incomplete beta function (``math`` only, no
+    ``scipy``): ``"two-sided"`` reports ``P(|T| >= |t|)``, ``"greater"``
+    reports ``P(T > t)``, and ``"less"`` reports ``P(T <= t)``.  When
+    both samples are constant the denominator vanishes: equal means give
+    ``t = 0.0`` (p-value 1.0 two-sided) and different means give a
+    signed infinite ``t`` whose tail probabilities are exactly 0 or 1,
+    evaluated against a finite pooled-df fallback so the tails stay
+    well-defined.
+
+    Parameters
+    ----------
+    a, b:
+        Samples, each with at least two values.
+    alternative:
+        ``"two-sided"``, ``"greater"``, or ``"less"``.
+
+    Returns
+    -------
+    Tuple[float, float]
+        The t statistic and its p-value as plain Python floats.
+
+    Raises
+    ------
+    ValueError
+        If either sample is empty or has fewer than two values, or
+        ``alternative`` is not one of the three supported strings.
+    """
+    a = _as_float_array(a, "a")
+    b = _as_float_array(b, "b")
+    if a.size < 2 or b.size < 2:
+        raise ValueError("welch_t_test requires at least two values per sample")
+    if alternative not in ("two-sided", "greater", "less"):
+        raise ValueError(f"unknown alternative: {alternative!r}")
+    na, nb = a.size, b.size
+    wa = float(np.var(a, ddof=1)) / na
+    wb = float(np.var(b, ddof=1)) / nb
+    num = float(np.mean(a) - np.mean(b))
+    denom = math.sqrt(wa + wb)
+    if denom == 0.0:
+        t = 0.0 if num == 0.0 else math.copysign(math.inf, num)
+        df = float(na + nb - 2)
+    else:
+        t = num / denom
+        df = (wa + wb) ** 2 / (wa * wa / (na - 1) + wb * wb / (nb - 1))
+    if alternative == "two-sided":
+        return t, _t_two_sided_tail(t, df)
+    if alternative == "greater":
+        return t, _t_sf(t, df)
+    return t, 1.0 - _t_sf(t, df)
+
+
+def rotation_stats(angles: np.ndarray) -> Dict[str, float]:
+    """Circular statistics for angles given in radians.
+
+    Returns four plain floats: ``mean`` is the circular mean, the
+    ``atan2`` of the averaged sine and cosine wrapped into ``(-pi, pi]``;
+    ``resultant_length`` is the mean resultant length
+    ``R = |n**-1 * sum(exp(1j * theta))|`` in ``[0, 1]``; ``variance`` is
+    the unitless circular variance ``1 - R`` in ``[0, 1]``; and
+    ``variance_2pi`` is ``2 * (1 - R)``, the convention for angles on the
+    full ``[0, 2*pi)`` circle, which ranges over ``[0, 2]`` and
+    approaches the linear variance for tightly clustered angles.  Because
+    sine and cosine are ``2*pi``-periodic, wrapping the angles into any
+    full circle leaves every value unchanged; when the resultant
+    vanishes the mean degenerates to whatever ``atan2`` returns for the
+    cancelled components.
+
+    Parameters
+    ----------
+    angles:
+        Angles in radians; at least one finite value is required.
+
+    Returns
+    -------
+    Dict[str, float]
+        Keys ``mean``, ``resultant_length``, ``variance``,
+        ``variance_2pi``.
+
+    Raises
+    ------
+    ValueError
+        If ``angles`` is empty or contains non-finite values.
+    """
+    angles = _as_finite_float_array(angles, "angles")
+    cos_mean = float(np.mean(np.cos(angles)))
+    sin_mean = float(np.mean(np.sin(angles)))
+    r = math.hypot(cos_mean, sin_mean)
+    return {
+        "mean": math.atan2(sin_mean, cos_mean),
+        "resultant_length": r,
+        "variance": 1.0 - r,
+        "variance_2pi": 2.0 * (1.0 - r),
+    }
