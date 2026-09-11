@@ -152,6 +152,135 @@ input size $n$, $\beta_1 \approx 2$ quadratic, and the coefficient of
 determination $r^2$ measures how well the power law describes the
 measurements.
 
+## Jackknife, FDR, Welch, and circular statistics {#sec:jackknife_fdr_welch_circular}
+
+`jackknife_ci(x, stat=np.mean, alpha=0.05)` produces both a confidence
+interval and a bias estimate for any scalar statistic without consuming a
+single random draw.  Where the percentile bootstrap of
+\eqref{eq:stat-bootstrap} resamples with replacement, the jackknife
+deletes one observation at a time: each of the $n$ leave-one-out samples
+is scored, and the spread of those scores determines the interval.  With
+$\hat{\theta}$ the full-sample statistic and $\hat{\theta}_{(i)}$ the
+statistic on the sample with observation $i$ deleted, the returned triple
+`(low, high, bias)` is
+
+\begin{equation}
+\label{eq:stat-jackknife}
+\begin{aligned}
+\mathrm{bias} &= (n-1)\big(\bar{\theta}_{(\cdot)} - \hat{\theta}\big), &
+\hat{\theta}_{\text{corr}} &= \hat{\theta} - \mathrm{bias}, \\
+\mathrm{se}_{\text{jack}} &=
+\sqrt{\tfrac{n-1}{n} \sum_{i=1}^{n} \big(\hat{\theta}_{(i)} -
+\bar{\theta}_{(\cdot)}\big)^{2}}, &
+\mathrm{CI}_{1-\alpha} &=
+\hat{\theta} \pm z_{1-\alpha/2}\,\mathrm{se}_{\text{jack}},
+\end{aligned}
+\end{equation}
+
+where $\bar{\theta}_{(\cdot)}$ is the mean of the leave-one-out scores.
+The bias-corrected estimate $\hat{\theta}_{\text{corr}}$ removes the
+first-order bias that the jackknife detects in curved statistics; the
+interval itself stays centered on the uncorrected $\hat{\theta}$.  The
+normal quantile $z$ comes from bisecting `math.erfc(z / sqrt(2))`, which
+decreases monotonically from $2$ to $0$ as $z$ runs from $-\infty$ to
+$\infty$, so one hundred halvings of the bracket $[-40, 40]$ pin $z$ to
+double precision.  This deterministic erfc-bisection quantile needs no
+seed and no lookup table, so repeated calls with identical arguments
+return bit-identical results — the same reproducibility contract as the
+seeded routines above, but with no generator to seed at all.
+
+`benjamini_hochberg(pvals)` controls a different error rate from the
+Bonferroni map of \eqref{eq:stat-bonferroni}: instead of the
+family-wise error rate it controls the expected proportion of false
+discoveries among rejections, the false discovery rate.  The step-up
+procedure sorts the $m$ p-values ascending, forms the raw values
+$m\,p_{(i)} / i$ for ranks $i = 1,\dots,m$, and then enforces monotonicity
+with a running minimum taken from the largest rank backwards,
+
+\begin{equation}
+\label{eq:stat-bh}
+p'_{(i)} \;=\;
+\min\!\Big(1,\; \min_{j \ge i}\, \frac{m\,p_{(j)}}{j}\Big),
+\qquad
+p'_{(m)} \;=\; \min(1,\, p_{(m)}),
+\end{equation}
+
+so the adjusted values are monotone non-decreasing in the sorted
+p-values and never exceed the largest raw p-value.  The backward
+cumulative minimum is the step that the naive $m\,p_{(i)}/i$ mapping
+misses: without it, a large early-rank raw value could exceed a smaller
+later-rank one, breaking monotonicity and invalidating the FDR guarantee.
+The stable argsort of the input is recorded so the adjusted values can
+be mapped back to the original input order, and the final cap at $1.0$
+keeps the output a valid p-value vector.
+
+`welch_t_test(a, b, alternative="two-sided")` compares two sample means
+without assuming equal variances, the assumption that the pooled
+standard deviation $s_p$ of `cohens_d` makes.  Writing
+$w_a = s_a^2/n_a$ and $w_b = s_b^2/n_b$, the statistic and its
+Welch–Satterthwaite degrees of freedom are
+
+\begin{equation}
+\label{eq:stat-welch}
+t \;=\; \frac{\bar{a} - \bar{b}}{\sqrt{w_a + w_b}},
+\qquad
+\nu \;=\;
+\frac{(w_a + w_b)^{2}}
+{\dfrac{w_a^{2}}{n_a - 1} + \dfrac{w_b^{2}}{n_b - 1}} .
+\end{equation}
+
+The p-value is evaluated from the exact Student-$t$ tails rather than a
+normal approximation, and it needs no `scipy`: the two-sided tail uses
+the identity
+
+\begin{equation}
+\label{eq:stat-tail}
+\mathrm{P}\big(|T| \ge |t|\big) \;=\; I_{x}\!\big(\tfrac{\nu}{2},
+\tfrac{1}{2}\big),
+\qquad
+x \;=\; \frac{\nu}{\nu + t^{2}},
+\end{equation}
+
+where $I_x(a, b)$ is the regularized incomplete beta function computed
+by a Lentz continued fraction (with the standard symmetry swap above
+$x = (a+1)/(a+b+2)$, an $\exp$-$\log\Gamma$ front factor, and guard
+floors against vanishing denominators).  `"greater"` and `"less"` reuse
+the same two-sided tail, halved on the appropriate side of $t = 0$.
+The degenerate branches matter for constant inputs: when both samples
+are constant the denominator of \eqref{eq:stat-welch} vanishes, and
+equal means give $t = 0.0$ (p-value $1.0$ two-sided) while different
+means give a signed infinite $t$ whose tail probabilities are exactly
+$0$ or $1$, evaluated against the finite pooled fallback
+$\nu = n_a + n_b - 2$ so the tails stay well-defined.
+
+`rotation_stats(angles)` treats angles in radians as points on a circle
+rather than points on a line, where $359°$ and $1°$ are neighbors:
+
+\begin{equation}
+\label{eq:stat-circular}
+\bar{\theta} \;=\; \operatorname{atan2}\!\Big(
+\tfrac{1}{n}\textstyle\sum_{j} \sin\theta_{j},\;
+\tfrac{1}{n}\textstyle\sum_{j} \cos\theta_{j}\Big),
+\qquad
+R \;=\; \Big|\tfrac{1}{n}\textstyle\sum_{j} e^{i\theta_{j}}\Big| .
+\end{equation}
+
+The circular mean is the `atan2` of the averaged sine and cosine,
+wrapped into $(-\pi, \pi]$, and the mean resultant length
+$R \in [0, 1]$ measures concentration: $R = 1$ only when every angle
+agrees, $R = 0$ when the unit vectors cancel completely.  The returned
+dictionary gives the circular variance $1 - R$ in $[0, 1]$, and
+`variance_2pi` $= 2\,(1 - R)$ under the convention for angles on the
+full $[0, 2\pi)$ circle, which ranges over $[0, 2]$ and approaches the
+familiar linear variance for tightly clustered angles.  Because sine
+and cosine are $2\pi$-periodic, wrapping the angles into any full
+circle leaves every returned value unchanged; when the resultant
+vanishes the mean degenerates to whatever `atan2` returns for the
+cancelled components.  Like everything else in
+`src/quadmath/stats/statistics.py`, all four routines are pure
+`numpy`-plus-`math` computations: no randomness, no optional scientific
+stack, and bit-identical repeats for identical arguments.
+
 ## A reproducible example
 
 Both workhorses above are fully determined by their arguments, so the

@@ -190,6 +190,84 @@ coverage level while the held-out MSE never drops below $0.7$ — the pinned
 observations are fit closely at all sizes, and the difficulty is entirely on
 unseen sites.
 
+## Three-way splitting and trainable site fits {#sec:learn_three_way_site_fits}
+
+The lattice surfaces above all share one shape: a seeded split of sites or
+snapshots, a fit on the training side, and scores on the held-out side. The
+same shape is available for plain tabular work in the same module
+(`src/quadmath/learn/learning_eval.py`), under the same discipline — all
+split randomness confined to the seeded permutation of the split, and fits
+that are pure deterministic functions of their inputs.
+
+`three_way_split(n, train_frac=0.6, val_frac=0.2, seed=0)` partitions
+`range(n)` into disjoint train/validation/test index lists. One seeded
+`numpy.random.default_rng` permutation of `range(n)` is drawn and cut into
+three contiguous blocks: the first $m_{train} =
+\operatorname{round}(\mathrm{train\_frac} \cdot n)$ indices train, the next
+$m_{val} = \operatorname{round}(\mathrm{val\_frac} \cdot n)$ validate, and
+the remainder test. Each returned list is sorted, the three lists are
+pairwise disjoint, and their union is exactly `range(n)`, so the split is a
+deterministic function of $(n, \mathrm{train\_frac}, \mathrm{val\_frac},
+seed)$ — the same deterministic-permutation contract as the k-fold site
+splits above, applied to a plain index range rather than observed lattice
+sites.
+Rounding is unguarded at the tails: for small $n$ a trailing block may come
+back empty ($n = 3$ under the default fractions leaves the test list empty),
+and a `ValueError` is raised when either fraction is not strictly positive
+or their sum reaches $1$ — a split with no held-out rows at all cannot be
+honest.
+
+`ridge_site_fit(features, values, lam=1e-3)` fits a single linear site
+model in closed form. Features and values are centered to zero mean, and
+the ridge normal equations are solved exactly for the slope vector $w$:
+
+\begin{equation}
+\label{eq:learn-ridge}
+\bigl( X_c^{\!\top} X_c + \lambda I \bigr)\, w \;=\; X_c^{\!\top} y_c,
+\qquad b \;=\; \bar{y} - \bar{x}^{\!\top} w,
+\end{equation}
+with $b$ the intercept recovered from the centered solve; $\lambda \geq 0$
+penalizes the centered coefficient norm, shrinking $w$ toward zero, and
+$\lambda = 0$ recovers the exact least-squares solve. The returned
+`RidgeSiteFit`
+carries `coefficients`, `intercept`, and the in-sample `train_mse`, and the
+fit is a deterministic function of `(features, values, lam)` — a
+`numpy.linalg.solve`, not an iterative optimizer, so repeated calls on the
+same inputs reproduce it bit for bit. Validation is explicit: a negative
+$\lambda$, a non-2-D design matrix, a non-1-D target, disagreeing sample
+counts, or zero rows each raise before any linear algebra runs.
+
+`GradientDescentTrainer(lr=0.05, max_iters=300, tol=1e-9)` is the
+iterative counterpart, useful where the closed form is deliberately being
+compared against: a full-batch gradient-descent fit of the same linear
+model. `fit` standardizes the feature columns internally (per-column zero
+mean and unit standard deviation, with constant columns passing through at
+standard deviation $1$), then runs at most `max_iters` full-batch updates
+on the mean-squared-error loss,
+
+\begin{equation}
+\label{eq:learn-gd}
+\theta \;\leftarrow\; \theta \;-\; \frac{2\,\eta}{m}\,
+\begin{bmatrix} X_s^{\!\top} e \\ \mathbf{1}^{\!\top} e \end{bmatrix},
+\qquad e \;=\; X_s w + b - y,
+\end{equation}
+
+where $X_s$ is the standardized design, $m$ the row count, and $\eta$ the
+learning rate. The MSE at the top of each executed iteration is appended to
+`loss_history` — one float per iteration, recorded before the update it
+describes — and training stops early with `converged_ = True` as soon as
+two consecutive losses differ by less than `tol`. The fit exposes `coef_`
+expressed against the standardized features and `intercept_` in original
+target units, together with the stored `mean_` and `std_` it used, so
+`predict` re-applies the recorded standardization before the linear map and
+thus scores consistently across training, validation, and test blocks of a
+`three_way_split`. Like `ridge_site_fit` the trainer draws no randomness of
+its own — no shuffling, no stochastic gradient — so its entire loss history
+is deterministic for fixed inputs: the same rows and hyperparameters replay
+the same loss curve to the last float, and the per-iteration record doubles
+as the divergence/plateau diagnostic that a scalar final loss cannot
+provide.
+
 ## Verification
 
 `tests/test_learning_eval.py` pins all of the above with fixed seeds and no

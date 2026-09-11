@@ -409,6 +409,40 @@ Source: `src/quadmath/core/quadray.py` — return the Euclidean magnitude of `q`
 
 Source: `src/quadmath/core/quadray.py` — return Euclidean dot product <q1,q2> under the given embedding.
 
+### Quaternion operations {#code:quaternion_operations}
+
+#### `qmul` {#code:qmul}
+
+Source: `src/quadmath/core/quadray.py` — Hamilton product of two quaternions in scalar-first $(w, x, y, z)$ order ($q = w + x\,i + y\,j + z\,k$), an independent representation from the Quadray lattice components $(a, b, c, d)$ and from the XYZ triples produced by `to_xyz`.
+
+#### `qconjugate` {#code:qconjugate}
+
+Source: `src/quadmath/core/quadray.py` — conjugate $(w, -x, -y, -z)$ of a quaternion in $(w, x, y, z)$ order; for a unit quaternion the conjugate is the multiplicative inverse, so `q * qconjugate(q)` equals $(1, 0, 0, 0)$ up to floating-point error.
+
+#### `qrotate` {#code:qrotate}
+
+Source: `src/quadmath/core/quadray.py` — Rodrigues rotation of a 3-vector by a unit quaternion via $v' = q\,(0, v)\,q^*$, composed with `qmul` and `qconjugate`; `q` must be unit (within 1e-9) and the rotation magnitude it encodes, $2\,\mathrm{atan2}(\|(x, y, z)\|, w)$, must match $|\mathrm{angle}|$ modulo $2\pi$ within 1e-9, so a mismatched (q, angle) pair raises instead of silently rotating by the wrong amount.
+
+#### `slerp` {#code:slerp}
+
+Source: `src/quadmath/core/quadray.py` — shortest-arc spherical linear interpolation between unit quaternions: when $\langle q_a, q_b\rangle < 0$ the second quaternion is negated first ($q$ and $-q$ encode the same rotation) so the path always takes the shorter arc on the rotation sphere; nearly parallel inputs (including exactly antipodal pairs after sign alignment) fall back to normalized lerp to avoid dividing by $\sin\theta \approx 0$, and the endpoints are exact.
+
+#### `rotate_about_axis` {#code:rotate_about_axis}
+
+Source: `src/quadmath/core/quadray.py` — axis-angle convenience wrapper: builds the unit quaternion $q = (\cos(\theta/2),\, \sin(\theta/2)\,\hat{u})$ from the normalized rotation axis (any non-zero scale accepted; the zero vector is rejected) and delegates to `qrotate`, reducing the angle to $(-\pi, \pi]$ first so rotation is right-handed about the axis and `qrotate`'s encoded-angle validation stays exact.
+
+The property checks in `src/quadmath/validate/validate.py` — normalization, conjugate-inverse, double cover, slerp midpoint, and associativity — consume these operations over quaternion sequences via `run_validation`, which collects the resulting deterministic validation reports.
+
+### Quaternion metrics {#code:quaternion_metrics}
+
+#### `angle_error` {#code:angle_error}
+
+Source: `src/quadmath/core/metrics.py` — geodesic rotation angle $2\arccos(|\langle q_1, q_2\rangle|)$ between two quaternions, in radians and confined to $[0, \pi]$ by clamping the acos argument; the metric is symmetric in its arguments and invariant under $q \to -q$ (the quaternion double cover), with inputs normalized internally so non-unit but non-zero quaternions are accepted.
+
+#### `quat_log_euclidean_dispersion` {#code:quat_log_euclidean_dispersion}
+
+Source: `src/quadmath/core/metrics.py` — root-mean-square chordal dispersion of a quaternion set about its normalized component-wise mean, $\sqrt{\mathrm{mean}_i\,\|q_i - m\|^2}$ in $\mathbb{R}^4$, with signs aligned to the first quaternion before averaging because $q$ and $-q$ encode the same rotation; returns 0 for a single quaternion and raises if the sign-aligned mean vanishes.
+
 ### Volume calculations {#code:volume_calculations}
 
 #### `integer_tetra_volume` {#code:integer_tetra_volume}
