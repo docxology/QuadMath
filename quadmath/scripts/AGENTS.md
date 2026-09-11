@@ -60,13 +60,14 @@ importable entrypoints under `src/`.
   check; there is no argparse).
 - `render_pdf.sh` requires `pandoc` + `xelatex`; `LOG_LEVEL=0..3` controls
   verbosity (0 = debug, default 1 = info).
-- Who runs what: `render_pdf.sh` directly runs 12 scripts (including
+- Who runs what: `render_pdf.sh` directly runs 3 scripts
+  (`make_all_figures.py`, `generate_glossary.py`,
+  `validate_markdown.py`), delegating every figure/data generator to
+  `make_all_figures.py`, which runs all 15 figure scripts.
+  `discrete_variational_demo.py`, `gpu_acceleration_demo.py`,
   `graphical_abstract_quadray.py`, `polyhedra_quadray_constructions.py`,
-  `generate_glossary.py`, `validate_markdown.py`, `make_all_figures.py`);
-  `make_all_figures.py` runs 15 figure scripts. `discrete_variational_demo.py`
-  and `gpu_acceleration_demo.py` are reached only via `make_all_figures.py`;
-  `graphical_abstract_quadray.py` and `polyhedra_quadray_constructions.py`
-  only directly in `render_pdf.sh`.
+  `ivm_field_demo.py`, `ivm_dynamics_demo.py`, `lattice_gallery.py`, and
+  `stats_gallery.py` are reachable only via `make_all_figures.py`.
 - Never commit `__pycache__/` or `.DS_Store`; `.gitignore` covers both
   (force-added `.pyc` files were removed in the 2026-09 scripts audit).
 - Adding a script: follow the README template, then register it in the
