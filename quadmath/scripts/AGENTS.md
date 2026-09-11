@@ -62,12 +62,9 @@ importable entrypoints under `src/`.
   verbosity (0 = debug, default 1 = info).
 - Who runs what: `render_pdf.sh` directly runs 3 scripts
   (`make_all_figures.py`, `generate_glossary.py`,
-  `validate_markdown.py`), delegating every figure/data generator to
-  `make_all_figures.py`, which runs all 15 figure scripts.
-  `discrete_variational_demo.py`, `gpu_acceleration_demo.py`,
-  `graphical_abstract_quadray.py`, `polyhedra_quadray_constructions.py`,
-  `ivm_field_demo.py`, `ivm_dynamics_demo.py`, `lattice_gallery.py`, and
-  `stats_gallery.py` are reachable only via `make_all_figures.py`.
+  `validate_markdown.py`); all 15 figure/data generators are reached
+  via `make_all_figures.py`. When adding a script, update that list —
+  see "Adding a script" below.
 - Never commit `__pycache__/` or `.DS_Store`; `.gitignore` covers both
   (force-added `.pyc` files were removed in the 2026-09 scripts audit).
 - Adding a script: follow the README template, then register it in the
