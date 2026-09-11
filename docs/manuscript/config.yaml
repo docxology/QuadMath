@@ -1,0 +1,51 @@
+paper:
+  title: "QuadMath: Analytical Review of Quadray Coordinates (4D)"
+  subtitle: "Integer volume quantization, optimization on tetrahedral lattices, and information geometry"
+  version: "1.0.0"
+  date: "2025-08-16" # published v1 PDF: QuadMath_v1_DAF_08-16-2025
+
+authors:
+  - name: "Daniel Ari Friedman"
+    orcid: "0000-0001-6232-9096"
+    email: "daniel@activeinference.institute"
+    affiliation: "Active Inference Institute"
+    corresponding: true
+
+publication:
+  doi: "10.5281/zenodo.16887791" # concept DOI — stable citation
+  github_repository: "QuadMath"
+  repository_url: "https://github.com/docxology/QuadMath"
+
+keywords:
+  - "Quadray coordinates"
+  - "4D geometry"
+  - "tetrahedral lattice"
+  - "integer volume quantization"
+  - "information geometry"
+  - "optimization"
+  - "synergetics"
+  - "active inference"
+
+metadata:
+  license: "Apache-2.0"
+  language: "en"
+
+render:
+  formats:
+    pdf: true
+    html: true
+    slides: false
+
+llm:
+  reviews:
+    enabled: false
+  translations:
+    enabled: false
+
+testing:
+  max_test_failures: 0
+
+# Ported from quadmath/markdown/ into the shared docxology/template render
+# layout (see MANUSCRIPT_STATUS.md). The local render path remains
+# quadmath/scripts/render_pdf.sh; stage_03_render (infrastructure.rendering)
+# is the target pipeline for this tree.
