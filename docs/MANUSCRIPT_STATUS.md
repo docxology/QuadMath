@@ -82,15 +82,19 @@ The manuscript exists in **two coordinated trees**:
   `EXCLUDE_NAMES`), `_pdf_combined_preamble.py` (preamble injection),
   `_bibliography.py` (bib discovery + key-uniqueness gate),
   `projects/templates/template_active_inference/manuscript/config.yaml` (config shape)
-- Template render (2026-09-11): `template/scripts/pipeline/stage_03_render.py`
-  --project quadmath produced `quadmath_combined.pdf` (9.66 MB, 25 figures
-  embedded) and the combined web edition; pre-render validation passed after
-  removing the pipe-bearing docstring/prose patterns and the two undefined
-  citation keys from the source tree (web-link advisories are shim-location
-  artifacts of hosting the tree under `projects/active/`).
+- Template render (2026-09-11, manuscript-improvement wave): `stage_03_render.py`
+  --project quadmath produced `quadmath_combined.pdf` (10.34 MB, 96 pages,
+  29 figures embedded) and the combined web edition, under the new typography
+  (extarticle 9pt, `metadata.geometry: margin=2cm`) and with the four new
+  gallery figures embedded (`quaternion_slerp_path.png`,
+  `learn_loss_history.png`, `animation_frames_strip.png`,
+  `stats_ci_comparison.png`); pre-render validation passed with 0 content
+  blockers (web-link advisories are shim-location artifacts of hosting the
+  tree under `projects/active/`). Earlier same-day render: 9.66 MB, 99 pages,
+  article default, 25 figures.
 - Port surface: `docs/manuscript/port_from_source.py` — re-port 2026-09-11
-  after the package restructure wave: "ported 18 sections, 25 figures,
-  preamble.md; all links resolve", exit 0 (idempotent re-run also exit 0).
+  after the improvement wave: "ported 18 sections, 29 figures, preamble.md;
+  all links resolve", exit 0 (idempotent re-run also exit 0).
   The same sweep refreshed in-section source references to the factored
   package (`src/quadmath/<sub>/<mod>.py`, package-form imports) and the
   98-glossary snapshot to the regenerated 301-row auto-glossary.
