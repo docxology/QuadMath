@@ -9,9 +9,9 @@ information geometry. Apache-2.0. Published v1 with DOI
 
 | Path | Contents |
 |---|---|
-| `src/` | Python modules: `quadray.py` (coordinates, Ace 5×5 volume), `linalg_utils.py` (Bareiss determinant), `cayley_menger.py` (length-based volumes), `conversions.py` (embeddings), `nelder_mead_quadray.py` + `discrete_variational.py` (optimizers), `information.py` (Fisher/free energy), `ivm_field.py` (lattice field learning), `ivm_dynamics.py` (field dynamics/coupling ID), `learning_eval.py` (evaluation methodology) + `vis_lattice.py` (gallery rendering — see `docs/learning/`), `lattice_search.py`, `omni_numbering.py` (omnidirectional numbering), `visualize.py`, `examples.py`, `symbolic.py`, `glossary_gen.py`, plus AGENTS/README |
+| `src/quadmath/` | Python package: `core/quadray.py` (coordinates, Ace 5×5 volume), `core/linalg_utils.py` (Bareiss determinant), `core/cayley_menger.py` (length-based volumes), `lattice/conversions.py` (embeddings), `optimize/nelder_mead_quadray.py` + `optimize/discrete_variational.py` (optimizers), `inference/information.py` (Fisher/free energy), `lattice/ivm_field.py` (lattice field learning), `lattice/ivm_dynamics.py` (field dynamics/coupling ID), `learn/learning_eval.py` (evaluation methodology) + `viz/vis_lattice.py` (gallery rendering — see `docs/learning/`), `lattice/lattice_search.py`, `lattice/omni_numbering.py` (omnidirectional numbering), `viz/visualize.py`, `core/examples.py`, `core/symbolic.py`, `tools/glossary_gen.py`, plus AGENTS/README |
 | `tests/` | Mirror tree; 100% coverage required for `src/` (see `docs/development/`) |
-| `quadmath/markdown/` | Manuscript source of truth: `00_preamble.md` + sections `01_introduction.md` … `16_lattice_gallery.md` |
+| `quadmath/markdown/` | Manuscript source of truth: `00_preamble.md` + sections `01_introduction.md` … `18_stats_gallery.md` |
 | `quadmath/scripts/` | Figure generators, `render_pdf.sh`, `clean_output.sh`, `validate_markdown.py` |
 | `quadmath/output/` | Generated artifacts (figures, PDFs, TeX, CSV/NPZ) — regeneratable, do not hand-edit |
 | `docs/manuscript/` | Template-layout manuscript projection (`config.yaml`, `preamble.md`, `references.bib`, sections `01–99`, `figures/`) |

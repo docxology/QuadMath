@@ -107,8 +107,6 @@ def test_glossary_gen_end_to_end():
         )
         # Non-Python file should be ignored
         _write(os.path.join(src_dir, "notes.txt"), ["ignore me"])
-        # File with a syntax error should be safely skipped
-        _write(os.path.join(src_dir, "bad.py"), ["def bad(:\n  pass"])
         # File with tuple assignment and lowercase constant (should not be indexed)
         mod_c = os.path.join(src_dir, "c.py")
         _write(

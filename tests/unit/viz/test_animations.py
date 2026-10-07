@@ -1,12 +1,16 @@
 import numpy as np
 import pytest
 
+from quadmath.core import quadray
+from quadmath.core.quadray import DEFAULT_EMBEDDING, qrotate, slerp, to_xyz
+from quadmath.lattice.ivm_field import ball_sites
 import quadmath.viz.animations as animations_module
+from quadmath.viz._common import encoded_angle
 from quadmath.viz.animations import (
     GRID_SIZE,
     Frame,
+    _ball_render_values,
     _project_to_grid,
-    _slerp,
     diffusion_frames,
     frames_strip,
     frames_to_gif,
@@ -53,51 +57,66 @@ def test_frame_rejects_float_out_of_range():
         Frame(np.array([[-0.1]]))
 
 
-# --------------------------------------------------------------- slerp ----
-
-def test_slerp_endpoints_are_exact():
-    qa = np.array([1.0, 0.0, 0.0, 0.0])
-    qb = _unit_quat(90.0)
-    assert np.allclose(_slerp(qa, qb, 0.0), qa, atol=1e-12)
-    assert np.allclose(_slerp(qa, qb, 1.0), qb, atol=1e-12)
-
-
-def test_slerp_midpoint_is_unit_and_between():
-    qa = _unit_quat(0.0)
-    qb = _unit_quat(90.0)
-    mid = _slerp(qa, qb, 0.5)
-    assert abs(float(np.linalg.norm(mid)) - 1.0) < 1e-9
-    # Half of a 90-degree rotation: the angle of mid is ~45 degrees.
-    angle = 2.0 * np.degrees(np.arctan2(np.linalg.norm(mid[1:]), mid[0]))
-    assert abs(angle - 45.0) < 1e-6
-
-
-def test_slerp_takes_shortest_arc_for_antiparallel_inputs():
-    qa = _unit_quat(0.0)
-    mid = _slerp(qa, -qa, 0.5)
-    # dot(qa, -qa) = -1 flips the target back to qa, so every t is qa.
-    assert np.allclose(mid, qa, atol=1e-12)
-
-
-def test_slerp_near_parallel_uses_normalized_lerp():
-    qa = _unit_quat(0.0)
-    assert np.allclose(_slerp(qa, qa, 0.5), qa, atol=1e-12)
-
-
-def test_slerp_rejects_bad_inputs():
-    qa = np.array([1.0, 0.0, 0.0, 0.0])
-    qb = _unit_quat(30.0)
-    with pytest.raises(ValueError):
-        _slerp(qa[:3], qb, 0.5)
-    with pytest.raises(ValueError):
-        _slerp(qa * 2.0, qb, 0.5)
-    with pytest.raises(ValueError):
-        _slerp(qa, qb, -0.1)
-    with pytest.raises(ValueError):
-        _slerp(qa, qb, 1.1)
-
-
 # ------------------------------------------------------ simplex_frames ----
+
+def _reference_simplex_grid(q0, q1, t):
+    """Grid at parameter ``t`` built directly from the core slerp and qrotate."""
+    sites = ball_sites(1)
+    embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
+    base_xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
+    q = slerp(q0, q1, t)
+    angle = encoded_angle(q)
+    rotated = np.array([qrotate(q, p, angle) for p in base_xyz], dtype=float)
+    return _project_to_grid(rotated, _ball_render_values(sites, shells=1))
+
+
+def test_simplex_frames_match_core_slerp_and_qrotate():
+    q0 = _unit_quat(0.0)
+    q1 = _unit_quat(60.0)
+    frames = simplex_frames(q0, q1, n=3)
+    for i, frame in enumerate(frames):
+        assert np.array_equal(frame.array, _reference_simplex_grid(q0, q1, i / 2.0))
+
+
+def test_simplex_frames_route_rotation_through_core(monkeypatch):
+    calls = {"slerp": 0, "qrotate": 0}
+    real_slerp = quadray.slerp
+    real_qrotate = quadray.qrotate
+
+    def counting_slerp(*args, **kwargs):
+        calls["slerp"] += 1
+        return real_slerp(*args, **kwargs)
+
+    def counting_qrotate(*args, **kwargs):
+        calls["qrotate"] += 1
+        return real_qrotate(*args, **kwargs)
+
+    monkeypatch.setattr(animations_module, "slerp", counting_slerp)
+    monkeypatch.setattr(animations_module, "qrotate", counting_qrotate)
+    simplex_frames(_unit_quat(0.0), _unit_quat(60.0), n=3)
+    assert calls["slerp"] == 3
+    assert calls["qrotate"] == 3 * len(ball_sites(1))
+
+
+def test_simplex_frames_negative_w_encoding_renders_same_end_frame():
+    # -q1 encodes the same rotation as q1, so both render the same last frame.
+    q0 = _unit_quat(0.0)
+    last_negated = simplex_frames(q0, -_unit_quat(90.0), n=3)[-1].array
+    last_direct = simplex_frames(q0, _unit_quat(90.0), n=3)[-1].array
+    assert np.array_equal(last_negated, last_direct)
+
+
+def test_simplex_frames_accepts_norm_within_validation_tolerance():
+    q0 = _unit_quat(0.0) * (1.0 + 5e-7)
+    frames = simplex_frames(q0, _unit_quat(45.0), n=2)
+    assert len(frames) == 2
+    assert all(np.isfinite(frame.array).all() for frame in frames)
+
+
+def test_simplex_frames_rejects_wrong_shape_quaternion():
+    with pytest.raises(ValueError):
+        simplex_frames(_unit_quat(0.0)[:3], _unit_quat(30.0), n=3)
+
 
 def test_simplex_frames_count_shape_and_range():
     frames = simplex_frames(_unit_quat(0.0), _unit_quat(90.0), n=4)

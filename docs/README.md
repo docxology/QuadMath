@@ -9,7 +9,7 @@ DOI [10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
 | Path | Contents |
 |---|---|
 | `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` + `01_introduction.md` … `18_stats_gallery.md`, 19 files) — editing source of truth |
-| `quadmath/scripts/` | Render/clean scripts plus figure, data, glossary, GIF, and validation generators (19 Python + 2 shell scripts) |
+| `quadmath/scripts/` | Render/clean scripts plus figure, data, glossary, GIF, and validation generators (23 Python + 2 shell scripts) |
 | `src/quadmath/`, `tests/` | Factored source package (`core`, `lattice`, `optimize`, `inference`, `stats`, `learn`, `viz`, `validate`, `tools`) and mirrored test suite |
 | `docs/manuscript/` | Template-layout manuscript projection for the shared docxology render pipeline (`config.yaml`, `preamble.md`, `references.bib`, sections `01…99`, `figures/`) — see its `README.md` and `docs/MANUSCRIPT_STATUS.md` |
 | `docs/development/` | Test/coverage workflow and the docs link checker (`check_links.py`) |

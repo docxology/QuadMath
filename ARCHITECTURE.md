@@ -50,11 +50,11 @@ This document provides a comprehensive overview of how the QuadMath repository a
 **Purpose**: Implements mathematical functionality for quadray coordinates, optimization, and information geometry.
 
 **Key Modules**:
-- `quadray.py`: Core quadray coordinate system
-- `cayley_menger.py`: Geometric algorithms (Bareiss algorithm)
-- `information.py`: Information geometry and Fisher information
-- `discrete_variational.py`: Optimization on tetrahedral lattices
-- `visualize.py`: Plotting and visualization utilities
+- `core/quadray.py`: Core quadray coordinate system
+- `core/cayley_menger.py`: Geometric algorithms (Bareiss algorithm)
+- `inference/information.py`: Information geometry and Fisher information
+- `optimize/discrete_variational.py`: Optimization on tetrahedral lattices
+- `viz/visualize.py`: Plotting and visualization utilities
 - `paths.py`: Path management and output directory utilities
 
 **Responsibilities**:
@@ -68,7 +68,7 @@ This document provides a comprehensive overview of how the QuadMath repository a
 **Coverage Requirements**:
 - **Statement coverage**: 100% of all code lines executed
 - **Branch coverage**: 100% of all conditional branches taken
-- **No mocks**: All tests use real numerical examples
+- **No mocks**: Numeric code is never mocked (`monkeypatch` only redirects output paths, shrinks benchmark sizes, or wraps a real helper)
 - **Deterministic**: Fixed RNG seeds for reproducible results
 
 **Validation Scope**:
@@ -108,7 +108,15 @@ This document provides a comprehensive overview of how the QuadMath repository a
 - `07_resources.md`: References and resources
 - `08_equations_appendix.md`: Mathematical equations
 - `09_free_energy_active_inference.md`: Active inference
-- `10_symbols_glossary.md`: Auto-generated API reference
+- `10_symbols_glossary.md`: Symbols and glossary, including the auto-generated API index
+- `11_ivm_field_learning.md`: Static IVM field learning
+- `12_ivm_dynamics.md`: Dynamics and learning on the IVM lattice
+- `13_lattice_tooling.md`: Omnidirectional numbering and nearest-site search
+- `14_conversions_spec.md`: Conversions and specification
+- `15_learning_evaluation.md`: Learning and evaluation on the IVM lattice
+- `16_lattice_gallery.md`: Lattice visualization gallery
+- `17_benchmarks_statistics.md`: Benchmarks and statistics
+- `18_stats_gallery.md`: Statistics and scaling gallery
 
 **Content Requirements**:
 - Reference source code using inline code formatting

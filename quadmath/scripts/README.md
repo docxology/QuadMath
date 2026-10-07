@@ -9,11 +9,11 @@ under `src/` — figure/data/analysis logic lives in `src/` and is tested under
 
 | Script | Purpose | Delegates to | Run command |
 |--------|---------|--------------|-------------|
-| `render_pdf.sh` | Full build: figures, glossary, validation, per-chapter + combined PDFs, LaTeX export | every script below (its `scripts` array) + `pandoc`/`xelatex` | `bash quadmath/scripts/render_pdf.sh` |
-| `clean_output.sh` | Remove all regenerable build output (`quadmath/output/`, `quadmath/latex/`) | filesystem only | `bash quadmath/scripts/clean_output.sh` |
-| `make_all_figures.py` | Run the 9 figure generators in sequence; write `figure_manifest.txt` | the 9 figure scripts below (subprocess); `src/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
+| `render_pdf.sh` | Full build: figures, glossary, validation, per-chapter + combined PDFs, LaTeX export | `make_all_figures.py`, `generate_glossary.py`, `validate_markdown.py` (its `scripts` array; figures skipped with `--skip-figures`) + `pandoc`/`xelatex` | `bash quadmath/scripts/render_pdf.sh` |
+| `clean_output.sh` | Remove generated files under `quadmath/output/`, keeping the per-folder `AGENTS.md` and `README.md` | filesystem only | `bash quadmath/scripts/clean_output.sh` |
+| `make_all_figures.py` | Run the 20 figure/data/GIF generators in sequence; write `figure_manifest.txt` (repo-relative, deduplicated paths) | the 20 scripts listed under Pipeline composition (subprocess); `src/quadmath/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
 | `validate_markdown.py` | Check image refs, internal links/anchors, equation-label uniqueness | none (stdlib only) | `uv run python quadmath/scripts/validate_markdown.py` |
-| `generate_glossary.py` | Regenerate `quadmath/markdown/10_symbols_glossary.md` from the `src/` API | `src/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py` |
+| `generate_glossary.py` | Regenerate `quadmath/markdown/10_symbols_glossary.md` from the `src/` API; `--check` exits 1 when the file is stale and never writes | `src/quadmath/tools/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py [--check]` |
 | `information_demo.py` | Information geometry: Fisher curvature, natural-gradient descent, free energy (figures + CSV) | `src/information.py`, `src/discrete_variational.py`, `src/metrics.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` | `uv run python quadmath/scripts/information_demo.py` |
 | `active_inference_figures.py` | Active-inference figures: free energy, perception-action loop | `src/information.py`, `src/paths.py` | `uv run python quadmath/scripts/active_inference_figures.py` |
 | `simplex_animation.py` | Nelder-Mead simplex animation (MP4) and trace figures | `src/nelder_mead_quadray.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` | `uv run python quadmath/scripts/simplex_animation.py` |
@@ -30,18 +30,20 @@ All commands run from the repository root.
 
 ### Pipeline composition
 
-- `render_pdf.sh` runs, in order: `ivm_neighbors.py`, `quadray_clouds.py`,
-  `volumes_demo.py`, `simplex_animation.py`, `graphical_abstract_quadray.py`,
-  `polyhedra_quadray_constructions.py`, `sympy_formalisms.py`,
-  `information_demo.py`, `active_inference_figures.py`, `generate_glossary.py`,
-  `validate_markdown.py`, `make_all_figures.py`.
-- `make_all_figures.py` runs: `information_demo.py`, `active_inference_figures.py`,
-  `volumes_demo.py`, `ivm_neighbors.py`, `quadray_clouds.py`,
-  `simplex_animation.py`, `discrete_variational_demo.py`, `sympy_formalisms.py`,
-  `gpu_acceleration_demo.py`.
-- Consequence: `discrete_variational_demo.py` and `gpu_acceleration_demo.py` run
-  only via `make_all_figures.py`; `graphical_abstract_quadray.py` and
-  `polyhedra_quadray_constructions.py` run only directly in `render_pdf.sh`.
+- `render_pdf.sh` runs 3 scripts, in order: `make_all_figures.py` (skipped with
+  `--skip-figures`), `generate_glossary.py`, `validate_markdown.py --strict`.
+  It then builds the per-module and combined PDFs with `pandoc` and `xelatex`.
+- `make_all_figures.py` runs 20 scripts, in its `main()` order:
+  `information_demo.py`, `active_inference_figures.py`, `volumes_demo.py`,
+  `ivm_neighbors.py`, `quadray_clouds.py`, `simplex_animation.py`,
+  `graphical_abstract_quadray.py`, `polyhedra_quadray_constructions.py`,
+  `discrete_variational_demo.py`, `sympy_formalisms.py`,
+  `gpu_acceleration_demo.py`, `ivm_field_demo.py`, `ivm_dynamics_demo.py`,
+  `lattice_gallery.py`, `stats_gallery.py`, `animation_gallery.py`,
+  `learning_gallery.py`, `quaternion_gallery.py`, `animation_stills.py`,
+  `stats_diagnostics_gallery.py`.
+- `gpu_acceleration_demo.py` writes no artifact and prints no output path, so
+  it is exempt from the existence check (`NO_ARTIFACT_SCRIPTS`).
 
 ## Script Development
 
@@ -92,7 +94,7 @@ def main() -> None:
     plt.close(fig)
     print(f"Generated: {fig_path}")  # stdout paths feed the manifest
 
-    data_path = get_data_dir() / "output_name.csv"
+    data_path = os.path.join(get_data_dir(), "output_name.csv")
     # ... save data ...
     print(f"Generated: {data_path}")
 
@@ -110,11 +112,11 @@ if __name__ == "__main__":
    `from quadmath.paths import ...` — NOT installed-package style
 3. **Headless mode**: `MPLBACKEND=Agg` before importing matplotlib
 4. **Fixed seeds**: `np.random.seed(42)` for reproducibility
-5. **Print outputs**: print every generated path; stdout lines ending in
-   `.png/.mp4/.pdf/.csv/.npz` feed the `make_all_figures.py` manifest
+5. **Print outputs**: print every generated absolute path; stdout lines ending in
+   `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` feed the `make_all_figures.py` manifest
 6. **Close figures + main guard**: `plt.close(fig)`; all entry logic behind
    `if __name__ == "__main__":` so scripts stay import-safe
-   (`tests/test_sympy_formalisms.py` imports `sympy_formalisms.py` directly)
+   (`tests/tools/test_sympy_formalisms.py` imports `sympy_formalisms.py` directly)
 
 ## Output Locations
 

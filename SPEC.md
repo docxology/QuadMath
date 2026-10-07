@@ -3,7 +3,7 @@
 **Status.** This is the canonical mathematical specification of the QuadMath lattice core
 (quadray coordinates, the Urner embedding, exact conversion and inversion, exact distances,
 shell structure, close-packing numbering, and nearest-site search). Its executable
-transcription is `tests/test_spec_examples.py`: every normative claim below carries an
+transcription is `tests/unit/lattice/test_spec_examples.py`: every normative claim below carries an
 identifier `S#` and is exercised by exactly one named test; the set of test names in that
 file equals the set of names in the claim index (§7.5), enforced mechanically in both
 directions. The manuscript projection of this specification is
@@ -22,15 +22,15 @@ Normative for these public surfaces:
 
 | Module | Surfaces specified here |
 | --- | --- |
-| `src/quadray.py` | `Quadray` (dataclass, `normalize`, `as_tuple`, `add`, `sub`), `to_xyz`, `DEFAULT_EMBEDDING`, `quadray_from_xyz`, `integer_tetra_volume`, `ace_tetravolume_5x5`, `magnitude`, `dot`, `distance`, `angle`, `centroid` |
-| `src/conversions.py` | `urner_embedding`, `quadray_to_xyz`, `xyz_to_quadray_canonical`, `quadray_roundtrip`, `embedding_basis` |
-| `src/ivm_field.py` | lattice predicates and enumeration only: `is_ivm_site`, `quadray_shell_norm`, `shell_sites`, `ball_sites`, `shell_cardinalities`, `IVM_NEIGHBOR_STEPS` |
-| `src/omni_numbering.py` | `NEIGHBOR_MOVES`, `MAX_SHELL`, `shell_count`, `cumulative_count`, `generate_shell`, `sites_through_shell`, `site_index`, `site_at_index` |
-| `src/lattice_search.py` | `squared_distance`, `nearest`, `within_radius` |
+| `src/quadmath/core/quadray.py` | `Quadray` (dataclass, `normalize`, `as_tuple`, `add`, `sub`), `to_xyz`, `DEFAULT_EMBEDDING`, `quadray_from_xyz`, `integer_tetra_volume`, `ace_tetravolume_5x5`, `magnitude`, `dot`, `distance`, `angle`, `centroid` |
+| `src/quadmath/lattice/conversions.py` | `urner_embedding`, `quadray_to_xyz`, `xyz_to_quadray_canonical`, `quadray_roundtrip`, `embedding_basis` |
+| `src/quadmath/lattice/ivm_field.py` | lattice predicates and enumeration only: `is_ivm_site`, `quadray_shell_norm`, `shell_sites`, `ball_sites`, `shell_cardinalities`, `IVM_NEIGHBOR_STEPS` |
+| `src/quadmath/lattice/omni_numbering.py` | `NEIGHBOR_MOVES`, `MAX_SHELL`, `shell_count`, `cumulative_count`, `generate_shell`, `sites_through_shell`, `site_index`, `site_at_index` |
+| `src/quadmath/lattice/lattice_search.py` | `squared_distance`, `nearest`, `within_radius` |
 | `lean/` | the Lean 4 mirror of the same mathematics (status in §7.3) |
 
 **Out of scope** (not specified here; they carry their own tests and manuscript sections):
-the field-learning machinery (`IVMField`, `fit_geometry` in `src/ivm_field.py`), the
+the field-learning machinery (`IVMField`, `fit_geometry` in `src/quadmath/lattice/ivm_field.py`), the
 dynamics modules (`discrete_variational`, `ivm_dynamics`), optimization and symbolic
 modules (`nelder_mead_quadray`, `cayley_menger`, `symbolic`), the Einstein.4D namespace
 (`geometry.py`), information geometry (`information.py`, `metrics.py`), and all
@@ -417,7 +417,7 @@ $q_{\mathrm{real}} = M^{+}\,\mathrm{xyz}$ (the sum-zero representative
 $w = q - \frac{s}{4}\mathbf{1}$ of the true class, since $\sum_i q_{\mathrm{real},i} = 0$
 by (S6)), rounds **half-up** (`floor(v + 0.5)`, not banker's rounding), and normalizes.
 For points that lie exactly on the quadray lattice — of any residue class — the rounded
-point stays in the input's $(1,1,1,1)$-coset, so the round trip through `from_xyz` is
+point stays in the input's $(1,1,1,1)$-coset, so the round trip through `quadray_from_xyz` is
 exact. Worked cases, exact at scales $c = 1$ and $c = 1/2$ alike: $(1,1,0,0)$ (sum
 $\equiv 2 \pmod 4$: the projection lands on exact half-integer ties in all four
 components, and half-up keeps the class), $(1,0,0,0)$, $(1,1,1,0)$, the unnormalized
@@ -442,12 +442,12 @@ function is a snapping operation, not an exact inverse (that is S20's role).
 
 ### 7.1 Executable transcription
 
-`tests/test_spec_examples.py` transcribes every claim of this specification as one named
+`tests/unit/lattice/test_spec_examples.py` transcribes every claim of this specification as one named
 test (deterministic, real numerical examples, no mocks, stdlib `fractions` allowed, no
 new dependencies). Run it from the repo root:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --no-sync pytest tests/test_spec_examples.py -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --no-sync pytest tests/unit/lattice/test_spec_examples.py -q
 ```
 
 The set of test functions in that file equals the set of names in the claim index
@@ -455,7 +455,7 @@ The set of test functions in that file equals the set of names in the claim inde
 
 ### 7.2 Companion coverage
 
-`tests/test_conversions.py` (landed with the conversions wave) covers the same layer
+`tests/unit/lattice/test_conversions.py` (landed with the conversions wave) covers the same layer
 independently: delegation, 309-site round-trips through shells 0–4, scale-robust
 round-trips ($c = 0.5, 2.0$), exact canonical recovery (default and half-scale
 embeddings), the fiber tie-break, the fail-closed taxonomy, both Gram identities, and
@@ -511,7 +511,7 @@ machinery it references in its "Lattice context" section is specified in §§4.5
 ### 7.5 Claim index
 
 One row per normative claim. "Implemented by" names the landed function that realizes
-the claim; "Exercised by" names the test in `tests/test_spec_examples.py` whose name
+the claim; "Exercised by" names the test in `tests/unit/lattice/test_spec_examples.py` whose name
 must match exactly (the test file contains these names and no others, and every test
 function appears here).
 

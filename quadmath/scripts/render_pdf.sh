@@ -245,6 +245,9 @@ build_one() {
 
   # Compile TeX to PDF with Xelatex
   log_info "Compiling PDF: $base.pdf"
+  local xelatex_log="$LATEX_TEMP_DIR/${base}.xelatex.log"
+  rm -f "$pdf_out" "$xelatex_log"
+  local compile_status=0
   (
     cd "$OUTPUT_DIR"
     
@@ -252,9 +255,11 @@ build_one() {
     log_info "Using optimized xelatex compilation"
     
     # First run - generate initial PDF
-    if xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1; then
+    xelatex_status=0
+    if xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >>"$xelatex_log" 2>&1; then
       log_info "First xelatex run completed"
     else
+      xelatex_status=$?
       log_warn "First xelatex run had warnings (continuing)"
     fi
     
@@ -264,28 +269,34 @@ build_one() {
       # Look for unresolved references in .aux file
       if grep -q "\\\@ref" "$aux_file" 2>/dev/null || grep -q "\\\@cite" "$aux_file" 2>/dev/null; then
         log_info "Unresolved references detected, running second xelatex pass"
-        xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+        xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
       fi
       
       # Final run to ensure all references are resolved
       log_info "Running final xelatex pass"
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
     else
       # If no .aux file, run twice to be safe
       log_info "No .aux file, running two xelatex passes"
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/$base.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
     fi
     
     # Clean up auxiliary files
     rm -f "$PDF_DIR/${base}.aux" "$PDF_DIR/${base}.log" "$PDF_DIR/${base}.toc" 2>/dev/null || true
-  )
-  
-  if [ -f "$pdf_out" ]; then
+    exit "$xelatex_status"
+  ) || compile_status=$?
+
+  if [ "$compile_status" -eq 0 ] && [ -f "$pdf_out" ]; then
+    rm -f "$xelatex_log"
     log_info "✅ Built: $pdf_out"
     return 0
   else
-    log_error "❌ Failed to build: $pdf_out"
+    log_error "❌ Failed to build: $pdf_out (xelatex exit $compile_status)"
+    if [ -f "$xelatex_log" ]; then
+      log_error "Last 20 lines of $xelatex_log:"
+      tail -n 20 "$xelatex_log" >&2
+    fi
     return 1
   fi
 }
@@ -364,6 +375,9 @@ build_combined() {
 
   # Compile combined TeX to PDF
   log_info "Compiling combined PDF..."
+  local xelatex_log="$LATEX_TEMP_DIR/quadmath_review.xelatex.log"
+  rm -f "$PDF_DIR/quadmath_review.pdf" "$xelatex_log"
+  local compile_status=0
   (
     cd "$OUTPUT_DIR"
     
@@ -371,9 +385,11 @@ build_combined() {
     log_info "Using optimized xelatex compilation for combined document"
     
     # First run - generate initial PDF
-    if xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1; then
+    xelatex_status=0
+    if xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >>"$xelatex_log" 2>&1; then
       log_info "First xelatex run completed for combined document"
     else
+      xelatex_status=$?
       log_warn "First xelatex run had warnings (continuing)"
     fi
     
@@ -383,28 +399,34 @@ build_combined() {
       # Look for unresolved references in .aux file
       if grep -q "\\\@ref" "$aux_file" 2>/dev/null || grep -q "\\\@cite" "$aux_file" 2>/dev/null; then
         log_info "Unresolved references detected, running second xelatex pass"
-        xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+        xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
       fi
       
       # Final run to ensure all references are resolved
       log_info "Running final xelatex pass for combined document"
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
     else
       # If no .aux file, run twice to be safe
       log_info "No .aux file, running two xelatex passes for combined document"
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >/dev/null 2>&1 || true
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
+      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$TEX_DIR/quadmath_review.tex" >>"$xelatex_log" 2>&1 || xelatex_status=$?
     fi
     
     # Clean up auxiliary files
     rm -f "$PDF_DIR/quadmath_review.aux" "$PDF_DIR/quadmath_review.log" "$PDF_DIR/quadmath_review.toc" 2>/dev/null || true
-  )
-  
-  if [ -f "$PDF_DIR/quadmath_review.pdf" ]; then
+    exit "$xelatex_status"
+  ) || compile_status=$?
+
+  if [ "$compile_status" -eq 0 ] && [ -f "$PDF_DIR/quadmath_review.pdf" ]; then
+    rm -f "$xelatex_log"
     log_info "✅ Built combined PDF: $PDF_DIR/quadmath_review.pdf"
     return 0
   else
-    log_error "❌ Failed to build combined PDF"
+    log_error "❌ Failed to build combined PDF (xelatex exit $compile_status)"
+    if [ -f "$xelatex_log" ]; then
+      log_error "Last 20 lines of $xelatex_log:"
+      tail -n 20 "$xelatex_log" >&2
+    fi
     return 1
   fi
 }
@@ -482,6 +504,7 @@ main() {
     log_info "✅ Combined document built successfully"
   else
     log_error "❌ Combined document failed"
+    failed_modules+=("quadmath_review.pdf")
   fi
   
   # Summary

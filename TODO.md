@@ -49,8 +49,34 @@ deleted.
 - [x] 42 tracked `__pycache__/*.pyc` files untracked. (src/__pycache__)
 - [ ] `quadray_from_xyz` nearest-point change conflicts with the documented contract (quadmath/markdown/14_conversions_spec.md, `test_spec_examples.py::test_quadray_from_xyz_not_always_xyz_nearest`). Needs an owner decision: keep component rounding and document it, or change the contract and test.
 - [ ] `docs/manuscript/` and `quadmath/markdown/` have diverged (only `quadmath/markdown/` was updated in this release; `docs/manuscript/` still reports 27 sites and the old `-H` formula). Pick one canonical copy and delete or sync the other.
-- [ ] Figure scripts (`animations.py`, `visualize.py`, `vis_lattice.py`) close figures with `plt.close` outside `try/finally`; an exception during save leaks the figure.
-- [ ] `learning_eval` gradient descent has no step-size stability check for `lr` (learning_eval.py, `lr` loop).
-- [ ] `statistics.summarize` returns NaN std for n=1 with a numpy RuntimeWarning rather than an explicit value.
-- [ ] Figure and data writes are not atomic.
+- [x] Figure scripts (`visualize.py`, `vis_lattice.py`, `vis_stats.py`, `plots.py`, `animations.py`) close figures in `try/finally`; `plots.py` with `save=False` no longer leaks an open figure. (src/quadmath/viz/)
+- [x] `GradientDescentTrainer` checks step size against the augmented Hessian `(2/n)[Z 1]^T[Z 1]` and raises when `lr * lambda_max >= 2`; a non-finite loss raises. (src/quadmath/learn/learning_eval.py)
+- [x] `statistics.summarize` returns NaN std for n=1 explicitly, with no RuntimeWarning. (src/quadmath/stats/statistics.py)
+- [~] Viz outputs are written via temp file and `os.replace`. Still open: data writes in `quadmath/scripts/` and `make_all_figures` manifest.
+- [x] `vis_lattice.field_slice` transposed the plane for square planes and raised TypeError for non-square planes; axes now follow the plane. `vis_gallery_field.png` regenerated. (src/quadmath/viz/vis_lattice.py)
+- [x] `visualize._set_axes_equal` set box aspect without equal data scales and swallowed exceptions; now sets aspect from data spans. (src/quadmath/viz/_common.py)
+- [x] Public viz functions consumed generator `embedding` inputs twice; now converted once. `visualize.py` gets an explicit `__all__`. (src/quadmath/viz/visualize.py)
+- [x] `animations.py` duplicated core `slerp`/`qrotate`; now uses core. Docstring of the quaternion rotation formula corrected. (src/quadmath/viz/animations.py)
+- [x] `permutation_test` accepted NaN and returned p=1/51 for `[1,nan,3,4]` vs `[2,5,6]`. (src/quadmath/stats/statistics.py)
+- [x] `bootstrap_ci` accepted alpha outside (0, 1). `p_adjust_bonferroni` accepted p outside [0, 1]. `cohens_d` accepted n<2 per sample. (src/quadmath/stats/statistics.py)
+- [x] `scaling_fit` accepted a single point or equal sizes. (src/quadmath/stats/statistics.py)
+- [x] NaN passed silently through `summarize`, `welch_t_test`, `cohens_d`, ridge, and GD. (src/quadmath/stats/statistics.py, src/quadmath/learn/learning_eval.py)
+- [x] `welch_t_test` underflowed for samples near 1e-85 scale; rescaled before squaring. (src/quadmath/stats/statistics.py)
+- [x] `run_all.sh` ignored unknown flags and exited 0; unknown options now exit 2. (run_all.sh)
+- [x] `render_pdf.sh` combined-PDF failure exited 0; stale PDFs counted as success; xelatex output discarded. Now logged and failure-checked. (quadmath/scripts/render_pdf.sh)
+- [x] `clean_output.sh` deleted git-tracked AGENTS.md and README.md under `quadmath/output/`. (quadmath/scripts/clean_output.sh)
+- [x] `make_all_figures.py` manifest dropped `.gif`/`.txt`, kept prose prefixes, and duplicated entries; now extracts repo-relative paths and asserts each path exists. (quadmath/scripts/make_all_figures.py)
+- [x] `generate_glossary.py` silently rewrote a tracked file; `--check` mode added. `glossary_gen` skipped syntax errors silently and indexed private constants. (quadmath/scripts/generate_glossary.py, src/quadmath/tools/glossary_gen.py)
+- [x] `learning_gallery.py` saved the figure via `plt.gcf()` after `save=False`; now passes `out_path` to `plot_loss_history`. (quadmath/scripts/learning_gallery.py, src/quadmath/viz/plots.py)
+- [x] Doc drift corrected: radius-3 lattice is 13 sites and free-energy formula in `docs/manuscript/08, 09, 12, 16`; test and file counts in `tests/README.md`, `tests/AGENTS.md`; flat `src/*.py` paths in SPEC, ARCHITECTURE, README, AGENTS, docs; broken links in `quadmath/markdown/`; scripts README counts and paths.
+- [ ] `validate.check_slerp_midpoint` (validate.py ~L270-286) fails correct slerp for any pair with dot < 0, so q and -q are reported as failures. Design decision: compare against the shorter-arc representative.
+- [ ] Stat-callable convention conflicts: `bootstrap_ci` calls `stat(x, axis=1)`; `jackknife_ci` calls `stat(1-D)`. Pick one.
+- [ ] `bootstrap_ci` and `scaling_fit` still accept NaN; `permutation_test` float ties (comparison tolerance).
+- [ ] `quadmath/output/data/figure_manifest.txt` is stale (34 lines, `/Volumes/...` paths) and fails the new existence assertion. Regenerate with the full pipeline.
+- [ ] `quadmath/markdown/10_symbols_glossary.md` not regenerated; generator now adds 3 rows and removes 23 `_`-prefixed rows. Regenerate with the full pipeline.
+- [ ] `render_pdf.sh` MODULES excludes sections 11–18; `gpu_acceleration_demo.py` writes no artifact; pandoc and xelatex blocks are duplicated in `render_pdf.sh`.
+- [ ] Viz path-handling policy differs across modules; MP4 byte reproducibility unverified (ffmpeg `creation_time`); `vis_lattice.shell_scatter` and `dynamics_strip` have the generator-of-rows issue.
+- [ ] `src/AGENTS.md` and `src/README.md` still name `_set_axes_equal` in `visualize.py`; it moved to `viz/_common.py`.
+- [ ] Lint: 8 `F`/`E9` errors in `tests/` (including F841 at `tests/unit/viz/test_vis_stats.py:135`), and 23 in `src/` and `quadmath/scripts/` (including F403/F401 in `src/quadmath/viz/__init__.py`).
+- [ ] Test counts in `tests/README.md` and `tests/AGENTS.md` are a 2026-10-07 snapshot (40 files, 709 tests); the tree now has 41 files and 745 tests. Regenerate or drop the hard numbers.
 - [ ] `ivm_field.ball_sites` and `ivm_dynamics.ball_sites` share a name with different semantics (see `src/quadmath/lattice/__init__.py`); consider renaming one.

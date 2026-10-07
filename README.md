@@ -11,7 +11,7 @@ This repository organizes a comprehensive review of Quadray coordinates, integer
 ## Status & Next Actions
 
 - **Status**: Published v1 (Zenodo DOI above). Manuscript details and layout
-  rationale: `docs/manuscript/MANUSCRIPT_STATUS.md`. Verify against disk, not
+  rationale: `docs/MANUSCRIPT_STATUS.md`. Verify against disk, not
   this line: `ls quadmath/output/pdf/quadmath_review.pdf`.
 - **Backlog / next actions**: `TODO.md` at repo root is the single canonical
   to-do list.
@@ -92,7 +92,7 @@ This ensures that the mathematical concepts in the markdown, the implemented cod
 - `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
 - `lean/`: Lean 4 (core, no Mathlib) formalization mirror — zero sorries; `cd lean && lake build`
 - `SPEC.md`: mathematical specification (conventions, embedding, Gram identity, shells)
-- `docs/manuscript/MANUSCRIPT_STATUS.md`: manuscript status and canonical-layout rationale
+- `docs/MANUSCRIPT_STATUS.md`: manuscript status and canonical-layout rationale
 
 ## Test Suite and Code Connections
 

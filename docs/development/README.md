@@ -19,28 +19,30 @@ uv run coverage report
 ## Rules (enforced by review and by the suite)
 
 - **100% test coverage for every module under `src/`.** The test file for
-  `src/<module>.py` is `tests/test_<module>.py`.
-- **No mocks.** Tests use real numerical examples — actual lattice points,
-  actual volumes, actual embeddings — never stubs.
+  `src/quadmath/<area>/<module>.py` is `tests/unit/<area>/test_<module>.py`.
+- **No mocks of numeric code.** Tests use real numerical examples — actual
+  lattice points, actual volumes, actual embeddings — never stubs. `monkeypatch`
+  is used only to redirect output directories, shrink benchmark sizes, or wrap
+  a real helper.
 - **Fixed RNG seeds** wherever randomness appears, so every run is
   reproducible.
 - **Fast and hermetic**: no network, no external state, deterministic outputs.
-- **Dependencies**: `numpy`, `matplotlib`, `sympy` only (`pyproject.toml`).
+- **Dependencies**: `numpy`, `matplotlib`, `pillow`, `sympy` (`pyproject.toml`).
 - **Type hints and NumPy-style docstrings** on all public functions.
 
 ## Source ↔ test correspondence
 
 | Source module | Test file |
 |---|---|
-| `src/quadray.py` | `tests/test_quadray.py` |
-| `src/linalg_utils.py` | `tests/test_linalg_utils.py` |
-| `src/cayley_menger.py` | `tests/test_cayley_menger.py` |
-| `src/conversions.py` | `tests/test_conversions.py` |
-| `src/nelder_mead_quadray.py` | `tests/test_nelder_mead_quadray.py` |
-| `src/discrete_variational.py` | `tests/test_discrete_variational.py` |
-| `src/information.py` | `tests/test_information.py` |
-| `src/ivm_dynamics.py` | `tests/test_ivm_dynamics.py` |
-| `src/<module>.py` | `tests/test_<module>.py` (pattern) |
+| `src/quadmath/core/quadray.py` | `tests/unit/core/test_quadray.py` |
+| `src/quadmath/core/linalg_utils.py` | `tests/unit/core/test_linalg_utils.py` |
+| `src/quadmath/core/cayley_menger.py` | `tests/unit/core/test_cayley_menger.py` |
+| `src/quadmath/lattice/conversions.py` | `tests/unit/lattice/test_conversions.py` |
+| `src/quadmath/optimize/nelder_mead_quadray.py` | `tests/unit/optimize/test_nelder_mead_visual.py` |
+| `src/quadmath/optimize/discrete_variational.py` | `tests/unit/optimize/test_discrete_variational.py` |
+| `src/quadmath/inference/information.py` | `tests/unit/inference/test_information.py` |
+| `src/quadmath/lattice/ivm_dynamics.py` | `tests/unit/lattice/test_ivm_dynamics.py` |
+| `src/quadmath/<area>/<module>.py` | `tests/unit/<area>/test_<module>.py` (pattern) |
 
 ## Manuscript validation
 

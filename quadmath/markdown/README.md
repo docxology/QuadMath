@@ -78,7 +78,7 @@ Link to other sections:
 ```markdown
 See [Quadray Methods](03_quadray_methods.md) for implementation details.
 
-The optimization methods in [Section 4](04_optimization_in_4d.md#nelder-mead)
+The optimization methods in [Section 4](04_optimization_in_4d.md)
 build on these foundations.
 ```
 
@@ -177,7 +177,7 @@ It documents all public APIs from `src/` modules.
 
 ### Custom Macros
 
-If needed, add to `quadmath/latex/preamble.tex`:
+If needed, add to `quadmath/markdown/00_preamble.md`:
 
 ```latex
 \newcommand{\quadray}[4]{(#1, #2, #3, #4)}

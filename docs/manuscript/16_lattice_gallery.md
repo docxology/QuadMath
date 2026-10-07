@@ -77,12 +77,12 @@ of 3D scatter panels over the embedded lattice.  All panels share one
 symmetric color scale \([-v_{\max}, v_{\max}]\) with
 \(v_{\max} = \max_t |u_t|\) over the selected snapshots, so evolution is
 directly comparable across panels.  The gallery strip shows heat diffusion
-(\(\alpha = 0.45\), horizon \(T = 20\)) on the radius-3 lattice (27 sites)
+(\(\alpha = 0.45\), horizon \(T = 20\)) on the radius-3 lattice (13 sites)
 at \(t = 0, 10, 20\): the seeded random initial field relaxes toward its
 lattice average — the visually flat mid panel and right panel are the
 \(L_2\)-monotone decay of the heat lemma in action.
 
-![**Heat-diffusion evolution strip.** Snapshots of a seeded heat run at t = 0, 10, 20 on the radius-3 IVM lattice (27 sites), rendered by `dynamics_strip` as 3D scatter panels on one shared symmetric `coolwarm` scale \([-v_{\max}, v_{\max}]\) with \(v_{\max} = \max_t |u_t|\) over the selected snapshots; the field visibly relaxes as the sum of squares decays monotonically.  Reproduced with `uv run python quadmath/scripts/lattice_gallery.py` (fixed seed 12).](figures/vis_gallery_dynamics.png)
+![**Heat-diffusion evolution strip.** Snapshots of a seeded heat run at t = 0, 10, 20 on the radius-3 IVM lattice (13 sites), rendered by `dynamics_strip` as 3D scatter panels on one shared symmetric `coolwarm` scale \([-v_{\max}, v_{\max}]\) with \(v_{\max} = \max_t |u_t|\) over the selected snapshots; the field visibly relaxes as the sum of squares decays monotonically.  Reproduced with `uv run python quadmath/scripts/lattice_gallery.py` (fixed seed 12).](figures/vis_gallery_dynamics.png)
 
 ## Deterministic animations and gallery plots {#sec:animation_frames}
 
@@ -113,12 +113,12 @@ The command-line surface is `quadmath/scripts/animation_gallery.py` — a thin o
   paths.  Every panel is fully seeded, and the PNGs carry no timestamp
   metadata: the test suite asserts byte-identical re-renders for a fixed
   seed.
-- Tests: `tests/test_vis_lattice.py` — 19 tests, no mocks, deterministic
+- Tests: `tests/unit/viz/test_vis_lattice.py` — 22 tests, no mocks, deterministic
   assertions without pixel diffs (artist placement on caller-provided
   axes, exact field values at known lattice cells, byte-level
   reproducibility).  Scope with
   `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
-  tests/test_vis_lattice.py -q` and `uv run coverage report` — 100%
+  tests/unit/viz/test_vis_lattice.py -q` and `uv run coverage report` — 100%
   statement and branch coverage of `src/quadmath/viz/vis_lattice.py`.
 - Tests: `tests/unit/viz/test_animations.py` covers the frame module
   (`Frame` validation, the three renderers, `frames_to_gif`) and the strip

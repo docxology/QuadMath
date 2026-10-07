@@ -5,10 +5,8 @@ Constructs a deterministic synthetic linear-regression problem, fits
 ``GradientDescentTrainer`` from ``src/quadmath/learn/learning_eval.py``, and
 delegates rendering to ``src/quadmath/viz/plots.py::plot_loss_history`` per the
 thin-orchestrator contract in ``quadmath/scripts/AGENTS.md``.  The builder's
-``save=True`` path writes to the fixed name ``loss_history.png``, but the
-manuscript pins this figure as ``learn_loss_history.png``; so the builder is
-called with ``save=False`` and the open figure is saved here under the pinned
-name.  Sets a headless backend and fixed seeds throughout; writes
+``out_path`` argument names the manuscript-pinned ``learn_loss_history.png``
+(the builder's default name is ``loss_history.png``).  Sets a headless backend and fixed seeds throughout; writes
 ``learn_loss_history.png`` under ``quadmath/output/figures/`` and prints the
 output path (the stdout path line is the ``make_all_figures`` manifest
 contract -- only path lines on stdout).
@@ -51,8 +49,6 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    import matplotlib.pyplot as plt  # noqa: WPS433
-
     from quadmath.learn.learning_eval import GradientDescentTrainer  # noqa: WPS433
     from quadmath.paths import get_figure_dir  # noqa: WPS433
     from quadmath.viz.plots import plot_loss_history  # noqa: WPS433
@@ -60,12 +56,8 @@ def main() -> None:
     features, target, _ = synthetic_linear_data(n_samples=40, n_features=3, seed=0)
     trainer = GradientDescentTrainer(lr=0.05, max_iters=300).fit(features, target)
 
-    plot_loss_history(trainer.loss_history, save=False)
-    fig = plt.gcf()
     out_path = f"{get_figure_dir()}/learn_loss_history.png"
-    fig.savefig(out_path, dpi=160, bbox_inches="tight")
-    plt.close(fig)
-    print(out_path)
+    print(plot_loss_history(trainer.loss_history, out_path=out_path))
 
 
 if __name__ == "__main__":

@@ -33,13 +33,13 @@ import os
 from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence, Tuple, Union
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 
 from quadmath.lattice.ivm_dynamics import DynamicsParams, Trajectory, simulate
 from quadmath.lattice.ivm_field import IVMField
 from quadmath.lattice.omni_numbering import generate_shell
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
+from quadmath.viz._common import figure_scope, save_figure
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from matplotlib.axes import Axes
@@ -334,10 +334,11 @@ def field_slice(
     vmax = vmax if vmax > vmin else vmin + 1.0
     cmap_obj = mpl.colormaps[cmap].copy()
     cmap_obj.set_bad("0.88")
+    # pcolormesh takes C shaped (len(Y), len(X)); grid is indexed [i, j] with i along x.
     mesh = ax.pcolormesh(
         _cell_edges(i_vals),
         _cell_edges(j_vals),
-        np.ma.masked_invalid(grid),
+        np.ma.masked_invalid(grid).T,
         cmap=cmap_obj,
         shading="flat",
         vmin=vmin,
@@ -456,15 +457,14 @@ def gallery(paths_out_dir: str, seed: int = 12) -> List[str]:
     rng = np.random.default_rng(seed)
 
     # Figure 1: frequency shells 1 and 2 with tetrahedral axis hints.
-    fig = plt.figure(figsize=(11.0, 4.6))
-    for n, k in enumerate((1, 2), start=1):
-        ax = fig.add_subplot(1, 2, n, projection="3d")
-        shell_scatter(ax, generate_shell(k), k)
-    fig.suptitle("IVM frequency shells of the omnidirectional close packing")
-    fig.tight_layout()
-    shell_path = os.path.join(paths_out_dir, GALLERY_FILES[0])
-    fig.savefig(shell_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(11.0, 4.6)) as fig:
+        for n, k in enumerate((1, 2), start=1):
+            ax = fig.add_subplot(1, 2, n, projection="3d")
+            shell_scatter(ax, generate_shell(k), k)
+        fig.suptitle("IVM frequency shells of the omnidirectional close packing")
+        fig.tight_layout()
+        shell_path = os.path.join(paths_out_dir, GALLERY_FILES[0])
+        save_figure(fig, shell_path, dpi=160)
 
     # Figure 2: learned scalar field sliced along the default lattice plane.
     radius = 3
@@ -480,23 +480,21 @@ def gallery(paths_out_dir: str, seed: int = 12) -> List[str]:
         for n, residual in zip(np.flatnonzero(mask), noise)
     ]
     field.learn(obs_sites, obs_values, lam=0.01, kernel_width=0.5)
-    fig = plt.figure(figsize=(7.2, 5.8))
-    ax = fig.add_subplot(1, 1, 1)
-    field_slice(ax, field, sites, DEFAULT_PLANE)
-    fig.tight_layout()
-    field_path = os.path.join(paths_out_dir, GALLERY_FILES[1])
-    fig.savefig(field_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(7.2, 5.8)) as fig:
+        ax = fig.add_subplot(1, 1, 1)
+        field_slice(ax, field, sites, DEFAULT_PLANE)
+        fig.tight_layout()
+        field_path = os.path.join(paths_out_dir, GALLERY_FILES[1])
+        save_figure(fig, field_path, dpi=160)
 
     # Figure 3: heat-diffusion evolution strip on the radius-3 lattice.
     trajectory = simulate(20, DynamicsParams(kind="heat", alpha=0.45, seed=seed))
-    fig = plt.figure(figsize=(12.0, 4.2))
-    axs = [fig.add_subplot(1, 3, n, projection="3d") for n in (1, 2, 3)]
-    dynamics_strip(axs, trajectory, (0, 10, 20))
-    fig.suptitle("Heat diffusion on the IVM lattice (radius-3 ball)")
-    fig.tight_layout()
-    dynamics_path = os.path.join(paths_out_dir, GALLERY_FILES[2])
-    fig.savefig(dynamics_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(12.0, 4.2)) as fig:
+        axs = [fig.add_subplot(1, 3, n, projection="3d") for n in (1, 2, 3)]
+        dynamics_strip(axs, trajectory, (0, 10, 20))
+        fig.suptitle("Heat diffusion on the IVM lattice (radius-3 ball)")
+        fig.tight_layout()
+        dynamics_path = os.path.join(paths_out_dir, GALLERY_FILES[2])
+        save_figure(fig, dynamics_path, dpi=160)
 
     return [shell_path, field_path, dynamics_path]

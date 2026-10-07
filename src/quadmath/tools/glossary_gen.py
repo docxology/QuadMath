@@ -18,6 +18,7 @@ class ApiEntry:
 def _is_constant(name: str, node: ast.AST) -> bool:
     return (
         name.isupper()
+        and not name.startswith("_")
         and isinstance(node, (ast.Assign, ast.AnnAssign))
     )
 
@@ -52,10 +53,7 @@ def build_api_index(src_dir: str) -> List[ApiEntry]:
             module = os.path.splitext(os.path.relpath(path, src_dir))[0].replace(os.sep, ".")
             with open(path, "r", encoding="utf-8") as fh:
                 code = fh.read()
-            try:
-                tree = ast.parse(code, filename=path)
-            except SyntaxError:
-                continue
+            tree = ast.parse(code, filename=path)
 
             for node in tree.body:
                 if isinstance(node, ast.FunctionDef) and not node.name.startswith("_"):

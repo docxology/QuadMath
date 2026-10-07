@@ -530,6 +530,13 @@ def three_way_split(
     return train_idx, val_idx, test_idx
 
 
+def _require_finite(array: np.ndarray, name: str) -> np.ndarray:
+    """Return ``array`` unchanged, rejecting NaN and infinite entries."""
+    if not np.all(np.isfinite(array)):
+        raise ValueError(f"{name} must contain only finite values")
+    return array
+
+
 def ridge_site_fit(
     features: np.ndarray,
     values: np.ndarray,
@@ -553,8 +560,8 @@ def ridge_site_fit(
 
     Raises
     - ValueError: If ``lam`` is negative, ``features`` is not 2-D,
-      ``values`` is not 1-D, their sample counts disagree, or no sample
-      rows are given.
+      ``values`` is not 1-D, their sample counts disagree, no sample
+      rows are given, or any entry is non-finite.
     """
     X = np.asarray(features, dtype=float)
     y = np.asarray(values, dtype=float)
@@ -572,6 +579,8 @@ def ridge_site_fit(
         )
     if X.shape[0] == 0:
         raise ValueError("ridge_site_fit needs at least one sample row")
+    _require_finite(X, "features")
+    _require_finite(y, "values")
     x_mean = X.mean(axis=0)
     y_mean = float(y.mean())
     centered = X - x_mean
@@ -647,7 +656,11 @@ class GradientDescentTrainer:
 
         Raises
         - ValueError: If ``features`` is not 2-D, ``target`` is not 1-D,
-          their sample counts disagree, or no sample rows are given.
+          their sample counts disagree, no sample rows are given, or any
+          entry is non-finite; if ``lr * lambda_max >= 2``, where
+          ``lambda_max`` is the largest eigenvalue of the MSE Hessian
+          ``(2/n) [Z 1]^T [Z 1]`` (the step size would diverge); or if the
+          loss becomes non-finite during training.
         """
         X = np.asarray(features, dtype=float)
         y = np.asarray(target, dtype=float)
@@ -663,11 +676,20 @@ class GradientDescentTrainer:
             )
         if X.shape[0] == 0:
             raise ValueError("fit needs at least one sample row")
+        _require_finite(X, "features")
+        _require_finite(y, "target")
         mean = X.mean(axis=0)
         std = X.std(axis=0)
         std = np.where(std == 0.0, 1.0, std)
         standardized = (X - mean) / std
         n_samples, n_features = X.shape
+        design = np.hstack([standardized, np.ones((n_samples, 1))])
+        lambda_max = 2.0 / n_samples * float(np.linalg.eigvalsh(design.T @ design)[-1])
+        if self.lr * lambda_max >= 2.0:
+            raise ValueError(
+                f"step size too large: lr * lambda_max = {self.lr * lambda_max:.4g} "
+                "must stay below 2; reduce lr"
+            )
         coef = np.zeros(n_features, dtype=float)
         intercept = 0.0
         loss_history: List[float] = []
@@ -676,6 +698,11 @@ class GradientDescentTrainer:
         for _ in range(self.max_iters):
             errors = standardized @ coef + intercept - y
             loss = float(np.mean(errors ** 2))
+            if not np.isfinite(loss):
+                raise ValueError(
+                    f"loss became non-finite at iteration {len(loss_history)}; "
+                    "check the target scale"
+                )
             loss_history.append(loss)
             if previous is not None and abs(loss - previous) < self.tol:
                 converged = True

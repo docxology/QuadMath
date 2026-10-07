@@ -24,9 +24,10 @@ from typing import List, Optional, Sequence
 
 import numpy as np
 
-from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
+from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, qrotate, slerp, to_xyz
 from quadmath.lattice.ivm_field import IVM_NEIGHBOR_STEPS, ball_sites, quadray_shell_norm
 from quadmath.paths import get_figure_dir
+from quadmath.viz._common import atomic_target, encoded_angle, figure_scope, save_figure
 
 __all__ = [
     "Frame",
@@ -96,14 +97,17 @@ class Frame:
 
 
 def _as_unit_quat(q: Sequence[float], name: str) -> np.ndarray:
-    """Validate and return ``q`` as a float 4-vector of unit norm.
+    """Validate ``q`` within ``_UNIT_TOL`` of unit norm and return it normalized.
+
+    Normalizing before the core calls keeps the 1e-6 input tolerance while the
+    core ``slerp``/``qrotate`` enforce their own tighter 1e-9 check.
 
     Parameters
     - q: Sequence of four numbers ``(w, x, y, z)``.
     - name: Label used in error messages.
 
     Returns
-    - np.ndarray: Shape ``(4,)`` float copy of ``q`` (not re-normalized).
+    - np.ndarray: Shape ``(4,)`` float unit quaternion.
 
     Raises
     - ValueError: If ``q`` does not have exactly four components or its norm
@@ -115,66 +119,7 @@ def _as_unit_quat(q: Sequence[float], name: str) -> np.ndarray:
     norm = float(np.linalg.norm(arr))
     if abs(norm - 1.0) > _UNIT_TOL:
         raise ValueError(f"{name} must be a unit quaternion, got norm {norm!r}")
-    return arr
-
-
-def _slerp(qa: Sequence[float], qb: Sequence[float], t: float) -> np.ndarray:
-    """Spherical-linear interpolation between two unit quaternions.
-
-    Standard formula (Shoemaker): with ``d = <qa, qb>`` and, after flipping
-    ``qb`` by its sign when ``d < 0`` (shortest arc), the angle
-    ``theta = acos(d)``,
-
-        q(t) = sin((1 - t) theta) / sin(theta) * qa
-             + sin(t theta)       / sin(theta) * qb
-
-    For nearly-parallel inputs (``d > 1 - 1e-9``) a normalized linear
-    interpolation is used instead to avoid division by ``sin(theta) -> 0``.
-    The result is normalized, so its norm is 1 up to floating-point error.
-
-    Parameters
-    - qa, qb: Unit quaternions as 4-vectors ``(w, x, y, z)``.
-    - t: Interpolation parameter in ``[0, 1]``.
-
-    Returns
-    - np.ndarray: Shape ``(4,)`` unit quaternion on the shortest arc from
-      ``qa`` to ``qb``.  ``t = 0`` returns ``qa`` and ``t = 1`` returns
-      ``qb`` exactly; when the inputs are anti-parallel (``d < 0``) the
-      returned endpoint is ``-qb``, which represents the same rotation.
-
-    Raises
-    - ValueError: If either input is not a unit 4-vector or ``t`` is outside
-      ``[0, 1]``.
-    """
-    if t < 0.0 or t > 1.0:
-        raise ValueError(f"t must lie in [0, 1], got {t!r}")
-    a = _as_unit_quat(qa, "qa")
-    b = _as_unit_quat(qb, "qb")
-    d = float(a @ b)
-    if d < 0.0:
-        b = -b
-        d = -d
-    if d > 1.0 - 1e-9:
-        q = a + t * (b - a)
-    else:
-        theta = math.acos(min(1.0, d))
-        sin_theta = math.sin(theta)
-        q = (math.sin((1.0 - t) * theta) / sin_theta) * a + (
-            math.sin(t * theta) / sin_theta
-        ) * b
-    return q / np.linalg.norm(q)
-
-
-def _rotate_vector(q: np.ndarray, v: np.ndarray) -> np.ndarray:
-    """Rotate the 3-vector ``v`` by the unit quaternion ``q``.
-
-    Uses the sandwich product ``q (0, v) conj(q)`` expanded as
-    ``v' = v + 2 * cross(qv, cross(qv, v) + w * qv)`` with ``q = (w, qv)``.
-    """
-    w = float(q[0])
-    qv = q[1:]
-    t = 2.0 * np.cross(qv, v)
-    return v + w * t + np.cross(qv, t)
+    return arr / norm
 
 
 def _project_to_grid(
@@ -216,9 +161,10 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
     """Render a quaternion-slerp rotation of the IVM radius-1 ball.
 
     The two unit quaternions ``q0`` and ``q1`` are interpolated on the
-    shortest arc with :func:`_slerp`; at each ``t = i / (n - 1)`` the 13
-    lattice sites of :func:`quadmath.lattice.ivm_field.ball_sites` radius 1
-    are rotated by ``q(t)``, projected with the fixed orthographic xy camera
+    shortest arc with :func:`quadmath.core.quadray.slerp`; at each
+    ``t = i / (n - 1)`` the 13 lattice sites of
+    :func:`quadmath.lattice.ivm_field.ball_sites` radius 1 are rotated with
+    :func:`quadmath.core.quadray.qrotate` by ``q(t)``, projected with the fixed orthographic xy camera
     onto a 48x48 grid, and shaded by radial shell (see ``_ball_render_values``
     with ``shells = 1``).  Deterministic: no RNG, no wall clock.
 
@@ -236,8 +182,8 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
     """
     if n < 2:
         raise ValueError(f"n must be at least 2, got {n}")
-    _as_unit_quat(q0, "q0")
-    _as_unit_quat(q1, "q1")
+    q0_unit = _as_unit_quat(q0, "q0")
+    q1_unit = _as_unit_quat(q1, "q1")
     sites = ball_sites(1)
     embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
     base_xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
@@ -245,8 +191,9 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
     frames: List[Frame] = []
     for i in range(n):
         t = i / (n - 1)
-        q = _slerp(q0, q1, t)
-        rotated = np.array([_rotate_vector(q, p) for p in base_xyz])
+        q = slerp(q0_unit, q1_unit, t)
+        angle = encoded_angle(q)
+        rotated = np.array([qrotate(q, p, angle) for p in base_xyz], dtype=float)
         grid = _project_to_grid(rotated, values)
         frames.append(Frame(grid, f"simplex slerp t={t:.3f}"))
     return frames
@@ -395,34 +342,28 @@ def frames_strip(
             f"labels length {len(labels)} does not match frames length {len(frames)}"
         )
 
-    import matplotlib.pyplot as plt  # noqa: WPS433  (lazy import; Agg via MPLBACKEND)
-
     titles = list(labels) if labels is not None else [f.title for f in frames]
-    fig, axs = plt.subplots(
-        1,
-        len(frames),
-        figsize=(_STRIP_PANEL_IN * len(frames), _STRIP_PANEL_IN + _STRIP_TITLE_IN),
-        squeeze=False,
-    )
-    for ax, frame, title in zip(axs[0], frames, titles):
-        arr = frame.array
-        if arr.dtype == np.uint8:
-            arr = arr / 255.0
-        ax.imshow(arr, cmap="gray", vmin=0.0, vmax=1.0, interpolation="nearest")
-        if title:
-            ax.set_title(title, fontsize=9)
-        ax.set_axis_off()
-    fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.9, wspace=0.0, hspace=0.0)
+    size = (_STRIP_PANEL_IN * len(frames), _STRIP_PANEL_IN + _STRIP_TITLE_IN)
+    with figure_scope(figsize=size) as fig:
+        axs = fig.subplots(1, len(frames), squeeze=False)
+        for ax, frame, title in zip(axs[0], frames, titles):
+            arr = frame.array
+            if arr.dtype == np.uint8:
+                arr = arr / 255.0
+            ax.imshow(arr, cmap="gray", vmin=0.0, vmax=1.0, interpolation="nearest")
+            if title:
+                ax.set_title(title, fontsize=9)
+            ax.set_axis_off()
+        fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.9, wspace=0.0, hspace=0.0)
 
-    outpath = ""
-    if save and out_path:
-        if os.path.dirname(out_path):
-            target = out_path
-        else:
-            target = os.path.join(get_figure_dir(), out_path)
-        fig.savefig(target, dpi=_STRIP_DPI, bbox_inches="tight")
-        outpath = target
-    plt.close(fig)
+        outpath = ""
+        if save and out_path:
+            if os.path.dirname(out_path):
+                target = out_path
+            else:
+                target = os.path.join(get_figure_dir(), out_path)
+            save_figure(fig, target, dpi=_STRIP_DPI, bbox_inches="tight")
+            outpath = target
     return outpath
 
 
@@ -474,11 +415,12 @@ def frames_to_gif(
         if scale != 1:
             img = img.resize((data.shape[1] * scale, data.shape[0] * scale), nearest)
         images.append(img)
-    images[0].save(
-        out_path,
-        save_all=True,
-        append_images=images[1:],
-        duration=duration_ms,
-        loop=0,
-    )
+    with atomic_target(out_path) as tmp:
+        images[0].save(
+            tmp,
+            save_all=True,
+            append_images=images[1:],
+            duration=duration_ms,
+            loop=0,
+        )
     return out_path

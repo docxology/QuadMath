@@ -1,11 +1,11 @@
 # QuadMath Test Suite
 
-This directory contains the comprehensive test suite for QuadMath. All tests maintain **100% coverage** of the `quadmath` package (`src/quadmath/`) using real numerical examples (no mocks).
+This directory contains the comprehensive test suite for QuadMath. All tests maintain **100% coverage** of the `quadmath` package (`src/quadmath/`) using real numerical examples (numeric code is never mocked).
 
 ## Test Statistics
 
 Counts drift; derive them live rather than trusting prose (verified
-2026-09-11 after the package restructure: 35 test files on disk).
+2026-10-07: 40 test files on disk, 709 tests collected).
 
 ```bash
 find tests/unit tests/tools -name "test_*.py" | wc -l              # test files
@@ -72,10 +72,15 @@ tests `quadmath/<subpackage>/<module>.py`; package-root modules live in
 | `tests/unit/viz/test_visualize_cov.py` | `quadmath.viz.visualize` | Additional coverage |
 | `tests/unit/viz/test_vis_lattice.py` | `quadmath.viz.vis_lattice` | Lattice gallery |
 | `tests/unit/viz/test_vis_stats.py` | `quadmath.viz.vis_stats` | Statistics gallery |
+| `tests/unit/viz/test_animations.py` | `quadmath.viz.animations` | Frame-based animations and byte-stable GIF writer |
+| `tests/unit/viz/test_plots.py` | `quadmath.viz.plots` | Standalone figure builders |
 | `tests/unit/tools/test_glossary_gen.py` | `quadmath.tools.glossary_gen` | API documentation |
 | `tests/unit/test_paths.py` | `quadmath.paths` | Path management |
 | `tests/unit/test_paths_cov.py` | `quadmath.paths` | Additional coverage |
 | `tests/unit/test_pipeline.py` | `quadmath.pipeline` | Typed pipeline composition |
+| `tests/unit/validate/test_validate.py` | `quadmath.validate.validate` | Quaternion property checks and validation reports |
+| `tests/tools/test_generate_glossary.py` | `quadmath/scripts/generate_glossary.py` | Glossary regeneration contract (script module) |
+| `tests/tools/test_make_all_figures.py` | `quadmath/scripts/make_all_figures.py` | Figure-manifest contract (script module) |
 | `tests/tools/test_sympy_formalisms.py` | `quadmath/scripts/sympy_formalisms.py` | Symbolic math (script module) |
 | `tests/tools/test_validate_markdown.py` | `quadmath/scripts/validate_markdown.py` | Manuscript-validation contract |
 
@@ -126,8 +131,8 @@ precision = 0
 
 ### Slow collection on external drives
 
-Full-suite wall time here is ~1.5 min with a healthy `.venv` (188 tests,
-2026-09-05). Earlier reports of >5 min pathological collection coincided with
+Full-suite wall time here was ~1.5 min with a healthy `.venv` (measured on
+188 tests, 2026-09-05; not re-measured since the suite grew). Earlier reports of >5 min pathological collection coincided with
 a corrupted venv (broken `numpy`/`matplotlib` installs make every module
 import fail and retry, which looks like a collection hang). If collection
 crawls again, first verify imports: `uv run python -c "import numpy,
@@ -138,7 +143,9 @@ matplotlib"`, and repair with `uv sync --reinstall-package numpy
 
 ### Real Numerical Examples
 
-All tests use actual computed values, not mocks:
+Numeric code is never mocked: tests call the real functions and assert on
+actual computed values. `monkeypatch` redirects output directories, shrinks
+benchmark sizes, or wraps a real helper:
 
 ```python
 def test_integer_tetra_volume():

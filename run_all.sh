@@ -29,15 +29,15 @@ NC='\033[0m' # No Color
 WITH_PDF=false
 TEST_ONLY=false
 
-for arg in "$@"; do
-    case $arg in
+while [ $# -gt 0 ]; do
+    arg="$1"
+    shift
+    case "$arg" in
         --with-pdf)
             WITH_PDF=true
-            shift
             ;;
         --test-only)
             TEST_ONLY=true
-            shift
             ;;
         --help|-h)
             echo "QuadMath Orchestrator"
@@ -49,6 +49,10 @@ for arg in "$@"; do
             echo "  --with-pdf     Also build PDFs (slow)"
             echo "  --help, -h     Show this help message"
             exit 0
+            ;;
+        *)
+            echo "Unknown option: $arg" >&2
+            exit 2
             ;;
     esac
 done

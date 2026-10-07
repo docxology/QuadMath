@@ -11,11 +11,13 @@ OUTPUT_DIR="$REPO_ROOT/quadmath/output"
 echo "🧹 Cleaning QuadMath output directories..."
 echo "Repository root: $REPO_ROOT"
 
-# Clean output directory (regeneratable; note: currently git-tracked, so
-# cleaning produces a large diff — commit or stash deliberately)
+# Clean generated output (regeneratable; note: currently git-tracked, so
+# cleaning produces a large diff — commit or stash deliberately). The
+# per-folder AGENTS.md and README.md files are kept.
 if [ -d "$OUTPUT_DIR" ]; then
-    echo "Removing output directory: $OUTPUT_DIR"
-    rm -rf "$OUTPUT_DIR"
+    echo "Removing generated files under: $OUTPUT_DIR (keeping AGENTS.md and README.md)"
+    find "$OUTPUT_DIR" -type f ! \( -name AGENTS.md -o -name README.md \) -delete
+    find "$OUTPUT_DIR" -mindepth 1 -depth -type d -empty -delete
     echo "✅ Output directory cleaned"
 else
     echo "ℹ️  Output directory not found: $OUTPUT_DIR"

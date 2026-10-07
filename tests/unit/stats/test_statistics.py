@@ -7,6 +7,8 @@ reproduces these numbers verbatim in section 17).
 """
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pytest
 
@@ -49,9 +51,23 @@ def test_summarize_single_value():
     assert np.isnan(s["std"])  # ddof=1 is undefined for one observation
 
 
+def test_summarize_single_value_warns_nothing():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        s = summarize([7.0])
+    assert np.isnan(s["std"])
+
+
 def test_summarize_rejects_empty():
     with pytest.raises(ValueError, match="at least one value"):
         summarize([])
+
+
+def test_summarize_rejects_nonfinite():
+    with pytest.raises(ValueError, match="only finite values"):
+        summarize([1.0, np.nan, 3.0])
+    with pytest.raises(ValueError, match="only finite values"):
+        summarize([1.0, np.inf])
 
 
 # --------------- bootstrap_ci ---------------
@@ -91,6 +107,13 @@ def test_bootstrap_ci_rejects_empty_and_bad_iters():
         bootstrap_ci([])
     with pytest.raises(ValueError, match="iters"):
         bootstrap_ci([1.0, 2.0], iters=0)
+
+
+def test_bootstrap_ci_rejects_alpha_outside_unit_interval():
+    # alpha = 1.5 used to return an inverted (high < low) interval silently.
+    for alpha in (0.0, 1.0, 1.5, -0.1):
+        with pytest.raises(ValueError, match="alpha must lie"):
+            bootstrap_ci([1.0, 2.0, 3.0], iters=50, seed=0, alpha=alpha)
 
 
 # --------------- permutation_test ---------------
@@ -140,6 +163,14 @@ def test_permutation_test_bounds():
     assert 0.0 < p <= 1.0
 
 
+def test_permutation_test_rejects_nonfinite_values():
+    # A NaN used to pass through and was silently ranked into the pool.
+    with pytest.raises(ValueError, match="only finite values"):
+        permutation_test([1.0, np.nan, 3.0, 4.0], [2.0, 5.0, 6.0])
+    with pytest.raises(ValueError, match="only finite values"):
+        permutation_test([1.0, 2.0], [3.0, np.inf])
+
+
 def test_permutation_test_rejects_empty_and_unknown_alternative():
     with pytest.raises(ValueError, match="at least one value"):
         permutation_test([], [1.0])
@@ -176,6 +207,24 @@ def test_cohens_d_rejects_empty():
         cohens_d([], [1.0])
 
 
+def test_cohens_d_rejects_nonfinite():
+    with pytest.raises(ValueError, match="only finite values"):
+        cohens_d([1.0, np.nan, 3.0], [1.0, 2.0, 3.0])
+    with pytest.raises(ValueError, match="only finite values"):
+        cohens_d([1.0, 2.0, 3.0], [1.0, np.inf, 3.0])
+
+
+def test_cohens_d_requires_two_values_per_sample():
+    # Single observations used to raise ZeroDivisionError (both samples) or
+    # return NaN silently (one sample).
+    with pytest.raises(ValueError, match="at least two values per sample"):
+        cohens_d([1.0], [2.0])
+    with pytest.raises(ValueError, match="at least two values per sample"):
+        cohens_d([1.0], [2.0, 3.0, 4.0])
+    with pytest.raises(ValueError, match="at least two values per sample"):
+        cohens_d([1.0, 2.0, 3.0], [5.0])
+
+
 # --------------- p_adjust_bonferroni ---------------
 
 
@@ -190,6 +239,16 @@ def test_bonferroni_returns_float_array_and_rejects_empty():
     assert adj.dtype == float and adj[0] == 0.5
     with pytest.raises(ValueError, match="at least one value"):
         p_adjust_bonferroni([])
+
+
+def test_bonferroni_rejects_values_outside_unit_interval():
+    # p = 1.7 used to map to 1.0 and p = -0.2 to -0.8 without any error.
+    with pytest.raises(ValueError, match="must all lie in"):
+        p_adjust_bonferroni([0.1, 1.7])
+    with pytest.raises(ValueError, match="must all lie in"):
+        p_adjust_bonferroni([-0.2, 0.5])
+    with pytest.raises(ValueError, match="must all lie in"):
+        p_adjust_bonferroni([0.5, np.nan])
 
 
 # --------------- scaling_fit ---------------
@@ -221,6 +280,14 @@ def test_scaling_fit_rejects_empty_mismatched_and_nonpositive():
         scaling_fit([0.0, 1.0], [1.0, 2.0])
     with pytest.raises(ValueError, match="positive"):
         scaling_fit([1.0, 2.0], [-1.0, 2.0])
+
+
+def test_scaling_fit_requires_two_distinct_sizes():
+    # A single point or equal sizes used to return a slope with a RankWarning.
+    with pytest.raises(ValueError, match="at least two"):
+        scaling_fit([10.0], [3.0])
+    with pytest.raises(ValueError, match="distinct sizes"):
+        scaling_fit([4.0, 4.0, 4.0], [1.0, 2.0, 3.0])
 
 
 # --------------- jackknife_ci ---------------
@@ -383,10 +450,29 @@ def test_welch_constant_samples_degenerate():
     assert welch_t_test(np.full(4, 5.0), np.full(3, 2.0), alternative="greater") == (np.inf, 0.0)
 
 
+def test_welch_scale_invariant_at_tiny_scales():
+    # Variances at 1e-85 scale underflow when squared inside the df formula,
+    # which used to raise ZeroDivisionError.  t and df are scale-invariant,
+    # so the 1e-85 result must match the unit-scale result.
+    a = np.array([1.0, 2.0, 3.0, 4.0])
+    b = np.array([2.0, 5.0, 6.0, 9.0])
+    t_unit, p_unit = welch_t_test(a, b)
+    t_tiny, p_tiny = welch_t_test(a * 1e-85, b * 1e-85)
+    assert t_tiny == pytest.approx(t_unit, rel=1e-12)
+    assert p_tiny == pytest.approx(p_unit, rel=1e-9)
+
+
 def test_welch_reproducible():
     a = np.array([1.0, 2.0, 3.0])
     b = np.array([4.0, 5.0, 6.0])
     assert welch_t_test(a, b) == welch_t_test(a, b)
+
+
+def test_welch_rejects_nonfinite():
+    with pytest.raises(ValueError, match="only finite values"):
+        welch_t_test([1.0, np.nan, 3.0], [1.0, 2.0, 3.0])
+    with pytest.raises(ValueError, match="only finite values"):
+        welch_t_test([1.0, 2.0, 3.0], [1.0, np.inf, 3.0])
 
 
 def test_welch_rejects_empty_short_and_unknown_alternative():

@@ -205,6 +205,16 @@ def test_cross_validation_inferred_radius_covers_scattered_sites():
         assert np.isfinite(res.refit_field.predict(q))
 
 
+def test_cross_validation_rejects_nonfinite_values_before_selection():
+    # A NaN observation is rejected by the learner in every training fold,
+    # so the MSE table (and its argmin) never sees a NaN candidate.
+    sites = ball_sites(1)
+    values = [1.0] * len(sites)
+    values[0] = float("nan")
+    with pytest.raises(ValueError, match="must be finite"):
+        cross_validate_field(values, sites, 2, [0.0, 1.0], seed=0)
+
+
 def test_cross_validation_rejects_invalid_inputs():
     sites = ball_sites(1)
     values = [1.0] * len(sites)
@@ -433,6 +443,20 @@ def test_ridge_site_fit_zero_lambda_matches_ols():
     assert fit.train_mse == again.train_mse
 
 
+def test_ridge_site_fit_rejects_nonfinite_inputs():
+    # A NaN used to propagate silently into the coefficients and intercept.
+    X = np.arange(20.0).reshape(10, 2)
+    y = np.arange(10.0)
+    X_nan = X.copy()
+    X_nan[2, 1] = np.nan
+    with pytest.raises(ValueError, match="only finite values"):
+        ridge_site_fit(X_nan, y)
+    y_nan = y.copy()
+    y_nan[4] = np.nan
+    with pytest.raises(ValueError, match="only finite values"):
+        ridge_site_fit(X, y_nan)
+
+
 def test_ridge_site_fit_rejects_invalid_inputs():
     X = np.arange(20.0).reshape(10, 2)
     y = np.arange(10.0)
@@ -482,6 +506,55 @@ def test_gradient_descent_handles_constant_column():
     assert trainer.converged_ is True
     assert trainer.std_[1] == 1.0
     assert np.allclose(trainer.predict(X), y, atol=1e-6)
+
+
+def _identical_columns_design(copies: int, seed: int = 3):
+    rng = np.random.default_rng(seed)
+    base = rng.normal(size=(40, 1))
+    X = np.repeat(base, copies, axis=1)
+    y = base[:, 0] + 0.1 * rng.normal(size=40)
+    return X, y
+
+
+def test_gradient_descent_rejects_unstable_step_size():
+    # 21 identical standardized columns give lambda_max((2/n) Z^T Z) = 42,
+    # so lr = 0.05 has lr * lambda_max = 2.1 >= 2: GD diverges.  This used to
+    # run silently to a loss near 1e24 with converged_ False.
+    X, y = _identical_columns_design(copies=21)
+    with pytest.raises(ValueError, match="step size"):
+        GradientDescentTrainer(lr=0.05, max_iters=300).fit(X, y)
+
+
+def test_gradient_descent_converges_below_stability_bound():
+    # Same design with lr * lambda_max = 0.84 < 2: the stability check passes
+    # and the loss decreases monotonically.
+    X, y = _identical_columns_design(copies=21)
+    trainer = GradientDescentTrainer(lr=0.02, max_iters=300).fit(X, y)
+    losses = np.asarray(trainer.loss_history)
+    assert np.all(np.isfinite(losses))
+    assert np.all(np.diff(losses) <= 1e-12)
+    assert losses[-1] < losses[0]
+
+
+def test_gradient_descent_raises_when_loss_becomes_nonfinite():
+    rng = np.random.default_rng(5)
+    X = rng.normal(size=(20, 2))
+    y = 1e200 * rng.normal(size=20)
+    with pytest.raises(ValueError, match="non-finite"):
+        GradientDescentTrainer(lr=0.05, max_iters=50).fit(X, y)
+
+
+def test_gradient_descent_rejects_nonfinite_inputs():
+    X = np.arange(20.0).reshape(10, 2)
+    y = np.arange(10.0)
+    X_nan = X.copy()
+    X_nan[0, 0] = np.nan
+    with pytest.raises(ValueError, match="only finite values"):
+        GradientDescentTrainer().fit(X_nan, y)
+    y_inf = y.copy()
+    y_inf[3] = np.inf
+    with pytest.raises(ValueError, match="only finite values"):
+        GradientDescentTrainer().fit(X, y_inf)
 
 
 def test_gradient_descent_max_iters_one_does_not_converge():

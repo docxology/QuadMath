@@ -4,9 +4,11 @@ This module is the figure surface for the statistics layer (latency
 distributions, log-log scaling fits, confidence intervals, empirical CDFs).
 It is deliberately input-agnostic: every primitive consumes plain numpy
 arrays and never imports ``benchmarks`` or ``statistics``, so panels
-compose inside caller-owned figures for any data source.  Only
-:func:`gallery` creates figures (four of them, written as PNG files); no
-figure is created at import time.
+compose inside caller-owned figures for any data source.  Primitives draw
+on the ``ax`` they are given; when ``ax`` is None they open a figure with
+:func:`matplotlib.pyplot.subplots` and leave it open for the caller to show
+or save.  :func:`gallery` is the only function that writes files, and it
+closes each of its four figures.  No figure is created at import time.
 
 Pieces:
 
@@ -15,8 +17,8 @@ Pieces:
 - :func:`plot_scaling_loglog` — log-log scatter of measured times versus
   input size together with the fitted power law
   ``t ~ c * n**slope`` obtained from a degree-1 fit in log space.
-- :func:`plot_ci_bars` — point estimates with symmetric confidence
-  intervals rendered as error bars with caps.
+- :func:`plot_ci_bars` — point estimates with confidence intervals
+  (lower and upper bounds per estimate) rendered as error bars with caps.
 - :func:`plot_ecdf` — empirical cumulative distribution function of a
   sample as a sorted step plot.
 - :func:`gallery` — composes the four statistics-gallery figures
@@ -35,6 +37,8 @@ from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+from quadmath.viz._common import figure_scope, save_figure
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from matplotlib.axes import Axes
@@ -156,7 +160,7 @@ def plot_ci_bars(
     *,
     title: str = "Estimates with CI",
 ) -> "Axes":
-    """Point estimates with symmetric confidence intervals as error bars.
+    """Point estimates with confidence intervals ``[lows, highs]`` as error bars.
 
     Parameters
     - labels: One label per bar (drawn as rotated x tick labels).
@@ -235,8 +239,8 @@ def gallery(paths_out_dir: str, seed: int = 32) -> List[str]:
        (:func:`plot_scaling_loglog`; the times carry small float noise
        rounded to four decimals for byte stability).
     3. ``stats_gallery_ci.png`` — three benchmark estimates
-       (``to_xyz``, ``quadray_from_xyz``, ``shell_enum``) with symmetric
-       confidence intervals (:func:`plot_ci_bars`).
+       (``to_xyz``, ``quadray_from_xyz``, ``shell_enum``) with confidence
+       intervals (:func:`plot_ci_bars`).
     4. ``stats_gallery_ecdf.png`` — empirical CDF of the same clipped
        lognormal latency sample (:func:`plot_ecdf`).
 
@@ -269,39 +273,35 @@ def gallery(paths_out_dir: str, seed: int = 32) -> List[str]:
     highs = means + half_widths
 
     # Figure 1: latency histogram with dashed mean line.
-    fig = plt.figure(figsize=(6.4, 4.8))
-    ax = fig.add_subplot(1, 1, 1)
-    plot_latency_hist(latency, ax)
-    fig.tight_layout()
-    latency_path = os.path.join(paths_out_dir, GALLERY_FILES[0])
-    fig.savefig(latency_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(6.4, 4.8)) as fig:
+        ax = fig.add_subplot(1, 1, 1)
+        plot_latency_hist(latency, ax)
+        fig.tight_layout()
+        latency_path = os.path.join(paths_out_dir, GALLERY_FILES[0])
+        save_figure(fig, latency_path, dpi=160)
 
     # Figure 2: log-log scaling with fitted power-law line.
-    fig = plt.figure(figsize=(6.4, 4.8))
-    ax = fig.add_subplot(1, 1, 1)
-    plot_scaling_loglog(sizes, times, ax)
-    fig.tight_layout()
-    scaling_path = os.path.join(paths_out_dir, GALLERY_FILES[1])
-    fig.savefig(scaling_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(6.4, 4.8)) as fig:
+        ax = fig.add_subplot(1, 1, 1)
+        plot_scaling_loglog(sizes, times, ax)
+        fig.tight_layout()
+        scaling_path = os.path.join(paths_out_dir, GALLERY_FILES[1])
+        save_figure(fig, scaling_path, dpi=160)
 
-    # Figure 3: point estimates with symmetric confidence intervals.
-    fig = plt.figure(figsize=(6.4, 4.8))
-    ax = fig.add_subplot(1, 1, 1)
-    plot_ci_bars(labels, means, lows, highs, ax)
-    fig.tight_layout()
-    ci_path = os.path.join(paths_out_dir, GALLERY_FILES[2])
-    fig.savefig(ci_path, dpi=160)
-    plt.close(fig)
+    # Figure 3: point estimates with confidence intervals.
+    with figure_scope(figsize=(6.4, 4.8)) as fig:
+        ax = fig.add_subplot(1, 1, 1)
+        plot_ci_bars(labels, means, lows, highs, ax)
+        fig.tight_layout()
+        ci_path = os.path.join(paths_out_dir, GALLERY_FILES[2])
+        save_figure(fig, ci_path, dpi=160)
 
     # Figure 4: empirical CDF of the latency sample.
-    fig = plt.figure(figsize=(6.4, 4.8))
-    ax = fig.add_subplot(1, 1, 1)
-    plot_ecdf(latency, ax)
-    fig.tight_layout()
-    ecdf_path = os.path.join(paths_out_dir, GALLERY_FILES[3])
-    fig.savefig(ecdf_path, dpi=160)
-    plt.close(fig)
+    with figure_scope(figsize=(6.4, 4.8)) as fig:
+        ax = fig.add_subplot(1, 1, 1)
+        plot_ecdf(latency, ax)
+        fig.tight_layout()
+        ecdf_path = os.path.join(paths_out_dir, GALLERY_FILES[3])
+        save_figure(fig, ecdf_path, dpi=160)
 
     return [latency_path, scaling_path, ci_path, ecdf_path]

@@ -4,13 +4,13 @@
 
 This directory contains all tests for the QuadMath `quadmath` package
 (`src/quadmath/`). Tests mirror the package layout (`tests/unit/<subpackage>/`),
-enforce **100% coverage**, and use **real numerical examples only** (no mocks).
+enforce **100% coverage**, and use **real numerical examples only** (numeric code is never mocked).
 
 ## Agent Guidelines
 
 ### Critical Rules
 
-1. **NO MOCKS** - Never mock internal functions or modules
+1. **NO MOCKS** - Never mock numeric code or the internal functions it calls; `monkeypatch` only redirects output paths, shrinks benchmark sizes, or wraps a real helper
 2. **FIXED SEEDS** - Always set `np.random.seed(42)` before random operations
 3. **100% COVERAGE** - Every new branch must be tested
 4. **REAL VALUES** - Use known mathematical results for assertions
@@ -42,6 +42,50 @@ enforce **100% coverage**, and use **real numerical examples only** (no mocks).
   `quadmath/<subpackage>/<module>.py` (package-root modules in `tests/unit/`,
   script-module tests in `tests/tools/`)
 - `test_<module>_cov.py` - Additional coverage tests
+- Current files (snapshot 2026-10-07, from `find tests -name 'test_*.py' | sort`):
+
+```text
+tests/tools/test_generate_glossary.py
+tests/tools/test_make_all_figures.py
+tests/tools/test_sympy_formalisms.py
+tests/tools/test_validate_markdown.py
+tests/unit/core/test_cayley_menger.py
+tests/unit/core/test_examples.py
+tests/unit/core/test_examples_cov.py
+tests/unit/core/test_geometry.py
+tests/unit/core/test_linalg_utils.py
+tests/unit/core/test_metrics.py
+tests/unit/core/test_metrics_cov.py
+tests/unit/core/test_quadray.py
+tests/unit/core/test_quadray_cov.py
+tests/unit/core/test_symbolic.py
+tests/unit/core/test_symbolic_cov.py
+tests/unit/inference/test_active_inference.py
+tests/unit/inference/test_information.py
+tests/unit/inference/test_information_cov.py
+tests/unit/lattice/test_conversions.py
+tests/unit/lattice/test_ivm_dynamics.py
+tests/unit/lattice/test_ivm_field.py
+tests/unit/lattice/test_lattice_search.py
+tests/unit/lattice/test_omni_numbering.py
+tests/unit/lattice/test_spec_examples.py
+tests/unit/learn/test_learning_eval.py
+tests/unit/optimize/test_discrete_variational.py
+tests/unit/optimize/test_nelder_mead_visual.py
+tests/unit/stats/test_benchmarks.py
+tests/unit/stats/test_statistics.py
+tests/unit/test_paths.py
+tests/unit/test_paths_cov.py
+tests/unit/test_pipeline.py
+tests/unit/tools/test_glossary_gen.py
+tests/unit/validate/test_validate.py
+tests/unit/viz/test_animations.py
+tests/unit/viz/test_plots.py
+tests/unit/viz/test_vis_lattice.py
+tests/unit/viz/test_vis_stats.py
+tests/unit/viz/test_visualize.py
+tests/unit/viz/test_visualize_cov.py
+```
 
 ### Function Names
 
@@ -230,7 +274,7 @@ Before committing test changes:
 - [ ] All tests pass: `pytest -q`
 - [ ] Coverage is 100%: `coverage report`
 - [ ] Tests are deterministic (run twice)
-- [ ] No mocks used
+- [ ] No mocks of numeric code
 - [ ] Fixed seeds for random operations
 - [ ] Descriptive test names
 - [ ] Edge cases covered

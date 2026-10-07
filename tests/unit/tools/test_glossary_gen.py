@@ -2,7 +2,21 @@ from __future__ import annotations
 
 import os
 
+import pytest
+
 from quadmath.tools.glossary_gen import build_api_index, generate_markdown_table, inject_between_markers
+
+
+def test_build_api_index_skips_underscore_prefixed_constants(tmp_path):
+    (tmp_path / "mod.py").write_text("_PRIVATE_LIMIT = 3\nPUBLIC_LIMIT = 4\n", encoding="utf-8")
+    entries = build_api_index(str(tmp_path))
+    assert [(e.module, e.name, e.kind) for e in entries] == [("mod", "PUBLIC_LIMIT", "constant")]
+
+
+def test_build_api_index_raises_on_syntax_error(tmp_path):
+    (tmp_path / "broken.py").write_text("def broken(:\n", encoding="utf-8")
+    with pytest.raises(SyntaxError):
+        build_api_index(str(tmp_path))
 
 
 def test_build_api_index_includes_public_symbols():

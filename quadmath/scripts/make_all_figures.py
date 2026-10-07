@@ -7,9 +7,36 @@ collecting the emitted output paths into a manifest file under quadmath/output/.
 from __future__ import annotations
 
 import os
+import re
 import sys
 import subprocess
-from typing import List
+from typing import Dict, List
+
+OUTPUT_SUFFIXES = (".png", ".mp4", ".pdf", ".csv", ".npz", ".gif", ".txt")
+# Scripts that print no output path by design; exempt from the existence check
+NO_ARTIFACT_SCRIPTS = frozenset({"gpu_acceleration_demo.py"})
+_PATH_TOKEN = re.compile(r"(?:^|\s)(/\S+)\s*$")
+
+
+def extract_output_paths(stdout: str, repo_root: str) -> List[str]:
+    """Return unique output paths named in stdout, relative to repo_root."""
+    root = os.path.normpath(repo_root)
+    found: Dict[str, None] = {}
+    for line in stdout.splitlines():
+        match = _PATH_TOKEN.search(line)
+        if match is None or not match.group(1).endswith(OUTPUT_SUFFIXES):
+            continue
+        token = os.path.normpath(match.group(1))
+        if not token.startswith(root + os.sep):
+            raise ValueError(f"Output path outside repo root: {token}")
+        found[os.path.relpath(token, root)] = None
+    return list(found)
+
+
+def require_existing_output(script: str, rel_paths: List[str], repo_root: str) -> None:
+    """Raise unless at least one emitted path exists on disk."""
+    if not any(os.path.exists(os.path.join(repo_root, p)) for p in rel_paths):
+        raise RuntimeError(f"{script} emitted no existing output path")
 
 
 def _repo_root() -> str:
@@ -48,11 +75,11 @@ def _run_script(path: str) -> List[str]:
     stderr = proc.stderr.strip()
     if proc.returncode != 0:
         raise RuntimeError(f"Script failed: {path}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}")
-    # Collect any printed output paths from the script
-    paths: List[str] = []
-    for line in stdout.splitlines():
-        if any(line.endswith(ext) for ext in (".png", ".mp4", ".pdf", ".csv", ".npz")):
-            paths.append(line.strip())
+    root = _repo_root()
+    paths = extract_output_paths(stdout, root)
+    name = os.path.basename(path)
+    if name not in NO_ARTIFACT_SCRIPTS:
+        require_existing_output(name, paths, root)
     return paths
 
 
@@ -80,17 +107,17 @@ def main() -> None:
         os.path.join(_repo_root(), "quadmath", "scripts", "stats_diagnostics_gallery.py"),
     ]
 
-    all_paths: List[str] = []
+    all_paths: Dict[str, None] = {}
     for script in scripts:
         if not os.path.exists(script):
             raise FileNotFoundError(f"Missing script: {script}")
-        out_paths = _run_script(script)
-        all_paths.extend(out_paths)
+        for p in _run_script(script):
+            all_paths[p] = None
 
     data_dir = _get_data_dir()
     manifest_path = os.path.join(data_dir, "figure_manifest.txt")
     with open(manifest_path, "w") as f:
-        f.write("# Generated figure/data paths\n")
+        f.write("# Generated figure/data paths (relative to repo root)\n")
         for p in all_paths:
             f.write(p + "\n")
     print(f"Wrote manifest: {manifest_path}")

@@ -41,6 +41,21 @@ def _figures_dir(tmp_path, monkeypatch):
     return figures_dir
 
 
+@pytest.fixture()
+def _created_figures(monkeypatch):
+    """Record each figure plots.py creates; save=False closes them before a test can read them."""
+    created = []
+    real_figure = plt.figure
+
+    def recording_figure(*args, **kwargs):
+        fig = real_figure(*args, **kwargs)
+        created.append(fig)
+        return fig
+
+    monkeypatch.setattr(plt, "figure", recording_figure)
+    return created
+
+
 # ---------------------------------------------------------------------------
 # plot_loss_history
 # ---------------------------------------------------------------------------
@@ -51,6 +66,13 @@ def test_loss_history_saves_png_and_returns_path(_figures_dir):
     assert outpath == str(_figures_dir / "loss_history.png")
     assert os.path.isfile(outpath)
     assert os.path.getsize(outpath) > 0
+
+
+def test_loss_history_writes_to_explicit_out_path(tmp_path):
+    target = tmp_path / "learn_loss_history.png"
+    outpath = plot_loss_history([1.0, 0.5, 0.2], out_path=str(target))
+    assert outpath == str(target)
+    assert target.is_file()
 
 
 def test_loss_history_accepts_numpy_and_iterator_inputs(_figures_dir):
@@ -73,9 +95,9 @@ def test_loss_history_is_byte_reproducible(tmp_path, monkeypatch):
         assert fh_a.read() == fh_b.read()
 
 
-def test_loss_history_styling_and_labels():
+def test_loss_history_styling_and_labels(_created_figures):
     plot_loss_history([1.0, 0.5], save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert ax.get_title() == "Training loss history"
     assert ax.get_xlabel() == "iteration"
     assert ax.get_ylabel() == "loss"
@@ -100,9 +122,9 @@ def test_shell_growth_saves_png_and_returns_path(_figures_dir):
     assert os.path.getsize(outpath) > 0
 
 
-def test_shell_growth_plots_cardinalities_and_uses_default_k_max():
+def test_shell_growth_plots_cardinalities_and_uses_default_k_max(_created_figures):
     plot_shell_growth(save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert ax.get_xlabel() == "shell index k"
     assert ax.get_ylabel() == "sites in shell"
     assert list(ax.lines[0].get_ydata()) == [float(c) for c in shell_cardinalities(6)]
@@ -125,10 +147,10 @@ def test_error_histogram_saves_png_and_returns_path(_figures_dir):
     assert os.path.getsize(outpath) > 0
 
 
-def test_error_histogram_draws_mean_line():
+def test_error_histogram_draws_mean_line(_created_figures):
     errors = [1.0, 2.0, 3.0]
     plot_error_histogram(errors, bins=3, save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert len(ax.lines) == 1
     assert ax.lines[0].get_xdata()[0] == pytest.approx(2.0)
     assert ax.get_xlabel() == "error" and ax.get_ylabel() == "count"
@@ -163,9 +185,9 @@ def test_lattice_shell_3d_saves_png_and_returns_path(_figures_dir):
     assert os.path.getsize(outpath) > 0
 
 
-def test_lattice_shell_3d_scatters_all_shell_sites():
+def test_lattice_shell_3d_scatters_all_shell_sites(_created_figures):
     plot_lattice_shell_3d(1, save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert ax.get_title() == f"IVM lattice shell k=1 ({len(shell_sites(1))} sites)"
     assert len(ax.collections[0]._offsets3d[0]) == len(shell_sites(1))
 
@@ -204,9 +226,9 @@ def test_slerp_path_saves_png_and_returns_path(_figures_dir):
     assert os.path.getsize(outpath) > 0
 
 
-def test_slerp_path_traces_default_site_with_exact_endpoints():
+def test_slerp_path_traces_default_site_with_exact_endpoints(_created_figures):
     plot_slerp_path(_Q0, _Q1, n_frames=9, save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert ax.get_title() == "Slerp rotation path of site (2, 0, 0, 0)"
     assert len(ax.lines) == 1 and len(ax.collections) == 2
     xs, ys, zs = ax.lines[0].get_data_3d()
@@ -221,9 +243,9 @@ def test_slerp_path_traces_default_site_with_exact_endpoints():
     assert len(ax.collections[1]._offsets3d[0]) == 1  # end marker
 
 
-def test_slerp_path_accepts_explicit_site():
+def test_slerp_path_accepts_explicit_site(_created_figures):
     plot_slerp_path(_Q0, _Q1, n_frames=5, site=Quadray(1, 0, 0, 0), save=False)
-    ax = plt.gcf().axes[0]
+    ax = _created_figures[-1].axes[0]
     assert ax.get_title() == "Slerp rotation path of site (1, 0, 0, 0)"
     xs, ys, zs = ax.lines[0].get_data_3d()
     assert (xs[0], ys[0], zs[0]) == (1.0, 1.0, 1.0)

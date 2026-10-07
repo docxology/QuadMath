@@ -13,7 +13,7 @@ importable entrypoints under `src/`.
   factored package — `from quadmath.core.quadray import ...`,
   `from quadmath.paths import ...`.
 - All entry logic sits behind `if __name__ == "__main__":` — keep scripts
-  import-safe (`tests/test_sympy_formalisms.py` imports
+  import-safe (`tests/tools/test_sympy_formalisms.py` imports
   `quadmath/scripts/sympy_formalisms.py` directly).
 - Known inline-logic exceptions (documented, do not grow):
   `validate_markdown.py` (stdlib-only checks, no src delegation),
@@ -61,7 +61,10 @@ importable entrypoints under `src/`.
 - Deferred imports: import src modules only after `_ensure_src_on_path()`;
   most scripts import inside `main()`.
 - `make_all_figures.py` writes `figure_manifest.txt` from stdout lines ending
-  in `.png/.mp4/.pdf/.csv/.npz` — generators MUST print their output paths.
+  in `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` — generators MUST print absolute output
+  paths under the repo root. The path is the last token of the line; paths are
+  stored repo-relative and deduplicated. Each script must emit at least one
+  existing path, except scripts in `NO_ARTIFACT_SCRIPTS`.
 - `validate_markdown.py --strict` exits 1 on any warning (plain `sys.argv`
   check; there is no argparse).
 - `render_pdf.sh` requires `pandoc` + `xelatex`; `LOG_LEVEL=0..3` controls

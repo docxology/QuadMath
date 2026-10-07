@@ -13,15 +13,14 @@ run headless via ``MPLBACKEND=Agg`` (set in ``tests/conftest.py``).
 from __future__ import annotations
 
 import math
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Sequence
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, qrotate, slerp, to_xyz
 from quadmath.lattice.ivm_field import shell_cardinalities, shell_sites
 from quadmath.paths import get_figure_dir
-from quadmath.viz.visualize import _set_axes_equal
+from quadmath.viz._common import encoded_angle, figure_scope, save_figure, set_axes_equal
 
 __all__ = [
     "plot_loss_history",
@@ -42,18 +41,22 @@ _UNIT_QUAT_TOL = 1e-9
 _DEFAULT_SLERP_SITE = Quadray(2, 0, 0, 0)
 
 
-def plot_loss_history(losses: Sequence[float], save: bool = True) -> str:
+def plot_loss_history(
+    losses: Sequence[float], save: bool = True, out_path: Optional[str] = None
+) -> str:
     """Plot a training loss sequence as a line with markers.
 
     Parameters
     - losses: Any finite sequence of loss values (e.g.
       ``GradientDescentTrainer.loss_history`` or a plain list), one per
       iteration in training order.
-    - save: If True, write PNG to ``quadmath/output/figures/loss_history.png``.
+    - save: If True, write PNG to ``out_path`` or, by default,
+      ``quadmath/output/figures/loss_history.png``.
+    - out_path: Optional explicit PNG destination used when ``save`` is True.
 
     Returns
-    - str: Output file path when ``save`` is True, else "" (the open figure
-      remains the caller's responsibility).
+    - str: Output file path when ``save`` is True, else "". The figure is
+      closed before the function returns.
 
     Raises
     - ValueError: If ``losses`` is empty.
@@ -62,19 +65,18 @@ def plot_loss_history(losses: Sequence[float], save: bool = True) -> str:
     if values.size == 0:
         raise ValueError("loss history must contain at least one value")
 
-    fig = plt.figure(figsize=_FIGSIZE)
-    ax = fig.add_subplot(111)
-    ax.plot(np.arange(values.size), values, color="tab:blue", marker="o", markersize=3, linewidth=1.2)
-    ax.set_title("Training loss history")
-    ax.set_xlabel("iteration")
-    ax.set_ylabel("loss")
-    ax.grid(True, alpha=0.3)
+    with figure_scope(figsize=_FIGSIZE) as fig:
+        ax = fig.add_subplot(111)
+        ax.plot(np.arange(values.size), values, color="tab:blue", marker="o", markersize=3, linewidth=1.2)
+        ax.set_title("Training loss history")
+        ax.set_xlabel("iteration")
+        ax.set_ylabel("loss")
+        ax.grid(True, alpha=0.3)
 
-    if save:
-        outpath = f"{get_figure_dir()}/loss_history.png"
-        plt.savefig(outpath, dpi=_DPI, bbox_inches="tight")
-        plt.close(fig)
-        return outpath
+        if save:
+            outpath = out_path or f"{get_figure_dir()}/loss_history.png"
+            save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
+            return outpath
     return ""
 
 
@@ -86,8 +88,8 @@ def plot_shell_growth(k_max: int = 6, save: bool = True) -> str:
     - save: If True, write PNG to ``quadmath/output/figures/shell_growth.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "" (the open figure
-      remains the caller's responsibility).
+    - str: Output file path when ``save`` is True, else "". The figure is
+      closed before the function returns.
 
     Raises
     - ValueError: If ``k_max`` is negative.
@@ -98,20 +100,19 @@ def plot_shell_growth(k_max: int = 6, save: bool = True) -> str:
     cardinalities = shell_cardinalities(k_max)
     ks = np.arange(len(cardinalities))
 
-    fig = plt.figure(figsize=_FIGSIZE)
-    ax = fig.add_subplot(111)
-    ax.plot(ks, np.asarray(cardinalities, dtype=float), color="tab:purple", marker="o", linewidth=1.2)
-    ax.set_title(f"IVM shell cardinalities, k = 0..{k_max}")
-    ax.set_xlabel("shell index k")
-    ax.set_ylabel("sites in shell")
-    ax.set_xticks(ks)
-    ax.grid(True, alpha=0.3)
+    with figure_scope(figsize=_FIGSIZE) as fig:
+        ax = fig.add_subplot(111)
+        ax.plot(ks, np.asarray(cardinalities, dtype=float), color="tab:purple", marker="o", linewidth=1.2)
+        ax.set_title(f"IVM shell cardinalities, k = 0..{k_max}")
+        ax.set_xlabel("shell index k")
+        ax.set_ylabel("sites in shell")
+        ax.set_xticks(ks)
+        ax.grid(True, alpha=0.3)
 
-    if save:
-        outpath = f"{get_figure_dir()}/shell_growth.png"
-        plt.savefig(outpath, dpi=_DPI, bbox_inches="tight")
-        plt.close(fig)
-        return outpath
+        if save:
+            outpath = f"{get_figure_dir()}/shell_growth.png"
+            save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
+            return outpath
     return ""
 
 
@@ -125,8 +126,8 @@ def plot_error_histogram(errors: Sequence[float], bins: int = 20, save: bool = T
       ``quadmath/output/figures/error_histogram.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "" (the open figure
-      remains the caller's responsibility).
+    - str: Output file path when ``save`` is True, else "". The figure is
+      closed before the function returns.
 
     Raises
     - ValueError: If ``errors`` is empty, contains a non-finite value
@@ -142,20 +143,19 @@ def plot_error_histogram(errors: Sequence[float], bins: int = 20, save: bool = T
 
     mean = float(np.mean(values))
 
-    fig = plt.figure(figsize=_FIGSIZE)
-    ax = fig.add_subplot(111)
-    ax.hist(values, bins=bins, color="tab:blue", edgecolor="white", alpha=0.8)
-    ax.axvline(mean, color="tab:red", linestyle="--", linewidth=1.5, label=f"mean = {mean:.6g}")
-    ax.set_title("Error histogram")
-    ax.set_xlabel("error")
-    ax.set_ylabel("count")
-    ax.legend()
+    with figure_scope(figsize=_FIGSIZE) as fig:
+        ax = fig.add_subplot(111)
+        ax.hist(values, bins=bins, color="tab:blue", edgecolor="white", alpha=0.8)
+        ax.axvline(mean, color="tab:red", linestyle="--", linewidth=1.5, label=f"mean = {mean:.6g}")
+        ax.set_title("Error histogram")
+        ax.set_xlabel("error")
+        ax.set_ylabel("count")
+        ax.legend()
 
-    if save:
-        outpath = f"{get_figure_dir()}/error_histogram.png"
-        plt.savefig(outpath, dpi=_DPI, bbox_inches="tight")
-        plt.close(fig)
-        return outpath
+        if save:
+            outpath = f"{get_figure_dir()}/error_histogram.png"
+            save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
+            return outpath
     return ""
 
 
@@ -169,8 +169,8 @@ def plot_lattice_shell_3d(k: int = 2, save: bool = True) -> str:
       ``quadmath/output/figures/lattice_shell_3d.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "" (the open figure
-      remains the caller's responsibility).
+    - str: Output file path when ``save`` is True, else "". The figure is
+      closed before the function returns.
 
     Raises
     - ValueError: If ``k`` is negative.
@@ -181,31 +181,20 @@ def plot_lattice_shell_3d(k: int = 2, save: bool = True) -> str:
     sites = shell_sites(k)
     xyz = np.asarray([to_xyz(q, DEFAULT_EMBEDDING) for q in sites], dtype=float)
 
-    fig = plt.figure(figsize=_FIGSIZE)
-    ax = fig.add_subplot(111, projection="3d")
-    ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], c="tab:blue", s=24)
-    ax.set_title(f"IVM lattice shell k={k} ({len(sites)} sites)")
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    _set_axes_equal(ax)
+    with figure_scope(figsize=_FIGSIZE) as fig:
+        ax = fig.add_subplot(111, projection="3d")
+        ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], c="tab:blue", s=24)
+        ax.set_title(f"IVM lattice shell k={k} ({len(sites)} sites)")
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        set_axes_equal(ax)
 
-    if save:
-        outpath = f"{get_figure_dir()}/lattice_shell_3d.png"
-        plt.savefig(outpath, dpi=_DPI, bbox_inches="tight")
-        plt.close(fig)
-        return outpath
+        if save:
+            outpath = f"{get_figure_dir()}/lattice_shell_3d.png"
+            save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
+            return outpath
     return ""
-
-
-def _encoded_angle(quat: Tuple[float, float, float, float]) -> float:
-    """Return the rotation magnitude a unit quaternion encodes.
-
-    The magnitude is ``2*atan2(||(x, y, z)||, w)``; passing it to
-    :func:`quadmath.core.quadray.qrotate` together with the quaternion
-    satisfies that function's encoded-angle validation exactly.
-    """
-    return 2.0 * math.atan2(math.sqrt(quat[1] ** 2 + quat[2] ** 2 + quat[3] ** 2), quat[0])
 
 
 def plot_slerp_path(
@@ -235,8 +224,8 @@ def plot_slerp_path(
       ``quadmath/output/figures/quaternion_slerp_path.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "" (the open figure
-      remains the caller's responsibility).
+    - str: Output file path when ``save`` is True, else "". The figure is
+      closed before the function returns.
 
     Raises
     - ValueError: If ``q0`` or ``q1`` is not a unit quaternion (norm 1
@@ -257,23 +246,22 @@ def plot_slerp_path(
         site = _DEFAULT_SLERP_SITE
     base = to_xyz(site, DEFAULT_EMBEDDING)
     quats = [slerp(q0_vec, q1_vec, t) for t in np.linspace(0.0, 1.0, n_frames)]
-    path = np.asarray([qrotate(q, base, _encoded_angle(q)) for q in quats], dtype=float)
+    path = np.asarray([qrotate(q, base, encoded_angle(q)) for q in quats], dtype=float)
 
-    fig = plt.figure(figsize=_FIGSIZE)
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot(path[:, 0], path[:, 1], path[:, 2], color="tab:blue", linewidth=1.2)
-    ax.scatter(path[0, 0], path[0, 1], path[0, 2], c="tab:green", s=48, label="start (t = 0)")
-    ax.scatter(path[-1, 0], path[-1, 1], path[-1, 2], c="tab:red", s=48, label="end (t = 1)")
-    ax.legend()
-    ax.set_title(f"Slerp rotation path of site {site.as_tuple()}")
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    _set_axes_equal(ax)
+    with figure_scope(figsize=_FIGSIZE) as fig:
+        ax = fig.add_subplot(111, projection="3d")
+        ax.plot(path[:, 0], path[:, 1], path[:, 2], color="tab:blue", linewidth=1.2)
+        ax.scatter(path[0, 0], path[0, 1], path[0, 2], c="tab:green", s=48, label="start (t = 0)")
+        ax.scatter(path[-1, 0], path[-1, 1], path[-1, 2], c="tab:red", s=48, label="end (t = 1)")
+        ax.legend()
+        ax.set_title(f"Slerp rotation path of site {site.as_tuple()}")
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        set_axes_equal(ax)
 
-    if save:
-        outpath = f"{get_figure_dir()}/quaternion_slerp_path.png"
-        plt.savefig(outpath, dpi=_DPI, bbox_inches="tight")
-        plt.close(fig)
-        return outpath
+        if save:
+            outpath = f"{get_figure_dir()}/quaternion_slerp_path.png"
+            save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
+            return outpath
     return ""

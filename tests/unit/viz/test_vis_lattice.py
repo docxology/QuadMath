@@ -17,7 +17,7 @@ import quadmath.paths as paths_module
 from quadmath.lattice.ivm_dynamics import DynamicsParams, simulate
 from quadmath.lattice.ivm_field import IVMField, quadray_shell_norm
 from quadmath.lattice.omni_numbering import generate_shell
-from quadmath.core.quadray import Quadray
+from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
 from quadmath.viz.vis_lattice import (
     DEFAULT_PLANE,
     GALLERY_FILES,
@@ -124,6 +124,61 @@ def test_field_slice_values_match_shell_norms_on_plane():
     assert ax.get_title() == "IVM field slice through q0 = [0, 0, 0, 0]"
 
 
+def _plane_index_field(radius: int, plane) -> IVMField:
+    """Field whose value at a site is ``10 * i + j`` for its plane indices.
+
+    Indices are solved in xyz space (origin q0 = 0), independently of the
+    integer solve used by ``field_slice``.
+    """
+    basis = np.array(
+        [to_xyz(Quadray(*plane[0]), DEFAULT_EMBEDDING), to_xyz(Quadray(*plane[1]), DEFAULT_EMBEDDING)]
+    ).T
+    field = IVMField.lattice_ball(radius)
+    values = []
+    for site in field.sites:
+        i, j = np.linalg.lstsq(basis, np.array(to_xyz(site, DEFAULT_EMBEDDING)), rcond=None)[0]
+        values.append(10.0 * round(i) + round(j))
+    field.values = np.array(values, dtype=float)
+    return field
+
+
+def _cell_centers_and_values(mesh):
+    """Cell centers (x, y) and values of a pcolormesh, as (ny, nx) arrays."""
+    corners = mesh.get_coordinates()
+    centers = 0.5 * (corners[:-1, :-1] + corners[1:, 1:])
+    values = np.ma.filled(np.ma.asarray(mesh.get_array(), dtype=float).reshape(centers.shape[:2]), np.nan)
+    return centers, values
+
+
+@pytest.mark.parametrize(
+    "plane",
+    [DEFAULT_PLANE, ((2, 1, 1, 0), (4, 0, 0, 0))],
+    ids=["square-default-plane", "non-square-plane"],
+)
+def test_field_slice_cells_land_at_their_plane_coordinates(plane):
+    field = _plane_index_field(2, plane)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    mesh = field_slice(ax, field, field.sites, plane, colorbar=False)
+    centers, values = _cell_centers_and_values(mesh)
+    filled = np.argwhere(np.isfinite(values))
+    assert len(filled) > 0
+    for row, col in filled:
+        x, y = centers[row, col]
+        assert values[row, col] == 10 * round(x) + round(y)
+
+
+def test_field_slice_non_square_plane_renders():
+    field = _plane_index_field(2, ((2, 1, 1, 0), (4, 0, 0, 0)))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    mesh = field_slice(ax, field, field.sites, ((2, 1, 1, 0), (4, 0, 0, 0)), colorbar=False)
+    centers, _ = _cell_centers_and_values(mesh)
+    x_positions = np.unique(np.round(centers[..., 0]))
+    y_positions = np.unique(np.round(centers[..., 1]))
+    assert len(x_positions) != len(y_positions)
+
+
 def test_field_slice_colorbar_off_and_custom_title():
     field = _shell_norm_field(2)
     fig = plt.figure(figsize=(7.0, 5.6))
@@ -215,7 +270,6 @@ def test_dynamics_strip_custom_titles():
 
 def test_dynamics_strip_rejects_empty_indices():
     trajectory = simulate(2, DynamicsParams(kind="heat", alpha=0.5, seed=12))
-    fig = plt.figure()
     with pytest.raises(ValueError, match="t_indices must be non-empty"):
         dynamics_strip([], trajectory, [])
 

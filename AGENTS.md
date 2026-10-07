@@ -97,32 +97,36 @@ bash quadmath/scripts/clean_output.sh
 ## Module Dependencies
 
 ```
-quadray.py ─────────────────────┬──► nelder_mead_quadray.py
-     │                          │
-     ├──► linalg_utils.py       └──► discrete_variational.py
-     │
-     └──► visualize.py (also imports paths.py, discrete_variational.py)
+Convention: `A ──► B` means module A imports module B. Paths are relative to `src/quadmath/`.
 
-cayley_menger.py ──► quadray.py (lazy import of to_xyz)
-information.py ──► quadray.py (DEFAULT_EMBEDDING); metrics.py is standalone
-conversions.py, examples.py ──► quadray.py; symbolic.py, glossary_gen.py: leaf modules
-ivm_field.py ──► quadray.py (DEFAULT_EMBEDDING/to_xyz; shell enumeration + field learning)
-ivm_dynamics.py ──► quadray.py (lattice graph; heat/majority dynamics + trajectory fit)
-lattice_search.py ──► quadray.py (precomputed ball index; nearest-site queries)
-omni_numbering.py ──► standalone (layer-BFS shells, packed int64 site keys)
-learning_eval.py ──► ivm_field.py, ivm_dynamics.py (k-fold CV, temporal splits, learning curves)
-vis_lattice.py ──► quadray.py, omni_numbering.py, ivm_field.py, ivm_dynamics.py (headless gallery)
-pipeline.py ──► typed Step/Pipeline composition over the surfaces above (structural protocols)
-benchmarks.py ──► quadray.py, lattice_search.py, ivm_field.py, omni_numbering.py (perf_counter timing harness)
-statistics.py ──► standalone numpy (bootstrap, permutation, scaling fits)
-vis_stats.py ──► matplotlib-only primitives (input-agnostic; no src imports)
-validate/ ──► core/quadray.py quaternion ops (property checks: normalization, conjugate-inverse,
-              double-cover, slerp midpoint, associativity; run_validation -> List[ValidationReport])
-viz/animations.py ──► core/quadray.py, lattice/ivm_field.py (deterministic frames + byte-stable GIF writer)
-viz/plots.py ──► lattice/ivm_field.py, viz/visualize.py (input-agnostic loss/shell/histogram/3D-shell builders)
-New methods extend existing modules in place: qmul/qconjugate/qrotate/slerp/rotate_about_axis (quadray.py),
-angle_error/quat_log_euclidean_dispersion (metrics.py), jackknife_ci/benjamini_hochberg/welch_t_test/
-rotation_stats (statistics.py), three_way_split/ridge_site_fit/GradientDescentTrainer (learning_eval.py).
+core/quadray.py ──► core/linalg_utils.py
+core/cayley_menger.py ──► core/quadray.py (lazy import of to_xyz)
+core/examples.py ──► core/quadray.py, optimize/nelder_mead_quadray.py
+core/symbolic.py, tools/glossary_gen.py: leaf modules
+core/metrics.py: standalone
+inference/information.py ──► core/quadray.py (DEFAULT_EMBEDDING)
+optimize/nelder_mead_quadray.py ──► core/quadray.py
+optimize/discrete_variational.py ──► core/quadray.py
+lattice/conversions.py ──► core/quadray.py
+lattice/omni_numbering.py ──► core/quadray.py (Quadray; layer-BFS shells, packed int64 site keys)
+lattice/lattice_search.py ──► lattice/omni_numbering.py (precomputed ball index; nearest-site queries)
+lattice/ivm_field.py ──► core/quadray.py (DEFAULT_EMBEDDING/to_xyz; shell enumeration + field learning)
+lattice/ivm_dynamics.py ──► core/quadray.py, paths.py (lattice graph; heat/majority dynamics + trajectory fit)
+learn/learning_eval.py ──► lattice/ivm_field.py, lattice/ivm_dynamics.py (k-fold CV, temporal splits, learning curves)
+viz/vis_lattice.py ──► core/quadray.py, lattice/omni_numbering.py, lattice/ivm_field.py, lattice/ivm_dynamics.py (headless gallery)
+pipeline.py ──► core/quadray.py, lattice/ivm_field.py, lattice/ivm_dynamics.py (typed Step/Pipeline composition; structural protocols)
+stats/benchmarks.py ──► core/quadray.py, lattice/lattice_search.py, lattice/ivm_field.py, lattice/omni_numbering.py (perf_counter timing harness)
+stats/statistics.py: standalone numpy (bootstrap, permutation, scaling fits)
+viz/vis_stats.py: matplotlib-only primitives (input-agnostic; no src imports)
+validate/validate.py ──► core/quadray.py quaternion ops (property checks: normalization, conjugate-inverse,
+                         double-cover, slerp midpoint, associativity; run_validation -> List[ValidationReport])
+viz/animations.py ──► core/quadray.py, lattice/ivm_field.py, paths.py (deterministic frames + byte-stable GIF writer)
+viz/plots.py ──► core/quadray.py, lattice/ivm_field.py, paths.py, viz/_common.py (input-agnostic loss/shell/histogram/3D-shell builders)
+viz/visualize.py ──► core/quadray.py, optimize/discrete_variational.py, optimize/nelder_mead_quadray.py, paths.py, viz/_common.py
+
+New methods extend existing modules in place: qmul/qconjugate/qrotate/slerp/rotate_about_axis (core/quadray.py),
+angle_error/quat_log_euclidean_dispersion (core/metrics.py), jackknife_ci/benjamini_hochberg/welch_t_test/
+rotation_stats (stats/statistics.py), three_way_split/ridge_site_fit/GradientDescentTrainer (learn/learning_eval.py).
 
 lean/ ── Lean 4 (core, no Mathlib) mirror of quadray.py + ivm_field.py lattice definitions;
         zero sorries (universal shell count stated as shellSites_card_target, machine-checked

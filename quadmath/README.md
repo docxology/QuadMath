@@ -6,8 +6,8 @@ This directory contains the build system for generating figures, PDFs, and LaTeX
 
 ```
 quadmath/
-├── markdown/          # Manuscript source files (11 sections)
-├── scripts/           # Generation and build scripts (16 scripts)
+├── markdown/          # Manuscript source files (19 numbered files, 00-18)
+├── scripts/           # Generation and build scripts (23 Python, 2 shell)
 ├── output/            # Generated artifacts (regeneratable; git-tracked)
 │   ├── figures/       # PNG, MP4, SVG files
 │   ├── data/          # CSV, NPZ data files

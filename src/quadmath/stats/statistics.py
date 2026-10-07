@@ -64,19 +64,21 @@ def summarize(x: np.ndarray) -> Dict[str, float]:
 
     Returns a dict with integer ``n`` and float entries ``mean``,
     ``std`` (sample standard deviation, ``ddof=1``), ``median``, ``iqr``
-    (75th minus 25th percentile), ``min``, and ``max``.
+    (75th minus 25th percentile), ``min``, and ``max``.  For a single
+    observation ``std`` is NaN by definition, returned without a warning.
 
     Raises
     ------
     ValueError
-        If ``x`` is empty.
+        If ``x`` is empty or contains non-finite values.
     """
-    x = _as_float_array(x, "x")
+    x = _as_finite_float_array(x, "x")
     q25, q75 = np.percentile(x, [25.0, 75.0])
+    std = float(np.std(x, ddof=1)) if x.size > 1 else float("nan")
     return {
         "n": int(x.size),
         "mean": float(np.mean(x)),
-        "std": float(np.std(x, ddof=1)),
+        "std": std,
         "median": float(np.median(x)),
         "iqr": float(q75 - q25),
         "min": float(np.min(x)),
@@ -103,11 +105,14 @@ def bootstrap_ci(
     Raises
     ------
     ValueError
-        If ``x`` is empty or ``iters`` is not positive.
+        If ``x`` is empty, ``iters`` is not positive, or ``alpha`` is
+        outside ``(0, 1)``.
     """
     x = _as_float_array(x, "x")
     if iters <= 0:
         raise ValueError("iters must be a positive integer")
+    if not 0.0 < alpha < 1.0:
+        raise ValueError(f"alpha must lie strictly between 0 and 1, got {alpha!r}")
     n = len(x)
     rng = np.random.default_rng(seed)
     idx = rng.integers(0, n, size=(iters, n))
@@ -138,11 +143,12 @@ def permutation_test(
     Raises
     ------
     ValueError
-        If either sample is empty or ``alternative`` is not one of
-        ``"two-sided"``, ``"greater"``, ``"less"``.
+        If either sample is empty or contains non-finite values, or
+        ``alternative`` is not one of ``"two-sided"``, ``"greater"``,
+        ``"less"``.
     """
-    a = _as_float_array(a, "a")
-    b = _as_float_array(b, "b")
+    a = _as_finite_float_array(a, "a")
+    b = _as_finite_float_array(b, "b")
     na = len(a)
     if alternative not in ("two-sided", "greater", "less"):
         raise ValueError(f"unknown alternative: {alternative!r}")
@@ -174,10 +180,13 @@ def cohens_d(a: np.ndarray, b: np.ndarray) -> float:
     Raises
     ------
     ValueError
-        If either sample is empty.
+        If either sample is empty or contains non-finite values, or has
+        fewer than two values.
     """
-    a = _as_float_array(a, "a")
-    b = _as_float_array(b, "b")
+    a = _as_finite_float_array(a, "a")
+    b = _as_finite_float_array(b, "b")
+    if a.size < 2 or b.size < 2:
+        raise ValueError("cohens_d requires at least two values per sample")
     na, nb = len(a), len(b)
     diff = float(np.mean(a) - np.mean(b))
     sa = float(np.std(a, ddof=1))
@@ -201,9 +210,12 @@ def p_adjust_bonferroni(pvals: np.ndarray) -> np.ndarray:
     Raises
     ------
     ValueError
-        If ``pvals`` is empty.
+        If ``pvals`` is empty or any value lies outside ``[0, 1]`` (NaN
+        fails the range check).
     """
     p = _as_float_array(pvals, "pvals")
+    if not np.all((p >= 0.0) & (p <= 1.0)):
+        raise ValueError("pvals must all lie in [0, 1]")
     m = p.size
     return np.minimum(1.0, p * m)
 
@@ -221,15 +233,20 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     Raises
     ------
     ValueError
-        If either array is empty, the arrays differ in length, or any
-        value is non-positive (logs would be undefined).
+        If either array is empty, the arrays differ in length, fewer than
+        two points are given, any value is non-positive (logs would be
+        undefined), or all sizes are equal (no slope is identified).
     """
     sizes = _as_float_array(sizes, "sizes")
     times = _as_float_array(times, "times")
     if sizes.size != times.size:
         raise ValueError("sizes and times must have the same length")
+    if sizes.size < 2:
+        raise ValueError("scaling_fit requires at least two observations")
     if np.any(sizes <= 0) or np.any(times <= 0):
         raise ValueError("sizes and times must be positive for a log-log fit")
+    if np.ptp(np.log(sizes)) <= 0.0:
+        raise ValueError("scaling_fit requires at least two distinct sizes")
     slope, intercept = np.polyfit(np.log(sizes), np.log(times), 1)
     fitted = slope * np.log(sizes) + intercept
     observed = np.log(times)
@@ -463,15 +480,21 @@ def welch_t_test(
     Raises
     ------
     ValueError
-        If either sample is empty or has fewer than two values, or
-        ``alternative`` is not one of the three supported strings.
+        If either sample is empty, contains non-finite values, or has
+        fewer than two values, or ``alternative`` is not one of the three
+        supported strings.
     """
-    a = _as_float_array(a, "a")
-    b = _as_float_array(b, "b")
+    a = _as_finite_float_array(a, "a")
+    b = _as_finite_float_array(b, "b")
     if a.size < 2 or b.size < 2:
         raise ValueError("welch_t_test requires at least two values per sample")
     if alternative not in ("two-sided", "greater", "less"):
         raise ValueError(f"unknown alternative: {alternative!r}")
+    # Common rescaling keeps squared variances representable; t and df are scale-invariant.
+    scale = max(float(np.std(a, ddof=1)), float(np.std(b, ddof=1)))
+    if scale > 0.0:
+        a = a / scale
+        b = b / scale
     na, nb = a.size, b.size
     wa = float(np.var(a, ddof=1)) / na
     wb = float(np.var(b, ddof=1)) / nb
