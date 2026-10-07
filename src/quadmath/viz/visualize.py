@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from typing import Iterable
 
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -10,7 +10,7 @@ import os
 
 from quadmath.core.quadray import Quadray, to_xyz, DEFAULT_EMBEDDING
 from quadmath.optimize.nelder_mead_quadray import SimplexState
-from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir
+from quadmath.paths import get_data_dir, get_figure_dir
 from quadmath.optimize.discrete_variational import DiscretePath
 
 

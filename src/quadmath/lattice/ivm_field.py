@@ -336,9 +336,9 @@ class IVMField:
           observation value is not finite, or an observation site lies
           outside the ball.
         """
-        if lam < 0.0:
+        if not lam >= 0.0:
             raise ValueError(f"lam must be non-negative, got {lam}")
-        if kernel_width <= 0.0:
+        if not kernel_width > 0.0:
             raise ValueError(f"kernel_width must be positive, got {kernel_width}")
         obs = list(observation_sites)
         y = np.asarray(list(observation_values), dtype=float)
@@ -354,6 +354,8 @@ class IVMField:
             if j is None:
                 raise ValueError(f"observation site {s.as_tuple()} is outside the lattice ball of radius {self.radius}")
             obs_idx.append(j)
+        if len(set(obs_idx)) != len(obs_idx):
+            raise ValueError("observation sites must be distinct")
 
         n = len(self.sites)
         observed = np.zeros(n, dtype=bool)

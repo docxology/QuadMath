@@ -26,7 +26,7 @@ def main() -> None:
 
     from quadmath.viz.visualize import plot_ivm_neighbors  # noqa: WPS433
     from quadmath.core.quadray import Quadray, to_xyz, DEFAULT_EMBEDDING  # noqa: WPS433
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import numpy as np  # noqa: WPS433
 

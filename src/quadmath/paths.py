@@ -10,8 +10,10 @@ def get_repo_root(start: str | None = None) -> str:
     `pyproject.toml`. A bare `README.md` in a subpackage directory (`src/`,
     `tests/`) is not enough — without the `pyproject.toml` requirement the
     walk would stop at `src/` and misplace all generated outputs under
-    `src/quadmath/output/`. If no marker is encountered before the
-    filesystem root, returns the last checked path (a safe terminal fallback).
+    `src/quadmath/output/`.
+
+    Raises
+    - RuntimeError: If no marker is encountered before the filesystem root.
     """
     path = os.path.abspath(start or os.path.dirname(__file__))
     while True:
@@ -24,7 +26,7 @@ def get_repo_root(start: str | None = None) -> str:
             return path
         parent = os.path.dirname(path)
         if parent == path:
-            return path
+            raise RuntimeError(f"no repository root found above {start or __file__}")
         path = parent
 
 

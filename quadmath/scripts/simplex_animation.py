@@ -25,9 +25,8 @@ def main() -> None:
     from quadmath.viz.visualize import animate_simplex  # noqa: WPS433
     from quadmath.viz.visualize import plot_simplex_trace  # noqa: WPS433
     from quadmath.viz.visualize import plot_ivm_neighbors  # noqa: WPS433
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
-    import numpy as np  # noqa: WPS433
 
     def f(q: Quadray) -> float:
         # Create a more challenging objective function that takes longer to converge
@@ -129,7 +128,6 @@ def main() -> None:
     fig.tight_layout()
     
     figure_dir = get_figure_dir()
-    data_dir = get_data_dir()
     static_path = os.path.join(figure_dir, "simplex_final.png")
     fig.savefig(static_path, dpi=160, bbox_inches="tight")
     plt.close(fig)

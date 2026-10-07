@@ -21,10 +21,6 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.animation as animation
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def _ensure_src_on_path() -> None:
@@ -39,7 +35,7 @@ def create_4d_trajectory_visualization():
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
     
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir
+    from quadmath.paths import get_data_dir, get_figure_dir
     from quadmath.inference.information import fisher_information_matrix, natural_gradient_step
     
     # Set style for professional appearance
@@ -305,7 +301,7 @@ def create_4d_trajectory_visualization():
     # Add value annotations with better formatting
     for i in range(4):
         for j in range(4):
-            text = ax5.text(j, i, f'{F_final[i, j]:.2f}', 
+            ax5.text(j, i, f'{F_final[i, j]:.2f}', 
                            ha="center", va="center", color="white", fontweight='bold', fontsize=9)
     
     cbar = fig.colorbar(im, ax=ax5, fraction=0.046, pad=0.04)
@@ -354,7 +350,7 @@ def create_free_energy_landscape():
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
     
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir
+    from quadmath.paths import get_data_dir, get_figure_dir
     from quadmath.inference.information import free_energy
     
     # Set style for professional appearance

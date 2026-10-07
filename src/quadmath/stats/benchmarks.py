@@ -18,7 +18,13 @@ import numpy as np
 
 from quadmath.lattice.ivm_field import IVMField, quadray_shell_norm, shell_sites
 from quadmath.lattice.lattice_search import nearest
-from quadmath.lattice.omni_numbering import MAX_SHELL, generate_shell, shell_count, sites_through_shell
+from quadmath.lattice.omni_numbering import (
+    MAX_SHELL,
+    clear_shell_cache,
+    generate_shell,
+    shell_count,
+    sites_through_shell,
+)
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, quadray_from_xyz, to_xyz
 
 #: Workload sizes used by :func:`run_all`.  Read at call time so tests can
@@ -198,16 +204,25 @@ def bench_shell_enumeration(k_max: int = 4, trials: int = 5) -> List[BenchRow]:
     if k_max < 0 or k_max > MAX_SHELL:
         raise ValueError(f"k_max must be in [0, MAX_SHELL={MAX_SHELL}], got {k_max}")
     probe = sites_through_shell(k_max)
+
+    def cold_sites_through_shell() -> np.ndarray:
+        clear_shell_cache()
+        return sites_through_shell(k_max)
+
+    def cold_generate_shell() -> np.ndarray:
+        clear_shell_cache()
+        return generate_shell(k_max)
+
     rows = [
         _row(
             "omni_numbering.sites_through_shell",
             int(probe.shape[0]),
-            time_callable(lambda: sites_through_shell(k_max), trials=trials),
+            time_callable(cold_sites_through_shell, trials=trials),
         ),
         _row(
             "omni_numbering.generate_shell",
             int(shell_count(k_max)),
-            time_callable(lambda: generate_shell(k_max), trials=trials),
+            time_callable(cold_generate_shell, trials=trials),
         ),
         _row(
             "ivm_field.shell_sites",

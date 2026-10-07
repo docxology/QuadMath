@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 import re
 import sys
-from typing import Dict, List, Set, Tuple
+from typing import List, Set, Tuple
 
 
 def find_markdown_files(markdown_dir: str) -> List[str]:

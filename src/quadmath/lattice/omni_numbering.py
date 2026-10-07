@@ -214,7 +214,12 @@ def sites_through_shell(max_shell: int) -> np.ndarray:
       lexicographic (a, b, c, d) order.
     """
     sites, _, _ = _build_through_shell(max_shell)
-    return sites
+    return sites.copy()
+
+
+def clear_shell_cache() -> None:
+    """Drop memoized shell enumerations so the next call recomputes them."""
+    _CACHE.clear()
 
 
 def generate_shell(k: int) -> np.ndarray:

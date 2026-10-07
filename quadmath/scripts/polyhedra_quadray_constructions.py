@@ -16,7 +16,7 @@ from __future__ import annotations
 import os
 import sys
 import numpy as np
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 
 def _ensure_src_on_path() -> None:
@@ -28,8 +28,6 @@ def _ensure_src_on_path() -> None:
 
 def generate_regular_tetrahedron(scale: float = 1.0) -> Tuple[np.ndarray, List[List[int]]]:
     """Generate regular tetrahedron vertices and faces."""
-    # Golden ratio for regular tetrahedron
-    phi = (1 + np.sqrt(5)) / 2
     vertices = np.array([
         [1, 1, 1],
         [-1, -1, 1],
@@ -145,7 +143,6 @@ def main() -> None:
     _ensure_src_on_path()
 
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
     from quadmath.paths import get_figure_dir
 
     # Create figure with 3D polyhedra and network diagram

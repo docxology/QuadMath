@@ -88,7 +88,7 @@ def compare_ace_vs_cm_examples() -> str:
     Returns
     - str: path to generated CSV file
     """
-    from sympy import Matrix, sqrt, simplify, N, Rational
+    from sympy import Matrix, simplify, N, Rational
     import csv
     import matplotlib.pyplot as plt
 

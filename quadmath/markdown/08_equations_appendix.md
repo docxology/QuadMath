@@ -176,14 +176,14 @@ See code: [`free_energy`](03_quadray_methods.md#code:free_energy) in `src/quadma
 Background: [Active Inference (Parr, Pezzulo & Friston, MIT Press, 2022)](https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind).
 
 \begin{equation}\label{eq:expected_free_energy}
-G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; H\big[Q(s)\big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
+G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid s)\big] \;-\; \log P(o)
 \end{equation}
 
 Explanation.
 
 - **Symbols**: $Q(s)$ the approximate posterior and $P(s)$ the prior over states (as in Eq. \eqref{eq:free_energy}), $P(o \mid s)$ the likelihood, $P(o)$ the prior preference over outcomes in nats (uniform when omitted), $H\big[Q\big] = -\sum_s Q(s) \log Q(s)$ the Shannon entropy in nats, and $\mathbb{E}_q$ expectation under $Q$; $G$ is the expected free energy minimized during action selection.
 - **Epistemic term**: the KL divergence between variational posterior and prior over states.
-- **Entropy**: the posterior entropy enters with the variational-bound sign, $\mathbb{E}_q[\log Q(s)] = -H[Q(s)]$.
+- **Entropy**: the posterior entropy is already inside the KL term, since $\mathrm{KL}[Q\|P] = \mathbb{E}_q[\log Q(s)] - \mathbb{E}_q[\log P(s)] = -H[Q(s)] - \mathbb{E}_q[\log P(s)]$; subtracting $H$ again would count it twice.
 - **Ambiguity**: the negative expected log-likelihood of outcomes penalizes noisy observations.
 - **Pragmatic term**: prior preferences $P(o)$ enter negatively ($-\log P(o)$), so preferred outcomes lower $G$; agents minimize $G$ during action selection.
 

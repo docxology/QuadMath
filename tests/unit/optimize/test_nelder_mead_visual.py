@@ -196,3 +196,24 @@ def test_nelder_mead_probes_escape_premature_collapse():
     assert state.vertices[0] == Quadray(2, 0, 0, 0)
     assert abs(state.values[0] - 0.6) < 1e-12
     assert state.volume == 0
+
+
+def test_nelder_mead_result_is_independent_of_initial_simplex_representative():
+    import math
+
+    from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
+    from quadmath.optimize.nelder_mead_quadray import nelder_mead_quadray
+
+    target = (0.3, 0.7, -0.2)
+
+    def f(q):
+        return math.dist(to_xyz(q, DEFAULT_EMBEDDING), target)
+
+    base = [(3, 0, 0, 4), (4, 2, 2, 2), (4, 3, 4, 3), (0, 0, 2, 3)]
+    best = {
+        k: nelder_mead_quadray(
+            f, [Quadray(*(c + k for c in v)) for v in base], max_iter=100
+        ).values[0]
+        for k in (0, 2)
+    }
+    assert best[0] == pytest.approx(best[2], abs=1e-12)

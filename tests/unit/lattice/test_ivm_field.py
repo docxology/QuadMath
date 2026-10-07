@@ -409,3 +409,18 @@ def test_shell_one_sites_match_to_xyz_embedding():
     # They embed exactly at the images of the (2,1,1,0) permutations
     expected = to_xyz(Quadray(2, 1, 1, 0), DEFAULT_EMBEDDING)
     assert any(np.allclose(E @ np.array(q.as_tuple(), dtype=float), expected) for q in sites)
+
+
+def test_learn_rejects_nan_regularization_and_kernel_width():
+    field = IVMField.lattice_ball(1)
+    with pytest.raises(ValueError, match="lam must be non-negative"):
+        field.learn([Quadray(0, 0, 0, 0)], [1.0], lam=float("nan"))
+    with pytest.raises(ValueError, match="kernel_width must be positive"):
+        field.learn([Quadray(0, 0, 0, 0)], [1.0], kernel_width=float("nan"))
+
+
+def test_learn_rejects_duplicate_observation_sites():
+    field = IVMField.lattice_ball(1)
+    origin = Quadray(0, 0, 0, 0)
+    with pytest.raises(ValueError, match="distinct"):
+        field.learn([origin, origin], [1.0, 2.0])

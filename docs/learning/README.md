@@ -46,9 +46,10 @@ Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
 `FitResult`, `fit_trajectory`, `render_dynamics_demo`.
 
 - **Move graph**: adjacency = embedding difference is one of the 12
-  canonical IVM neighbor shifts (permutations of `(2,1,1,0)`). The R=3 ball
-  (27 sites) decomposes into a 12-around-one cluster, two tetrahedra, and an
-  octahedron — the update laws act independently per component.
+  canonical IVM neighbor shifts (permutations of `(2,1,1,0)`). Sites are the
+  quadrays with coordinate sum divisible by 4. The R=3 ball (13 sites) is a
+  single 12-around-one cluster; the update laws act independently per
+  connected component.
 - **Heat update** (`heat_step`): `u ← (1−α)u + α·S·u` with the symmetric
   normalization `S = D^{-1/2} A D^{-1/2}`; provably non-increasing in ‖u‖²
   (lemma in the manuscript section, asserted per step in

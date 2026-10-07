@@ -181,7 +181,6 @@ def memory_bandwidth_optimization_demo(dataset: np.ndarray) -> None:
     print("\nMemory bandwidth optimization demonstration:")
     
     # Show how quadray coordinates can be structured for efficient memory access
-    n_tetrahedra = len(dataset)
     
     # Structure 1: Array of structures (AoS) - current format
     aos_size = dataset.nbytes
@@ -243,7 +242,7 @@ def gpu_acceleration_benchmark() -> None:
     print("=" * 40)
     
     # Use volume data for prefix sum demonstration
-    prefix_result = parallel_prefix_sum_demo(seq_volumes)
+    parallel_prefix_sum_demo(seq_volumes)
     
     # The scan verifies itself against the exclusive prefix sum and raises on mismatch
     print("✅ Prefix sum results are correct")

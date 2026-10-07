@@ -253,11 +253,11 @@ def expected_free_energy(
     Computes the canonical expected free energy G (Parr, Pezzulo & Friston,
     *Active Inference*, MIT Press, 2022):
 
-        G = KL[q(s) || p(s)] - H[q(s)] - E_q[log p(o|s)] - log p(o)
+        G = KL[q(s) || p(s)] - E_q[log p(o|s)] - log p(o)
 
     Terms: the epistemic KL divergence between posterior and prior over
-    states, the negative posterior entropy E_q[log q(s)] = -H[q(s)] (the
-    standard variational-bound sign), the ambiguity/expected-surprise term
+    states (which already contains the posterior entropy, since
+    KL = E_q[log q] - E_q[log p]), the ambiguity/expected-surprise term
     (negative expected log-likelihood of outcomes), and the pragmatic
     preference term (prior preference over outcomes enters negatively, so
     preferred outcomes lower G). G is minimized during action selection in
@@ -284,14 +284,10 @@ def expected_free_energy(
     pn = p / np.sum(p)
 
     eps = 1e-15
-    # Ambiguity: negative expected log-likelihood of outcomes
     expected_nll = -float(np.sum(qn * log_p_o_given_s))
-    # Entropy of the variational posterior (penalized via -H)
-    entropy = -float(np.sum(qn * np.log(qn + eps)))
-    # Epistemic term: KL divergence between posterior and prior
     kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
 
-    return expected_nll - entropy + kl - log_p_o
+    return kl + expected_nll - log_p_o
 
 
 def active_inference_step(
@@ -401,6 +397,8 @@ def mutual_information(p_joint: np.ndarray, eps: float = 1e-15) -> float:
     p_joint = np.asarray(p_joint, dtype=float)
     if p_joint.ndim != 2:
         raise ValueError("p_joint must be 2D")
+    if np.any(p_joint < 0):
+        raise ValueError("p_joint must be non-negative")
     total = np.sum(p_joint)
     if total <= 0.0:
         raise ValueError("p_joint must have positive total mass")
@@ -439,6 +437,8 @@ def information_gain(prior: np.ndarray, posterior: np.ndarray, eps: float = 1e-1
     posterior = np.asarray(posterior, dtype=float)
     if prior.shape != posterior.shape:
         raise ValueError("prior and posterior must have the same shape")
+    if np.any(prior < 0) or np.any(posterior < 0):
+        raise ValueError("prior and posterior must be non-negative")
     pn = posterior / np.sum(posterior)
     qn = prior / np.sum(prior)
     return float(np.sum(pn * (np.log(pn + eps) - np.log(qn + eps))))

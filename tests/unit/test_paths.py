@@ -1,3 +1,4 @@
+import pytest
 import os
 
 from quadmath.paths import get_repo_root, get_output_dir, get_data_dir, get_figure_dir
@@ -34,10 +35,11 @@ def test_get_repo_root_from_src():
 
 
 def test_get_repo_root_terminal_branch():
-    # On Unix, starting from '/' will immediately hit terminal branch
+    # Starting from the filesystem root with no marker above it must fail, not
+    # return '/' (which would direct generated outputs to /quadmath/output).
     start = os.path.abspath(os.sep)
-    root = get_repo_root(start=start)
-    assert isinstance(root, str)
+    with pytest.raises(RuntimeError, match="no repository root"):
+        get_repo_root(start=start)
 
 
 def test_get_data_and_figure_dirs():

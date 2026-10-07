@@ -1,3 +1,5 @@
+import pytest
+
 from quadmath.paths import get_repo_root, get_output_dir
 
 
@@ -38,6 +40,5 @@ def test_bare_readme_is_not_repo_root(tmp_path):
     nested.mkdir(parents=True)
     (tmp_path / "README.md").write_text("# Test")
     
-    root = get_repo_root(start=str(nested))
-    # Walks past the bare-README directory (terminal fallback at fs root)
-    assert root != str(tmp_path)
+    with pytest.raises(RuntimeError, match="no repository root"):
+        get_repo_root(start=str(nested))

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, Tuple
+from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from quadmath.core.quadray import Quadray
 
 
 def tetra_volume_cayley_menger(d2: np.ndarray) -> float:

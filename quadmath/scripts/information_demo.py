@@ -26,15 +26,13 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_data_dir, get_figure_dir  # noqa: WPS433
     from quadmath.inference.information import fisher_information_matrix, natural_gradient_step, free_energy  # noqa: WPS433
     from quadmath.optimize.discrete_variational import discrete_ivm_descent  # noqa: WPS433
     from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
     from quadmath.viz.visualize import animate_discrete_path  # noqa: WPS433
     from quadmath.core.metrics import fisher_curvature_analysis  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
-    import matplotlib.patches as patches  # noqa: WPS433
-    from mpl_toolkits.mplot3d import Axes3D  # noqa: WPS433
 
     # Set style for professional appearance
     plt.style.use('default')
@@ -107,7 +105,7 @@ def main() -> None:
     for i in range(3):
         for j in range(3):
             color = "white" if F[i, j] > 0.5 else "black"
-            text = ax2.text(j, i, f'{F[i, j]:.3f}', 
+            ax2.text(j, i, f'{F[i, j]:.3f}', 
                            ha="center", va="center", color=color, fontweight='bold', fontsize=9)
     
     cbar2 = fig.colorbar(im2, ax=ax2, fraction=0.046, pad=0.04)

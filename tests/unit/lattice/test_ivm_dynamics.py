@@ -32,7 +32,7 @@ from quadmath.lattice.ivm_dynamics import (
 )
 from quadmath.core.quadray import Quadray
 
-LATTICE = make_lattice(3)  # 27 sites; origin component = 12-around-one cluster
+LATTICE = make_lattice(3)  # 13 sites; origin + cuboctahedron of 12 close packers
 SEED = 7
 
 
@@ -61,19 +61,16 @@ def test_ball_sites_radius_zero():
     assert sites == [Quadray(0, 0, 0, 0)]
 
 
-def test_ball_sites_radius_two_counts_shells():
-    sites = ball_sites(2)
-    assert len(sites) == 15  # origin + 8 vertex sites (r^2=3) + 6 axis (r^2=4)
-    radii = [site_radius_sq(q) for q in sites]
-    assert radii == sorted(radii)  # deterministic shell ordering
-    for q in sites:
-        components = q.as_tuple()
-        assert min(components) == 0 and min(components) >= 0  # canonical
+def test_ball_sites_radius_two_is_origin_only():
+    # Close-packed sites sit at r^2 = 8, so radius 2 (r^2 <= 4) holds only the origin.
+    assert ball_sites(2) == [Quadray(0, 0, 0, 0)]
 
 
 def test_ball_sites_radius_three():
     sites = ball_sites(3)
-    assert len(sites) == 27
+    assert len(sites) == 13
+    radii = [site_radius_sq(q) for q in sites]
+    assert radii == sorted(radii)  # deterministic shell ordering
     assert Quadray(0, 0, 0, 0) in sites
     assert Quadray(2, 1, 1, 0) in sites
     assert ball_sites(3) == sites  # deterministic across calls
@@ -86,7 +83,7 @@ def test_ball_sites_negative_radius_raises():
 
 def test_make_lattice_origin_component_is_twelve_around_one():
     lattice = LATTICE
-    assert lattice.size == 27
+    assert lattice.size == 13
     assert lattice.radius == 3
     origin = lattice.sites[0]
     assert origin == Quadray(0, 0, 0, 0)
@@ -102,7 +99,7 @@ def test_make_lattice_row_stochastic_average_and_symmetric_diffusion():
     eigvals = np.linalg.eigvalsh(lattice.diffusion)
     assert eigvals.min() >= -1.0 - 1e-12
     assert eigvals.max() <= 1.0 + 1e-12
-    assert lattice.size == 27
+    assert lattice.size == 13
 
 
 def test_make_lattice_negative_radius_raises():
@@ -146,17 +143,13 @@ def test_heat_step_hand_values_on_single_site_lattice():
     assert heat_step(u, single, 1.0)[0] == 0.0
 
 
-def test_heat_step_isolated_sites_decay_exactly():
-    sparse = make_lattice(2)  # origin + two tetrahedra (deg 3) + octahedron (deg 4)
-    isolated = np.flatnonzero(sparse.degrees == 0)
-    assert isolated.tolist() == [0]  # only the origin is isolated at radius 2
-    u = np.ones(15)
+def test_heat_step_isolated_site_decays_exactly():
+    single = make_lattice(1)  # one site, no neighbors: diffusion row is zero
+    assert single.degrees.tolist() == [0]
+    u = np.ones(1)
     for _ in range(4):
-        u = heat_step(u, sparse, 0.5)
-    assert np.allclose(u[isolated], 0.5**4)  # uniform geometric decay
-    # Connected pieces are regular (uniform degree per component), so the
-    # symmetric normalization S preserves their constant state exactly:
-    assert np.allclose(u[sparse.degrees > 0], 1.0, atol=1e-12)
+        u = heat_step(u, single, 0.5)
+    assert u[0] == pytest.approx(0.5**4)  # uniform geometric decay
 
 
 def test_heat_step_validation():
@@ -307,8 +300,8 @@ def test_simulate_default_lattice_and_seeded_majority_integers():
     traj = simulate(5, DynamicsParams(radius=1))
     assert traj.lattice.size == 1
     assert traj.lattice.radius == 1
-    maj = simulate(3, DynamicsParams(kind="majority", radius=2, seed=1))
-    assert maj.lattice.size == 15
+    maj = simulate(3, DynamicsParams(kind="majority", radius=3, seed=1))
+    assert maj.lattice.size == 13
     assert maj.fields[0].dtype.kind == "i"  # seeded integer initial field
     assert maj.fields[0].min() >= -3 and maj.fields[0].max() <= 3
 
@@ -444,3 +437,17 @@ def test_render_dynamics_demo_explicit_path(tmp_path):
     returned = render_dynamics_demo(str(target))
     assert returned == str(target)
     assert target.stat().st_size > 0
+
+
+def test_ball_sites_exclude_tetrahedral_and_octahedral_voids():
+    for radius in (2, 3):
+        assert all(sum(q.as_tuple()) % 4 == 0 for q in ball_sites(radius))
+    assert Quadray(1, 0, 0, 0) not in ball_sites(3)
+
+
+def test_coupling_rejects_nan_alpha():
+    u = np.zeros(LATTICE.size)
+    with pytest.raises(ValueError):
+        heat_step(u, LATTICE, float("nan"))
+    with pytest.raises(ValueError):
+        majority_step(u.astype(np.int64), LATTICE, float("nan"))

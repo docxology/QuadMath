@@ -270,3 +270,18 @@ def test_bench_defaults_expose_module_constants():
         "field_n_sites",
         "field_trials",
     }
+
+def test_bench_shell_enumeration_times_cold_enumeration(monkeypatch):
+    import quadmath.lattice.omni_numbering as omni_numbering
+
+    cache_hits = []
+    real_build = omni_numbering._build_through_shell
+
+    def spy(max_shell):
+        cache_hits.append(max_shell in omni_numbering._CACHE)
+        return real_build(max_shell)
+
+    monkeypatch.setattr(omni_numbering, "_build_through_shell", spy)
+    bench_shell_enumeration(k_max=2, trials=3)
+    assert cache_hits
+    assert not any(cache_hits)

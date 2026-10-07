@@ -81,7 +81,7 @@ def nelder_mead_quadray(
     `max_iter`.
     """
     assert len(initial_vertices) == 4, "Need 4 vertices for 4D (tetrahedron)"
-    vertices, values = order_simplex(initial_vertices, f)
+    vertices, values = order_simplex([v.normalize() for v in initial_vertices], f)
     history: List[List[Quadray]] = [list(vertices)]
     # Per-iteration diagnostics
     best_values: List[float] = [values[0]]

@@ -215,8 +215,8 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     least squares (``np.polyfit(..., 1)``) and returns
     ``(slope, intercept, r2)`` where ``r2 = 1 - ss_res / ss_tot`` is
     computed on the log-log fit, so ``slope`` approximates the empirical
-    complexity exponent (e.g. ~0.5 for linear scaling measured against
-    the raw size axis, ~1.0 for quadratic).
+    complexity exponent (e.g. ~1.0 for linear scaling, ~2.0 for quadratic).
+    ``r2`` is NaN when all times are equal (no variance to explain).
 
     Raises
     ------
@@ -235,7 +235,7 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     observed = np.log(times)
     ss_res = float(np.sum((observed - fitted) ** 2))
     ss_tot = float(np.sum((observed - np.mean(observed)) ** 2))
-    r2 = 1.0 - ss_res / ss_tot
+    r2 = 1.0 - ss_res / ss_tot if ss_tot > 0.0 else float("nan")
     return float(slope), float(intercept), float(r2)
 
 

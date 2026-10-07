@@ -1,6 +1,6 @@
 [project]
 name = "quadmath-project"
-version = "0.1.0"
+version = "0.2.0"
 description = "QuadMath: Quadray coordinates, optimization on tetrahedral lattices, and information geometry"
 authors = [{ name = "QuadMath Project" }]
 readme = "README.md"
@@ -8,6 +8,7 @@ requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.22",
   "matplotlib>=3.7",
+  "pillow>=11.0",
   "sympy>=1.12",
 ]
 

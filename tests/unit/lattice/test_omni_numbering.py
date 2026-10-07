@@ -152,10 +152,11 @@ def test_sites_through_shell_range_checks():
         sites_through_shell(MAX_SHELL + 1)
 
 
-def test_build_through_shell_cache_hit():
+def test_sites_through_shell_repeat_calls_return_equal_copies():
     a = sites_through_shell(3)
     b = sites_through_shell(3)
-    assert a is b
+    assert a is not b
+    assert np.array_equal(a, b)
 
 
 def test_site_index_accepts_projective_representatives():
@@ -248,3 +249,9 @@ def test_row_keys_injective_across_full_component_range():
     rows = np.unique(np.concatenate([sample, edge]), axis=0)
     keys = _row_keys(rows)
     assert np.unique(keys).size == rows.shape[0]
+
+
+def test_sites_through_shell_returns_independent_copy():
+    first = sites_through_shell(1)
+    first[:] = 99
+    assert not np.any(sites_through_shell(1) == 99)

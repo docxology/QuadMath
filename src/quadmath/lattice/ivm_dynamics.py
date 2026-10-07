@@ -63,9 +63,11 @@ def ball_sites(radius: int) -> List[Quadray]:
     """Enumerate canonical quadray sites with squared IVM radius <= radius**2.
 
     Sites are canonical quadray representatives: non-negative integer
-    components with at least one zero. For a canonical nonzero site the
-    squared radius is at least twice the square of its largest component,
-    so enumerating components in [0, radius] covers the whole ball.
+    components with at least one zero, and component sum divisible by 4
+    (the IVM close-packed sites; the other residue classes are tetrahedral
+    and octahedral voids). For a canonical nonzero site the squared radius is
+    at least twice the square of its largest component, so enumerating
+    components in [0, radius] covers the whole ball.
 
     Parameters
     - radius: inclusive radius bound; must be non-negative.
@@ -83,8 +85,8 @@ def ball_sites(radius: int) -> List[Quadray]:
             for c in range(radius + 1):
                 for d in range(radius + 1):
                     q = Quadray(a, b, c, d)
-                    if min(q.as_tuple()) != 0:
-                        continue  # keep canonical representatives only
+                    if min(q.as_tuple()) != 0 or sum(q.as_tuple()) % 4 != 0:
+                        continue  # canonical IVM sites only
                     r2 = site_radius_sq(q)
                     if r2 <= r_cap:
                         found.append((r2, q.as_tuple()))
@@ -194,7 +196,7 @@ def _validated_field(u: np.ndarray, lattice: IVMLattice) -> np.ndarray:
 def _validated_alpha(alpha: float) -> float:
     """Validate and return the coupling parameter as a float."""
     value = float(alpha)
-    if value < 0.0 or value > 1.0:
+    if not 0.0 <= value <= 1.0:
         raise ValueError("coupling alpha must lie in [0, 1]")
     return value
 

@@ -229,7 +229,7 @@ def test_trajectory_split_correctly_specified_is_exact():
     # Heat dynamics with alpha = 0.3 (in GRID8): the identified model
     # re-simulates the data exactly, so train, held-out multi-step, and
     # one-step-ahead errors are all exactly zero.
-    lat = make_lattice(2)
+    lat = make_lattice(3)
     u0 = np.random.default_rng(19).uniform(-2.0, 2.0, size=lat.size)
     observed = np.stack(
         simulate(8, DynamicsParams(kind="heat", alpha=0.3), lattice=lat, u0=u0).fields
@@ -248,7 +248,7 @@ def test_trajectory_split_misspecified_blows_up():
     # Majority (integer) dynamics identified with the heat model: the fit
     # error over the early training rows is modest, but the held-out
     # multi-step continuation error compounds with horizon.
-    lat = make_lattice(2)
+    lat = make_lattice(3)
     u0 = np.random.default_rng(19).integers(-3, 4, size=lat.size)
     observed = np.stack(
         simulate(8, DynamicsParams(kind="majority", alpha=0.3), lattice=lat, u0=u0).fields
@@ -263,7 +263,7 @@ def test_trajectory_split_misspecified_blows_up():
 
 
 def test_trajectory_split_one_step_matches_manual():
-    lat = make_lattice(2)
+    lat = make_lattice(3)
     u0 = np.random.default_rng(19).uniform(-2.0, 2.0, size=lat.size)
     observed = np.stack(
         simulate(8, DynamicsParams(kind="heat", alpha=0.3), lattice=lat, u0=u0).fields
@@ -277,7 +277,7 @@ def test_trajectory_split_one_step_matches_manual():
 
 
 def test_trajectory_split_clamps_extreme_fractions():
-    lat = make_lattice(2)
+    lat = make_lattice(3)
     u0 = np.random.default_rng(19).uniform(-2.0, 2.0, size=lat.size)
     observed = np.stack(
         simulate(6, DynamicsParams(kind="heat", alpha=0.3), lattice=lat, u0=u0).fields

@@ -1,5 +1,7 @@
 from fractions import Fraction
 
+import pytest
+
 from quadmath.core.quadray import (
     Quadray,
     integer_tetra_volume,
@@ -356,3 +358,31 @@ def test_quaternion_helpers_deterministic():
     assert qrotate(qz90, v, math.pi / 2.0) == qrotate(qz90, v, math.pi / 2.0)
     assert slerp((1.0, 0.0, 0.0, 0.0), qz90, 0.25) == slerp((1.0, 0.0, 0.0, 0.0), qz90, 0.25)
     assert rotate_about_axis(v, (0.0, 1.0, 0.0), 0.7) == rotate_about_axis(v, (0.0, 1.0, 0.0), 0.7)
+
+
+def test_dot_distance_angle_accept_one_shot_iterable_embedding():
+    from quadmath.core.quadray import angle, distance
+
+    q1, q2 = Quadray(2, 0, 0, 0), Quadray(0, 1, 0, 0)
+
+    def rows():
+        return (tuple(r) for r in DEFAULT_EMBEDDING)
+
+    assert dot(q1, q2, rows()) == pytest.approx(dot(q1, q2, DEFAULT_EMBEDDING))
+    assert distance(q1, q2, rows()) == pytest.approx(distance(q1, q2, DEFAULT_EMBEDDING))
+    assert angle(q1, Quadray(0, 0, 0, 0), q2, rows()) == pytest.approx(angle(q1, Quadray(0, 0, 0, 0), q2, DEFAULT_EMBEDDING))
+
+
+def test_centroid_rounds_half_up_and_is_shift_invariant():
+    assert centroid(Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0)) == Quadray(1, 0, 0, 0)
+    shifted = centroid(Quadray(2, 1, 1, 1), Quadray(1, 1, 1, 1))
+    assert shifted == centroid(Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0))
+
+
+def test_qrotate_accepts_negated_quaternion_as_same_rotation():
+    qz90 = (math.cos(math.pi / 4.0), 0.0, 0.0, math.sin(math.pi / 4.0))
+    neg = tuple(-c for c in qz90)
+    v = (1.0, 2.0, 3.0)
+    got = qrotate(neg, v, math.pi / 2.0)
+    expected = qrotate(qz90, v, math.pi / 2.0)
+    assert all(abs(g - e) < 1e-12 for g, e in zip(got, expected))

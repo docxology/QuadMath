@@ -238,6 +238,16 @@ def test_frames_to_gif_uint8_and_upscale(tmp_path):
         assert img.size == (64, 64)
 
 
+def test_frames_to_gif_emits_no_pillow_mode_deprecation(tmp_path):
+    import warnings
+
+    arr = np.zeros((4, 4), dtype=np.uint8)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        frames_to_gif([Frame(arr, "tiny")], str(tmp_path / "nomode.gif"), fps=4, scale=1)
+    assert not [w for w in caught if "mode" in str(w.message)]
+
+
 def test_frames_to_gif_rejects_bad_arguments(tmp_path):
     frames = lattice_frames(shells=1, n=2)
     target = str(tmp_path / "x.gif")

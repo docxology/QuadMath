@@ -23,7 +23,7 @@ def main() -> None:
 
     from quadmath.core.quadray import Quadray, integer_tetra_volume  # noqa: WPS433
     from quadmath.core.cayley_menger import tetra_volume_cayley_menger, ivm_tetra_volume_cayley_menger  # noqa: WPS433
-    from quadmath.paths import get_output_dir, get_data_dir, get_figure_dir  # noqa: WPS433
+    from quadmath.paths import get_data_dir, get_figure_dir  # noqa: WPS433
     import matplotlib.pyplot as plt  # noqa: WPS433
     import csv  # noqa: WPS433
 
@@ -44,7 +44,6 @@ def main() -> None:
     scales = np.linspace(0.0, 5.0, 21)
     v_xyz_list = []
     v_ivm_list = []
-    S3 = np.sqrt(9.0 / 8.0)
     base_d2 = np.ones((4, 4)) - np.eye(4)
     for s in scales:
         d2_s = (s * s) * base_d2

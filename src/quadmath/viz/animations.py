@@ -470,7 +470,7 @@ def frames_to_gif(
             data = arr
         else:
             data = np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8)
-        img = Image.fromarray(data, mode="L")
+        img = Image.fromarray(data)
         if scale != 1:
             img = img.resize((data.shape[1] * scale, data.shape[0] * scale), nearest)
         images.append(img)

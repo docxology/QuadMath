@@ -193,11 +193,11 @@ def test_expected_free_energy_basic():
     logp = np.log(np.array([0.6, 0.4]))
     q = np.array([0.5, 0.5])
     p = np.array([0.5, 0.5])
-    # Canonical G = KL - H - E_q[log p(o|s)] - log p(o); here KL = 0 and
-    # G = 0.7135581778 - 0.6931471806 = 0.0204109973.
+    # Canonical G = KL - E_q[log p(o|s)] - log p(o); here KL = 0, so G is the
+    # ambiguity -(0.5 ln 0.6 + 0.5 ln 0.4) = 0.7135581778.
     G = expected_free_energy(logp, q, p)
     assert np.isfinite(G)
-    assert abs(G - 0.020410997260129515) < 1e-12
+    assert abs(G - 0.7135581778200728) < 1e-12
 
 
 def test_expected_free_energy_shape_mismatch():
@@ -243,14 +243,14 @@ def test_expected_free_energy_pinned_nonuniform():
     logp = np.log(np.array([0.9, 0.1]))
     q = np.array([0.8, 0.2])
     p = np.array([0.3, 0.7])
-    # ambiguity 0.5448054311 - entropy 0.5004024235 + KL 0.5341108087
+    # ambiguity 0.5448054311 + KL 0.5341108087
     G = expected_free_energy(logp, q, p)
-    assert abs(G - 0.5785138162971909) < 1e-12
+    assert abs(G - 1.0789162398353778) < 1e-12
 
 
 def test_expected_free_energy_term_signs():
-    """Each canonical term enters with its documented sign: ambiguity and KL
-    positive, posterior entropy as E_q[log q] = -H, preference negative."""
+    """Ambiguity and KL enter positively, preference negatively; the entropy
+    is carried inside KL and is not added a second time."""
     logp = np.log(np.array([0.9, 0.1]))
     q = np.array([0.8, 0.2])
     p = np.array([0.3, 0.7])
@@ -258,10 +258,9 @@ def test_expected_free_energy_term_signs():
     pn = p / np.sum(p)
     eps = 1e-15
     ambiguity = -float(np.sum(qn * logp))
-    neg_entropy = float(np.sum(qn * np.log(qn + eps)))
     kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
     G = expected_free_energy(logp, q, p, log_p_o=-0.25)
-    assert np.allclose(G, ambiguity + neg_entropy + kl + 0.25, rtol=1e-10)
+    assert np.allclose(G, ambiguity + kl + 0.25, rtol=1e-10)
 
 
 def test_expected_free_energy_prior_enters_via_kl():
@@ -446,3 +445,19 @@ def test_information_gain_positive():
 def test_information_gain_shape_mismatch():
     with pytest.raises(ValueError):
         information_gain(np.array([0.5, 0.5]), np.array([0.3, 0.3, 0.4]))
+
+
+def test_mutual_information_rejects_negative_entries():
+    from quadmath.inference.information import mutual_information
+
+    with pytest.raises(ValueError, match="non-negative"):
+        mutual_information(np.array([[1.0, -0.5], [0.2, 0.3]]))
+
+
+def test_information_gain_rejects_negative_weights():
+    from quadmath.inference.information import information_gain
+
+    with pytest.raises(ValueError, match="non-negative"):
+        information_gain(np.array([0.5, -0.5]), np.array([0.5, 0.5]))
+    with pytest.raises(ValueError, match="non-negative"):
+        information_gain(np.array([0.5, 0.5]), np.array([1.5, -0.5]))

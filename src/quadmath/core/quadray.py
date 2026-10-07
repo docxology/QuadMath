@@ -148,6 +148,7 @@ def dot(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float
     Returns
     - float: Dot product in the embedded Euclidean space
     """
+    embedding = _xyz_tuple(embedding)
     x1, y1, z1 = _to_xyz_array(q1, embedding)
     x2, y2, z2 = _to_xyz_array(q2, embedding)
     return float(x1 * x2 + y1 * y2 + z1 * z2)
@@ -163,6 +164,7 @@ def distance(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> 
     Returns
     - float: Non-negative Euclidean distance in R^3
     """
+    embedding = _xyz_tuple(embedding)
     x1, y1, z1 = _to_xyz_array(q1, embedding)
     x2, y2, z2 = _to_xyz_array(q2, embedding)
     dx, dy, dz = x2 - x1, y2 - y1, z2 - z1
@@ -187,6 +189,7 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
     Raises
     - ValueError: If q1==q2 or q3==q2 (degenerate angle)
     """
+    embedding = _xyz_tuple(embedding)
     ax, ay, az = _to_xyz_array(q1, embedding)
     bx, by, bz = _to_xyz_array(q2, embedding)
     cx, cy, cz = _to_xyz_array(q3, embedding)
@@ -206,7 +209,8 @@ def centroid(*quads: Quadray) -> Quadray:
     """Component-wise mean of quadray points, rounded to the nearest lattice point.
 
     Computes the arithmetic mean of each component (a, b, c, d) across all
-    input quadrays, rounds to the nearest integer, and normalizes.
+    input quadrays, rounds half up (so the result is invariant under adding
+    the same integer to every component of every input), and normalizes.
 
     Parameters
     - *quads: Two or more Quadray points
@@ -225,7 +229,10 @@ def centroid(*quads: Quadray) -> Quadray:
     sc = sum(q.c for q in quads)
     sd = sum(q.d for q in quads)
     return Quadray(
-        round(sa / n), round(sb / n), round(sc / n), round(sd / n)
+        math.floor(sa / n + 0.5),
+        math.floor(sb / n + 0.5),
+        math.floor(sc / n + 0.5),
+        math.floor(sd / n + 0.5),
     ).normalize()
 
 
@@ -322,14 +329,12 @@ def qrotate(q: Iterable[float], v_xyz: Iterable[float],
     """Rotate a 3-vector by a unit quaternion via Rodrigues (v' = q v q*).
 
     The rotated vector is computed as q * (0, v) * qconjugate(q) using
-    :func:`qmul` and :func:`qconjugate`.  ``q`` must be a unit quaternion
-    that encodes a rotation of ``angle`` radians: the ``angle`` argument is
-    validated against the rotation magnitude q encodes,
-    2*atan2(||(x, y, z)||, w), compared to |angle| modulo 2*pi within 1e-9,
-    so a mismatched (q, angle) pair raises instead of silently rotating by
-    the wrong amount.  The validation is exact for |angle| <= 2*pi (which
-    covers :func:`rotate_about_axis`, which reduces angles to (-pi, pi]
-    before delegating).
+    :func:`qmul` and :func:`qconjugate`.  ``q`` and ``-q`` encode the same
+    rotation and are both accepted.  The rotation axis is not an input, so
+    ``angle`` is validated only up to sign: its magnitude, folded into
+    [0, pi] modulo 2*pi, must equal the rotation angle encoded by q,
+    2*atan2(||(x, y, z)||, |w|), within 1e-9.  A mismatched (q, angle) pair
+    raises instead of silently rotating by the wrong amount.
 
     Parameters
     - q: Unit quaternion (w, x, y, z) encoding the rotation
@@ -351,10 +356,10 @@ def qrotate(q: Iterable[float], v_xyz: Iterable[float],
         raise ValueError("q must be a unit quaternion (|q| = 1 within 1e-9)")
     qw, qx, qy, qz = qw / n, qx / n, qy / n, qz / n
     two_pi = 2.0 * math.pi
-    theta_q = 2.0 * math.atan2(math.sqrt(qx * qx + qy * qy + qz * qz), qw)
-    expected = abs(angle) % two_pi
-    diff = (theta_q - expected) % two_pi
-    if min(diff, two_pi - diff) > _QUAT_UNIT_TOL:
+    theta_q = 2.0 * math.atan2(math.sqrt(qx * qx + qy * qy + qz * qz), abs(qw))
+    folded = abs(angle) % two_pi
+    expected = min(folded, two_pi - folded)
+    if abs(theta_q - expected) > _QUAT_UNIT_TOL:
         raise ValueError(
             "angle does not match the rotation encoded by q "
             "(compared modulo 2*pi within 1e-9)"

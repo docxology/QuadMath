@@ -452,3 +452,9 @@ def test_rotation_stats_rejects_empty_and_nonfinite():
         rotation_stats([0.5, np.inf])
     with pytest.raises(ValueError, match="only finite values"):
         rotation_stats([np.nan])
+
+def test_scaling_fit_constant_times_has_undefined_r2():
+    sizes = np.array([1.0, 10.0, 100.0])
+    slope, _, r2 = scaling_fit(sizes, np.array([5.0, 5.0, 5.0]))
+    assert slope == pytest.approx(0.0, abs=1e-12)
+    assert np.isnan(r2)
