@@ -38,7 +38,8 @@ from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from quadmath.viz._common import figure_scope, save_figure
+from quadmath.paths import get_figure_dir
+from quadmath.viz._common import figure_scope, resolve_output_path, save_figure
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from matplotlib.axes import Axes
@@ -250,13 +251,16 @@ def gallery(paths_out_dir: str, seed: int = 32) -> List[str]:
 
     Parameters
     - paths_out_dir: Directory the four PNGs are written to (created when
-      missing).
+      missing).  A bare directory name is resolved under
+      ``quadmath/output/figures/``; a path with a directory component (or an
+      absolute path) is used as given.
     - seed: Seed for the latency sample, the scaling noise, and the
       confidence half-widths.
 
     Returns
     - List[str]: The four written paths, in :data:`GALLERY_FILES` order.
     """
+    paths_out_dir = resolve_output_path(paths_out_dir, get_figure_dir)
     if not os.path.isdir(paths_out_dir):
         os.makedirs(paths_out_dir, exist_ok=True)
     rng = np.random.default_rng(seed)

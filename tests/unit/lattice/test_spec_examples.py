@@ -25,7 +25,7 @@ from quadmath.lattice.conversions import (
 )
 from quadmath.lattice.ivm_field import (
     IVM_NEIGHBOR_STEPS,
-    ball_sites,
+    shell_ball_sites,
     is_ivm_site,
     quadray_shell_norm,
     shell_cardinalities,
@@ -227,7 +227,7 @@ def test_shell_truncation_bound_8g():
 
 def test_ivm_membership_residue_classes():
     """S12: site iff normalized sum ≡ 0 (mod 4); class property; voids rejected."""
-    sites = ball_sites(4)
+    sites = shell_ball_sites(4)
     assert len(sites) == 309
     assert all(is_ivm_site(q) for q in sites)
     assert is_ivm_site(Quadray(3, 2, 2, 1)) == is_ivm_site(Quadray(2, 1, 1, 0)) is True
@@ -265,7 +265,7 @@ def test_shell_enumeration_cuboctahedral_cardinalities():
         (0, 0, 2, 2),
         (0, 0, 3, 1),
     ]
-    ball = ball_sites(4)
+    ball = shell_ball_sites(4)
     assert len(ball) == 309
     assert ball == [q for k in range(5) for q in shell_sites(k)]
 

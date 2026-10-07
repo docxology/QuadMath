@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from quadmath.lattice.ivm_dynamics import DynamicsParams, Trajectory, is_nonincreasing
-from quadmath.lattice.ivm_field import IVMField, ball_sites
+from quadmath.lattice.ivm_field import IVMField, shell_ball_sites
 from quadmath.pipeline import (
     FieldLearner,
     FieldModel,
@@ -106,7 +106,7 @@ def test_describe_lists_steps_in_order():
 
 def test_sites_step_enumerates_ivm_ball_ignoring_input():
     sites = sites_step(1).run(None)
-    assert sites == tuple(ball_sites(1))
+    assert sites == tuple(shell_ball_sites(1))
     assert len(sites) == 13
     assert all(isinstance(q, Quadray) for q in sites)
     assert sites_step(1).run("ignored input") == sites

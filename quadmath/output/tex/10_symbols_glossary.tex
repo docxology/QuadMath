@@ -56,9 +56,6 @@
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -70,6 +67,10 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
 
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
@@ -187,7 +188,7 @@
 
 \title{Appendix: Symbols and Glossary}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -548,173 +549,513 @@ Summary
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\passthrough{\lstinline!cayley\_menger!} &
+\passthrough{\lstinline!quadmath.core.cayley\_menger!} &
 \passthrough{\lstinline!ivm\_tetra\_volume\_cayley\_menger!} & function
 & \passthrough{\lstinline!(d2)!} & Compute IVM tetravolume from squared
 distances via Cayley--Menger. \\
-\passthrough{\lstinline!cayley\_menger!} &
+\passthrough{\lstinline!quadmath.core.cayley\_menger!} &
 \passthrough{\lstinline!squared\_distances\_from\_quadrays!} & function
 & \passthrough{\lstinline!(p0, p1, p2, p3, embedding)!} & Build the 4x4
 squared-distance matrix from four quadray vertices. \\
-\passthrough{\lstinline!cayley\_menger!} &
+\passthrough{\lstinline!quadmath.core.cayley\_menger!} &
 \passthrough{\lstinline!tetra\_circumradius!} & function &
 \passthrough{\lstinline!(d2)!} & Circumscribed sphere radius of a
 tetrahedron from squared distances. \\
-\passthrough{\lstinline!cayley\_menger!} &
+\passthrough{\lstinline!quadmath.core.cayley\_menger!} &
 \passthrough{\lstinline!tetra\_inradius!} & function &
 \passthrough{\lstinline!(d2)!} & Inscribed sphere radius of a
 tetrahedron from squared distances. \\
-\passthrough{\lstinline!cayley\_menger!} &
+\passthrough{\lstinline!quadmath.core.cayley\_menger!} &
 \passthrough{\lstinline!tetra\_volume\_cayley\_menger!} & function &
 \passthrough{\lstinline!(d2)!} & Compute Euclidean tetrahedron volume
 from squared distances (Coxeter.4D). \\
-\passthrough{\lstinline!conversions!} &
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_cuboctahedron\_neighbors!} & function &
+\passthrough{\lstinline!()!} & Return twelve-around-one IVM neighbors
+(vector equilibrium shell). \\
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_cuboctahedron\_vertices\_xyz!} &
+function & \passthrough{\lstinline!()!} & Return XYZ coordinates for the
+twelve-around-one neighbors. \\
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_ivm\_neighbors!} & function &
+\passthrough{\lstinline!()!} & Return the 12 nearest IVM neighbors as
+permutations of \{2,1,1,0\} (Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_optimize!} & function &
+\passthrough{\lstinline!()!} & Run Nelder--Mead over integer quadrays
+for a simple convex objective (Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_partition\_tetra\_volume!} & function &
+\passthrough{\lstinline!(mu, s, a, psi)!} & Construct a tetrahedron from
+the four-fold partition and return tetravolume (Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.examples!} &
+\passthrough{\lstinline!example\_volume!} & function &
+\passthrough{\lstinline!()!} & Return the exact IVM tetravolume of the
+primitive lattice tetrahedron. \\
+\passthrough{\lstinline!quadmath.core.geometry!} &
+\passthrough{\lstinline!lorentz\_factor!} & function &
+\passthrough{\lstinline!(v, c)!} & Lorentz factor gamma = 1 / sqrt(1 -
+v\textsuperscript{2/c}2) (Einstein.4D). \\
+\passthrough{\lstinline!quadmath.core.geometry!} &
+\passthrough{\lstinline!minkowski\_interval!} & function &
+\passthrough{\lstinline!(dt, dx, dy, dz, c)!} & Return the Minkowski
+interval squared ds\^{}2 (Einstein.4D). \\
+\passthrough{\lstinline!quadmath.core.geometry!} &
+\passthrough{\lstinline!proper\_time!} & function &
+\passthrough{\lstinline!(dt, dx, dy, dz, c)!} & Proper time elapsed for
+a timelike interval (Einstein.4D). \\
+\passthrough{\lstinline!quadmath.core.geometry!} &
+\passthrough{\lstinline!spacetime\_classify!} & function &
+\passthrough{\lstinline!(ds2, tol)!} & Classify a Minkowski interval
+squared as timelike, spacelike, or lightlike. \\
+\passthrough{\lstinline!quadmath.core.linalg\_utils!} &
+\passthrough{\lstinline!bareiss\_determinant\_int!} & function &
+\passthrough{\lstinline!(matrix)!} & Compute an exact integer
+determinant using the Bareiss algorithm. \\
+\passthrough{\lstinline!quadmath.core.linalg\_utils!} &
+\passthrough{\lstinline!bareiss\_rank!} & function &
+\passthrough{\lstinline!(matrix)!} & Compute the exact integer rank of a
+matrix via Bareiss elimination. \\
+\passthrough{\lstinline!quadmath.core.linalg\_utils!} &
+\passthrough{\lstinline!integer\_adjugate!} & function &
+\passthrough{\lstinline!(matrix)!} & Compute the exact integer adjugate
+(classical adjoint) of a square matrix. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!angle\_error!} & function &
+\passthrough{\lstinline!(q1, q2)!} & Geodesic rotation angle between two
+quaternions, in radians. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!fim\_eigenspectrum!} & function &
+\passthrough{\lstinline!(F)!} & Eigen-decomposition of a Fisher
+information matrix. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!fisher\_condition\_number!} & function &
+\passthrough{\lstinline!(F)!} & Compute the condition number of the
+Fisher information matrix. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!fisher\_curvature\_analysis!} & function &
+\passthrough{\lstinline!(F)!} & Comprehensive analysis of Fisher
+information matrix curvature. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!fisher\_quadray\_comparison!} & function &
+\passthrough{\lstinline!(F\_cartesian, F\_quadray)!} & Compare Fisher
+information matrices between coordinate systems. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!fisher\_rao\_metric!} & function &
+\passthrough{\lstinline!(p, q, eps)!} & Fisher--Rao geodesic distance on
+the probability simplex. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!information\_length!} & function &
+\passthrough{\lstinline!(path\_gradients)!} & Gradient-weighted proxy
+for informational path length (NOT the \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!jensen\_shannon\_divergence!} & function &
+\passthrough{\lstinline!(p, q, eps)!} & Jensen--Shannon divergence
+between two discrete distributions. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!kl\_divergence!} & function &
+\passthrough{\lstinline!(p, q, eps)!} & Kullback--Leibler divergence
+between two discrete distributions. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!quat\_log\_euclidean\_dispersion!} & function &
+\passthrough{\lstinline!(quats)!} & Root-mean-square chordal dispersion
+of quaternions about their mean. \\
+\passthrough{\lstinline!quadmath.core.metrics!} &
+\passthrough{\lstinline!shannon\_entropy!} & function &
+\passthrough{\lstinline!(p, eps)!} & Shannon entropy H(p) for a discrete
+distribution. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!DEFAULT\_EMBEDDING!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.core.quadray` | `Quadray` | class |!}
+& Quadray vector with non-negative components and at least one zero
+(Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!ace\_tetravolume\_5x5!} & function &
+\passthrough{\lstinline!(p0, p1, p2, p3)!} & Tom Ace 5x5 determinant as
+the exact IVM tetra-volume (Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!angle!} & function &
+\passthrough{\lstinline!(q1, q2, q3, embedding)!} & Angle at vertex q2
+formed by rays q2-\textgreater q1 and q2-\textgreater q3 (radians). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!centroid!} & function &
+\passthrough{\lstinline!(*quads)!} & Component-wise mean of quadray
+points, rounded to the nearest lattice point. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!distance!} & function &
+\passthrough{\lstinline!(q1, q2, embedding)!} & Euclidean distance
+between two quadray points under the given embedding. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!dot!} & function &
+\passthrough{\lstinline!(q1, q2, embedding)!} & Return Euclidean dot
+product \textless q1,q2\textgreater{} under the given embedding. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!integer\_tetra\_volume!} & function &
+\passthrough{\lstinline!(p0, p1, p2, p3)!} & Compute the exact IVM
+tetra-volume of a lattice tetrahedron (Fuller.4D). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!magnitude!} & function &
+\passthrough{\lstinline!(q, embedding)!} & Return the Euclidean
+magnitude of \passthrough{\lstinline!q!} under the given embedding
+(vector norm). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!qconjugate!} & function &
+\passthrough{\lstinline!(q)!} & Conjugate (w, -x, -y, -z) of a
+quaternion in (w, x, y, z) order. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!qmul!} & function &
+\passthrough{\lstinline!(a, b)!} & Hamilton product of two
+quaternions. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!qrotate!} & function &
+\passthrough{\lstinline!(q, v\_xyz, angle)!} & Rotate a 3-vector by a
+unit quaternion via Rodrigues (v' = q v q*). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!quadray\_from\_xyz!} & function &
+\passthrough{\lstinline!(x, y, z, embedding)!} & Map an R\^{}3 point
+back to the quadray lattice via pseudoinverse rounding. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!rotate\_about\_axis!} & function &
+\passthrough{\lstinline!(v\_xyz, axis\_xyz, angle)!} & Rotate a 3-vector
+about an axis by an angle (axis-angle convenience). \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!slerp!} & function &
+\passthrough{\lstinline!(qa, qb, t)!} & Shortest-arc spherical linear
+interpolation between unit quaternions. \\
+\passthrough{\lstinline!quadmath.core.quadray!} &
+\passthrough{\lstinline!to\_xyz!} & function &
+\passthrough{\lstinline!(q, embedding)!} & Map quadray to R\^{}3 via a
+3x4 embedding matrix (Fuller.4D -\textgreater{} Coxeter.4D slice). \\
+\passthrough{\lstinline!quadmath.core.symbolic!} &
+\passthrough{\lstinline!cayley\_menger\_volume\_symbolic!} & function &
+\passthrough{\lstinline!(d2)!} & Return symbolic Euclidean tetrahedron
+volume from squared distances. \\
+\passthrough{\lstinline!quadmath.core.symbolic!} &
+\passthrough{\lstinline!convert\_xyz\_volume\_to\_ivm\_symbolic!} &
+function & \passthrough{\lstinline!(V\_xyz)!} & Convert a symbolic
+Euclidean volume to IVM tetravolume via S3. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!action\_update!} & function &
+\passthrough{\lstinline!(action, free\_energy\_fn, step\_size, epsilon)!}
+& Continuous-time action update: da/dt = - dF/da. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!active\_inference\_step!} & function &
+\passthrough{\lstinline!(mu, action, free\_energy\_fn, derivative\_operator, step\_size, epsilon)!}
+& Joint perception-action update step in Active Inference. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!expected\_free\_energy!} & function &
+\passthrough{\lstinline!(log\_p\_o\_given\_s, q, p, log\_p\_o)!} &
+Expected free energy for Active Inference with prior preferences. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!finite\_difference\_gradient!} & function &
+\passthrough{\lstinline!(function, x, epsilon)!} & Compute numerical
+gradient of a scalar function via central differences. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!fisher\_information\_matrix!} & function &
+\passthrough{\lstinline!(gradients, normalize)!} & Estimate the Fisher
+information matrix via sample gradients. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!fisher\_information\_quadray!} & function &
+\passthrough{\lstinline!(gradients, embedding\_matrix)!} & Compute
+Fisher information matrix in both Cartesian and Quadray coordinates. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!free\_energy!} & function &
+\passthrough{\lstinline!(log\_p\_o\_given\_s, q, p)!} & Variational free
+energy for discrete latent states. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!information\_gain!} & function &
+\passthrough{\lstinline!(prior, posterior, eps)!} & Information gain
+(Bayesian surprise) between prior and posterior. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!information\_geometric\_distance!} & function &
+\passthrough{\lstinline!(F, x1, x2)!} & Compute information-geometric
+distance between two points. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!mutual\_information!} & function &
+\passthrough{\lstinline!(p\_joint, eps)!} & Mutual information I(X; Y)
+from a joint probability matrix. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!natural\_gradient\_step!} & function &
+\passthrough{\lstinline!(gradient, fisher, step\_size, ridge)!} &
+Compute a natural gradient step using a damped inverse Fisher. \\
+\passthrough{\lstinline!quadmath.inference.information!} &
+\passthrough{\lstinline!perception\_update!} & function &
+\passthrough{\lstinline!(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)!}
+& Continuous-time perception update: dmu/dt = D mu - dF/dmu. \\
+\passthrough{\lstinline!quadmath.lattice.conversions!} &
+\passthrough{\lstinline!embedding\_basis!} & function &
+\passthrough{\lstinline!(M)!} & Return the four embedding COLUMNS as a
+(4,3) basis matrix (Fuller.4D axes). \\
+\passthrough{\lstinline!quadmath.lattice.conversions!} &
+\passthrough{\lstinline!quadray\_roundtrip!} & function &
+\passthrough{\lstinline!(q, M)!} & Assert the exact round-trip identity
+recon == q for q -\textgreater{} XYZ -\textgreater{} quadray. \\
+\passthrough{\lstinline!quadmath.lattice.conversions!} &
 \passthrough{\lstinline!quadray\_to\_xyz!} & function &
 \passthrough{\lstinline!(q, M)!} & Map a
 \passthrough{\lstinline!Quadray!} to Cartesian XYZ via a 3x4 embedding
 matrix (Fuller.4D -\textgreater{} Coxeter.4D slice). \\
-\passthrough{\lstinline!conversions!} &
+\passthrough{\lstinline!quadmath.lattice.conversions!} &
 \passthrough{\lstinline!urner\_embedding!} & function &
 \passthrough{\lstinline!(scale)!} & Return a 3x4 Urner-style symmetric
 embedding matrix (Fuller.4D -\textgreater{} Coxeter.4D slice). \\
-\passthrough{\lstinline!discrete\_variational!} &
-\passthrough{\lstinline!DiscretePath!} & class &
-\passthrough{\lstinline!| Optimization trajectory on the integer quadray lattice. | | `discrete\_variational` | `apply\_move` | function | `(q, delta)` | Apply a lattice move and normalize to the canonical representative. | | `discrete\_variational` | `discrete\_ivm\_descent` | function | `(objective, start, moves=, max\_iter=, on\_step=)` | Greedy discrete descent over the quadray integer lattice. | | `discrete\_variational` | `neighbor\_moves\_ivm` | function | `()` | Return the 12 canonical IVM neighbor moves as Quadray deltas. | | `examples` | `example\_cuboctahedron\_neighbors` | function | `()` | Return twelve-around-one IVM neighbors (vector equilibrium shell). | | `examples` | `example\_cuboctahedron\_vertices\_xyz` | function | `()` | Return XYZ coordinates for the twelve-around-one neighbors. | | `examples` | `example\_ivm\_neighbors` | function | `()` | Return the 12 nearest IVM neighbors as permutations of \{2,1,1,0\} (Fuller.4D). | | `examples` | `example\_optimize` | function | `()` | Run Nelder–Mead over integer quadrays for a simple convex objective (Fuller.4D). | | `examples` | `example\_partition\_tetra\_volume` | function | `(mu, s, a, psi)` | Construct a tetrahedron from the four-fold partition and return tetravolume (Fuller.4D). | | `examples` | `example\_volume` | function | `()` | Return the exact IVM tetravolume of the primitive lattice tetrahedron. | | `geometry` | `lorentz\_factor` | function | `(v, c)` | Lorentz factor gamma = 1 / sqrt(1 - v\^2/c\^2) (Einstein.4D). | | `geometry` | `minkowski\_interval` | function | `(dt, dx, dy, dz, c)` | Return the Minkowski interval squared ds\^2 (Einstein.4D). | | `geometry` | `proper\_time` | function | `(dt, dx, dy, dz, c)` | Proper time elapsed for a timelike interval (Einstein.4D). | | `geometry` | `spacetime\_classify` | function | `(ds2, tol)` | Classify a Minkowski interval squared as timelike, spacelike, or lightlike. | | `glossary\_gen` | `ApiEntry` | class |!}
+\passthrough{\lstinline!quadmath.lattice.conversions!} &
+\passthrough{\lstinline!xyz\_to\_quadray\_canonical!} & function &
+\passthrough{\lstinline!(xyz, M)!} & Recover the canonical integer
+quadray for an XYZ point in the embedding image, EXACTLY. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!DynamicsParams!} & class &
+\passthrough{\lstinline!| Parameters of a discrete IVM lattice dynamics run. | | `quadmath.lattice.ivm\_dynamics` | `FitResult` | class |!}
+& Outcome of gradient-free coupling identification. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!IVMLattice!} & class &
+\passthrough{\lstinline!| Finite IVM lattice ball with neighbor adjacency and diffusion operators. | | `quadmath.lattice.ivm\_dynamics` | `Trajectory` | class |!}
+& Deterministic simulation record. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!ball\_sites!} & function &
+\passthrough{\lstinline!(radius)!} & Enumerate canonical quadray sites
+with squared IVM radius \textless= radius**2. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!fit\_trajectory!} & function &
+\passthrough{\lstinline!(observed, grid, lattice, kind, refine\_rounds)!}
+& Identify the coupling alpha from an observed trajectory
+(gradient-free). \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!heat\_step!} & function &
+\passthrough{\lstinline!(u, lattice, alpha)!} & One heat-diffusion step
+u \textless- (1 - alpha) u + alpha S u. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!is\_nonincreasing!} & function &
+\passthrough{\lstinline!(values, tol)!} & True iff no consecutive pair
+of values increases by more than tol. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!majority\_step!} & function &
+\passthrough{\lstinline!(u, lattice, alpha)!} & One rounded-averaging
+(``majority'') step on integer states. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!make\_lattice!} & function &
+\passthrough{\lstinline!(radius)!} & Build the finite IVM lattice ball
+of the given radius. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!neighbor\_shifts!} & function &
+\passthrough{\lstinline!()!} & Return the 12 canonical IVM neighbor
+shifts as quadray deltas. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!render\_dynamics\_demo!} & function &
+\passthrough{\lstinline!(output\_path, radius=, seed=, alpha=, horizon=, fit\_alpha=, grid\_count=, refine\_rounds=)!}
+& Render the multi-snapshot IVM dynamics demo figure; return its
+path. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!simulate!} & function &
+\passthrough{\lstinline!(T, params, lattice, u0)!} & Simulate T updates;
+deterministic given \passthrough{\lstinline!params!} (fixed seed). \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!site\_radius\_sq!} & function &
+\passthrough{\lstinline!(q)!} & Integer squared IVM radius of a quadray
+site (squared embedding norm). \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!step!} & function &
+\passthrough{\lstinline!(u, lattice, params)!} & Apply one update of the
+dynamics in \passthrough{\lstinline!params!} to the field. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_dynamics!} &
+\passthrough{\lstinline!sum\_of\_squares!} & function &
+\passthrough{\lstinline!(u)!} & Sum of squares of a field --- the
+observable of the heat lemma. \\
+\passthrough{\lstinline!quadmath.lattice.ivm\_field!} &
+\passthrough{\lstinline!IVMField!} & class &
+\passthrough{\lstinline!| Scalar field over an IVM lattice ball, stored on a deterministic site index. | | `quadmath.lattice.ivm\_field` | `IVM\_NEIGHBOR\_STEPS` | constant |!}
 & \\
-\passthrough{\lstinline!glossary\_gen!} &
+\passthrough{\lstinline!quadmath.lattice.ivm\_field!} &
+\passthrough{\lstinline!TetrahedronFit!} & class &
+\passthrough{\lstinline!| Result of :func:`fit\_geometry`. | | `quadmath.lattice.ivm\_field` | `fit\_geometry` | function | `(points, labels, embedding)` | Least-squares recovery of a tetrahedron's orientation+scale from noisy 3D points. | | `quadmath.lattice.ivm\_field` | `is\_ivm\_site` | function | `(q)` | Return True iff!}q\passthrough{\lstinline!(after normalization) is an IVM lattice site. | | `quadmath.lattice.ivm\_field` | `quadray\_shell\_norm` | function | `(q)` | Return the IVM shell norm of!}q\passthrough{\lstinline!: an even integer equal to!}2k\passthrough{\lstinline!. | | `quadmath.lattice.ivm\_field` | `shell\_ball\_sites` | function | `(radius)` | Enumerate the IVM lattice ball of the given shell radius, deterministically. | | `quadmath.lattice.ivm\_field` | `shell\_cardinalities` | function | `(max\_shell)` | Cardinalities of shells!}0
+..
+max\_shell\passthrough{\lstinline!(cuboctahedral numbers). | | `quadmath.lattice.ivm\_field` | `shell\_sites` | function | `(k)` | Enumerate all IVM lattice sites with quadray shell norm!}2k\passthrough{\lstinline!. | | `quadmath.lattice.lattice\_search` | `nearest` | function | `(site, R, k)` | Return the!}k\passthrough{\lstinline!nearest IVM lattice sites within radius!}R\passthrough{\lstinline!. | | `quadmath.lattice.lattice\_search` | `squared\_distance` | function | `(p, sites)` | Exact lattice squared distances from!}p\passthrough{\lstinline!to rows of!}sites\passthrough{\lstinline!. | | `quadmath.lattice.lattice\_search` | `within\_radius` | function | `(site, R)` | Return all IVM lattice sites within Euclidean radius!}R\passthrough{\lstinline!of!}site\passthrough{\lstinline!. | | `quadmath.lattice.omni\_numbering` | `MAX\_SHELL` | constant |!}
+& \\
+\passthrough{\lstinline!quadmath.lattice.omni\_numbering!} &
+\passthrough{\lstinline!NEIGHBOR\_MOVES!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.lattice.omni\_numbering` | `clear\_shell\_cache` | function | `()` | Drop memoized shell enumerations so the next call recomputes them. | | `quadmath.lattice.omni\_numbering` | `cumulative\_count` | function | `(k)` | Return the total number of IVM sites through shell!}k\passthrough{\lstinline!(inclusive). | | `quadmath.lattice.omni\_numbering` | `generate\_shell` | function | `(k)` | Generate the sites of shell!}k\passthrough{\lstinline!of the omnidirectional close packing. | | `quadmath.lattice.omni\_numbering` | `shell\_count` | function | `(k)` | Return the number of IVM sites on shell!}k\passthrough{\lstinline!of the close packing. | | `quadmath.lattice.omni\_numbering` | `site\_at\_index` | function | `(index, max\_shell)` | Return the IVM site at a canonical global index. | | `quadmath.lattice.omni\_numbering` | `site\_index` | function | `(site, max\_shell)` | Return the canonical global index of an IVM site, or -1 if absent. | | `quadmath.lattice.omni\_numbering` | `sites\_through\_shell` | function | `(max\_shell)` | Return all IVM sites through shell!}max\_shell\passthrough{\lstinline!in canonical order. | | `quadmath.learn.learning\_eval` | `CrossValidationResult` | class |!}
+& K-fold cross-validation table for the IVM field learner. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!GradientDescentTrainer!} & class &
+\passthrough{\lstinline!| Full-batch gradient-descent fit of a linear model on standardized features. | | `quadmath.learn.learning\_eval` | `LearningCurveResult` | class |!}
+& Data-coverage curve for the IVM field learner. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!RidgeSiteFit!} & class &
+\passthrough{\lstinline!| Closed-form ridge fit of a single linear site model. | | `quadmath.learn.learning\_eval` | `TrajectorySplitResult` | class |!}
+& Outcome of a temporal train/test evaluation of dynamics
+identification. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!cross\_validate\_field!} & function &
+\passthrough{\lstinline!(field\_values, sites, k, lam\_grid, seed, radius=, kernel\_width=)!}
+& Cross-validate the Laplacian-regularized field learner over k
+folds. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!enclosing\_radius!} & function &
+\passthrough{\lstinline!(sites)!} & Return the smallest IVM ball radius
+containing every given site. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!kfold\_site\_splits!} & function &
+\passthrough{\lstinline!(observed\_sites, k, seed)!} & Partition
+observed lattice sites into \passthrough{\lstinline!k!} seeded folds. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!learning\_curve!} & function &
+\passthrough{\lstinline!(values, sites, train\_fracs, seed, radius=, lam=, kernel\_width=)!}
+& Trace held-out MSE as a function of the fraction of observed sites. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!ridge\_site\_fit!} & function &
+\passthrough{\lstinline!(features, values, lam)!} & Fit a closed-form
+ridge regression with intercept on tabular rows. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!three\_way\_split!} & function &
+\passthrough{\lstinline!(n, train\_frac, val\_frac, seed)!} & Split
+\passthrough{\lstinline!range(n)!} into seeded, disjoint train/val/test
+index lists. \\
+\passthrough{\lstinline!quadmath.learn.learning\_eval!} &
+\passthrough{\lstinline!trajectory\_train\_test!} & function &
+\passthrough{\lstinline!(observed, split\_frac, lattice, kind=, grid=, refine\_rounds=)!}
+& Identify dynamics parameters on a training prefix, score the held-out
+suffix. \\
+\passthrough{\lstinline!quadmath.optimize.discrete\_variational!} &
+\passthrough{\lstinline!DiscretePath!} & class &
+\passthrough{\lstinline!| Optimization trajectory on the integer quadray lattice. | | `quadmath.optimize.discrete\_variational` | `apply\_move` | function | `(q, delta)` | Apply a lattice move and normalize to the canonical representative. | | `quadmath.optimize.discrete\_variational` | `discrete\_ivm\_descent` | function | `(objective, start, moves=, max\_iter=, on\_step=)` | Greedy discrete descent over the quadray integer lattice. | | `quadmath.optimize.discrete\_variational` | `neighbor\_moves\_ivm` | function | `()` | Return the 12 canonical IVM neighbor moves as Quadray deltas. | | `quadmath.optimize.nelder\_mead\_quadray` | `SimplexState` | class |!}
+& \\
+\passthrough{\lstinline!quadmath.optimize.nelder\_mead\_quadray!} &
+\passthrough{\lstinline!centroid\_excluding!} & function &
+\passthrough{\lstinline!(vertices, exclude\_idx)!} & Integer centroid of
+three vertices, excluding the specified index. \\
+\passthrough{\lstinline!quadmath.optimize.nelder\_mead\_quadray!} &
+\passthrough{\lstinline!compute\_volume!} & function &
+\passthrough{\lstinline!(vertices)!} & Exact IVM tetra-volume (a
+Fraction, absolute determinant divided by 4) of the first four
+vertices. \\
+\passthrough{\lstinline!quadmath.optimize.nelder\_mead\_quadray!} &
+\passthrough{\lstinline!nelder\_mead\_quadray!} & function &
+\passthrough{\lstinline!(f, initial\_vertices, alpha, gamma, rho, sigma, max\_iter, tol, on\_step)!}
+& Nelder--Mead on the integer quadray lattice. \\
+\passthrough{\lstinline!quadmath.optimize.nelder\_mead\_quadray!} &
+\passthrough{\lstinline!order\_simplex!} & function &
+\passthrough{\lstinline!(vertices, f)!} & Sort vertices by objective
+value ascending and return paired lists. \\
+\passthrough{\lstinline!quadmath.optimize.nelder\_mead\_quadray!} &
+\passthrough{\lstinline!project\_to\_lattice!} & function &
+\passthrough{\lstinline!(q)!} & Project a quadray to the canonical
+lattice representative via normalize. \\
+\passthrough{\lstinline!quadmath.paths!} &
+\passthrough{\lstinline!get\_data\_dir!} & function &
+\passthrough{\lstinline!()!} & Return
+\passthrough{\lstinline!quadmath/output/data!} path and ensure it
+exists. \\
+\passthrough{\lstinline!quadmath.paths!} &
+\passthrough{\lstinline!get\_figure\_dir!} & function &
+\passthrough{\lstinline!()!} & Return
+\passthrough{\lstinline!quadmath/output/figures!} path and ensure it
+exists. \\
+\passthrough{\lstinline!quadmath.paths!} &
+\passthrough{\lstinline!get\_output\_dir!} & function &
+\passthrough{\lstinline!()!} & Return
+\passthrough{\lstinline!quadmath/output!} path at the repo root and
+ensure it exists. \\
+\passthrough{\lstinline!quadmath.paths!} &
+\passthrough{\lstinline!get\_repo\_root!} & function &
+\passthrough{\lstinline!(start)!} & Heuristically find repository root
+by walking up from \passthrough{\lstinline!start!}. \\
+\passthrough{\lstinline!quadmath.pipeline!} &
+\passthrough{\lstinline!FieldLearner!} & class &
+\passthrough{\lstinline!| Laplacian-regularized field learner over an IVM ball; satisfies :class:`Fittable`. | | `quadmath.pipeline` | `FieldModel` | class |!}
+& Anything that predicts a scalar field value at a lattice site. \\
+\passthrough{\lstinline!quadmath.pipeline!} &
+\passthrough{\lstinline!Fittable!} & class &
+\passthrough{\lstinline!| Anything that can fit a field model from data, then predict. | | `quadmath.pipeline` | `LatticeBall` | class |!}
+& Immutable view of an IVM lattice ball; satisfies
+:class:\passthrough{\lstinline!LatticeSource!}. \\
+\passthrough{\lstinline!quadmath.pipeline!} &
+\passthrough{\lstinline!LatticeSource!} & class &
+\passthrough{\lstinline!| Anything that can enumerate IVM lattice sites (structural). | | `quadmath.pipeline` | `Pipeline` | class |!}
+& Immutable sequence of :class:\passthrough{\lstinline!Step!} objects;
+monoid-style composition. \\
+\passthrough{\lstinline!quadmath.pipeline!} &
+\passthrough{\lstinline!Step!} & class &
+\passthrough{\lstinline!| A named, typed callable unit of a :class:`Pipeline`. | | `quadmath.pipeline` | `dynamics\_step` | function | `(params, T)` | Step simulating the discrete IVM dynamics in!}params\passthrough{\lstinline!(ignores input). | | `quadmath.pipeline` | `learn\_step` | function | `(lam, seed, radius)` | Step fitting an :class:`IVMField` by Laplacian-regularized learning. | | `quadmath.pipeline` | `sites\_step` | function | `(radius)` | Step producing the IVM ball sites of shell!}radius\passthrough{\lstinline!(ignores input). | | `quadmath.stats.benchmarks` | `BENCH\_DEFAULTS` | constant |!}
+& \\
+\passthrough{\lstinline!quadmath.stats.benchmarks!} &
+\passthrough{\lstinline!BenchRow!} & class &
+\passthrough{\lstinline!| One timed benchmark result. | | `quadmath.stats.benchmarks` | `bench\_conversions` | function | `(n, trials)` | Benchmark quadray/XYZ conversions over!}n\passthrough{\lstinline!deterministic samples. | | `quadmath.stats.benchmarks` | `bench\_field\_fit` | function | `(n\_sites, trials)` | Benchmark!}IVMField.learn\passthrough{\lstinline!on a synthetic field with a fixed seed. | | `quadmath.stats.benchmarks` | `bench\_lattice\_search` | function | `(n\_sites, queries, trials)` | Benchmark nearest-site queries through the!}lattice\_search\passthrough{\lstinline!ball index. | | `quadmath.stats.benchmarks` | `bench\_shell\_enumeration` | function | `(k\_max, trials)` | Benchmark shell enumeration through shell!}k\_max\passthrough{\lstinline!. | | `quadmath.stats.benchmarks` | `run\_all` | function | `()` | Run every benchmark with the module-level :data:`BENCH\_DEFAULTS`. | | `quadmath.stats.benchmarks` | `summary\_table` | function | `(rows)` | Render aligned fixed-width ASCII rows as a table. | | `quadmath.stats.benchmarks` | `time\_callable` | function | `(fn, trials=, warmup=)` | Time!}fn\passthrough{\lstinline!with!}time.perf\_counter\passthrough{\lstinline!and return per-trial wall seconds. | | `quadmath.stats.statistics` | `benjamini\_hochberg` | function | `(pvals)` | Benjamini-Hochberg FDR-adjusted p-values (step-up procedure). | | `quadmath.stats.statistics` | `bootstrap\_ci` | function | `(x, stat, iters=, seed=, alpha=)` | Percentile bootstrap confidence interval for!}stat\passthrough{\lstinline!on!}x\passthrough{\lstinline!. | | `quadmath.stats.statistics` | `cohens\_d` | function | `(a, b)` | Pooled-standard-deviation Cohen's d between two samples. | | `quadmath.stats.statistics` | `jackknife\_ci` | function | `(x, stat, alpha)` | Leave-one-out jackknife interval and bias estimate for!}stat\passthrough{\lstinline!. | | `quadmath.stats.statistics` | `p\_adjust\_bonferroni` | function | `(pvals)` | Bonferroni-adjusted p-values, elementwise!}min(1,
+p *
+m)\passthrough{\lstinline!. | | `quadmath.stats.statistics` | `permutation\_test` | function | `(a, b, iters=, seed=, alternative=)` | Pooled permutation test on the difference of sample means. | | `quadmath.stats.statistics` | `rotation\_stats` | function | `(angles)` | Circular statistics for angles given in radians. | | `quadmath.stats.statistics` | `scaling\_fit` | function | `(sizes, times)` | Power-law (log-log linear) fit of runtimes against input sizes. | | `quadmath.stats.statistics` | `summarize` | function | `(x)` | Descriptive summary of a sample. | | `quadmath.stats.statistics` | `welch\_t\_test` | function | `(a, b, alternative)` | Welch's unequal-variance two-sample t test. | | `quadmath.tools.atomic\_write` | `atomic\_open` | function | `(path, newline=)` | Yield a text handle whose contents replace!}path\passthrough{\lstinline!only if the block succeeds. | | `quadmath.tools.atomic\_write` | `atomic\_write\_text` | function | `(path, text, newline=)` | Write!}text\passthrough{\lstinline!to!}path\passthrough{\lstinline!atomically (see :func:`atomic\_open`). | | `quadmath.tools.glossary\_gen` | `ApiEntry` | class |!}
+& \\
+\passthrough{\lstinline!quadmath.tools.glossary\_gen!} &
 \passthrough{\lstinline!build\_api\_index!} & function &
 \passthrough{\lstinline!(src\_dir)!} & \\
-\passthrough{\lstinline!glossary\_gen!} &
+\passthrough{\lstinline!quadmath.tools.glossary\_gen!} &
 \passthrough{\lstinline!generate\_markdown\_table!} & function &
 \passthrough{\lstinline!(entries)!} & \\
-\passthrough{\lstinline!glossary\_gen!} &
+\passthrough{\lstinline!quadmath.tools.glossary\_gen!} &
 \passthrough{\lstinline!inject\_between\_markers!} & function &
 \passthrough{\lstinline!(markdown\_text, begin, end, payload)!} & \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!action\_update!} & function &
-\passthrough{\lstinline!(action, free\_energy\_fn, step\_size, epsilon)!}
-& Continuous-time action update: da/dt = - dF/da. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!active\_inference\_step!} & function &
-\passthrough{\lstinline!(mu, action, free\_energy\_fn, derivative\_operator, step\_size, epsilon)!}
-& Joint perception-action update step in Active Inference. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!expected\_free\_energy!} & function &
-\passthrough{\lstinline!(log\_p\_o\_given\_s, q, p, log\_p\_o)!} &
-Expected free energy for Active Inference with prior preferences. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!finite\_difference\_gradient!} & function &
-\passthrough{\lstinline!(function, x, epsilon)!} & Compute numerical
-gradient of a scalar function via central differences. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!fisher\_information\_matrix!} & function &
-\passthrough{\lstinline!(gradients, normalize)!} & Estimate the Fisher
-information matrix via sample gradients. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!fisher\_information\_quadray!} & function &
-\passthrough{\lstinline!(gradients, embedding\_matrix)!} & Compute
-Fisher information matrix in both Cartesian and Quadray coordinates. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!free\_energy!} & function &
-\passthrough{\lstinline!(log\_p\_o\_given\_s, q, p)!} & Variational free
-energy for discrete latent states. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!information\_gain!} & function &
-\passthrough{\lstinline!(prior, posterior, eps)!} & Information gain
-(Bayesian surprise) between prior and posterior. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!information\_geometric\_distance!} & function &
-\passthrough{\lstinline!(F, x1, x2)!} & Compute information-geometric
-distance between two points. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!mutual\_information!} & function &
-\passthrough{\lstinline!(p\_joint, eps)!} & Mutual information I(X; Y)
-from a joint probability matrix. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!natural\_gradient\_step!} & function &
-\passthrough{\lstinline!(gradient, fisher, step\_size, ridge)!} &
-Compute a natural gradient step using a damped inverse Fisher. \\
-\passthrough{\lstinline!information!} &
-\passthrough{\lstinline!perception\_update!} & function &
-\passthrough{\lstinline!(mu, derivative\_operator, free\_energy\_fn, step\_size, epsilon)!}
-& Continuous-time perception update: dmu/dt = D mu - dF/dmu. \\
-\passthrough{\lstinline!linalg\_utils!} &
-\passthrough{\lstinline!bareiss\_determinant\_int!} & function &
-\passthrough{\lstinline!(matrix)!} & Compute an exact integer
-determinant using the Bareiss algorithm. \\
-\passthrough{\lstinline!linalg\_utils!} &
-\passthrough{\lstinline!bareiss\_rank!} & function &
-\passthrough{\lstinline!(matrix)!} & Compute the exact integer rank of a
-matrix via Bareiss elimination. \\
-\passthrough{\lstinline!linalg\_utils!} &
-\passthrough{\lstinline!integer\_adjugate!} & function &
-\passthrough{\lstinline!(matrix)!} & Compute the exact integer adjugate
-(classical adjoint) of a square matrix. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!fim\_eigenspectrum!} & function &
-\passthrough{\lstinline!(F)!} & Eigen-decomposition of a Fisher
-information matrix. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!fisher\_condition\_number!} & function &
-\passthrough{\lstinline!(F)!} & Compute the condition number of the
-Fisher information matrix. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!fisher\_curvature\_analysis!} & function &
-\passthrough{\lstinline!(F)!} & Comprehensive analysis of Fisher
-information matrix curvature. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!fisher\_quadray\_comparison!} & function &
-\passthrough{\lstinline!(F\_cartesian, F\_quadray)!} & Compare Fisher
-information matrices between coordinate systems. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!fisher\_rao\_metric!} & function &
-\passthrough{\lstinline!(p, q, eps)!} & Fisher--Rao geodesic distance on
-the probability simplex. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!information\_length!} & function &
-\passthrough{\lstinline!(path\_gradients)!} & Gradient-weighted proxy
-for informational path length (NOT the \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!jensen\_shannon\_divergence!} & function &
-\passthrough{\lstinline!(p, q, eps)!} & Jensen--Shannon divergence JSD(p
-\textbar\textbar{} q) for discrete distributions. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!kl\_divergence!} & function &
-\passthrough{\lstinline!(p, q, eps)!} & Kullback--Leibler divergence
-D\_KL(p \textbar\textbar{} q) for discrete distributions. \\
-\passthrough{\lstinline!metrics!} &
-\passthrough{\lstinline!shannon\_entropy!} & function &
-\passthrough{\lstinline!(p, eps)!} & Shannon entropy H(p) for a discrete
-distribution. \\
-\passthrough{\lstinline!nelder\_mead\_quadray!} &
-\passthrough{\lstinline!SimplexState!} & class &
-\passthrough{\lstinline!|  | | `nelder\_mead\_quadray` | `centroid\_excluding` | function | `(vertices, exclude\_idx)` | Integer centroid of three vertices, excluding the specified index. | | `nelder\_mead\_quadray` | `compute\_volume` | function | `(vertices)` | Exact IVM tetra-volume (a Fraction, \\|det\\|/4) of the first four vertices. | | `nelder\_mead\_quadray` | `nelder\_mead\_quadray` | function | `(f, initial\_vertices, alpha, gamma, rho, sigma, max\_iter, tol, on\_step)` | Nelder–Mead on the integer quadray lattice. | | `nelder\_mead\_quadray` | `order\_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. | | `nelder\_mead\_quadray` | `project\_to\_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. | | `paths` | `get\_data\_dir` | function | `()` | Return `quadmath/output/data` path and ensure it exists. | | `paths` | `get\_figure\_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. | | `paths` | `get\_output\_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. | | `paths` | `get\_repo\_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. | | `quadray` | `DEFAULT\_EMBEDDING` | constant |!}
+\passthrough{\lstinline!quadmath.validate.validate!} &
+\passthrough{\lstinline!DEFAULT\_CHECKS!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.validate.validate` | `DEFAULT\_TOLERANCE` | constant |!}
 & \\
-\passthrough{\lstinline!quadray!} & \passthrough{\lstinline!Quadray!} &
-class &
-`\passthrough{\lstinline!| Quadray vector with non-negative components and at least one zero (Fuller.4D). | |!}quadray\passthrough{\lstinline!|!}ace\_tetravolume\_5x5\passthrough{\lstinline!| function |!}(p0,
-p1, p2,
-p3)\passthrough{\lstinline!| Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). | |!}quadray\passthrough{\lstinline!|!}angle\passthrough{\lstinline!| function |!}(q1,
-q2, q3,
-embedding)\passthrough{\lstinline!| Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). | |!}quadray\passthrough{\lstinline!|!}centroid\passthrough{\lstinline!| function |!}(*quads)\passthrough{\lstinline!| Component-wise mean of quadray points, rounded to the nearest lattice point. | |!}quadray\passthrough{\lstinline!|!}distance\passthrough{\lstinline!| function |!}(q1,
-q2,
-embedding)\passthrough{\lstinline!| Euclidean distance between two quadray points under the given embedding. | |!}quadray\passthrough{\lstinline!|!}dot\passthrough{\lstinline!| function |!}(q1,
-q2,
-embedding)\passthrough{\lstinline!| Return Euclidean dot product <q1,q2> under the given embedding. | |!}quadray\passthrough{\lstinline!|!}integer\_tetra\_volume\passthrough{\lstinline!| function |!}(p0,
-p1, p2,
-p3)\passthrough{\lstinline!| Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). | |!}quadray\passthrough{\lstinline!|!}magnitude\passthrough{\lstinline!| function |!}(q,
-embedding)\passthrough{\lstinline!| Return Euclidean magnitude \\|\\|q\\|\\| under the given embedding (vector norm). | |!}quadray\passthrough{\lstinline!|!}quadray\_from\_xyz\passthrough{\lstinline!| function |!}(x,
-y, z,
-embedding)\passthrough{\lstinline!| Map an R\^3 point back to the quadray lattice via pseudoinverse rounding. | |!}quadray\passthrough{\lstinline!|!}to\_xyz\passthrough{\lstinline!| function |!}(q,
-embedding)\passthrough{\lstinline!| Map quadray to R\^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). | |!}symbolic\passthrough{\lstinline!|!}cayley\_menger\_volume\_symbolic\passthrough{\lstinline!| function |!}(d2)\passthrough{\lstinline!| Return symbolic Euclidean tetrahedron volume from squared distances. | |!}symbolic\passthrough{\lstinline!|!}convert\_xyz\_volume\_to\_ivm\_symbolic\passthrough{\lstinline!| function |!}(V\_xyz)\passthrough{\lstinline!| Convert a symbolic Euclidean volume to IVM tetravolume via S3. | |!}visualize\passthrough{\lstinline!|!}animate\_discrete\_path\passthrough{\lstinline!| function |!}(path,
-embedding,
-save)\passthrough{\lstinline!| Animate a point moving along a discrete quadray path. | |!}visualize\passthrough{\lstinline!|!}animate\_simplex\passthrough{\lstinline!| function |!}(vertices\_list,
-embedding,
-save)\passthrough{\lstinline!| Animate simplex evolution across iterations. | |!}visualize\passthrough{\lstinline!|!}plot\_ivm\_neighbors\passthrough{\lstinline!| function |!}(embedding,
-save)\passthrough{\lstinline!| Scatter the 12 IVM neighbor points in 3D. | |!}visualize\passthrough{\lstinline!|!}plot\_partition\_tetrahedron\passthrough{\lstinline!| function |!}(mu,
-s, a, psi, embedding,
-save)\passthrough{\lstinline!| Plot the four-fold partition as a labeled tetrahedron in 3D. | |!}visualize\passthrough{\lstinline!|!}plot\_simplex\_trace\passthrough{\lstinline!| function |!}(state,
-save)` & Plot per-iteration diagnostics for Nelder--Mead. \\
+\passthrough{\lstinline!quadmath.validate.validate!} &
+\passthrough{\lstinline!NOTES!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.validate.validate` | `SKIPPED\_CHECKS` | constant |!}
+& \\
+\passthrough{\lstinline!quadmath.validate.validate!} &
+\passthrough{\lstinline!ValidationReport!} & class &
+\passthrough{\lstinline!| Immutable outcome of a single validation check. | | `quadmath.validate.validate` | `check\_associativity` | function | `(a, b, c, tol)` | Verify (a*b)*c == a*(b*c) within!}tol\passthrough{\lstinline!via the core Hamilton product. | | `quadmath.validate.validate` | `check\_conjugate\_inverse` | function | `(q, tol)` | Verify q * conj(q) equals the identity (1, 0, 0, 0) within!}tol\passthrough{\lstinline!. | | `quadmath.validate.validate` | `check\_double\_cover` | function | `(q1, q2, tol)` | Verify the SO(3) homomorphism R(q1*q2) == R(q1) R(q2) within!}tol\passthrough{\lstinline!. | | `quadmath.validate.validate` | `check\_normalization` | function | `(q, tol)` | Verify the quaternion norm is within!}tol\passthrough{\lstinline!of 1 (norm of (a, b, c, d)). | | `quadmath.validate.validate` | `check\_slerp\_midpoint` | function | `(q0, q1, tol)` | Verify the shortest-arc slerp midpoint lies on the geodesic of (q0, q1). | | `quadmath.validate.validate` | `run\_validation` | function | `(quaternions, checks)` | Run checks over!}quaternions\passthrough{\lstinline!and collect deterministic reports. | | `quadmath.viz.\_common` | `atomic\_target` | function | `(path)` | Yield a temporary sibling of!}path\passthrough{\lstinline!; move it onto!}path\passthrough{\lstinline!only on success. | | `quadmath.viz.\_common` | `embedding\_array` | function | `(embedding)` | Return a 3x4 embedding as a float array. | | `quadmath.viz.\_common` | `encoded\_angle` | function | `(quat)` | Return the rotation magnitude a unit quaternion!}(w,
+x, y,
+z)\passthrough{\lstinline!encodes. | | `quadmath.viz.\_common` | `figure\_scope` | function | `(*args, **kwargs)` | Yield a new figure and close it on exit, including when a save fails. | | `quadmath.viz.\_common` | `mp4\_writer` | function | `(fps)` | Return an ffmpeg writer whose MP4 bytes repeat for identical frames. | | `quadmath.viz.\_common` | `resolve\_output\_path` | function | `(path, figure\_dir)` | Return the location to write!}path\passthrough{\lstinline!under the viz output policy. | | `quadmath.viz.\_common` | `save\_figure` | function | `(fig, path, **kwargs)` | Write!}fig\passthrough{\lstinline!to!}path\passthrough{\lstinline!atomically; keyword arguments go to!}savefig\passthrough{\lstinline!. | | `quadmath.viz.\_common` | `set\_axes\_equal` | function | `(ax)` | Scale a 3D axes box to the data spans so equal lengths match on every axis. | | `quadmath.viz.animations` | `Frame` | class |!}
+& A single animation frame. \\
+\passthrough{\lstinline!quadmath.viz.animations!} &
+\passthrough{\lstinline!GRID\_SIZE!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.viz.animations` | `diffusion\_frames` | function | `(n\_steps, seed)` | Render explicit heat diffusion on the IVM radius-3 ball adjacency. | | `quadmath.viz.animations` | `frames\_strip` | function | `(frames, out\_path, labels, save)` | Render frames as a single-row matplotlib strip, one panel per frame. | | `quadmath.viz.animations` | `frames\_to\_gif` | function | `(frames, out\_path, fps, scale)` | Assemble frames into an animated GIF at!}out\_path\passthrough{\lstinline!. | | `quadmath.viz.animations` | `lattice\_frames` | function | `(shells, n)` | Render a pulsing IVM lattice ball. | | `quadmath.viz.animations` | `simplex\_frames` | function | `(q0, q1, n)` | Render a quaternion-slerp rotation of the IVM radius-1 ball. | | `quadmath.viz.plots` | `plot\_error\_histogram` | function | `(errors, bins, save, out\_path)` | Plot a histogram of error values with a dashed vertical mean line. | | `quadmath.viz.plots` | `plot\_lattice\_shell\_3d` | function | `(k, save, out\_path)` | Scatter the sites of one IVM lattice shell in 3D (equal-aspect axes). | | `quadmath.viz.plots` | `plot\_loss\_history` | function | `(losses, save, out\_path)` | Plot a training loss sequence as a line with markers. | | `quadmath.viz.plots` | `plot\_shell\_growth` | function | `(k\_max, save, out\_path)` | Plot IVM shell cardinalities (cuboctahedral numbers) versus shell index. | | `quadmath.viz.plots` | `plot\_slerp\_path` | function | `(q0, q1, n\_frames, site, save, out\_path)` | Trace the 3D path of a fixed lattice site under shortest-arc slerp. | | `quadmath.viz.vis\_lattice` | `DEFAULT\_PLANE` | constant |!}
+& \\
+\passthrough{\lstinline!quadmath.viz.vis\_lattice!} &
+\passthrough{\lstinline!GALLERY\_FILES!} & constant &
+\passthrough{\lstinline!|  | | `quadmath.viz.vis\_lattice` | `dynamics\_strip` | function | `(axs, trajectory, t\_indices, embedding=, cmap=, titles=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. | | `quadmath.viz.vis\_lattice` | `field\_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. | | `quadmath.viz.vis\_lattice` | `gallery` | function | `(paths\_out\_dir, seed)` | Compose the three lattice-gallery figures deterministically. | | `quadmath.viz.vis\_lattice` | `shell\_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis\_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. | | `quadmath.viz.vis\_stats` | `GALLERY\_FILES` | constant |!}
+& \\
+\passthrough{\lstinline!quadmath.viz.vis\_stats!} &
+\passthrough{\lstinline!gallery!} & function &
+\passthrough{\lstinline!(paths\_out\_dir, seed)!} & Compose the four
+statistics-gallery figures deterministically. \\
+\passthrough{\lstinline!quadmath.viz.vis\_stats!} &
+\passthrough{\lstinline!plot\_ci\_bars!} & function &
+\passthrough{\lstinline!(labels, means, lows, highs, ax, title=)!} &
+Point estimates with confidence intervals
+\passthrough{\lstinline![lows, highs]!} as error bars. \\
+\passthrough{\lstinline!quadmath.viz.vis\_stats!} &
+\passthrough{\lstinline!plot\_ecdf!} & function &
+\passthrough{\lstinline!(values, ax, title=)!} & Empirical cumulative
+distribution function as a sorted step plot. \\
+\passthrough{\lstinline!quadmath.viz.vis\_stats!} &
+\passthrough{\lstinline!plot\_latency\_hist!} & function &
+\passthrough{\lstinline!(times, ax, bins=, title=)!} & Histogram of a
+latency sample with a dashed vertical mean line. \\
+\passthrough{\lstinline!quadmath.viz.vis\_stats!} &
+\passthrough{\lstinline!plot\_scaling\_loglog!} & function &
+\passthrough{\lstinline!(sizes, times, ax, title=)!} & Log-log scatter
+of times versus sizes with the fitted power law. \\
+\passthrough{\lstinline!quadmath.viz.visualize!} &
+\passthrough{\lstinline!animate\_discrete\_path!} & function &
+\passthrough{\lstinline!(path, embedding, save, out\_path)!} & Animate a
+point moving along a discrete quadray path. \\
+\passthrough{\lstinline!quadmath.viz.visualize!} &
+\passthrough{\lstinline!animate\_simplex!} & function &
+\passthrough{\lstinline!(vertices\_list, embedding, save, out\_path)!} &
+Animate simplex evolution across iterations. \\
+\passthrough{\lstinline!quadmath.viz.visualize!} &
+\passthrough{\lstinline!plot\_ivm\_neighbors!} & function &
+\passthrough{\lstinline!(embedding, save, out\_path)!} & Scatter the 12
+IVM neighbor points in 3D. \\
+\passthrough{\lstinline!quadmath.viz.visualize!} &
+\passthrough{\lstinline!plot\_partition\_tetrahedron!} & function &
+\passthrough{\lstinline!(mu, s, a, psi, embedding, save, out\_path)!} &
+Plot the four-fold partition as a labeled tetrahedron in 3D. \\
+\passthrough{\lstinline!quadmath.viz.visualize!} &
+\passthrough{\lstinline!plot\_simplex\_trace!} & function &
+\passthrough{\lstinline!(state, save, out\_path)!} & Plot per-iteration
+diagnostics for Nelder--Mead. \\
 \end{longtable}
 }
 

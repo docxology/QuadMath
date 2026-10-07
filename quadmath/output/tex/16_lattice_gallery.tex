@@ -1,0 +1,600 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
+
+% Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Lattice Visualization Gallery}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{October 07, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
+\section{Lattice Visualization
+Gallery}\label{lattice-visualization-gallery}
+
+\subsection{Overview}\label{overview}
+
+This section is the figure surface of the lattice layer: every rendering
+primitive used by the IVM chapters lives in
+\passthrough{\lstinline!vis\_lattice.py!}
+(\passthrough{\lstinline!shell\_scatter!},
+\passthrough{\lstinline!field\_slice!},
+\passthrough{\lstinline!dynamics\_strip!},
+\passthrough{\lstinline!gallery!}). Each primitive receives its
+matplotlib axes explicitly, so panels compose inside caller-owned
+figures; only \passthrough{\lstinline!gallery!} creates figures (three,
+written as PNGs). Nothing renders at import time, and all randomness is
+drawn from a seeded \passthrough{\lstinline!numpy.random.default\_rng!},
+so the gallery is deterministic. The command-line entry is
+\passthrough{\lstinline!quadmath/scripts/lattice\_gallery.py!} --- a
+thin orchestrator that sets a headless backend and a fixed seed,
+delegates to \passthrough{\lstinline!gallery!} (thin-orchestrator
+contract of \passthrough{\lstinline!quadmath/scripts/AGENTS.md!}), and
+prints each written path on its own line: those stdout lines are the
+\passthrough{\lstinline!make\_all\_figures!} manifest contract.
+
+\subsection{Frequency shells}\label{frequency-shells}
+
+\passthrough{\lstinline!shell\_scatter(ax, sites, k)!} embeds the sites
+of shell \passthrough{\lstinline!k!} (from
+:func:\passthrough{\lstinline!omni\_numbering.generate\_shell!}, which
+enumerates the \(10k^2 + 2\) sites of shell \(k\); see
+\href{13_lattice_tooling.md}{Lattice Tooling}) with
+\passthrough{\lstinline!to\_xyz!} under
+\passthrough{\lstinline!DEFAULT\_EMBEDDING!} and scatters them in 3D.
+With \passthrough{\lstinline!axis\_hints!} it overlays four dashed rays
+from the origin toward the embedding matrix columns --- the images of
+the quadray basis directions \(A, B, C, D\), which are the vertices of a
+regular tetrahedron (pairwise dot product \(-1\), edge length
+\(2\sqrt{2}\); see \href{03_quadray_methods.md}{Quadray Methods}). The
+hints make the tetrahedral axis frame of the lattice readable in print.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Frequency shells of the omnidirectional close packing. Shell 1 (12 sites) and shell 2 (42 sites) of the IVM lattice embedded via DEFAULT\_EMBEDDING and scattered by shell\_scatter as 3D point clouds in the x, y, z embedding coordinates; dashed gray rays mark the four tetrahedral quadray axes, labeled A, B, C, D, pointing toward the embedding-matrix columns. Reproduced with uv run python quadmath/scripts/lattice\_gallery.py (fixed seed 12).}]{../output/figures/vis_gallery_shell.png}}
+\caption{\textbf{Frequency shells of the omnidirectional close packing.}
+Shell 1 (12 sites) and shell 2 (42 sites) of the IVM lattice embedded
+via \protect\passthrough{\lstinline!DEFAULT\_EMBEDDING!} and scattered
+by \protect\passthrough{\lstinline!shell\_scatter!} as 3D point clouds
+in the \(x, y, z\) embedding coordinates; dashed gray rays mark the four
+tetrahedral quadray axes, labeled A, B, C, D, pointing toward the
+embedding-matrix columns. Reproduced with
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/lattice\_gallery.py!}
+(fixed seed 12).}
+\end{figure}
+
+\subsection{Lattice-plane slices}\label{lattice-plane-slices}
+
+\passthrough{\lstinline!field\_slice(ax, field, sites, plane)!} renders
+a scalar \passthrough{\lstinline!ivm\_field.IVMField!} as a heatmap
+restricted to a lattice plane. A plane is parametrized by an origin
+\(q_0\) and two independent integer translation vectors \(u\), \(v\) ---
+by default two of the twelve IVM neighbor moves, both permutations of
+\((2,1,1,0)\) --- and its points are
+
+\begin{equation}
+\label{eq:vis-plane}
+q(i, j) \;=\; \operatorname{normalize}\!\big(q_0 + i\,u + j\,v\big),
+\qquad (i, j) \in \mathbb{Z}^2 ,
+\end{equation}
+
+with \passthrough{\lstinline!normalize!} the quadray canonical
+representative. Because each neighbor move has component sum \(4\), the
+sum stays divisible by \(4\) along the whole plane, so every \(q(i,j)\)
+is again a lattice site. Two coordinate facts make the rendering exact:
+the embedding is linear, so the xyz image is the planar set
+\(t(q_0) + i\,t(u) + j\,t(v)\); and the shift \((1,1,1,1)\) lies in the
+embedding kernel, so plane membership is tested in integer quadray space
+--- a site lies on the plane of \eqref{eq:vis-plane} iff
+\(q - q_0 = i\,u + j\,v + m\,(1,1,1,1)\) for integers \(i, j, m\).
+\passthrough{\lstinline!field\_slice!} decides membership by an exact
+least-squares solve followed by an integer verification, so no site is
+ever misassigned by floating point. Sites off the plane are ignored,
+plane cells outside the field's ball are masked, and the heatmap axes
+are the integer plane indices \(i\) (steps along \(u\)) and \(j\) (steps
+along \(v\)).
+
+The gallery figure learns a field on the radius-3 ball (147 sites) from
+noisy observations of a linear synthetic truth (25\% of sites observed,
+noise level \(0.1\), regularization \passthrough{\lstinline!lam=0.01!},
+kernel width \passthrough{\lstinline!0.5!}) and slices it through the
+default plane \(\big((2,1,1,0), (1,2,1,0)\big)\); the learned surface
+follows the planar lattice, with masked tiles where the ball ends. Field
+learning itself is the subject of \href{11_ivm_field_learning.md}{Static
+IVM Field Learning}.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Learned scalar field sliced along a lattice plane. Heatmap of a Laplacian-regularized IVMField over the radius-3 ball, restricted by field\_slice to the plane spanned by the neighbor moves u = (2,1,1,0) and v = (1,2,1,0): a viridis heatmap whose axes are the integer plane indices i (steps along u) and j (steps along v), with the colorbar reporting the field value and light-gray masked tiles marking plane cells outside the ball. Reproduced with uv run python quadmath/scripts/lattice\_gallery.py (fixed seed 12).}]{../output/figures/vis_gallery_field.png}}
+\caption{\textbf{Learned scalar field sliced along a lattice plane.}
+Heatmap of a Laplacian-regularized
+\protect\passthrough{\lstinline!IVMField!} over the radius-3 ball,
+restricted by \protect\passthrough{\lstinline!field\_slice!} to the
+plane spanned by the neighbor moves u = (2,1,1,0) and v = (1,2,1,0): a
+\protect\passthrough{\lstinline!viridis!} heatmap whose axes are the
+integer plane indices \(i\) (steps along u) and \(j\) (steps along v),
+with the colorbar reporting the field value and light-gray masked tiles
+marking plane cells outside the ball. Reproduced with
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/lattice\_gallery.py!}
+(fixed seed 12).}
+\end{figure}
+
+\subsection{Dynamics strips}\label{dynamics-strips}
+
+\passthrough{\lstinline!dynamics\_strip(axs, trajectory, t\_indices)!}
+renders selected snapshots of an
+\passthrough{\lstinline!ivm\_dynamics.simulate!} trajectory (see
+\href{12_ivm_dynamics.md}{Dynamics and Learning on the IVM Lattice}) as
+a strip of 3D scatter panels over the embedded lattice. All panels share
+one symmetric color scale \([-v_{\max}, v_{\max}]\) with
+\(v_{\max} = \max_t |u_t|\) over the selected snapshots, so evolution is
+directly comparable across panels. The gallery strip shows heat
+diffusion (\(\alpha = 0.45\), horizon \(T = 20\)) on the radius-3
+lattice (13 sites) at \(t = 0, 10, 20\): the seeded random initial field
+relaxes toward its lattice average --- the visually flat mid panel and
+right panel are the \(L_2\)-monotone decay of the heat lemma in action.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Heat-diffusion evolution strip. Snapshots of a seeded heat run at t = 0, 10, 20 on the radius-3 IVM lattice (13 sites), rendered by dynamics\_strip as 3D scatter panels on one shared symmetric coolwarm scale {[}-v\_\{\textbackslash max\}, v\_\{\textbackslash max\}{]} with v\_\{\textbackslash max\} = \textbackslash max\_t \textbar u\_t\textbar{} over the selected snapshots; the field visibly relaxes as the sum of squares decays monotonically. Reproduced with uv run python quadmath/scripts/lattice\_gallery.py (fixed seed 12).}]{../output/figures/vis_gallery_dynamics.png}}
+\caption{\textbf{Heat-diffusion evolution strip.} Snapshots of a seeded
+heat run at t = 0, 10, 20 on the radius-3 IVM lattice (13 sites),
+rendered by \protect\passthrough{\lstinline!dynamics\_strip!} as 3D
+scatter panels on one shared symmetric
+\protect\passthrough{\lstinline!coolwarm!} scale
+\([-v_{\max}, v_{\max}]\) with \(v_{\max} = \max_t |u_t|\) over the
+selected snapshots; the field visibly relaxes as the sum of squares
+decays monotonically. Reproduced with
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/lattice\_gallery.py!}
+(fixed seed 12).}
+\end{figure}
+
+\subsection{Deterministic animations and gallery
+plots}\label{sec:animation_frames}
+
+Where the primitives above compose panels inside caller-owned figures,
+the module \passthrough{\lstinline!src/quadmath/viz/animations.py!}
+renders frame-based animations that own their pixels: each renderer
+returns a list of \passthrough{\lstinline!Frame!} objects --- the frozen
+\passthrough{\lstinline!dataclass!} \passthrough{\lstinline!Frame!} in
+that file pairs a 2D \passthrough{\lstinline!numpy!} array with a
+human-readable \passthrough{\lstinline!title!}, and its
+\passthrough{\lstinline!\_\_post\_init\_\_!} validation admits only
+\passthrough{\lstinline!uint8!} arrays (raw gray levels) or float arrays
+with every value in \([0, 1]\), rejecting anything that is not 2D, is of
+another dtype, or drifts outside the unit interval. No matplotlib is
+involved at frame level and no RNG or wall-clock input exists (except
+the explicit \passthrough{\lstinline!seed!} of
+\passthrough{\lstinline!diffusion\_frames!}), so identical arguments
+yield byte-identical frames. All three renderers share one fixed-camera
+convention: sites are embedded in \(R^3\) via
+\passthrough{\lstinline!DEFAULT\_EMBEDDING!} and viewed by an
+orthographic camera looking down \(+z\) --- each point \((x,y,z)\)
+projects to \((x,y)\) on a \passthrough{\lstinline!GRID\_SIZE!} \(=48\)
+square grid whose extent is \([-8, 8]\) (module constant
+\passthrough{\lstinline!\_HALF\_EXTENT!}, sized to cover a radius-3 IVM
+ball of embedded norm \(6\) with margin even while pulsing), the
+vertical axis flipped so \(+y\) points up, colliding points resolved by
+maximum brightness, and out-of-window points clamped to the border
+pixel.
+
+\passthrough{\lstinline!simplex\_frames(q0, q1, n=16)!} animates a
+quaternion-slerp rotation of the radius-1 ball: the two unit quaternions
+\(q_0\), \(q_1\) (validated to four components of unit norm) are
+interpolated on the shortest arc --- sign-flipping \(q_1\) when their
+dot product is negative, using the Shoemaker spherical formula
+\(q(t) = \sin((1-t)\theta)\,q_0 / \sin\theta + \sin(t\theta)\,q_1 / \sin\theta\),
+and falling back to normalized linear interpolation when the inputs are
+nearly parallel --- and at each \(t = i/(n-1)\) the 13 lattice sites of
+\passthrough{\lstinline!ball\_sites!} radius 1 are rotated by \(q(t)\),
+projected onto the 48×48 grid, and shaded by radial shell, with origin
+brightness \(1.0\) and the outermost shell never dimmer than \(0.25\) so
+nothing renders invisible.
+
+\passthrough{\lstinline!lattice\_frames(shells=3, n=12)!} renders a
+pulsing IVM lattice ball: the radius-\passthrough{\lstinline!shells!}
+ball from \passthrough{\lstinline!ball\_sites!} (147 sites at the
+default radius 3) has its embedded coordinates scaled per frame by the
+deterministic pulse \(1 + 0.25\sin(2\pi i/n)\) over one full
+growth-and-contraction cycle, while brightness per site stays the fixed
+radial-shell shading --- brightest at the center, decaying linearly in
+shell index, outermost shell at \(0.25\) --- so the pulse animates
+geometry, not shading.
+
+\passthrough{\lstinline!diffusion\_frames(n\_steps=12, seed=0)!} seeds
+one-hot heat on the radius-3 ball and diffuses it over the IVM neighbor
+graph: the 147 ball sites become a graph in which two sites are adjacent
+iff their difference normalizes to one of the twelve
+\passthrough{\lstinline!IVM\_NEIGHBOR\_STEPS!}, a
+\passthrough{\lstinline!numpy.random.default\_rng(seed)!} draw selects
+the source site deterministically, and each explicit update applies
+\(u \leftarrow u + \alpha\,(\text{mean of graph neighbors} - u)\) with
+\(\alpha = 0.25\) (stable below \(0.5\)) and values clipped at zero.
+Each frame is normalized by dividing by its (always positive) maximum
+heat, giving float values in \([0, 1]\); because heat only spreads to
+graph neighbors, the set of heated sites grows monotonically across
+frames.
+
+The companion module \passthrough{\lstinline!src/quadmath/viz/plots.py!}
+supplies standalone figure builders for diagnostics that do not belong
+to any gallery: \passthrough{\lstinline!plot\_loss\_history!} draws a
+training loss sequence as a marker line over its iteration index,
+\passthrough{\lstinline!plot\_shell\_growth!} plots the IVM shell
+cardinalities --- the cuboctahedral numbers \(10k^2+2\) produced by
+\passthrough{\lstinline!shell\_cardinalities!} in
+\passthrough{\lstinline!src/quadmath/lattice/ivm\_field.py!} --- versus
+shell index, \passthrough{\lstinline!plot\_error\_histogram!} histograms
+error values with a dashed vertical mean line, and
+\passthrough{\lstinline!plot\_lattice\_shell\_3d!} scatters the sites of
+one shell (\passthrough{\lstinline!shell\_sites!}, embedded via
+\passthrough{\lstinline!DEFAULT\_EMBEDDING!}) in 3D with equal-aspect
+axes. Unlike the axes-composing primitives of
+\passthrough{\lstinline!vis\_lattice!}, each owns a fixed-size figure
+(6.4×4.8 inches at 160 dpi), applies a fixed style, and on
+\passthrough{\lstinline!save=True!} writes its PNG into
+\passthrough{\lstinline!quadmath/output/figures/!} via
+\passthrough{\lstinline!quadmath.paths.get\_figure\_dir!}, returning the
+output path (empty string when the caller keeps the figure). All four
+are input-agnostic and seed-free: inputs are plain sequences or shell
+indices, styling is fixed, and no randomness or wall-clock time enters,
+so runs stay deterministic headless
+(\passthrough{\lstinline!MPLBACKEND=Agg!}).
+
+\passthrough{\lstinline!frames\_to\_gif(frames, out\_path, fps=8, scale=8)!}
+assembles a frame sequence into an animated GIF: float frames are
+quantized to \passthrough{\lstinline!uint8!} gray levels by rounding
+\(255\,v\), each frame is upscaled by the integer factor
+\passthrough{\lstinline!scale!} with nearest-neighbor resampling, and
+the sequence is saved with per-frame duration \(1000\,/\,\texttt{fps}\)
+milliseconds and infinite looping. PIL is imported lazily inside the
+function (Pillow stays optional at import time), and because the PIL GIF
+encoder is deterministic and embeds no timestamps, identical
+\passthrough{\lstinline!(frames, fps, scale)!} inputs render
+byte-identical GIF files --- the same byte-stability contract the PNG
+gallery asserts.
+
+\passthrough{\lstinline!frames\_strip(frames, out\_path=None, labels=None, save=True)!}
+renders the print still-counterpart of
+\passthrough{\lstinline!frames\_to\_gif!}: a single-row matplotlib strip
+with one grayscale \passthrough{\lstinline!imshow!} panel per
+\passthrough{\lstinline!Frame!}, figure width scaling with the panel
+count while the height stays one panel plus the title band, each panel
+pinned to the unit brightness interval
+(\passthrough{\lstinline!vmin = 0!}, \passthrough{\lstinline!vmax = 1!};
+\passthrough{\lstinline!uint8!} frames are first mapped by \(v/255\), so
+both \passthrough{\lstinline!Frame!} dtypes share the GIF's gray-level
+convention), per-panel titles taken from
+\passthrough{\lstinline!labels!} or, by default, from each frame's own
+\passthrough{\lstinline!title!}, and axes switched off with zero
+inter-panel spacing so consecutive panels butt together. Matplotlib is
+imported lazily inside the function (the module stays matplotlib-free at
+import time), and saving follows the \passthrough{\lstinline!plots.py!}
+convention: a bare \passthrough{\lstinline!out\_path!} name is written
+into \passthrough{\lstinline!quadmath/output/figures/!} via
+\passthrough{\lstinline!quadmath.paths.get\_figure\_dir!}, a path
+carrying a directory component is used verbatim, and the returned string
+is the written path (\passthrough{\lstinline!""!} when
+\passthrough{\lstinline!save!} is off or no name is given). An empty
+\passthrough{\lstinline!frames!} sequence or a
+\passthrough{\lstinline!labels!} length mismatch raises
+\passthrough{\lstinline!ValueError!}; the render has no RNG and no
+wall-clock input, so identical inputs give byte-identical PNGs --- the
+test suite asserts the byte stability, the full \([0, 1]\) grayscale
+excursion, the uint8/float equivalence, and the panel-count scaling.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Three animation stills in one strip. Single-row frames\_strip composition of one evenly spaced still from each 6-frame animation: left, the pulsing radius-2 IVM ball sampled at the quarter-pulse fraction (lattice\_frames, radial-shell brightness, brightest at the center); center, the quaternion-slerp rotation of the radius-1 ball in the midpoint region of the arc (t = 0.4 on the way from the identity to a 90-degree rotation about z, simplex\_frames); right, the final state of seeded heat diffusion on the radius-3 ball (diffusion\_frames, brightness normalized by the frame's maximum heat). All panels are 48×48 orthographic projections under the fixed +z camera with brightness in {[}0, 1{]}; reproduced with uv run python quadmath/scripts/animation\_stills.py.}]{../output/figures/animation_frames_strip.png}}
+\caption{\textbf{Three animation stills in one strip.} Single-row
+\protect\passthrough{\lstinline!frames\_strip!} composition of one
+evenly spaced still from each 6-frame animation: left, the pulsing
+radius-2 IVM ball sampled at the quarter-pulse fraction
+(\protect\passthrough{\lstinline!lattice\_frames!}, radial-shell
+brightness, brightest at the center); center, the quaternion-slerp
+rotation of the radius-1 ball in the midpoint region of the arc
+(\(t = 0.4\) on the way from the identity to a 90-degree rotation about
+\(z\), \protect\passthrough{\lstinline!simplex\_frames!}); right, the
+final state of seeded heat diffusion on the radius-3 ball
+(\protect\passthrough{\lstinline!diffusion\_frames!}, brightness
+normalized by the frame's maximum heat). All panels are 48×48
+orthographic projections under the fixed \(+z\) camera with brightness
+in \([0, 1]\); reproduced with
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/animation\_stills.py!}.}
+\end{figure}
+
+The command-line surface is
+\passthrough{\lstinline!quadmath/scripts/animation\_gallery.py!} --- a
+thin orchestrator in the
+\passthrough{\lstinline!quadmath/scripts/AGENTS.md!} contract that sets
+the headless \passthrough{\lstinline!Agg!} backend and renders three
+GIFs via \passthrough{\lstinline!frames\_to\_gif!}:
+\passthrough{\lstinline!animation\_lattice.gif!} (pulsing radius-3 ball,
+12 frames), \passthrough{\lstinline!animation\_simplex.gif!} (slerp from
+the identity to a 90-degree rotation about the \(x\) axis, 16 frames),
+and \passthrough{\lstinline!animation\_diffusion.gif!} (12 diffusion
+steps from seed 0), writing each into
+\passthrough{\lstinline!quadmath/output/figures/!} and printing each
+path on its own line. The script is registered in
+\passthrough{\lstinline!quadmath/scripts/make\_all\_figures.py!}
+alongside the other galleries, so the manifest contract of the Overview
+applies unchanged: only path lines on stdout, byte-identical re-renders
+for identical inputs. The companion
+\passthrough{\lstinline!quadmath/scripts/animation\_stills.py!} follows
+the same thin-orchestrator contract for print stills: it renders the
+three 6-frame sequences of the module ---
+\passthrough{\lstinline!lattice\_frames!} at radius 2,
+\passthrough{\lstinline!simplex\_frames!} from the identity to a
+90-degree rotation about \(z\) with the endpoint quaternion derived from
+\passthrough{\lstinline!rotate\_about\_axis!}, and
+\passthrough{\lstinline!diffusion\_frames!} at seed 0 --- samples each
+at an evenly spaced fraction (quarter-pulse, slerp midpoint region,
+final diffusion step), composes the three stills with
+\passthrough{\lstinline!frames\_strip!} into
+\passthrough{\lstinline!animation\_frames\_strip.png!}, and prints the
+written path on its own line.
+
+\subsection{Reproducibility and test
+contract}\label{reproducibility-and-test-contract}
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!gallery(paths\_out\_dir, seed=12)!} writes
+  exactly the three files
+  \passthrough{\lstinline!vis\_gallery\_shell.png!},
+  \passthrough{\lstinline!vis\_gallery\_field.png!},
+  \passthrough{\lstinline!vis\_gallery\_dynamics.png!} (module constant
+  \passthrough{\lstinline!GALLERY\_FILES!}, in that order) into
+  \passthrough{\lstinline!paths\_out\_dir!}, creating it when missing,
+  and returns their paths. Every panel is fully seeded, and the PNGs
+  carry no timestamp metadata: the test suite asserts byte-identical
+  re-renders for a fixed seed.
+\item
+  Tests: \passthrough{\lstinline!tests/test\_vis\_lattice.py!} --- 19
+  tests, no mocks, deterministic assertions without pixel diffs (artist
+  placement on caller-provided axes, exact field values at known lattice
+  cells, byte-level reproducibility). Scope with
+  \passthrough{\lstinline!PYTEST\_DISABLE\_PLUGIN\_AUTOLOAD=1 uv run coverage run -m pytest tests/test\_vis\_lattice.py -q!}
+  and \passthrough{\lstinline!uv run coverage report!} --- 100\%
+  statement and branch coverage of
+  \passthrough{\lstinline!src/quadmath/viz/vis\_lattice.py!}.
+\item
+  Tests: \passthrough{\lstinline!tests/unit/viz/test\_animations.py!}
+  covers the frame module (\passthrough{\lstinline!Frame!} validation,
+  the three renderers, \passthrough{\lstinline!frames\_to\_gif!}) and
+  the strip renderer --- \passthrough{\lstinline!frames\_strip!} label
+  and emptiness validation, byte-identical re-renders in temporary
+  directories, uint8/float equivalence, the full grayscale excursion,
+  and panel-count scaling --- headless via
+  \passthrough{\lstinline!MPLBACKEND=Agg!} (set in
+  \passthrough{\lstinline!tests/conftest.py!}).
+\item
+  Figure regeneration:
+  \passthrough{\lstinline!uv run python quadmath/scripts/lattice\_gallery.py!}
+  (the script sets \passthrough{\lstinline!MPLBACKEND=Agg!} itself);
+  stdout is exactly the three written paths.
+\item
+  Still-strip regeneration:
+  \passthrough{\lstinline!uv run python quadmath/scripts/animation\_stills.py!}
+  (the script sets \passthrough{\lstinline!MPLBACKEND=Agg!} itself);
+  stdout is exactly the one written strip path,
+  \passthrough{\lstinline!quadmath/output/figures/animation\_frames\_strip.png!}.
+\item
+  Markdown:
+  \passthrough{\lstinline!uv run python quadmath/scripts/validate\_markdown.py!}.
+\end{itemize}
+
+\subsection{Cross-references}\label{cross-references}
+
+\begin{itemize}
+\tightlist
+\item
+  Site geometry, normalization, and the embedding:
+  \href{03_quadray_methods.md}{Quadray Methods}.
+\item
+  Shell enumeration and nearest-site search:
+  \href{13_lattice_tooling.md}{Lattice Tooling}.
+\item
+  The sliced learner: \href{11_ivm_field_learning.md}{Static IVM Field
+  Learning}.
+\item
+  The stripped dynamics: \href{12_ivm_dynamics.md}{Dynamics and Learning
+  on the IVM Lattice}.
+\end{itemize}
+
+\end{document}

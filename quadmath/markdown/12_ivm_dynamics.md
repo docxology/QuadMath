@@ -67,7 +67,7 @@ to the random-walk matrix \(D^{-1}A\)). The update operator
 
 This is exactly the claim the test suite asserts — *per step*, across seeds
 and the full coupling range (`test_heat_update_l2_nonincreasing_per_step` in
-`tests/test_ivm_dynamics.py`). Two scope restrictions are deliberate and
+`tests/unit/lattice/test_ivm_dynamics.py`). Two scope restrictions are deliberate and
 tested:
 
 1. The guarantee is specific to the symmetric normalization \(S\). Plain
@@ -145,7 +145,7 @@ figure is reproducible byte-for-byte up to PNG encoding.
 ## Reproducibility and test contract
 
 - Tests: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
-  tests/test_ivm_dynamics.py -q` then `uv run coverage report` — 40 tests,
+  tests/unit/lattice/test_ivm_dynamics.py -q` then `uv run coverage report` — 42 tests,
   100% statement and branch coverage of `src/quadmath/lattice/ivm_dynamics.py`, no mocks, all
   examples real numerics with fixed seeds.
 - Markdown: `uv run python quadmath/scripts/validate_markdown.py`.

@@ -113,12 +113,12 @@ The command-line surface is `quadmath/scripts/animation_gallery.py` — a thin o
   paths.  Every panel is fully seeded, and the PNGs carry no timestamp
   metadata: the test suite asserts byte-identical re-renders for a fixed
   seed.
-- Tests: `tests/unit/viz/test_vis_lattice.py` — 22 tests, no mocks, deterministic
+- Tests: `tests/test_vis_lattice.py` — 19 tests, no mocks, deterministic
   assertions without pixel diffs (artist placement on caller-provided
   axes, exact field values at known lattice cells, byte-level
   reproducibility).  Scope with
   `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
-  tests/unit/viz/test_vis_lattice.py -q` and `uv run coverage report` — 100%
+  tests/test_vis_lattice.py -q` and `uv run coverage report` — 100%
   statement and branch coverage of `src/quadmath/viz/vis_lattice.py`.
 - Tests: `tests/unit/viz/test_animations.py` covers the frame module
   (`Frame` validation, the three renderers, `frames_to_gif`) and the strip

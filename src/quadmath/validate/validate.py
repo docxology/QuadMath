@@ -242,15 +242,12 @@ def check_slerp_midpoint(
     """Verify the shortest-arc slerp midpoint lies on the geodesic of (q0, q1).
 
     Computes m = slerp(q0, q1, 0.5) reusing :func:`slerp` from
-    quadmath.core.quadray (which takes the shorter arc by negating q1 when
-    <q0, q1> < 0), then verifies angle(q0, m) == angle(m, q1) within
-    ``tol``, where angle is the signed R^4 geodesic angle between the
-    quaternions as written.  For <q0, q1> >= 0 the midpoint is equidistant
-    from both written endpoints and the check passes.  For <q0, q1> < 0 the
-    shortest-arc midpoint is equidistant from -q1 instead, so
-    angle(m, q1) = pi - angle(q0, m) and the check reports a failure: the
-    two written representatives do not lie on a common short arc (a
-    representative-consistency defect of the inputs, not of slerp).
+    quadmath.core.quadray, which takes the shorter arc by negating q1 when
+    <q0, q1> < 0.  The shorter-arc representative of q1 is s * q1 with
+    s = -1 when <q0, q1> < 0 and s = +1 otherwise; the check verifies
+    angle(q0, m) == angle(m, s * q1) within ``tol``, where angle is the
+    signed R^4 geodesic angle.  Because q and -q are one rotation, passing
+    q and -q as the pair is a valid input and passes.
 
     Parameters
     - q0, q1: Unit Quadray quaternions (w, x, y, z) = (a, b, c, d)
@@ -268,8 +265,10 @@ def check_slerp_midpoint(
     q0_4 = _components(q0)
     q1_4 = _components(q1)
     midpoint = slerp(q0_4, q1_4, 0.5)
+    dot = sum(a * b for a, b in zip(q0_4, q1_4))
+    q1_short = tuple(-c for c in q1_4) if dot < 0.0 else q1_4
     angle_q0_m = _signed_angle(q0_4, midpoint)
-    angle_m_q1 = _signed_angle(midpoint, q1_4)
+    angle_m_q1 = _signed_angle(midpoint, q1_short)
     deviation = abs(angle_q0_m - angle_m_q1)
     if deviation <= tol:
         return ValidationReport(

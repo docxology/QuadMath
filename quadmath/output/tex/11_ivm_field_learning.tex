@@ -1,0 +1,444 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
+
+% Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Static IVM Field Learning}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{October 07, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
+\section{Static IVM Field Learning}\label{static-ivm-field-learning}
+
+\subsection{Overview}\label{overview}
+
+This section develops machine learning on a static synergetic geometry:
+scalar fields defined over the Isotropic Vector Matrix (IVM) lattice,
+learned from sparse noisy observations by Laplacian-regularized
+kernel-weighted least squares on the lattice graph. All methods live in
+the \passthrough{\lstinline!ivm\_field.py!} module
+(\passthrough{\lstinline!quadray.IVMField!},
+\passthrough{\lstinline!quadray\_shell\_norm!},
+\passthrough{\lstinline!shell\_sites!},
+\passthrough{\lstinline!fit\_geometry!}) and reuse the quadray machinery
+of \passthrough{\lstinline!quadray.py!} described in
+\href{03_quadray_methods.md}{Quadray Methods}. The learner uses
+\passthrough{\lstinline!numpy!} only --- no machine-learning frameworks
+--- and is fully deterministic for a fixed observation set.
+
+\subsection{The IVM Lattice in Quadray
+Coordinates}\label{the-ivm-lattice-in-quadray-coordinates}
+
+Quadray coordinates represent IVM close-packed sphere centers as
+non-negative integer quadrays normalized so the minimum component is
+zero (see \href{03_quadray_methods.md}{Quadray Methods}). Two facts
+organize the lattice. First, normalization adds or subtracts
+\((k,k,k,k)\), so the component sum is a projective invariant modulo 4.
+Second, the IVM sites are exactly one of the four residue classes:
+
+\begin{equation}
+\label{eq:ivm-site-condition}
+q \text{ is an IVM site} \quad\Longleftrightarrow\quad \textstyle\sum_i q_i \equiv 0 \pmod{4},
+\end{equation}
+
+implemented as \passthrough{\lstinline!is\_ivm\_site()!} in
+\passthrough{\lstinline!ivm\_field.py!}. The remaining three cosets are
+the octahedral (sum \(\equiv 2\)) and tetrahedral (sum \(\equiv 1, 3\))
+voids of the packing --- lattice points of the ambient grid, but not
+sphere centers.
+
+The shell norm of a site is the \(L^1\) magnitude of its sum-zero
+(Coxeter.4D hyperplane) representative. With \(s = \sum_i q_i\):
+
+\begin{equation}
+\label{eq:ivm-shell-norm}
+N(q) \;=\; \sum_{i=1}^{4} \left|\, q_i - \tfrac{s}{4} \,\right| \;=\; 2k, \qquad k \in \mathbb{Z}_{\geq 0},
+\end{equation}
+
+computed by \passthrough{\lstinline!quadray\_shell\_norm()!}. Shell
+\(k\) of the lattice is the set of sites with \(N(q) = 2k\);
+\passthrough{\lstinline!shell\_sites(k)!} enumerates it by scanning the
+bounding box \([0, 2k]^4\), filtering on the membership condition
+\eqref{eq:ivm-site-condition} and the norm \eqref{eq:ivm-shell-norm},
+and sorting lexicographically --- a deterministic site order. The shell
+cardinalities are the cuboctahedral numbers:
+
+\begin{equation}
+\label{eq:ivm-shell-cardinality}
+\bigl|\, \{ q : N(q) = 2k \} \,\bigr| \;=\; 10k^2 + 2, \qquad k \geq 1,
+\end{equation}
+
+giving the sequence 1, 12, 42, 92, 162, \ldots{} for
+\(k = 0, 1, 2, 3, 4\) --- the center plus the cuboctahedral numbers,
+with shell 1 the twelve-around-one vector equilibrium of
+\href{03_quadray_methods.md}{Quadray Methods}.
+\passthrough{\lstinline!shell\_cardinalities()!} counts shells of an
+enumerated ball, and the test suite pins the sequence exactly.
+
+\subsection{The Field Model}\label{the-field-model}
+
+\passthrough{\lstinline!IVMField.lattice\_ball(radius)!} stores a scalar
+field over the lattice ball \(B_R = \{ q : N(q) \leq 2R \}\) as a
+one-dimensional \passthrough{\lstinline!numpy!} array keyed by the
+deterministic site index of
+\passthrough{\lstinline!shell\_ball\_sites()!} (shell-major,
+lexicographic within shell), with a dictionary mapping each normalized
+site to its array position. Two lattice-graph ingredients drive
+learning. The adjacency structure uses the twelve IVM neighbor moves ---
+the permutations of \((2,1,1,0)\) collected in
+\passthrough{\lstinline!IVM\_NEIGHBOR\_STEPS!} --- so two sites in the
+ball are graph-adjacent exactly when one step of close packing separates
+them. The graph Laplacian \(L\) (method
+\passthrough{\lstinline!IVMField.\_laplacian()!}) is the symmetric
+difference operator on that adjacency:
+
+\begin{equation}
+\label{eq:ivm-laplacian}
+(L f)_i \;=\; \deg(i)\, f_i \;-\; \sum_{j \sim i} f_j .
+\end{equation}
+
+\subsection{Learning: Laplacian-Regularized Kernel-Weighted Least
+Squares}\label{learning-laplacian-regularized-kernel-weighted-least-squares}
+
+Observations \(y_j\) arrive at a sampled subset \(\Omega\) of sites.
+Graph distances \(d(\cdot,\cdot)\) are hop counts from a multi-source
+BFS (\passthrough{\lstinline!\_multi\_source\_distances()!} in
+\passthrough{\lstinline!ivm\_field.py!}), and the Gaussian kernel over
+hops with width \(\tau\) (\passthrough{\lstinline!kernel\_width!}) is:
+
+\begin{equation}
+\label{eq:ivm-kernel}
+K(d) \;=\; \exp\!\bigl( -(d/\tau)^2 \bigr), \qquad d(i,j) = \text{hop distance}.
+\end{equation}
+
+\passthrough{\lstinline!IVMField.learn()!} minimizes a two-regime
+objective over the ball, with Laplacian regularization weight
+\(\lambda \geq 0\):
+
+\begin{equation}
+\label{eq:ivm-objective}
+\min_{f} \;\; \sum_{i \in \Omega} \bigl( f_i - y_i \bigr)^2
+\;+\; \sum_{i \notin \Omega} c_i \bigl( f_i - t_i \bigr)^2
+\;+\; \lambda \sum_{i \sim j} \bigl( f_i - f_j \bigr)^2 ,
+\end{equation}
+
+with three data-fidelity terms: observed sites are pinned to their data
+with unit weight (no self-smoothing of real observations); unobserved
+sites carry a kernel confidence weight and a Nadaraya--Watson kernel
+target,
+
+\begin{equation}
+\label{eq:ivm-confidence}
+c_i \;=\; \max\bigl( K\bigl(\min_{j \in \Omega} d(i,j)\bigr),\ \varepsilon \bigr),
+\qquad
+t_i \;=\; \frac{\sum_{j \in \Omega} K(d(i,j))\, y_j}{\sum_{j \in \Omega} K(d(i,j))},
+\end{equation}
+
+where \(\varepsilon\) --- the \passthrough{\lstinline!\_WEIGHT\_FLOOR!}
+constant, \(10^{-12}\), in \passthrough{\lstinline!ivm\_field.py!} ---
+is a numerical floor keeping the normal-equation matrix of
+\eqref{eq:ivm-objective} positive definite on the connected lattice
+ball. The normal equations of \eqref{eq:ivm-objective} are
+
+\begin{equation}
+\label{eq:ivm-normal-equations}
+\bigl( C + \lambda L \bigr) f \;=\; C\, t ,
+\end{equation}
+
+with \(C = \mathrm{diag}(c_i)\) and \(t\) the target vector;
+\passthrough{\lstinline!IVMField.learn()!} solves them with a dense
+\passthrough{\lstinline!numpy.linalg.solve!}. The Laplacian term
+propagates field structure from observed sites across the lattice graph,
+and the confidence weighting degrades gracefully to pure Laplacian
+propagation as observation density falls. Because observed rows carry
+unit weight, the estimator interpolates exact data as \(\lambda \to 0\)
+and denoises noisy data for moderate \(\lambda\) --- both behaviors are
+verified numerically in
+\passthrough{\lstinline!tests/test\_ivm\_field.py!} with fixed seeds.
+
+Two structural facts justify the estimator. A linear field in the
+embedded XYZ coordinates (the \passthrough{\lstinline!to\_xyz()!} image
+of \passthrough{\lstinline!quadray.py!}) is harmonic on the IVM graph
+--- the twelve neighbor moves sum to zero --- so the harmonic extension
+implied by \eqref{eq:ivm-normal-equations} reproduces it exactly from
+boundary data (asserted to \(10^{-5}\) in the test suite). And for noisy
+smooth fields, the learned field tracks the kernel-weighted local mean,
+which averages observation noise across graph neighborhoods:
+
+\begin{equation}
+\label{eq:ivm-mse}
+\mathrm{MSE}(f) \;=\; \frac{1}{|B_R|} \sum_{i \in B_R} \bigl( f_i - f_i^{\text{truth}} \bigr)^2 ,
+\end{equation}
+
+the quantity returned by \passthrough{\lstinline!IVMField.score()!}.
+
+\subsection{Recovering Tetrahedral Geometry from Noisy
+Points}\label{recovering-tetrahedral-geometry-from-noisy-points}
+
+\passthrough{\lstinline!fit\_geometry()!} recovers the orientation and
+scale of a tetrahedron from noisy 3D point clouds, using the quadray
+basis of \passthrough{\lstinline!quadray.py!}. The four canonical vertex
+images are \(v_i = \texttt{to\_xyz}(e_i)\), where \(e_i\) are the unit
+quadray axes mapped through the 3\$\times\$4 embedding matrix of
+\passthrough{\lstinline!quadray.py!}. Given labeled observations
+\(p^{(i)}_m \approx R\, v_i + o\) (noisy samples of vertex \(i\) under
+rotation \(R\) and offset \(o\)), vertex centroids \(c_i\) are formed
+and the linear map \(G\) is fit in closed form:
+
+\begin{equation}
+\label{eq:ivm-fit}
+G \;=\; \arg\min_{M \in \mathbb{R}^{3\times 3}} \sum_{i=1}^{4}
+\bigl\| M v_i - c_i \bigr\|^2 ,
+\qquad
+\text{scale} \;=\; \operatorname{sign}\bigl(\det G\bigr)\, \bigl|\det G\bigr|^{1/3}.
+\end{equation}
+
+The least-squares solve uses
+\passthrough{\lstinline!numpy.linalg.lstsq!} on the transpose system, so
+noisy multi-sample vertices average out; the residual reported by
+\passthrough{\lstinline!TetrahedronFit.residual!} is the RMS
+vertex-centroid mismatch. The test suite recovers a rotated, scaled
+tetrahedron to \(10^{-6}\) from \(\sigma =
+10^{-7}\) noise, verifies the signed scale for reflected (negative
+determinant) fits, and checks that doubling the embedding halves the
+recovered matrix --- orientation and scale separate cleanly.
+
+\subsection{Demonstration}\label{demonstration}
+
+The script
+\passthrough{\lstinline!quadmath/scripts/ivm\_field\_demo.py!} (run with
+\passthrough{\lstinline!MPLBACKEND=Agg!}, seed 12) renders the pipeline
+on the radius-3 ball (147 lattice sites): the synthetic field (a
+harmonic linear part plus a weak quadratic bowl), the noisy observations
+at 74 of the 147 sites, and the learned field. The learned
+reconstruction beats the raw observation noise (reconstruction MSE
+0.0558 against observation-noise MSE 0.0720, printed by the demo):
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field --- a harmonic linear part plus a weak quadratic bowl --- with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. --); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with quadmath/scripts/ivm\_field\_demo.py (MPLBACKEND=Agg, seed 12).}]{../output/figures/ivm_field_demo.png}}
+\caption{Static IVM field learning on the radius-3 IVM lattice ball (147
+sites, shown at their XYZ embedding from the quadray coordinates; axes
+in embedding units). Panel A: the synthetic ground-truth field --- a
+harmonic linear part plus a weak quadratic bowl --- with dot color
+giving field value on the shared color bar (right). Panel B: the noisy
+observations at 74 of the 147 sites (seed 12). Panel C: the learned
+field from Laplacian-regularized kernel-weighted least squares (Eqs.
+\eqref{eq:ivm-objective}--\eqref{eq:ivm-normal-equations});
+reconstruction MSE 0.0558 against observation-noise MSE 0.0720.
+Reproduce with
+\protect\passthrough{\lstinline!quadmath/scripts/ivm\_field\_demo.py!}
+(\protect\passthrough{\lstinline!MPLBACKEND=Agg!}, seed 12).}
+\end{figure}
+
+\subsection{Cross-References}\label{cross-references}
+
+\begin{itemize}
+\tightlist
+\item
+  Coordinate foundations and the twelve-around-one shell:
+  \href{03_quadray_methods.md}{Quadray Methods}
+\item
+  Optimization methods on tetrahedral lattices:
+  \href{04_optimization_in_4d.md}{Optimization in 4D}
+\item
+  Applications and generalizations: \href{05_extensions.md}{Extensions}
+\end{itemize}
+
+\end{document}

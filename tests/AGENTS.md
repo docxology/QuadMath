@@ -46,6 +46,7 @@ enforce **100% coverage**, and use **real numerical examples only** (numeric cod
 
 ```text
 tests/tools/test_generate_glossary.py
+tests/tools/test_render_pdf.py
 tests/tools/test_make_all_figures.py
 tests/tools/test_sympy_formalisms.py
 tests/tools/test_validate_markdown.py
@@ -77,9 +78,14 @@ tests/unit/stats/test_statistics.py
 tests/unit/test_paths.py
 tests/unit/test_paths_cov.py
 tests/unit/test_pipeline.py
+tests/unit/tools/test_atomic_write.py
 tests/unit/tools/test_glossary_gen.py
 tests/unit/validate/test_validate.py
 tests/unit/viz/test_animations.py
+tests/unit/viz/test_common.py
+tests/unit/viz/test_figure_lifecycle.py
+tests/unit/viz/test_mp4_reproducibility.py
+tests/unit/viz/test_output_policy.py
 tests/unit/viz/test_plots.py
 tests/unit/viz/test_vis_lattice.py
 tests/unit/viz/test_vis_stats.py

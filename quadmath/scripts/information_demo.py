@@ -10,6 +10,7 @@ Saves to quadmath/output/ and prints saved paths.
 """
 from __future__ import annotations
 
+import io
 import os
 import sys
 import numpy as np
@@ -20,6 +21,15 @@ def _ensure_src_on_path() -> None:
     src_path = os.path.join(repo_root, "src")
     if src_path not in sys.path:
         sys.path.insert(0, src_path)
+
+
+def _savetxt_atomic(path: str, array: np.ndarray) -> None:
+    """Write a comma-delimited ``np.savetxt`` table to ``path`` atomically."""
+    from quadmath.tools.atomic_write import atomic_write_text  # noqa: WPS433
+
+    buf = io.StringIO()
+    np.savetxt(buf, array, delimiter=",")
+    atomic_write_text(path, buf.getvalue())
 
 
 def main() -> None:
@@ -159,7 +169,7 @@ def main() -> None:
     plt.close(fig)
 
     # Save raw data alongside the figure for reproducibility and downstream use
-    np.savetxt(os.path.join(data_dir, "fisher_information_matrix.csv"), F, delimiter=",")
+    _savetxt_atomic(os.path.join(data_dir, "fisher_information_matrix.csv"), F)
     np.savez(
         os.path.join(data_dir, "fisher_information_matrix.npz"),
         F=F,
@@ -309,7 +319,7 @@ def main() -> None:
     plt.close(fig)
     
     # Save eigen-data
-    np.savetxt(os.path.join(data_dir, "fisher_information_eigenvalues.csv"), evals[None, :], delimiter=",")
+    _savetxt_atomic(os.path.join(data_dir, "fisher_information_eigenvalues.csv"), evals[None, :])
     print(os.path.join(data_dir, "fisher_information_eigenvalues.csv"))
     np.savez(
         os.path.join(data_dir, "fisher_information_eigensystem.npz"),
@@ -361,8 +371,9 @@ def main() -> None:
     # Save raw trajectory data for reproducibility
     import csv  # noqa: WPS433
     ng_csv = os.path.join(data_dir, "natural_gradient_path.csv")
-    with open(ng_csv, "w", newline="") as f:
-        writer = csv.writer(f)
+    from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
+    with atomic_open(ng_csv, newline="") as f:
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["w0", "w1", "w2"])
         for row in path:
             writer.writerow([float(row[0]), float(row[1]), float(row[2])])

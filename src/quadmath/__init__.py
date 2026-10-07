@@ -21,8 +21,7 @@ The package layers mirror the repository layout:
 This ``__init__`` re-exports the historical top-level public API so that
 ``from quadmath import X`` keeps working after the flat ``src/`` modules
 moved into the subpackages.  Names that collide across modules (``gallery``
-and ``GALLERY_FILES`` in ``vis_lattice`` vs ``vis_stats``; ``ball_sites`` in
-``ivm_field`` vs ``ivm_dynamics``) are NOT re-exported here; import those
+and ``GALLERY_FILES`` in ``vis_lattice`` vs ``vis_stats``) are NOT re-exported here; import those
 from their concrete modules (e.g. ``from quadmath.viz.vis_stats import
 gallery``).
 """
@@ -107,7 +106,7 @@ from quadmath.lattice.ivm_field import (
     IVM_NEIGHBOR_STEPS,
     IVMField,
     TetrahedronFit,
-    ball_sites,
+    shell_ball_sites,
     fit_geometry,
     is_ivm_site,
     quadray_shell_norm,
@@ -359,7 +358,7 @@ __all__ = [
     "IVM_NEIGHBOR_STEPS",
     "IVMField",
     "TetrahedronFit",
-    "ball_sites",
+    "shell_ball_sites",
     "fit_geometry",
     "is_ivm_site",
     "quadray_shell_norm",

@@ -41,6 +41,16 @@ def test_visualize_star_import_exports_only_public_functions():
     assert exported == sorted(PUBLIC_VISUALIZE_NAMES)
 
 
+def test_viz_package_exports_are_explicit():
+    import quadmath.viz as viz
+
+    assert sorted(viz.__all__) == sorted(PUBLIC_VISUALIZE_NAMES + ["vis_lattice", "vis_stats"])
+    for name in PUBLIC_VISUALIZE_NAMES:
+        assert getattr(viz, name) is getattr(visualize, name)
+    for leaked in ("plt", "np", "csv", "os", "animation", "Iterable", "Quadray", "to_xyz", "DEFAULT_EMBEDDING"):
+        assert not hasattr(viz, leaked)
+
+
 def test_plot_ivm_neighbors_saves_file():
     path = plot_ivm_neighbors(save=True)
     assert os.path.isfile(path)

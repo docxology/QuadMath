@@ -3,7 +3,7 @@ import pytest
 
 from quadmath.core import quadray
 from quadmath.core.quadray import DEFAULT_EMBEDDING, qrotate, slerp, to_xyz
-from quadmath.lattice.ivm_field import ball_sites
+from quadmath.lattice.ivm_field import shell_ball_sites
 import quadmath.viz.animations as animations_module
 from quadmath.viz._common import encoded_angle
 from quadmath.viz.animations import (
@@ -61,7 +61,7 @@ def test_frame_rejects_float_out_of_range():
 
 def _reference_simplex_grid(q0, q1, t):
     """Grid at parameter ``t`` built directly from the core slerp and qrotate."""
-    sites = ball_sites(1)
+    sites = shell_ball_sites(1)
     embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
     base_xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
     q = slerp(q0, q1, t)
@@ -95,7 +95,7 @@ def test_simplex_frames_route_rotation_through_core(monkeypatch):
     monkeypatch.setattr(animations_module, "qrotate", counting_qrotate)
     simplex_frames(_unit_quat(0.0), _unit_quat(60.0), n=3)
     assert calls["slerp"] == 3
-    assert calls["qrotate"] == 3 * len(ball_sites(1))
+    assert calls["qrotate"] == 3 * len(shell_ball_sites(1))
 
 
 def test_simplex_frames_negative_w_encoding_renders_same_end_frame():
@@ -363,10 +363,17 @@ def test_frames_strip_rejects_empty_frames_and_label_mismatch():
 
 def test_frames_strip_renders_without_saving(tmp_path):
     frames = lattice_frames(shells=1, n=2)
-    assert frames_strip(frames, labels=["a", "b"]) == ""
-    assert frames_strip(frames, out_path=None, save=True) == ""
+    assert frames_strip(frames, labels=["a", "b"], save=False) == ""
     assert frames_strip(frames, str(tmp_path / "ignored.png"), save=False) == ""
     assert not (tmp_path / "ignored.png").exists()
+
+
+def test_frames_strip_save_without_out_path_raises():
+    frames = lattice_frames(shells=1, n=2)
+    with pytest.raises(ValueError, match="out_path"):
+        frames_strip(frames, labels=["a", "b"])
+    with pytest.raises(ValueError, match="out_path"):
+        frames_strip(frames, out_path=None, save=True)
 
 
 def test_frames_strip_saves_labeled_strip(tmp_path):

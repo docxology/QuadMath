@@ -9,9 +9,9 @@ under `src/` — figure/data/analysis logic lives in `src/` and is tested under
 
 | Script | Purpose | Delegates to | Run command |
 |--------|---------|--------------|-------------|
-| `render_pdf.sh` | Full build: figures, glossary, validation, per-chapter + combined PDFs, LaTeX export | `make_all_figures.py`, `generate_glossary.py`, `validate_markdown.py` (its `scripts` array; figures skipped with `--skip-figures`) + `pandoc`/`xelatex` | `bash quadmath/scripts/render_pdf.sh` |
+| `render_pdf.sh` | Full build: figures, glossary, validation, per-section (18) + combined PDFs at 1cm margins, LaTeX export | `make_all_figures.py`, `generate_glossary.py`, `validate_markdown.py` (its `scripts` array; figures skipped with `--skip-figures`) + `pandoc`/`xelatex` | `bash quadmath/scripts/render_pdf.sh` |
 | `clean_output.sh` | Remove generated files under `quadmath/output/`, keeping the per-folder `AGENTS.md` and `README.md` | filesystem only | `bash quadmath/scripts/clean_output.sh` |
-| `make_all_figures.py` | Run the 20 figure/data/GIF generators in sequence; write `figure_manifest.txt` (repo-relative, deduplicated paths) | the 20 scripts listed under Pipeline composition (subprocess); `src/quadmath/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
+| `make_all_figures.py` | Run the 19 figure/data/GIF generators (`FIGURE_SCRIPTS`) in sequence; write `figure_manifest.txt` (repo-relative, deduplicated paths) atomically | the 19 scripts listed under Pipeline composition (subprocess); `quadmath.tools.atomic_write`; `src/quadmath/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
 | `validate_markdown.py` | Check image refs, internal links/anchors, equation-label uniqueness | none (stdlib only) | `uv run python quadmath/scripts/validate_markdown.py` |
 | `generate_glossary.py` | Regenerate `quadmath/markdown/10_symbols_glossary.md` from the `src/` API; `--check` exits 1 when the file is stale and never writes | `src/quadmath/tools/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py [--check]` |
 | `information_demo.py` | Information geometry: Fisher curvature, natural-gradient descent, free energy (figures + CSV) | `src/information.py`, `src/discrete_variational.py`, `src/metrics.py`, `src/visualize.py`, `src/quadray.py`, `src/paths.py` | `uv run python quadmath/scripts/information_demo.py` |
@@ -24,7 +24,7 @@ under `src/` — figure/data/analysis logic lives in `src/` and is tested under
 | `polyhedra_quadray_constructions.py` | Platonic solids and quadray constructions (figures) | `src/paths.py` (figure construction inline) | `uv run python quadmath/scripts/polyhedra_quadray_constructions.py` |
 | `graphical_abstract_quadray.py` | Journal graphical-abstract overview figure | `src/quadray.py`, `src/paths.py` | `uv run python quadmath/scripts/graphical_abstract_quadray.py` |
 | `sympy_formalisms.py` | Symbolic Cayley-Menger / IVM volume formalisms (SymPy figure + CSV) | `src/symbolic.py`, `src/quadray.py` | `uv run python quadmath/scripts/sympy_formalisms.py` |
-| `gpu_acceleration_demo.py` | Integer tetra-volume benchmark at scale (CPU timing figure) | `src/quadray.py` | `uv run python quadmath/scripts/gpu_acceleration_demo.py` |
+| `gpu_acceleration_demo.py` | Integer tetra-volume timing benchmark (manual; prints timings, writes no artifact, not part of the pipeline) | `src/quadmath/core/quadray.py` | `uv run python quadmath/scripts/gpu_acceleration_demo.py` |
 
 All commands run from the repository root.
 
@@ -32,18 +32,34 @@ All commands run from the repository root.
 
 - `render_pdf.sh` runs 3 scripts, in order: `make_all_figures.py` (skipped with
   `--skip-figures`), `generate_glossary.py`, `validate_markdown.py --strict`.
-  It then builds the per-module and combined PDFs with `pandoc` and `xelatex`.
-- `make_all_figures.py` runs 20 scripts, in its `main()` order:
+  It then builds one PDF per section and a combined PDF with `pandoc` and
+  `xelatex`. All PDFs share one margin (1cm on every side).
+- `render_pdf.sh` section list: `MODULES` holds the 18 sections `01`-`18`
+  (`NN_*.md|title`). `00_preamble.md` is listed in `EXCLUDED_MODULES` with a
+  reason; it is the LaTeX header, not a section. `check_module_coverage` fails
+  the build if any `NN_*.md` file is unlisted, a listed file is missing, or an
+  exclusion has no reason. Titles must avoid LaTeX special characters because
+  pandoc copies them into `\title{}` unescaped.
+- `make_all_figures.py` runs 19 scripts, in its `FIGURE_SCRIPTS` order:
   `information_demo.py`, `active_inference_figures.py`, `volumes_demo.py`,
   `ivm_neighbors.py`, `quadray_clouds.py`, `simplex_animation.py`,
   `graphical_abstract_quadray.py`, `polyhedra_quadray_constructions.py`,
   `discrete_variational_demo.py`, `sympy_formalisms.py`,
-  `gpu_acceleration_demo.py`, `ivm_field_demo.py`, `ivm_dynamics_demo.py`,
-  `lattice_gallery.py`, `stats_gallery.py`, `animation_gallery.py`,
-  `learning_gallery.py`, `quaternion_gallery.py`, `animation_stills.py`,
-  `stats_diagnostics_gallery.py`.
-- `gpu_acceleration_demo.py` writes no artifact and prints no output path, so
-  it is exempt from the existence check (`NO_ARTIFACT_SCRIPTS`).
+  `ivm_field_demo.py`, `ivm_dynamics_demo.py`, `lattice_gallery.py`,
+  `stats_gallery.py`, `animation_gallery.py`, `learning_gallery.py`,
+  `quaternion_gallery.py`, `animation_stills.py`,
+  `stats_diagnostics_gallery.py`. Every entry must print at least one path
+  that exists afterwards; there are no exemptions.
+- `gpu_acceleration_demo.py` is not in `FIGURE_SCRIPTS`. It is a manual timing
+  benchmark: its output varies by machine and it writes no artifact, so it
+  cannot satisfy the manifest contract.
+- Atomic writes: `quadmath.tools.atomic_write` (`atomic_open`,
+  `atomic_write_text`) writes to a temp file in the target directory and
+  `os.replace`s it on success, so a failed run leaves the previous file intact
+  and no temp file behind. Used by `make_all_figures.py` (manifest),
+  `volumes_demo.py`, `ivm_neighbors.py`, `sympy_formalisms.py` (CSV and
+  symbolics text), and `information_demo.py` (CSV and `np.savetxt` output).
+  `.npz` outputs and the glossary markdown are still written directly.
 
 ## Script Development
 
@@ -131,12 +147,10 @@ get_output_dir()  # -> quadmath/output/
 ## Adding New Scripts
 
 1. Follow the template above
-2. If it is a figure generator, add it to the `scripts` list in
-   `make_all_figures.py` `main()`
-3. If it must run in full builds, add it to the `scripts` array in
-   `render_pdf.sh`
-4. Test individually: `uv run python quadmath/scripts/new_script.py`
-5. Run the full pipeline: `bash quadmath/scripts/render_pdf.sh`
+2. If it is a figure generator, add it to the `FIGURE_SCRIPTS` tuple in
+   `make_all_figures.py` (`render_pdf.sh` reaches it through that script)
+3. Test individually: `uv run python quadmath/scripts/new_script.py`
+4. Run the full pipeline: `bash quadmath/scripts/render_pdf.sh`
 
 ## Cross-References
 

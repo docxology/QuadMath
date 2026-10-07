@@ -8,7 +8,7 @@ from quadmath.core.cayley_menger import (
     tetra_circumradius,
     tetra_inradius,
 )
-from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING, integer_tetra_volume
+from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING
 
 
 def test_tetra_volume_cayley_menger_regular_tetra_unit_edge():
@@ -33,11 +33,6 @@ def test_tetra_volume_degenerate():
 
 
 def test_cayley_menger_matches_integer_volume_for_simple_case():
-    # Regular unit IVM tetra from quadray points (origin plus 3 unit edges)
-    p0 = Quadray(0, 0, 0, 0)
-    p1 = Quadray(1, 0, 0, 0)
-    p2 = Quadray(0, 1, 0, 0)
-    p3 = Quadray(0, 0, 1, 0)
     # Build squared distances between points in an embedding where edge length=1 implies V=1
     # For this synthetic check, use combinatorial distances: edges between distinct unit axes = 1
     d2 = np.array(

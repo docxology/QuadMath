@@ -1,0 +1,437 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
+
+% Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Statistics and Scaling Gallery}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{October 07, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
+\section{Statistics and Scaling
+Gallery}\label{statistics-and-scaling-gallery}
+
+\subsection{Overview}\label{overview}
+
+This section is the figure surface of the benchmarks-and-statistics
+layer: every rendering primitive used by section
+\passthrough{\lstinline!17\_benchmarks\_statistics.md!} lives in
+\passthrough{\lstinline!src/quadmath/viz/vis\_stats.py!}
+(\passthrough{\lstinline!plot\_latency\_hist!},
+\passthrough{\lstinline!plot\_scaling\_loglog!},
+\passthrough{\lstinline!plot\_ci\_bars!},
+\passthrough{\lstinline!plot\_ecdf!}). The primitives are input-agnostic
+--- plain numpy arrays in, artists out; they import nothing from the
+other \passthrough{\lstinline!src/!} modules and receive their
+matplotlib axes explicitly, so panels compose inside caller-owned
+figures and nothing renders at import time. The command-line entry is
+\passthrough{\lstinline!quadmath/scripts/stats\_gallery.py!} --- a thin
+orchestrator that sets a headless backend and a fixed seed
+(\passthrough{\lstinline!seed=32!}), delegates to the gallery function
+in \passthrough{\lstinline!src/quadmath/viz/vis\_stats.py!}
+(thin-orchestrator contract of
+\passthrough{\lstinline!quadmath/scripts/AGENTS.md!}), and prints each
+written path on its own line: those stdout lines are the
+\passthrough{\lstinline!make\_all\_figures!} manifest contract. The
+gallery writes exactly four PNGs ---
+\passthrough{\lstinline!stats\_gallery\_latency.png!},
+\passthrough{\lstinline!stats\_gallery\_scaling.png!},
+\passthrough{\lstinline!stats\_gallery\_ci.png!},
+\passthrough{\lstinline!stats\_gallery\_ecdf.png!} --- and every random
+draw comes from the fixed seed, so the whole set is deterministic.
+
+\subsection{Latency histogram}\label{latency-histogram}
+
+\passthrough{\lstinline!plot\_latency\_hist(times, ax=None, *, bins=20, title=...)!}
+renders the distribution of per-call wall-clock durations measured by
+\passthrough{\lstinline!src/quadmath/stats/benchmarks.py::time\_callable!}
+(trials summary in
+\passthrough{\lstinline!17\_benchmarks\_statistics.md!}) as a histogram
+with \passthrough{\lstinline!bins!} bins on the given axes. The shape of
+the distribution carries what the mean alone hides: a tight spike means
+the harness saw a stable workload, while a heavy right tail is exactly
+what the \passthrough{\lstinline!median\_s!} /
+\passthrough{\lstinline!p95\_s!} fields of
+\passthrough{\lstinline!BenchRow!} are there to expose. The gallery
+panel histograms a deterministic synthetic stand-in for such a sample:
+256 draws of a lognormal distribution (mean 0, \(\sigma = 0.6\), clipped
+to \([0.05, 5.0]\) in seconds-scale units) taken from the single
+fixed-seed \passthrough{\lstinline!numpy.random.default\_rng(32)!}
+generator, so re-renders are byte-identical.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Latency distribution. Histogram (20 bins) of a synthetic 256-draw lognormal latency sample (mean 0, \textbackslash sigma = 0.6) clipped to {[}0.05, 5.0{]} in seconds-scale units, drawn from the fixed-seed numpy.random.default\_rng(32) generator of stats\_gallery.py; the dashed line marks the sample mean. Rendered by plot\_latency\_hist; reproduced by uv run python quadmath/scripts/stats\_gallery.py. The spread and right tail complement the mean\_s, median\_s, and p95\_s fields of BenchRow, whose per-call times time\_callable measures with time.perf\_counter after one discarded warmup call.}]{../output/figures/stats_gallery_latency.png}}
+\caption{\textbf{Latency distribution.} Histogram (20 bins) of a
+synthetic 256-draw lognormal latency sample (mean 0, \(\sigma = 0.6\))
+clipped to {[}0.05, 5.0{]} in seconds-scale units, drawn from the
+fixed-seed
+\protect\passthrough{\lstinline!numpy.random.default\_rng(32)!}
+generator of \protect\passthrough{\lstinline!stats\_gallery.py!}; the
+dashed line marks the sample mean. Rendered by
+\protect\passthrough{\lstinline!plot\_latency\_hist!}; reproduced by
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/stats\_gallery.py!}.
+The spread and right tail complement the
+\protect\passthrough{\lstinline!mean\_s!},
+\protect\passthrough{\lstinline!median\_s!}, and
+\protect\passthrough{\lstinline!p95\_s!} fields of
+\protect\passthrough{\lstinline!BenchRow!}, whose per-call times
+\protect\passthrough{\lstinline!time\_callable!} measures with
+\protect\passthrough{\lstinline!time.perf\_counter!} after one discarded
+warmup call.}
+\end{figure}
+
+\subsection{Scaling fit}\label{scaling-fit}
+
+\passthrough{\lstinline!plot\_scaling\_loglog(sizes, times, ax=None, *, title=...)!}
+plots measured workload sizes against durations on log-log axes and
+overlays the least-squares power law of
+\passthrough{\lstinline!src/quadmath/stats/statistics.py::scaling\_fit!}
+--- the slope is the empirical complexity exponent \(\beta_1\) of
+\eqref{eq:stat-scaling}. On log-log axes a power law is a straight line,
+so the panel shows at a glance whether a lattice routine scales
+linearly, quadratically, or worse, and how tightly the data follow the
+law (\(r^2\)). The gallery panel fits a synthetic sweep with known
+ground truth: durations \(t \approx 3\,n^{1.35}\,(1 + \varepsilon)\)
+with \(\varepsilon \sim \mathcal{N}(0, 0.02^{2})\) relative noise over
+sizes \(n \in \{8, 16, 32, 64, 128, 256\}\), drawn from the same
+fixed-seed generator (times rounded to four decimals for byte
+stability), so the fit should recover the planted exponent 1.35.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Log-log scaling fit. Workload sizes n \textbackslash in \textbackslash\{8, 16, 32, 64, 128, 256\textbackslash\} (dimensionless units) against synthetic durations t \textbackslash approx 3\textbackslash,n\^{}\{1.35\}\textbackslash,(1 + \textbackslash varepsilon) with \textbackslash varepsilon \textbackslash sim \textbackslash mathcal\{N\}(0, 0.02\^{}\{2\}) relative noise, times rounded to four decimals, all drawn from the fixed-seed numpy.random.default\_rng(32) generator; the least-squares power law from scaling\_fit is overlaid by plot\_scaling\_loglog, and its fitted slope --- annotated in the legend --- should recover the planted exponent 1.35, the empirical complexity exponent \textbackslash beta\_1 of .}]{../output/figures/stats_gallery_scaling.png}}
+\caption{\textbf{Log-log scaling fit.} Workload sizes
+\(n \in \{8, 16, 32, 64, 128, 256\}\) (dimensionless units) against
+synthetic durations \(t \approx 3\,n^{1.35}\,(1 + \varepsilon)\) with
+\(\varepsilon \sim \mathcal{N}(0, 0.02^{2})\) relative noise, times
+rounded to four decimals, all drawn from the fixed-seed
+\protect\passthrough{\lstinline!numpy.random.default\_rng(32)!}
+generator; the least-squares power law from
+\protect\passthrough{\lstinline!scaling\_fit!} is overlaid by
+\protect\passthrough{\lstinline!plot\_scaling\_loglog!}, and its fitted
+slope --- annotated in the legend --- should recover the planted
+exponent 1.35, the empirical complexity exponent \(\beta_1\) of
+\eqref{eq:stat-scaling}.}
+\end{figure}
+
+\subsection{Confidence intervals}\label{confidence-intervals}
+
+\passthrough{\lstinline!plot\_ci\_bars(labels, means, lows, highs, ax=None, *, title=...)!}
+renders paired estimates as a bar-and-whisker chart: one bar per label
+at its point estimate, with error bars spanning the low and high ends of
+a percentile bootstrap interval
+\passthrough{\lstinline!src/quadmath/stats/statistics.py::bootstrap\_ci!}
+(\eqref{eq:stat-bootstrap}). Overlapping intervals visually encode the
+same information a permutation test quantifies
+(\eqref{eq:stat-permutation}): two conditions whose intervals do not
+overlap are the ones the pooled test flags. The gallery panel shows
+three benchmark estimates (\passthrough{\lstinline!to\_xyz!},
+\passthrough{\lstinline!quadray\_from\_xyz!},
+\passthrough{\lstinline!shell\_enum!}) with symmetric intervals whose
+half-widths are seeded uniform draws on \([0.05, 0.25]\) from the same
+fixed-seed \passthrough{\lstinline!numpy.random.default\_rng(32)!}
+generator: the primitive renders whatever \passthrough{\lstinline!lows!}
+/ \passthrough{\lstinline!highs!} it is given, and in a measured
+analysis those bounds are the percentile endpoints
+\passthrough{\lstinline!bootstrap\_ci!} returns
+(\eqref{eq:stat-bootstrap}).
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Point estimates with confidence intervals by condition. Three benchmark estimates (to\_xyz, quadray\_from\_xyz, shell\_enum) in synthetic estimate units, rendered by plot\_ci\_bars as points with symmetric error bars whose half-widths are uniform draws on {[}0.05, 0.25{]} from the fixed-seed numpy.random.default\_rng(32) generator; in a measured analysis the bar ends would be the 95\% percentile bootstrap endpoints from bootstrap\_ci (2000 resamples, ), whose non-overlap is the visual cue the permutation test of  quantifies.}]{../output/figures/stats_gallery_ci.png}}
+\caption{\textbf{Point estimates with confidence intervals by
+condition.} Three benchmark estimates
+(\protect\passthrough{\lstinline!to\_xyz!},
+\protect\passthrough{\lstinline!quadray\_from\_xyz!},
+\protect\passthrough{\lstinline!shell\_enum!}) in synthetic estimate
+units, rendered by \protect\passthrough{\lstinline!plot\_ci\_bars!} as
+points with symmetric error bars whose half-widths are uniform draws on
+{[}0.05, 0.25{]} from the fixed-seed
+\protect\passthrough{\lstinline!numpy.random.default\_rng(32)!}
+generator; in a measured analysis the bar ends would be the 95\%
+percentile bootstrap endpoints from
+\protect\passthrough{\lstinline!bootstrap\_ci!} (2000 resamples,
+\eqref{eq:stat-bootstrap}), whose non-overlap is the visual cue the
+permutation test of \eqref{eq:stat-permutation} quantifies.}
+\end{figure}
+
+\subsection{Empirical CDF}\label{empirical-cdf}
+
+\passthrough{\lstinline!plot\_ecdf(values, ax=None, *, title=...)!}
+renders the empirical distribution function
+
+\begin{equation}
+\label{eq:vis-ecdf}
+\hat{F}(t) \;=\; \frac{1}{n}\sum_{i=1}^{n}
+\mathbf{1}\{t_i \le t\},
+\end{equation}
+
+a monotone step function that jumps by \(1/n\) at every observed value
+--- the exact distribution of the sample, with no binning choices at
+all. For timing data the ECDF answers directly what a percentile summary
+rounds off: the curve passes through the empirical median at height
+\(0.5\) and through the 95th percentile at height \(0.95\), so
+\passthrough{\lstinline!median\_s!} and \passthrough{\lstinline!p95\_s!}
+are readable off the plot. The gallery panel draws the ECDF of the same
+256-draw clipped lognormal latency sample as the histogram panel above,
+so the two panels read as one distribution in two renderings.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Empirical cumulative distribution of the latency sample. Exact step-function ECDF \textbackslash hat\{F\}(t) of the same 256-draw clipped lognormal sample as the histogram panel above (fixed seed 32, latency in seconds-scale units), rendered by plot\_ecdf; the empirical median (height 0.5) and 95th percentile (height 0.95) are read directly off the curve.}]{../output/figures/stats_gallery_ecdf.png}}
+\caption{\textbf{Empirical cumulative distribution of the latency
+sample.} Exact step-function ECDF \(\hat{F}(t)\) of the same 256-draw
+clipped lognormal sample as the histogram panel above (fixed seed 32,
+latency in seconds-scale units), rendered by
+\protect\passthrough{\lstinline!plot\_ecdf!}; the empirical median
+(height 0.5) and 95th percentile (height 0.95) are read directly off the
+curve.}
+\end{figure}
+
+\subsection{Reproducibility and test
+contract}\label{reproducibility-and-test-contract}
+
+\begin{itemize}
+\tightlist
+\item
+  The gallery function in
+  \passthrough{\lstinline!src/quadmath/viz/vis\_stats.py!} writes
+  exactly the four files listed above, in that order, into the output
+  directory (creating it when missing) and returns their paths. Every
+  panel is fully seeded --- the script fixes
+  \passthrough{\lstinline!seed=32!} --- and the PNGs carry no timestamp
+  metadata, so re-renders are byte-identical.
+\item
+  Tests: \passthrough{\lstinline!tests/test\_vis\_stats.py!} pins the
+  contract with deterministic assertions, no mocks, and no pixel diffs
+  --- artist placement on caller-provided axes, input-agnostic behavior
+  over plain arrays, and the invariants of each primitive (monotone
+  non-decreasing ECDF steps, CI whisker endpoints matching the
+  lows/highs inputs). Consistent with
+  \passthrough{\lstinline!17\_benchmarks\_statistics.md!}, no test
+  asserts wall-clock timing values.
+\item
+  Figure regeneration:
+  \passthrough{\lstinline!uv run python quadmath/scripts/stats\_gallery.py!}
+  (the script sets \passthrough{\lstinline!MPLBACKEND=Agg!} itself);
+  stdout is exactly the four written paths, the same manifest contract
+  as \passthrough{\lstinline!quadmath/scripts/lattice\_gallery.py!}.
+\item
+  Markdown:
+  \passthrough{\lstinline!uv run python quadmath/scripts/validate\_markdown.py!}.
+\end{itemize}
+
+\subsection{Cross-references}\label{cross-references}
+
+\begin{itemize}
+\tightlist
+\item
+  The measured quantities behind every panel:
+  \passthrough{\lstinline!17\_benchmarks\_statistics.md!}
+  (\passthrough{\lstinline!src/quadmath/stats/benchmarks.py!},
+  \passthrough{\lstinline!src/quadmath/stats/statistics.py!}).
+\item
+  The sibling gallery of the lattice layer, same thin-orchestrator and
+  determinism contract:
+  \passthrough{\lstinline!16\_lattice\_gallery.md!}
+  (\passthrough{\lstinline!src/quadmath/viz/vis\_lattice.py!}).
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,449 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
+
+% Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Dynamics and Learning on the IVM Lattice}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{October 07, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
+\section{Dynamics and Learning on the IVM
+Lattice}\label{dynamics-and-learning-on-the-ivm-lattice}
+
+\subsection{Overview}\label{overview}
+
+Where \href{04_optimization_in_4d.md}{Section 4} descends a \emph{single
+point} along the IVM lattice, this section evolves a \emph{field} ---
+one scalar per lattice site --- and then asks the inverse question:
+given an observed field trajectory, what coupling produced it?
+Everything here is implemented in
+\passthrough{\lstinline!ivm\_dynamics.py!}
+(\passthrough{\lstinline!ball\_sites!},
+\passthrough{\lstinline!make\_lattice!},
+\passthrough{\lstinline!heat\_step!},
+\passthrough{\lstinline!majority\_step!},
+\passthrough{\lstinline!step!}, \passthrough{\lstinline!simulate!},
+\passthrough{\lstinline!fit\_trajectory!},
+\passthrough{\lstinline!sum\_of\_squares!},
+\passthrough{\lstinline!is\_nonincreasing!}) on top of the
+\passthrough{\lstinline!Quadray!} class and
+\passthrough{\lstinline!to\_xyz!} embedding in
+\passthrough{\lstinline!quadray.py!}; the demo figure is produced by
+\passthrough{\lstinline!quadmath/scripts/ivm\_dynamics\_demo.py!} (which
+delegates to \passthrough{\lstinline!render\_dynamics\_demo!} in
+\passthrough{\lstinline!src/quadmath/lattice/ivm\_dynamics.py!}, per the
+thin-orchestrator contract in
+\passthrough{\lstinline!quadmath/scripts/AGENTS.md!}).
+
+\subsection{Lattice sites, shells, and the 12-around-one move
+graph}\label{lattice-sites-shells-and-the-12-around-one-move-graph}
+
+A \emph{site} is a canonical quadray representative --- non-negative
+integer components with at least one zero, selected by
+\passthrough{\lstinline!Quadray.normalize!} (see
+\href{03_quadray_methods.md}{Quadray Methods}). The radial observable is
+the squared embedding norm
+\passthrough{\lstinline!site\_radius\_sq(q)!}; because the shift vector
+\((1,1,1,1)\) lies in the kernel of the
+\passthrough{\lstinline!DEFAULT\_EMBEDDING!} matrix, the radius is
+invariant under quadray normalization.
+\passthrough{\lstinline!ball\_sites(R)!} enumerates the canonical sites
+with squared radius at most \(R^2\): for a canonical site the squared
+radius is at least twice the square of its largest component, so
+components in \([0, R]\) cover the ball.
+
+\passthrough{\lstinline!make\_lattice(R)!} joins two sites when one of
+the 12 canonical IVM neighbor shifts
+(\passthrough{\lstinline!neighbor\_shifts!}, all permutations of
+\((2,1,1,0)\), each at squared radius 8 --- the close-packing distance)
+maps one site onto the other after renormalization. Normalization never
+moves the embedded point, so adjacency is exactly ``embedding difference
+is one of the 12 shifts''. Lattice sites are the quadrays whose
+coordinate sum is divisible by 4; the remaining residue classes are IVM
+voids and are excluded. On the \(R = 3\) ball (13 sites) the graph is a
+single connected component: the close-packed \textbf{12-around-one
+cluster}, i.e.~the origin (degree 12) and its twelve cuboctahedron
+neighbors (degree 5). The update laws below act independently on each
+connected component of the ball.
+
+\subsection{Heat update and the monotonicity
+lemma}\label{heat-update-and-the-monotonicity-lemma}
+
+The heat (diffusion) update blends a field \(u_t \in \mathbb{R}^{N}\)
+--- one value per lattice site, \(N\) the site count --- with its
+symmetric-normalized adjacency average \(S = D^{-1/2} A D^{-1/2}\),
+where \(A\) is the adjacency matrix of the move graph, \(D\) the
+diagonal degree matrix, and rows of \(S\) are zero at isolated sites:
+
+\begin{equation}
+\label{eq:ivmdyn-heat}
+u_{t+1} \;=\; (1-\alpha)\, u_t \;+\; \alpha\, S\, u_t ,
+\qquad \alpha \in [0,1] .
+\end{equation}
+
+\textbf{Lemma (heat averaging is non-increasing in sum of squares).} For
+every \(\alpha \in [0,1]\), every lattice built by
+\passthrough{\lstinline!make\_lattice!}, and every state,
+
+\begin{equation}
+\label{eq:ivmdyn-lemma}
+\lVert u_{t+1} \rVert_2^2 \;\le\; \lVert u_t \rVert_2^2 .
+\end{equation}
+
+\emph{Proof sketch.} \(S\) is symmetric with spectrum in \([-1,1]\) (it
+is similar to the random-walk matrix \(D^{-1}A\)). The update operator
+\((1-\alpha)I + \alpha S\) is therefore symmetric with eigenvalues in
+\([1-2\alpha,\,1] \subseteq [-1,1]\), hence non-expansive in the 2-norm.
+\(\square\)
+
+This is exactly the claim the test suite asserts --- \emph{per step},
+across seeds and the full coupling range
+(\passthrough{\lstinline!test\_heat\_update\_l2\_nonincreasing\_per\_step!}
+in \passthrough{\lstinline!tests/unit/lattice/test\_ivm\_dynamics.py!}).
+Two scope restrictions are deliberate and tested:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The guarantee is specific to the symmetric normalization \(S\). Plain
+  row-average diffusion \(P = D^{-1}A\) on a truncated ball is
+  \textbf{not} covered (boundary rows make \(P\) non-doubly-stochastic);
+  the module neither uses nor claims it.
+\item
+  In the demo run (\(\alpha = 0.35\), \(T = 40\), seed 7) the sum of
+  squares decreases monotonically from \(37.04\) to \(3.93\) while never
+  increasing at any single step.
+\end{enumerate}
+
+\subsection{Majority update on integer
+states}\label{majority-update-on-integer-states}
+
+For integer-valued fields the rounded-averaging (``majority'') update is
+
+\begin{equation}
+\label{eq:ivmdyn-majority}
+u_{t+1}(s) \;=\; \operatorname{rint}\!\Big( (1-\alpha)\, u_t(s)
+\;+\; \alpha\, \tfrac{1}{\deg(s)} \!\!\sum_{n \in N(s)} u_t(n) \Big),
+\end{equation}
+
+with \(N(s)\) the neighbor set of site \(s\) and \(\deg(s) = |N(s)|\)
+its degree, identity rows at isolated sites, and round-half-to-even ties
+(\passthrough{\lstinline!numpy.rint!}), computed by
+\passthrough{\lstinline!majority\_step!}. Every new value is a rounded
+convex combination of the site and its neighbors, so the extremal
+structure is preserved:
+
+\textbf{Proposition (range containment).} Under
+\eqref{eq:ivmdyn-majority} the field maximum is non-increasing and the
+minimum non-decreasing, at every step, for every \(\alpha \in [0,1]\).
+
+We deliberately make \textbf{no} sum-of-squares claim for this update:
+rounding can increase it, and the test suite pins a demonstrating case
+(origin at 0 with its twelve packers at 1 maps to thirteen sites at
+value 1, raising the sum of squares from 12 to 13 ---
+\passthrough{\lstinline!test\_majority\_step\_sum\_of\_squares\_can\_increase!}).
+The honest summary: heat is \(L_2\)-monotone, majority is
+range-preserving, and neither claim is stretched to cover the other
+update.
+
+\subsection{Learning the coupling from an observed
+trajectory}\label{learning-the-coupling-from-an-observed-trajectory}
+
+Given observed snapshots \(u_{\mathrm{obs}}(0..T)\) on a known lattice,
+the coupling \(\alpha\) is identified gradient-free:
+\passthrough{\lstinline!fit\_trajectory!} re-simulates the field from
+the observed initial condition for each candidate coupling and minimizes
+the trajectory mean squared error over the \(T\) post-initial snapshots
+and the \(N\) sites, where \(u_{\alpha}(t)\) is the re-simulated field
+under candidate coupling \(\alpha\):
+
+\begin{equation}
+\label{eq:ivmdyn-mse}
+\mathcal{L}(\alpha) \;=\; \frac{1}{T\,N} \sum_{t=1}^{T}
+\big\lVert u_{\alpha}(t) - u_{\mathrm{obs}}(t) \big\rVert_2^2 ,
+\end{equation}
+
+scanning the supplied grid, then re-gridding the interval between the
+best candidate's grid neighbors \passthrough{\lstinline!refine\_rounds!}
+times (grid/coordinate search; ties resolve to the smallest \(\alpha\);
+fully deterministic). The result is a global optimum \emph{over the
+evaluated candidates only} --- no convergence beyond the refinement
+resolution is claimed. In the demo configuration (synthetic trajectory
+generated at \(\alpha_{\text{true}} = 0.3\) on the \(R=3\) lattice,
+\(T = 40\)), a 21-point grid plus refinement (33 MSE evaluations)
+recovers \(\alpha \approx 0.300\) with
+\(\mathcal{L} \approx 4.5 \times 10^{-33}\) --- machine precision for a
+bitwise-deterministic re-simulation. When the true coupling lies
+off-grid, refinement converges to within a grid-spacing fraction of it
+(\passthrough{\lstinline!test\_fit\_refinement\_finds\_offgrid\_coupling!}:
+0.37 recovered to \(\le 0.0125\) from a coarse
+\(\{0, 0.25, 0.5, 0.75, 1\}\) grid).
+
+\subsection{Demo figure}\label{demo-figure}
+
+Generated by
+\passthrough{\lstinline!uv run python quadmath/scripts/ivm\_dynamics\_demo.py!}
+(\passthrough{\lstinline!MPLBACKEND=Agg!}); all randomness is seeded
+(\passthrough{\lstinline!DynamicsParams.seed!}), so the figure is
+reproducible byte-for-byte up to PNG encoding.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Dynamics and learning on the IVM lattice (R=3 ball, 13 sites). Top row: heat-field snapshots at t = 0, 20, 40 (\textbackslash alpha = 0.35, seed 7) over the embedded quadray sites (XYZ axes in embedding units); dot color encodes field value on a shared symmetric scale, and diffusion homogenizes the field by t = 40. Bottom left: sum-of-squares histories over t = 0 \textbackslash ldots 40 --- the heat curve decreases monotonically (lemma ); the majority curve falls steeply and plateaus, but unlike heat it carries no monotonicity guarantee, since rounding can increase the sum of squares (test\_majority\_step\_sum\_of\_squares\_can\_increase). Bottom middle: trajectory MSE versus coupling \textbackslash alpha on a logarithmic axis over the search grid, with the identified optimum (fit 0.3000) coinciding with the true generating \textbackslash alpha = 0.3 (dotted). Bottom right: the final integer majority field at t = 40. Generated by uv run python quadmath/scripts/ivm\_dynamics\_demo.py (MPLBACKEND=Agg, seeded via DynamicsParams.seed).}]{../output/figures/ivm_dynamics_demo.png}}
+\caption{\textbf{Dynamics and learning on the IVM lattice (\(R=3\) ball,
+13 sites)}. Top row: heat-field snapshots at \(t = 0, 20, 40\)
+(\(\alpha = 0.35\), seed 7) over the embedded quadray sites (XYZ axes in
+embedding units); dot color encodes field value on a shared symmetric
+scale, and diffusion homogenizes the field by \(t = 40\). Bottom left:
+sum-of-squares histories over \(t = 0 \ldots 40\) --- the heat curve
+decreases monotonically (lemma \eqref{eq:ivmdyn-lemma}); the majority
+curve falls steeply and plateaus, but unlike heat it carries no
+monotonicity guarantee, since rounding can increase the sum of squares
+(\protect\passthrough{\lstinline!test\_majority\_step\_sum\_of\_squares\_can\_increase!}).
+Bottom middle: trajectory MSE versus coupling \(\alpha\) on a
+logarithmic axis over the search grid, with the identified optimum
+(\protect\passthrough{\lstinline!fit 0.3000!}) coinciding with the true
+generating \(\alpha = 0.3\) (dotted). Bottom right: the final integer
+majority field at \(t = 40\). Generated by
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/ivm\_dynamics\_demo.py!}
+(\protect\passthrough{\lstinline!MPLBACKEND=Agg!}, seeded via
+\protect\passthrough{\lstinline!DynamicsParams.seed!}).}
+\end{figure}
+
+\subsection{Reproducibility and test
+contract}\label{reproducibility-and-test-contract}
+
+\begin{itemize}
+\tightlist
+\item
+  Tests:
+  \passthrough{\lstinline!PYTEST\_DISABLE\_PLUGIN\_AUTOLOAD=1 uv run coverage run -m pytest tests/unit/lattice/test\_ivm\_dynamics.py -q!}
+  then \passthrough{\lstinline!uv run coverage report!} --- 42 tests,
+  100\% statement and branch coverage of
+  \passthrough{\lstinline!src/quadmath/lattice/ivm\_dynamics.py!}, no
+  mocks, all examples real numerics with fixed seeds.
+\item
+  Markdown:
+  \passthrough{\lstinline!uv run python quadmath/scripts/validate\_markdown.py!}.
+\item
+  The two provable claims (lemma \eqref{eq:ivmdyn-lemma}, the range
+  proposition under \eqref{eq:ivmdyn-majority}) are asserted per step;
+  the non-claims (row-average diffusion, majority \(L_2\) behavior) are
+  pinned by the honesty tests described above rather than left implicit.
+\end{itemize}
+
+\subsection{Cross-references}\label{cross-references}
+
+\begin{itemize}
+\tightlist
+\item
+  Site geometry and normalization: \href{03_quadray_methods.md}{Quadray
+  Methods}.
+\item
+  Discrete point descent on the same move set:
+  \href{04_optimization_in_4d.md}{Optimization in 4D}.
+\item
+  Field/energy vocabulary (free energy, Fisher information):
+  \href{09_free_energy_active_inference.md}{Appendix B}; equation index:
+  \href{08_equations_appendix.md}{Appendix A}.
+\end{itemize}
+
+\end{document}

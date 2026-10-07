@@ -134,9 +134,9 @@ def test_ci_bars_rejects_mismatched_lengths():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     with pytest.raises(ValueError, match="equal length"):
-        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9, 1.8]), np.array([1.1]))
+        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9, 1.8]), np.array([1.1]), ax=ax)
     with pytest.raises(ValueError, match="equal length"):
-        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9]), np.array([1.1, 2.2]))
+        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9]), np.array([1.1, 2.2]), ax=ax)
     with pytest.raises(ValueError, match="equal length"):
         plot_ci_bars(["a"], np.array([1.0, 2.0]), np.array([0.9, 1.8]), np.array([1.1, 2.2]))
 

@@ -97,18 +97,19 @@ def bootstrap_ci(
     """Percentile bootstrap confidence interval for ``stat`` on ``x``.
 
     Draws ``iters`` resamples of size ``len(x)`` with replacement from a
-    single seeded generator (``np.random.default_rng(seed)``), evaluates
-    ``stat`` on each row (along ``axis=1``), and returns the
-    ``alpha``/2 and 1-``alpha``/2 percentiles of the bootstrap
-    distribution as a ``(low, high)`` tuple.
+    single seeded generator (``np.random.default_rng(seed)``), applies
+    ``stat`` to each resample, and returns the ``alpha``/2 and
+    1-``alpha``/2 percentiles of the bootstrap distribution as a
+    ``(low, high)`` tuple.  ``stat`` receives one 1-D float array per call
+    and must return a scalar; it is never called on a 2-D batch.
 
     Raises
     ------
     ValueError
-        If ``x`` is empty, ``iters`` is not positive, or ``alpha`` is
-        outside ``(0, 1)``.
+        If ``x`` is empty or contains non-finite values, ``iters`` is not
+        positive, or ``alpha`` is outside ``(0, 1)``.
     """
-    x = _as_float_array(x, "x")
+    x = _as_finite_float_array(x, "x")
     if iters <= 0:
         raise ValueError("iters must be a positive integer")
     if not 0.0 < alpha < 1.0:
@@ -116,7 +117,7 @@ def bootstrap_ci(
     n = len(x)
     rng = np.random.default_rng(seed)
     idx = rng.integers(0, n, size=(iters, n))
-    stats = stat(x[idx], axis=1)
+    stats = np.array([float(stat(x[row])) for row in idx], dtype=float)
     return tuple(np.percentile(stats, [100 * alpha / 2, 100 * (1 - alpha / 2)]))
 
 
@@ -138,7 +139,10 @@ def permutation_test(
     the result strictly positive and attainable.  ``alternative`` selects
     the tail: ``"two-sided"`` counts permutations whose absolute mean
     difference reaches ``abs(obs)``, ``"greater"`` / ``"less"`` use the
-    signed comparison against the observed difference.
+    signed comparison against the observed difference.  Differences within
+    ``1e-12 * max(|pool|)`` of the observed value count as ties, so
+    permutations that reproduce the observed partition with different
+    floating-point summation order are not dropped by rounding.
 
     Raises
     ------
@@ -154,17 +158,18 @@ def permutation_test(
         raise ValueError(f"unknown alternative: {alternative!r}")
     pool = np.concatenate([a, b])
     obs = np.mean(a) - np.mean(b)
+    tie = 1e-12 * float(np.max(np.abs(pool)))
     rng = np.random.default_rng(seed)
     perm_diffs = np.empty(iters, dtype=float)
     for i in range(iters):
         perm = rng.permutation(pool)
         perm_diffs[i] = perm[:na].mean() - perm[na:].mean()
     if alternative == "two-sided":
-        count = np.count_nonzero(np.abs(perm_diffs) >= abs(obs))
+        count = np.count_nonzero(np.abs(perm_diffs) >= abs(obs) - tie)
     elif alternative == "greater":
-        count = np.count_nonzero(perm_diffs >= obs)
+        count = np.count_nonzero(perm_diffs >= obs - tie)
     else:
-        count = np.count_nonzero(perm_diffs <= obs)
+        count = np.count_nonzero(perm_diffs <= obs + tie)
     return float((count + 1) / (iters + 1))
 
 
@@ -233,12 +238,13 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     Raises
     ------
     ValueError
-        If either array is empty, the arrays differ in length, fewer than
-        two points are given, any value is non-positive (logs would be
-        undefined), or all sizes are equal (no slope is identified).
+        If either array is empty or contains non-finite values, the arrays
+        differ in length, fewer than two points are given, any value is
+        non-positive (logs would be undefined), or all sizes are equal (no
+        slope is identified).
     """
-    sizes = _as_float_array(sizes, "sizes")
-    times = _as_float_array(times, "times")
+    sizes = _as_finite_float_array(sizes, "sizes")
+    times = _as_finite_float_array(times, "times")
     if sizes.size != times.size:
         raise ValueError("sizes and times must have the same length")
     if sizes.size < 2:
@@ -377,7 +383,8 @@ def jackknife_ci(
     x:
         Sample values; at least two finite observations are required.
     stat:
-        Scalar-valued statistic applied to each leave-one-out sample.
+        Applied to one 1-D float array per call (each leave-one-out sample)
+        and must return a scalar; the same contract as :func:`bootstrap_ci`.
     alpha:
         Tail probability in ``(0, 1)``; the interval covers ``1 - alpha``.
 

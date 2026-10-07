@@ -290,6 +290,24 @@ def test_dynamics_strip_rejects_out_of_range_index():
         dynamics_strip([ax], trajectory, (4,))
 
 
+def test_dynamics_strip_accepts_generator_inputs():
+    trajectory = simulate(4, DynamicsParams(kind="heat", alpha=0.5, seed=12))
+    fig = plt.figure(figsize=(6.0, 3.0))
+    axs = [fig.add_subplot(1, 2, n, projection="3d") for n in (1, 2)]
+    handles = dynamics_strip((ax for ax in axs), trajectory, (t for t in (0, 4)))
+    assert len(handles) == 2
+    assert axs[0].get_title() == "heat, t = 0"
+    assert axs[1].get_title() == "heat, t = 4"
+
+
+def test_shell_scatter_accepts_generator_of_sites():
+    fig = plt.figure(figsize=(6.0, 4.8))
+    ax = fig.add_subplot(111, projection="3d")
+    shell_scatter(ax, (site for site in generate_shell(2)), 2)
+    assert ax.get_title() == "IVM shell 2 (42 sites)"
+    assert len(ax.get_lines()) == 4
+
+
 # ---------------------------------------------------------------------------
 # gallery: composition, determinism, reproducibility
 # ---------------------------------------------------------------------------

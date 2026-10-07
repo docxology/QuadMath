@@ -38,7 +38,7 @@ src/quadmath/
 | `quadmath/core/symbolic.py` | Symbolic math (SymPy) | Symbolic Quadray operations |
 | `quadmath/tools/glossary_gen.py` | API glossary generation | Auto-document src/ modules |
 | `quadmath/lattice/omni_numbering.py` | IVM shell enumeration & site indexing | `NEIGHBOR_MOVES`, `MAX_SHELL`, `sites_through_shell` |
-| `quadmath/lattice/ivm_field.py` | Field learning on the IVM lattice | `IVMField`, `ball_sites`, `quadray_shell_norm` |
+| `quadmath/lattice/ivm_field.py` | Field learning on the IVM lattice | `IVMField`, `shell_ball_sites`, `quadray_shell_norm` |
 | `quadmath/lattice/ivm_dynamics.py` | Dynamics & trajectory identification | `DynamicsParams`, `simulate`, `fit_trajectory` |
 | `quadmath/lattice/lattice_search.py` | Fast nearest-site queries | `nearest`, `squared_distance`, `within_radius` |
 | `quadmath/stats/statistics.py` | Descriptive stats & resampling | `bootstrap_ci`, `permutation_test`, `cohens_d` |
@@ -134,7 +134,7 @@ path: DiscretePath = discrete_ivm_descent(
 `from .<mod> import *` per module. Two cross-module name collisions prevent
 flat re-export; import those from their concrete modules:
 
-- `ball_sites`: `quadmath.lattice.ivm_field` vs `quadmath.lattice.ivm_dynamics`
+- `shell_ball_sites`: `quadmath.lattice.ivm_field` vs `quadmath.lattice.ivm_dynamics`
   (distinct functions).
 - `gallery` / `GALLERY_FILES`: `quadmath.viz.vis_lattice` vs
   `quadmath.viz.vis_stats` (distinct objects).

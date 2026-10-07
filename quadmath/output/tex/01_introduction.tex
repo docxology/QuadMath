@@ -73,6 +73,10 @@
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}
@@ -189,7 +193,7 @@
 
 \title{Introduction}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -204,34 +208,29 @@
 
 \subsection{Abstract}\label{abstract}
 
-We review a unified analytical framework for four dimensional (4D)
-modeling and Quadray coordinates, synthesizing geometric foundations,
+We review a unified analytical framework for four-dimensional (4D)
+modeling with Quadray coordinates, synthesizing geometric foundations,
 optimization on tetrahedral lattices, and information geometry. Building
 on R. Buckminster Fuller's
 \href{https://en.wikipedia.org/wiki/Synergetics_(Fuller)}{Synergetics}
-and the Quadray coordinate system, with extensive reference to Kirby
-Urner's computational implementations across multiple programming
-languages (see the comprehensive
-\href{https://github.com/4dsolutions}{4dsolutions ecosystem} including
-Python, Rust, Clojure, and POV-Ray implementations), we review how
-integer lattice constraints yield integer volume quantization of
-tetrahedral simplexes, creating discrete ``energy levels'' that
-regularize optimization and enable integer-based optimization. We adapt
-standard methods (e.g.,
+and Kirby Urner's computational implementations in the
+\href{https://github.com/4dsolutions}{4dsolutions ecosystem} (Python,
+Rust, Clojure, and POV-Ray), we show that integer lattice constraints
+force the volume of any tetrahedron with lattice vertices to be an
+integer multiple of the unit tetrahedron's volume --- a quantization
+into discrete ``energy levels'' that regularizes optimization on the
+tetrahedral lattice. We adapt the
 \href{https://en.wikipedia.org/wiki/Nelder\%E2\%80\%93Mead_method}{Nelder--Mead
-method}) to the quadray lattice, define
+method} to the Quadray lattice, define
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information} in Quadray parameter space, and analyze optimization as
 geodesic motion on an information manifold via the
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{natural gradient}.
-We review three distinct 4D namespaces --- Coxeter.4D (Euclidean E⁴),
+We distinguish three 4D namespaces --- Coxeter.4D (Euclidean E⁴),
 Einstein.4D (Minkowski spacetime), and Fuller.4D (synergetics/Quadrays)
---- develop analytical tools and equations, and survey extensions and
-applications across AI,
-\href{https://welcome.activeinference.institute/}{active inference},
-cognitive security, and complex systems. The result is a cohesive,
-interpretable approach for robust, geometry-grounded computation in 4D.
-All source code for the manuscript is available at
+--- and map each to the analytical tools it supports. The result is a
+cohesive, interpretable approach for robust, geometry-grounded
+computation in 4D. All source code for the manuscript is available at
 \href{https://github.com/docxology/quadmath}{QuadMath}.
 
 \textbf{Keywords}: Quadray coordinates, 4D geometry, tetrahedral
@@ -242,12 +241,12 @@ optimization, synergetics, active inference.
 
 Quadray coordinates provide a tetrahedral basis for modeling space and
 computation, standing in contrast to Cartesian cubic frameworks.
-Originating in Buckminster Fuller's Synergetics, quadray coordinates
-enable the replacement of right-angle orthonormal assumptions, with
-60-degree coordination and a unit tetrahedron of volume 1. This
-reframing yields striking integer relationships among common polyhedra
-and provides a natural account of space via close-packed spheres and the
-isotropic vector matrix (IVM).
+Originating in Buckminster Fuller's Synergetics, Quadray coordinates
+replace right-angle orthonormal assumptions with 60-degree coordination
+and a unit tetrahedron of volume 1. This reframing yields striking
+integer relationships among common polyhedra and provides a natural
+account of space via close-packed spheres and the isotropic vector
+matrix (IVM).
 
 This paper unifies three threads:
 
@@ -276,24 +275,24 @@ Namespaces}.
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Coxeter.4D} --- four-dimensional Euclidean space (E⁴), as in
-  classical polytope theory. Coxeter emphasizes that Euclidean 4D is not
-  spacetime; see the Dover edition of Regular Polytopes (p.~119) for a
-  clear statement to this effect; background on lattice packings in four
-  dimensions aligns with the treatment in Conway \& Sloane's
+  \textbf{Coxeter.4D} --- four-dimensional Euclidean space (E⁴) with
+  mutually orthogonal axes and a positive-definite metric: the setting
+  of classical polytope theory, and explicitly not spacetime (Coxeter,
+  Regular Polytopes, Dover ed., p.~119). Lattice packings in four
+  dimensions align with the treatment in Conway \& Sloane's
   \href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
   Packings, Lattices and Groups}.
 \item
-  \textbf{Einstein.4D} --- Minkowski spacetime (3D + time) with an
-  indefinite metric; appropriate for relativistic physics but distinct
-  from Euclidean E⁴.
+  \textbf{Einstein.4D} --- Minkowski spacetime: three space dimensions
+  plus time, with an indefinite metric of signature \((-,+,+,+)\); the
+  arena of relativistic physics, distinct from Euclidean E⁴.
 \item
-  \textbf{Fuller.4D} --- synergetics' tetrahedral accounting of space
-  using Quadrays (four non-negative coordinates with at least one zero
-  after normalization) and the Isotropic Vector Matrix (IVM) = Cubic
-  Close Packing (CCP) = Face-Centered Cubic (FCC) correspondence. This
-  treats the regular tetrahedron as a natural unit container and
-  emphasizes angle/shape relations independent of time/energy.
+  \textbf{Fuller.4D} --- synergetics' tetrahedral accounting of space:
+  Quadray coordinates (four non-negative coordinates with at least one
+  zero after normalization) on the Isotropic Vector Matrix (IVM) = Cubic
+  Close Packing (CCP) = Face-Centered Cubic (FCC) lattice, with the
+  regular tetrahedron as the natural unit container; it emphasizes
+  angle/shape relations independent of time and energy.
 \end{itemize}
 
 \subsection{Contributions}\label{contributions}
@@ -353,25 +352,28 @@ paper:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Quadray APIs}: \passthrough{\lstinline!src/quadray.py!}
+  \textbf{Quadray APIs}:
+  \passthrough{\lstinline!src/quadmath/core/quadray.py!}
   (\passthrough{\lstinline!Quadray!},
   \passthrough{\lstinline!integer\_tetra\_volume!},
   \passthrough{\lstinline!ace\_tetravolume\_5x5!}).
 \item
   \textbf{Determinant utilities}:
-  \passthrough{\lstinline!src/linalg\_utils.py!}
+  \passthrough{\lstinline!src/quadmath/core/linalg\_utils.py!}
   (\passthrough{\lstinline!bareiss\_determinant\_int!}).
 \item
   \textbf{Length-based volume}:
-  \passthrough{\lstinline!src/cayley\_menger.py!}
+  \passthrough{\lstinline!src/quadmath/core/cayley\_menger.py!}
   (\passthrough{\lstinline!tetra\_volume\_cayley\_menger!},
   \passthrough{\lstinline!ivm\_tetra\_volume\_cayley\_menger!}).
 \item
-  \textbf{XYZ conversion}: \passthrough{\lstinline!src/conversions.py!}
+  \textbf{XYZ conversion}:
+  \passthrough{\lstinline!src/quadmath/lattice/conversions.py!}
   (\passthrough{\lstinline!urner\_embedding!},
   \passthrough{\lstinline!quadray\_to\_xyz!}).
 \item
-  \textbf{Examples}: \passthrough{\lstinline!src/examples.py!}
+  \textbf{Examples}:
+  \passthrough{\lstinline!src/quadmath/core/examples.py!}
   (\passthrough{\lstinline!example\_ivm\_neighbors!},
   \passthrough{\lstinline!example\_volume!},
   \passthrough{\lstinline!example\_optimize!}).
@@ -388,15 +390,15 @@ Availability}\label{reproducibility-and-data-availability}
 \item
   The manuscript Markdown and code to generate the PDF are available on
   the project repository (\passthrough{\lstinline!QuadMath!} on GitHub,
-  @docxology username). See the repository home page for source,
-  figures, and scripts:
+  \passthrough{\lstinline!@docxology!} username). See the repository
+  home page for source, figures, and scripts:
   \href{https://github.com/docxology/QuadMath}{QuadMath repository}. The
   repository is also archived on
   \href{https://zenodo.org/records/16887791}{Zenodo record 16887791}
   with DOI 10.5281/zenodo.16887791.
 \item
   The manuscript is licensed under the Apache License 2.0. See the
-  \href{../LICENSE}{LICENSE} file for details.
+  \href{../../LICENSE}{LICENSE} file for details.
 \item
   The manuscript is accompanied by a fully-tested Python codebase under
   \passthrough{\lstinline!src/!} with unit tests under
@@ -428,33 +430,38 @@ Availability}\label{reproducibility-and-data-availability}
 
 \subsection{Graphical Abstract}\label{graphical-abstract}
 
-\textbf{Panel A} shows Quadray axes (A,B,C,D) under a symmetric
-embedding with wireframe context. \textbf{Panel B} shows close-packed
-spheres at the tetrahedron vertices (IVM/CCP/FCC, ``twelve around
-one'').
+\textbf{Panel A} shows the four Quadray axes (A, B, C, D) under the
+default symmetric embedding with a tetrahedron wireframe. \textbf{Panel
+B} shows the same vertices as close-packed spheres (IVM = CCP = FCC)
+sized to kiss along the tetrahedron edges.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Quadray coordinate system overview (graphical abstract). Panel A: Four Quadray axes (A,B,C,D) rendered as colored directional arrows from the origin to the vertices of a regular tetrahedron under the default symmetric embedding. Each axis is distinctly colored (A=blue, B=orange, C=green, D=red) with axis labels positioned at the vertex endpoints. A light gray wireframe connects the four vertices to emphasize the tetrahedral geometry underlying the coordinate system. This panel illustrates the fundamental Fuller.4D direction-based structure where Quadrays represent four canonical directions in tetrahedral space rather than orthogonal Cartesian dimensions. Panel B: The same tetrahedral vertices shown as close-packed spheres with radius chosen so neighboring spheres kiss along tetrahedron edges, emphasizing the connection to the Isotropic Vector Matrix (IVM), Cubic Close Packing (CCP), and Face-Centered Cubic (FCC) arrangements. Each sphere is colored to match its corresponding axis from Panel A, with light edge wireframes providing geometric context. This visualization demonstrates how Quadray coordinates naturally align with dense sphere packing and the ``twelve around one'' coordination motif central to synergetics and Fuller.4D modeling.}]{../output/figures/graphical_abstract_quadray.png}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Quadray coordinate system overview (graphical abstract). Panel A: The four Quadray axes --- rays A, B, C, D from the origin to the vertices of a reference regular tetrahedron under the default symmetric embedding --- drawn as colored arrows (A=blue, B=orange, C=green, D=red) with axis labels at the vertex endpoints and a light gray wireframe joining the four vertices. Notice that the axes are four canonical directions (spokes) separated by 60° angles, not orthogonal Cartesian dimensions --- the defining ``directions, not dimensions'' character of Fuller.4D. Panel B: The same four vertices shown as close-packed spheres, each colored to match its Panel A axis and with radius equal to half the minimum edge length, so neighboring spheres kiss exactly along the tetrahedron edges; a light black wireframe marks those edges. This is the local building block of the Isotropic Vector Matrix (IVM) = Cubic Close Packing (CCP) = Face-Centered Cubic (FCC) correspondence; extending the kissing arrangement across the lattice yields the ``twelve around one'' coordination central to synergetics. What to notice: one and the same tetrahedral skeleton underlies both the direction-based Quadray coordinate system and the densest sphere packing in 3D, which is why integer Quadray coordinates and integer sphere counts (and hence integer volumes) live on a single lattice. Generated by quadmath/scripts/graphical\_abstract\_quadray.py (output at quadmath/output/figures/graphical\_abstract\_quadray.png).}]{../output/figures/graphical_abstract_quadray.png}}
 \caption{\textbf{Quadray coordinate system overview (graphical
-abstract)}. \textbf{Panel A}: Four Quadray axes (A,B,C,D) rendered as
-colored directional arrows from the origin to the vertices of a regular
-tetrahedron under the default symmetric embedding. Each axis is
-distinctly colored (A=blue, B=orange, C=green, D=red) with axis labels
-positioned at the vertex endpoints. A light gray wireframe connects the
-four vertices to emphasize the tetrahedral geometry underlying the
-coordinate system. This panel illustrates the fundamental Fuller.4D
-direction-based structure where Quadrays represent four canonical
-directions in tetrahedral space rather than orthogonal Cartesian
-dimensions. \textbf{Panel B}: The same tetrahedral vertices shown as
-close-packed spheres with radius chosen so neighboring spheres kiss
-along tetrahedron edges, emphasizing the connection to the Isotropic
-Vector Matrix (IVM), Cubic Close Packing (CCP), and Face-Centered Cubic
-(FCC) arrangements. Each sphere is colored to match its corresponding
-axis from Panel A, with light edge wireframes providing geometric
-context. This visualization demonstrates how Quadray coordinates
-naturally align with dense sphere packing and the ``twelve around one''
-coordination motif central to synergetics and Fuller.4D modeling.}
+abstract)}. \textbf{Panel A}: The four Quadray axes --- rays A, B, C, D
+from the origin to the vertices of a reference regular tetrahedron under
+the default symmetric embedding --- drawn as colored arrows (A=blue,
+B=orange, C=green, D=red) with axis labels at the vertex endpoints and a
+light gray wireframe joining the four vertices. Notice that the axes are
+four canonical directions (spokes) separated by 60° angles, not
+orthogonal Cartesian dimensions --- the defining ``directions, not
+dimensions'' character of Fuller.4D. \textbf{Panel B}: The same four
+vertices shown as close-packed spheres, each colored to match its Panel
+A axis and with radius equal to half the minimum edge length, so
+neighboring spheres kiss exactly along the tetrahedron edges; a light
+black wireframe marks those edges. This is the local building block of
+the Isotropic Vector Matrix (IVM) = Cubic Close Packing (CCP) =
+Face-Centered Cubic (FCC) correspondence; extending the kissing
+arrangement across the lattice yields the ``twelve around one''
+coordination central to synergetics. What to notice: one and the same
+tetrahedral skeleton underlies both the direction-based Quadray
+coordinate system and the densest sphere packing in 3D, which is why
+integer Quadray coordinates and integer sphere counts (and hence integer
+volumes) live on a single lattice. Generated by
+\protect\passthrough{\lstinline!quadmath/scripts/graphical\_abstract\_quadray.py!}
+(output at
+\protect\passthrough{\lstinline!quadmath/output/figures/graphical\_abstract\_quadray.png!}).}
 \end{figure}
 
 \end{document}

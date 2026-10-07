@@ -135,8 +135,9 @@ def main() -> None:
     np.savez(os.path.join(data_dir, "ivm_neighbors_edges_data.npz"), quadrays=q_arr, xyz=xyz_arr, radius=r)
     # Also provide a simple CSV of neighbor coordinates (both Quadray and XYZ)
     csv_path = os.path.join(data_dir, "ivm_neighbors_data.csv")
-    with open(csv_path, "w", newline="") as f:
-        writer = csv.writer(f)
+    from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
+    with atomic_open(csv_path, newline="") as f:
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["a", "b", "c", "d", "x", "y", "z"])
         for (a, b, c, d), (x, y, z) in zip(q_arr.tolist(), xyz_arr.tolist()):
             writer.writerow([int(a), int(b), int(c), int(d), float(x), float(y), float(z)])

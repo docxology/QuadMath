@@ -17,7 +17,7 @@ from quadmath.lattice.lattice_search import (
     squared_distance,
     within_radius,
 )
-from quadmath.lattice.omni_numbering import Quadray, cumulative_count, sites_through_shell
+from quadmath.lattice.omni_numbering import Quadray, sites_through_shell
 from quadmath.core.quadray import DEFAULT_EMBEDDING
 
 _E = np.asarray(DEFAULT_EMBEDDING, dtype=np.float64)

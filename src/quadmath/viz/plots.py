@@ -20,7 +20,7 @@ import numpy as np
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, qrotate, slerp, to_xyz
 from quadmath.lattice.ivm_field import shell_cardinalities, shell_sites
 from quadmath.paths import get_figure_dir
-from quadmath.viz._common import encoded_angle, figure_scope, save_figure, set_axes_equal
+from quadmath.viz._common import encoded_angle, figure_scope, resolve_output_path, save_figure, set_axes_equal
 
 __all__ = [
     "plot_loss_history",
@@ -50,13 +50,14 @@ def plot_loss_history(
     - losses: Any finite sequence of loss values (e.g.
       ``GradientDescentTrainer.loss_history`` or a plain list), one per
       iteration in training order.
-    - save: If True, write PNG to ``out_path`` or, by default,
-      ``quadmath/output/figures/loss_history.png``.
-    - out_path: Optional explicit PNG destination used when ``save`` is True.
+    - save: If True, write the PNG; else write nothing.
+    - out_path: PNG destination. A bare file name goes in
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given. Defaults to ``loss_history.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "". The figure is
-      closed before the function returns.
+    - str: The PNG path when ``save`` is True, else "". The figure is closed
+      before the function returns, so no handle is returned.
 
     Raises
     - ValueError: If ``losses`` is empty.
@@ -74,22 +75,25 @@ def plot_loss_history(
         ax.grid(True, alpha=0.3)
 
         if save:
-            outpath = out_path or f"{get_figure_dir()}/loss_history.png"
+            outpath = resolve_output_path(out_path or "loss_history.png", get_figure_dir)
             save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
             return outpath
     return ""
 
 
-def plot_shell_growth(k_max: int = 6, save: bool = True) -> str:
+def plot_shell_growth(k_max: int = 6, save: bool = True, out_path: Optional[str] = None) -> str:
     """Plot IVM shell cardinalities (cuboctahedral numbers) versus shell index.
 
     Parameters
     - k_max: Largest shell index to include; shells ``0 .. k_max`` are drawn.
-    - save: If True, write PNG to ``quadmath/output/figures/shell_growth.png``.
+    - save: If True, write the PNG; else write nothing.
+    - out_path: PNG destination. A bare file name goes in
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given. Defaults to ``shell_growth.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "". The figure is
-      closed before the function returns.
+    - str: The PNG path when ``save`` is True, else "". The figure is closed
+      before the function returns, so no handle is returned.
 
     Raises
     - ValueError: If ``k_max`` is negative.
@@ -110,24 +114,28 @@ def plot_shell_growth(k_max: int = 6, save: bool = True) -> str:
         ax.grid(True, alpha=0.3)
 
         if save:
-            outpath = f"{get_figure_dir()}/shell_growth.png"
+            outpath = resolve_output_path(out_path or "shell_growth.png", get_figure_dir)
             save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
             return outpath
     return ""
 
 
-def plot_error_histogram(errors: Sequence[float], bins: int = 20, save: bool = True) -> str:
+def plot_error_histogram(
+    errors: Sequence[float], bins: int = 20, save: bool = True, out_path: Optional[str] = None
+) -> str:
     """Plot a histogram of error values with a dashed vertical mean line.
 
     Parameters
     - errors: Non-empty sequence of finite error values.
     - bins: Number of histogram bins (positive integer).
-    - save: If True, write PNG to
-      ``quadmath/output/figures/error_histogram.png``.
+    - save: If True, write the PNG; else write nothing.
+    - out_path: PNG destination. A bare file name goes in
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given. Defaults to ``error_histogram.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "". The figure is
-      closed before the function returns.
+    - str: The PNG path when ``save`` is True, else "". The figure is closed
+      before the function returns, so no handle is returned.
 
     Raises
     - ValueError: If ``errors`` is empty, contains a non-finite value
@@ -153,24 +161,26 @@ def plot_error_histogram(errors: Sequence[float], bins: int = 20, save: bool = T
         ax.legend()
 
         if save:
-            outpath = f"{get_figure_dir()}/error_histogram.png"
+            outpath = resolve_output_path(out_path or "error_histogram.png", get_figure_dir)
             save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
             return outpath
     return ""
 
 
-def plot_lattice_shell_3d(k: int = 2, save: bool = True) -> str:
+def plot_lattice_shell_3d(k: int = 2, save: bool = True, out_path: Optional[str] = None) -> str:
     """Scatter the sites of one IVM lattice shell in 3D (equal-aspect axes).
 
     Parameters
     - k: Non-negative shell index; sites with quadray shell norm ``2k`` are
       embedded via :data:`quadmath.core.quadray.DEFAULT_EMBEDDING`.
-    - save: If True, write PNG to
-      ``quadmath/output/figures/lattice_shell_3d.png``.
+    - save: If True, write the PNG; else write nothing.
+    - out_path: PNG destination. A bare file name goes in
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given. Defaults to ``lattice_shell_3d.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "". The figure is
-      closed before the function returns.
+    - str: The PNG path when ``save`` is True, else "". The figure is closed
+      before the function returns, so no handle is returned.
 
     Raises
     - ValueError: If ``k`` is negative.
@@ -191,7 +201,7 @@ def plot_lattice_shell_3d(k: int = 2, save: bool = True) -> str:
         set_axes_equal(ax)
 
         if save:
-            outpath = f"{get_figure_dir()}/lattice_shell_3d.png"
+            outpath = resolve_output_path(out_path or "lattice_shell_3d.png", get_figure_dir)
             save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
             return outpath
     return ""
@@ -203,6 +213,7 @@ def plot_slerp_path(
     n_frames: int = 16,
     site: Optional[Quadray] = None,
     save: bool = True,
+    out_path: Optional[str] = None,
 ) -> str:
     """Trace the 3D path of a fixed lattice site under shortest-arc slerp.
 
@@ -220,12 +231,14 @@ def plot_slerp_path(
     - site: Quadray point to rotate; defaults to the canonical ``(2, 0, 0, 0)``
       point on the A quadray axis (embedded at ``(2, 2, 2)`` under
       :data:`quadmath.core.quadray.DEFAULT_EMBEDDING`).
-    - save: If True, write PNG to
-      ``quadmath/output/figures/quaternion_slerp_path.png``.
+    - save: If True, write the PNG; else write nothing.
+    - out_path: PNG destination. A bare file name goes in
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given. Defaults to ``quaternion_slerp_path.png``.
 
     Returns
-    - str: Output file path when ``save`` is True, else "". The figure is
-      closed before the function returns.
+    - str: The PNG path when ``save`` is True, else "". The figure is closed
+      before the function returns, so no handle is returned.
 
     Raises
     - ValueError: If ``q0`` or ``q1`` is not a unit quaternion (norm 1
@@ -261,7 +274,7 @@ def plot_slerp_path(
         set_axes_equal(ax)
 
         if save:
-            outpath = f"{get_figure_dir()}/quaternion_slerp_path.png"
+            outpath = resolve_output_path(out_path or "quaternion_slerp_path.png", get_figure_dir)
             save_figure(fig, outpath, dpi=_DPI, bbox_inches="tight")
             return outpath
     return ""

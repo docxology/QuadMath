@@ -39,7 +39,8 @@ from quadmath.lattice.ivm_dynamics import DynamicsParams, Trajectory, simulate
 from quadmath.lattice.ivm_field import IVMField
 from quadmath.lattice.omni_numbering import generate_shell
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
-from quadmath.viz._common import figure_scope, save_figure
+from quadmath.paths import get_figure_dir
+from quadmath.viz._common import figure_scope, resolve_output_path, save_figure
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from matplotlib.axes import Axes
@@ -122,7 +123,7 @@ def _tetra_directions(
 
 def shell_scatter(
     ax: "Axes",
-    sites: Sequence[SiteLike],
+    sites: Iterable[SiteLike],
     k: int,
     *,
     embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING,
@@ -141,7 +142,9 @@ def shell_scatter(
 
     Parameters
     - ax: Matplotlib 3D axes owned by the caller.
-    - sites: Shell-``k`` sites as ``Quadray`` points or integer rows.
+    - sites: Shell-``k`` sites as ``Quadray`` points or integer rows; any
+      iterable (including a one-shot generator) is accepted.  It is
+      materialized once at entry.
     - k: Shell index (non-negative); used for the default title only.
     - embedding: 3x4 embedding matrix (defaults to ``DEFAULT_EMBEDDING``).
     - color: Scatter color.
@@ -155,11 +158,12 @@ def shell_scatter(
     Raises
     - ValueError: If ``sites`` is empty or ``k`` is negative.
     """
-    if len(sites) == 0:
+    site_list = list(sites)
+    if len(site_list) == 0:
         raise ValueError("sites must be non-empty")
     if k < 0:
         raise ValueError(f"shell index must be non-negative, got {k}")
-    quads = _as_quadray_rows(sites)
+    quads = _as_quadray_rows(site_list)
     arr = np.asarray(embedding, dtype=float)
     xyz = np.array([to_xyz(q, arr) for q in quads], dtype=float)
     handle = ax.scatter(
@@ -355,9 +359,9 @@ def field_slice(
 
 
 def dynamics_strip(
-    axs: Sequence["Axes"],
+    axs: Iterable["Axes"],
     trajectory: Trajectory,
-    t_indices: Sequence[int],
+    t_indices: Iterable[int],
     *,
     embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING,
     cmap: str = "coolwarm",
@@ -371,9 +375,11 @@ def dynamics_strip(
     selected snapshots, so panels are directly comparable.
 
     Parameters
-    - axs: One 3D axes per snapshot, owned by the caller.
+    - axs: One 3D axes per snapshot, owned by the caller; any iterable
+      (including a one-shot generator) is accepted.
     - trajectory: Simulation record from :func:`ivm_dynamics.simulate`.
-    - t_indices: Snapshot indices into ``trajectory.fields``.
+    - t_indices: Snapshot indices into ``trajectory.fields``; any iterable
+      (including a one-shot generator) is accepted.
     - embedding: 3x4 embedding matrix (defaults to ``DEFAULT_EMBEDDING``).
     - cmap: Diverging colormap name.
     - titles: Optional per-panel titles; defaults to
@@ -386,6 +392,8 @@ def dynamics_strip(
     - ValueError: If ``t_indices`` is empty, lengths of ``axs`` and
       ``t_indices`` differ, or an index is outside the trajectory.
     """
+    axs = list(axs)
+    t_indices = list(t_indices)
     if len(t_indices) == 0:
         raise ValueError("t_indices must be non-empty")
     if len(axs) != len(t_indices):
@@ -446,12 +454,15 @@ def gallery(paths_out_dir: str, seed: int = 12) -> List[str]:
 
     Parameters
     - paths_out_dir: Directory the three PNGs are written to (created
-      when missing).
+      when missing).  A bare directory name is resolved under
+      ``quadmath/output/figures/``; a path with a directory component (or an
+      absolute path) is used as given.
     - seed: Seed for the field observations and the dynamics run.
 
     Returns
     - List[str]: The three written paths, in :data:`GALLERY_FILES` order.
     """
+    paths_out_dir = resolve_output_path(paths_out_dir, get_figure_dir)
     if not os.path.isdir(paths_out_dir):
         os.makedirs(paths_out_dir, exist_ok=True)
     rng = np.random.default_rng(seed)

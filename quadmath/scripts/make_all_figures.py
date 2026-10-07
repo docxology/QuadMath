@@ -13,8 +13,29 @@ import subprocess
 from typing import Dict, List
 
 OUTPUT_SUFFIXES = (".png", ".mp4", ".pdf", ".csv", ".npz", ".gif", ".txt")
-# Scripts that print no output path by design; exempt from the existence check
-NO_ARTIFACT_SCRIPTS = frozenset({"gpu_acceleration_demo.py"})
+# Figure/data generators run by main(), in order. gpu_acceleration_demo.py is
+# deliberately absent: it is a timing benchmark that writes no artifact.
+FIGURE_SCRIPTS = (
+    "information_demo.py",
+    "active_inference_figures.py",
+    "volumes_demo.py",
+    "ivm_neighbors.py",
+    "quadray_clouds.py",
+    "simplex_animation.py",
+    "graphical_abstract_quadray.py",
+    "polyhedra_quadray_constructions.py",
+    "discrete_variational_demo.py",
+    "sympy_formalisms.py",
+    "ivm_field_demo.py",
+    "ivm_dynamics_demo.py",
+    "lattice_gallery.py",
+    "stats_gallery.py",
+    "animation_gallery.py",
+    "learning_gallery.py",
+    "quaternion_gallery.py",
+    "animation_stills.py",
+    "stats_diagnostics_gallery.py",
+)
 _PATH_TOKEN = re.compile(r"(?:^|\s)(/\S+)\s*$")
 
 
@@ -77,38 +98,25 @@ def _run_script(path: str) -> List[str]:
         raise RuntimeError(f"Script failed: {path}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}")
     root = _repo_root()
     paths = extract_output_paths(stdout, root)
-    name = os.path.basename(path)
-    if name not in NO_ARTIFACT_SCRIPTS:
-        require_existing_output(name, paths, root)
+    require_existing_output(os.path.basename(path), paths, root)
     return paths
 
 
-def main() -> None:
-    scripts = [
-        os.path.join(_repo_root(), "quadmath", "scripts", "information_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "active_inference_figures.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "volumes_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "ivm_neighbors.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "quadray_clouds.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "simplex_animation.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "graphical_abstract_quadray.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "polyhedra_quadray_constructions.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "discrete_variational_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "sympy_formalisms.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "gpu_acceleration_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "ivm_field_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "ivm_dynamics_demo.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "lattice_gallery.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "stats_gallery.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "animation_gallery.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "learning_gallery.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "quaternion_gallery.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "animation_stills.py"),
-        os.path.join(_repo_root(), "quadmath", "scripts", "stats_diagnostics_gallery.py"),
-    ]
+def write_manifest(rel_paths: List[str], manifest_path: str) -> None:
+    """Atomically write the figure manifest: a header line, then one path per line."""
+    _ensure_src_on_path()
+    from quadmath.tools.atomic_write import atomic_write_text  # noqa: WPS433
 
+    body = "# Generated figure/data paths (relative to repo root)\n"
+    body += "".join(p + "\n" for p in rel_paths)
+    atomic_write_text(manifest_path, body)
+
+
+def main() -> None:
+    root = _repo_root()
     all_paths: Dict[str, None] = {}
-    for script in scripts:
+    for name in FIGURE_SCRIPTS:
+        script = os.path.join(root, "quadmath", "scripts", name)
         if not os.path.exists(script):
             raise FileNotFoundError(f"Missing script: {script}")
         for p in _run_script(script):
@@ -116,10 +124,7 @@ def main() -> None:
 
     data_dir = _get_data_dir()
     manifest_path = os.path.join(data_dir, "figure_manifest.txt")
-    with open(manifest_path, "w") as f:
-        f.write("# Generated figure/data paths (relative to repo root)\n")
-        for p in all_paths:
-            f.write(p + "\n")
+    write_manifest(list(all_paths), manifest_path)
     print(f"Wrote manifest: {manifest_path}")
     print(manifest_path)
 

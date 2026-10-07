@@ -1,0 +1,573 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1cm,top=1cm,bottom=1cm,left=1cm,right=1cm,includeheadfoot]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{3}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Serif}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Enable graphics inclusion and ensure figure numbering works
+\usepackage{graphicx}
+\renewcommand{\figurename}{Figure}
+
+% Configure fonts for Unicode support with fallbacks
+\usepackage{newunicodechar}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+% Enhanced code block styling for better contrast and readability
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors for code blocks
+\definecolor{codebg}{RGB}{245, 245, 245}      % Light gray background
+\definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
+\definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
+
+% Configure Verbatim environment for inline code
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
+    fontsize=\small,
+    frame=single,
+    framerule=0.5pt,
+    framesep=3pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Configure code block styling
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+    fontsize=\footnotesize,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    rulecolor=\color{codeborder},
+    bgcolor=\color{codebg},
+    fgcolor=\color{codefg}
+}
+
+% Style inline code with \texttt
+\renewcommand{\texttt}[1]{%
+    \colorbox{codebg}{\color{codefg}\ttfamily #1}%
+}
+
+% Configure listings package for code blocks
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\footnotesize\ttfamily\color{codefg},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codefg},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.5pt,
+    framesep=5pt,
+    keepspaces=true,
+    keywordstyle=\color{codefg},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{codefg},
+    rulecolor=\color{codeborder},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{codefg},
+    tabsize=2,
+    title=\lstname
+}
+
+% Override any Pandoc default lstset configurations
+\AtBeginDocument{
+    \lstset{
+        backgroundcolor=\color{codebg},
+        basicstyle=\footnotesize\ttfamily\color{codefg},
+        frame=single,
+        framerule=0.5pt,
+        framesep=5pt,
+        rulecolor=\color{codeborder},
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codefg}
+    }
+}
+
+% Configure hyperref colors consistently
+\AtBeginDocument{
+% Override pandoc's hidelinks setting with consistent options
+\hypersetup{
+    colorlinks=true,
+    allcolors=red,
+    linkcolor=red,
+    urlcolor=red,
+    citecolor=red,
+    filecolor=red,
+    menucolor=red,
+    linktoc=all
+}
+}
+
+% Simple page break support for document structure
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={red},
+  citecolor={red},
+  urlcolor={red},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Learning and Evaluation on the IVM Lattice}
+\author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
+\date{October 07, 2026}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\setstretch{1.0}
+\section{Learning and Evaluation on the IVM
+Lattice}\label{learning-and-evaluation-on-the-ivm-lattice}
+
+\subsection{Overview}\label{overview}
+
+Learning on a lattice is easy to fake. A learner that merely
+interpolates its observations through the graph can look excellent on
+the very data it was fit to, and a dynamics model identified on early
+snapshots can silently diverge on late ones. This section develops the
+training/testing methodology used to evaluate the two IVM learners
+honestly --- the static field learner of
+\href{11_ivm_field_learning.md}{Static IVM Field Learning} and the
+dynamics identifier of \href{12_ivm_dynamics.md}{IVM Lattice Dynamics}.
+All utilities live in the \passthrough{\lstinline!learning\_eval.py!}
+module (\passthrough{\lstinline!kfold\_site\_splits()!},
+\passthrough{\lstinline!cross\_validate\_field()!},
+\passthrough{\lstinline!trajectory\_train\_test()!},
+\passthrough{\lstinline!learning\_curve()!},
+\passthrough{\lstinline!enclosing\_radius()!}), use
+\passthrough{\lstinline!numpy!} only, and are fully deterministic for
+fixed seeds. Every behavioral claim below is pinned in
+\passthrough{\lstinline!tests/test\_learning\_eval.py!} with fixed RNG
+seeds and real numerics.
+
+\subsection{Why held-out evaluation is harder on a
+lattice}\label{why-held-out-evaluation-is-harder-on-a-lattice}
+
+On independent data, random resampling is benign. On a lattice it is
+not: field values at neighboring sites are strongly correlated, and the
+learners of \passthrough{\lstinline!ivm\_field.py!} exploit exactly that
+correlation --- the kernel-weighted target of the normal equations
+\eqref{eq:ivm-normal-equations} predicts an unobserved site as a
+weighted average of its graph neighbors. A random split that leaves
+graph neighbors on both sides therefore lets the learner ``cheat'': the
+held-out site is predicted from observations one hop away, and the
+apparent skill measures the smoothness of the field under
+\eqref{eq:ivm-objective}, not generalization to unseen territory. The
+autocorrelation that makes lattice learning work is the same
+autocorrelation that inflates its evaluation:
+
+\begin{equation}
+\label{eq:learn-correlation}
+\operatorname{Cov}\bigl(f_i, f_j\bigr) \;\approx\; \sigma_f^{2}\,
+K\bigl(d(i,j)\bigr),
+\qquad d(i,j) \;=\; \text{hop distance on the IVM graph},
+\end{equation}
+
+with \(K\) the Gaussian hop kernel of \eqref{eq:ivm-kernel} and
+\(\sigma_f^2\) the field variance. Because \(K\) decays with hop
+distance, the leakage is local --- but the IVM ball is small, and a
+random split leaks everywhere.
+
+The methodology below therefore always holds out \emph{structure}, not
+just rows: whole folds of sites for the field learner (never shared
+between training and scoring), and a temporal suffix of snapshots for
+dynamics identification (never shuffled). The pinned numerical result
+worth internalizing: on the radius-2 ball (55 sites, 80\% observed), the
+noise-free held-out error of the kernel-weighted interpolator is
+dominated not by observation noise but by \emph{coverage geometry} ---
+which sites happen to be observed --- so per-fold scores vary
+substantially even at fixed sample size, and honest evaluation must
+average over folds.
+
+\subsection{K-fold site splits}\label{k-fold-site-splits}
+
+\passthrough{\lstinline!kfold\_site\_splits(observed\_sites, k, seed)!}
+partitions observed sites into \(k\) folds by a seeded
+\passthrough{\lstinline!numpy.random.default\_rng!} permutation cut with
+\passthrough{\lstinline!numpy.array\_split!} (the first \(n \bmod k\)
+folds receive one extra site). Each split is a (train, test) pair; folds
+are pairwise disjoint and jointly exhaustive, and site order within each
+list follows the original normalized index order, so the splits are a
+pure function of \((sites, k, seed)\). With \(s\) the seeded permutation
+and \(F_j\) fold \(j\)'s index set, the held-out score of a fit
+\(\hat{f}^{(-F_j)}_\lambda\) that never saw \(F_j\) is
+
+\begin{equation}
+\label{eq:learn-fold}
+\widehat{M}(\lambda, F_j) \;=\; \frac{1}{|F_j|}
+\sum_{i \in F_j}
+\bigl( \hat{f}^{(-F_j)}_\lambda(i) - y_i \bigr)^{2},
+\end{equation}
+
+the quantity \passthrough{\lstinline!IVMField.score()!} returns.
+Duplicate sites are rejected after normalization (two projective
+representatives of one lattice point would sit on both sides of a
+split), as is \(k < 2\) or \(k > n\).
+
+\subsection{Cross-validation and honest model
+selection}\label{cross-validation-and-honest-model-selection}
+
+\passthrough{\lstinline!cross\_validate\_field(field\_values, sites, k, lam\_grid, seed)!}
+runs \eqref{eq:learn-fold} for every fold and every regularization
+candidate of \passthrough{\lstinline!lam\_grid!}, fitting each fold from
+scratch on the training sites only --- a fresh
+\passthrough{\lstinline!IVMField.lattice\_ball!} per fit, via
+\passthrough{\lstinline!IVMField.learn()!} with the objective
+\eqref{eq:ivm-objective}. The result is the full table
+\(\widehat{M}(\lambda, F_j)\) with per-candidate mean and standard
+deviation over folds, and the selected strength
+
+\begin{equation}
+\label{eq:learn-lambda-star}
+\lambda^{*} \;=\; \arg\min_{\lambda \in \mathcal{G}}
+\frac{1}{k} \sum_{j=1}^{k} \widehat{M}(\lambda, F_j),
+\end{equation}
+
+resolved to the earliest candidate on ties. Selection uses validation
+folds only; the returned \passthrough{\lstinline!refit\_field!} is then
+refit with \(\lambda^{*}\) on \emph{all} observed sites, matching the
+deployment condition where every observation is available. Separating
+the two is what makes the selection honest: choosing \(\lambda\) on the
+same data the final model fits is how interpolation gets mistaken for
+skill.
+
+Two regimes are pinned numerically on synthetic fields. With exact
+observations of a harmonic (linear in embedded XYZ) field at 80\%
+coverage, cross-validation selects \(\lambda^{*} = 0\): the
+kernel-weighted interpolator generalizes best, and Laplacian smoothing
+only biases the fit away from exact data --- the mean held-out MSE is
+strictly increasing in \(\lambda\) across a grid spanning two decades.
+With noisy observations of a smooth non-harmonic field, the selection
+flips to \(\lambda^{*} > 0\): interpolation carries observation noise
+into the fit, and moderate regularization wins on the held-out folds.
+The margin is honest about the learner's limits --- because observed
+rows are pinned to their data, the noise propagates through the graph
+regardless of \(\lambda\), so the achievable gain is set by how much
+neighbor averaging the kernel already performs, not by the regularizer
+alone.
+
+\subsection{Temporal splits for dynamics
+identification}\label{temporal-splits-for-dynamics-identification}
+
+\passthrough{\lstinline!trajectory\_train\_test(observed, split\_frac, lattice)!}
+evaluates \passthrough{\lstinline!fit\_trajectory()!}-style
+identification of the coupling \(\alpha\) (\href{12_ivm_dynamics.md}{IVM
+Lattice Dynamics}). The snapshot matrix (\(T+1\) rows, row 0 the initial
+condition) is split \textbf{temporally}: the first
+nearest-integer-rounded fraction of rows trains, the trailing rows are
+held out, and no shuffling is ever applied --- a shuffled split
+interpolates between adjacent snapshots of a deterministic trajectory
+and hides exactly the forecast error being measured. The split point is
+clamped so training keeps at least two rows (initial condition plus one
+snapshot) and testing keeps at least one. Identification uses the
+training prefix only, with candidate grid and refinement passed through
+to \passthrough{\lstinline!fit\_trajectory()!}. Two held-out errors are
+reported. The multi-step continuation error re-simulates from the
+observed initial condition with the identified \(\hat{\alpha}\) and
+scores only the held-out rows:
+
+\begin{equation}
+\label{eq:learn-horizon}
+M_{\mathrm{test}}(\hat{\alpha}) \;=\; \frac{1}{(T - t_s)\,N}
+\sum_{t=t_s+1}^{T} \big\lVert u_{\hat{\alpha}}(t) - u_{\mathrm{obs}}(t)
+\big\rVert^{2} ,
+\end{equation}
+
+where \(t_s\) is the last training row. This is the stringent metric:
+for any model that is not exactly right, error compounds with horizon,
+so the held-out tail punishes misspecification that early rows forgive.
+The one-step-ahead error is teacher-forced --- each held-out transition
+is predicted a single step from the \emph{true} previous state, the
+first transition starting from the last training row:
+
+\begin{equation}
+\label{eq:learn-onestep}
+M_{1}(\hat{\alpha}) \;=\; \frac{1}{(T - t_s)\,N}
+\sum_{t=t_s}^{T-1} \big\lVert
+\mathrm{step}\bigl(u_{\mathrm{obs}}(t);\, \hat{\alpha}\bigr)
+- u_{\mathrm{obs}}(t+1) \big\rVert^{2},
+\end{equation}
+
+isolating local prediction error from error accumulation. The contrast
+between \eqref{eq:learn-horizon} and \eqref{eq:learn-onestep} is
+diagnostic: a correct model drives both to zero (pinned exactly: a heat
+trajectory with \(\alpha = 0.3\) in the candidate grid yields train,
+continuation, and one-step errors of exactly \(0\)), while a
+misspecified model class --- a heat model identified on
+majority-dynamics data --- shows a modest training error, a held-out
+continuation error more than twice as large (horizon compounding), and a
+one-step error five times smaller than the continuation error (local
+prediction is easier than long-horizon forecasting). Note the direction
+of the misspecification: \passthrough{\lstinline!majority\_step()!}
+requires integer states, so the float-continuum heat model can be fit to
+integer data, but not the reverse.
+
+\subsection{Learning curves}\label{learning-curves}
+
+\passthrough{\lstinline!learning\_curve(values, sites, train\_fracs, seed)!}
+traces the classic data-coverage curve on a lattice. One seeded
+permutation of the observed sites is drawn; for each requested fraction
+\(p\) the first \(m(p) = \operatorname{round}(p \cdot n)\) sites of that
+permutation (clamped to \([1, n-1]\)) form the training subset and the
+remainder the held-out complement:
+
+\begin{equation}
+\label{eq:learn-curve}
+M(p) \;=\; \frac{1}{n - m(p)} \sum_{i \notin P_{m(p)}}
+\bigl( \hat{f}_{P_{m(p)}}(i) - y_i \bigr)^{2},
+\qquad P_{m} \;=\; \text{first } m \text{ entries of the permutation},
+\end{equation}
+
+reported together with the in-sample score of the same fit. The subsets
+are \emph{nested} by construction --- growing \(p\) never removes an
+earlier observation --- so the curve is a proper coverage curve rather
+than a family of independent splits. The pinned example (radius-2 ball,
+quadratic bowl observed with noise \(\sigma = 0.4\) everywhere,
+\(\lambda = 0.05\)) shows held-out MSE falling by more than a factor of
+two from 10\% to 85\% coverage, with non-monotone wiggles in between:
+with few observations the held-out complement is large and its geometry
+varies between fractions, so the curve is monotone-ish, not monotone ---
+the final point sits far below the first, and that is the asserted
+invariant. The curve also separates interpolation from generalization
+visibly: the in-sample MSE stays below \(0.15\) at every coverage level
+while the held-out MSE never drops below \(0.7\) --- the pinned
+observations are fit closely at all sizes, and the difficulty is
+entirely on unseen sites.
+
+\subsection{Three-way splitting and trainable site
+fits}\label{sec:learn_three_way_site_fits}
+
+The lattice surfaces above all share one shape: a seeded split of sites
+or snapshots, a fit on the training side, and scores on the held-out
+side. The same shape is available for plain tabular work in the same
+module (\passthrough{\lstinline!src/quadmath/learn/learning\_eval.py!}),
+under the same discipline --- all split randomness confined to the
+seeded permutation of the split, and fits that are pure deterministic
+functions of their inputs.
+
+\passthrough{\lstinline!three\_way\_split(n, train\_frac=0.6, val\_frac=0.2, seed=0)!}
+partitions \passthrough{\lstinline!range(n)!} into disjoint
+train/validation/test index lists. One seeded
+\passthrough{\lstinline!numpy.random.default\_rng!} permutation of
+\passthrough{\lstinline!range(n)!} is drawn and cut into three
+contiguous blocks: the first \(m_{train} =
+\operatorname{round}(\mathrm{train\_frac} \cdot n)\) indices train, the
+next \(m_{val} = \operatorname{round}(\mathrm{val\_frac} \cdot n)\)
+validate, and the remainder test. Each returned list is sorted, the
+three are pairwise disjoint with union exactly
+\passthrough{\lstinline!range(n)!}, and the split is a deterministic
+function of \((n, \mathrm{train\_frac}, \mathrm{val\_frac}, seed)\) ---
+the same deterministic-permutation contract as the k-fold site splits
+above, applied to a plain index range rather than observed lattice
+sites. Rounding is unguarded at the tails: for small \(n\) a trailing
+block may come back empty (\(n = 3\) under the default fractions leaves
+the test list empty), and a \passthrough{\lstinline!ValueError!} is
+raised when either fraction is not strictly positive or their sum
+reaches \(1\) --- a split with no held-out rows at all cannot be honest.
+
+\passthrough{\lstinline!ridge\_site\_fit(features, values, lam=1e-3)!}
+fits a single linear site model in closed form. With \(X_c\) the
+mean-centered design matrix, \(y_c\) the mean-centered target, and
+\(\bar{x}\), \(\bar{y}\) the feature-column means and target mean, the
+ridge normal equations are solved exactly for the slope vector \(w\):
+
+\begin{equation}
+\label{eq:learn-ridge}
+\bigl( X_c^{\!\top} X_c + \lambda I \bigr)\, w \;=\; X_c^{\!\top} y_c,
+\qquad b \;=\; \bar{y} - \bar{x}^{\!\top} w,
+\end{equation} with \(b\) the intercept recovered from the centered
+solve; \(\lambda \geq 0\) penalizes the centered coefficient norm,
+shrinking \(w\) toward zero, and \(\lambda = 0\) recovers the exact
+least-squares solve. The returned \passthrough{\lstinline!RidgeSiteFit!}
+carries \passthrough{\lstinline!coefficients!},
+\passthrough{\lstinline!intercept!}, and the in-sample
+\passthrough{\lstinline!train\_mse!}, and the fit is a deterministic
+function of \passthrough{\lstinline!(features, values, lam)!} --- a
+\passthrough{\lstinline!numpy.linalg.solve!}, not an iterative
+optimizer, so repeated calls on the same inputs reproduce it bit for
+bit. Validation is explicit: a negative \(\lambda\), a non-2-D design
+matrix, a non-1-D target, disagreeing sample counts, or zero rows each
+raise before any linear algebra runs.
+
+\passthrough{\lstinline!GradientDescentTrainer(lr=0.05, max\_iters=300, tol=1e-9)!}
+is the iterative counterpart, useful where the closed form is
+deliberately being compared against: a full-batch gradient-descent fit
+of the same linear model. \passthrough{\lstinline!fit!} standardizes the
+feature columns internally (per-column zero mean and unit standard
+deviation, with constant columns passing through at standard deviation
+\(1\)), then runs at most \passthrough{\lstinline!max\_iters!}
+full-batch updates on the mean-squared-error loss,
+
+\begin{equation}
+\label{eq:learn-gd}
+\theta \;\leftarrow\; \theta \;-\; \frac{2\,\eta}{m}\,
+\begin{bmatrix} X_s^{\!\top} e \\ \mathbf{1}^{\!\top} e \end{bmatrix},
+\qquad e \;=\; X_s w + b - y,
+\end{equation}
+
+where \(X_s\) is the standardized design, \(m\) the row count, \(\eta\)
+the learning rate, \(w\) and \(b\) the coefficient vector and bias, and
+\(y\) the target. The MSE at the top of each executed iteration is
+appended to \passthrough{\lstinline!loss\_history!} --- one float per
+iteration, recorded before the update it describes --- and training
+stops early with \passthrough{\lstinline!converged\_ = True!} as soon as
+two consecutive losses differ by less than
+\passthrough{\lstinline!tol!}. The fit exposes
+\passthrough{\lstinline!coef\_!} expressed against the standardized
+features and \passthrough{\lstinline!intercept\_!} in original target
+units, together with the stored \passthrough{\lstinline!mean\_!} and
+\passthrough{\lstinline!std\_!} it used, so
+\passthrough{\lstinline!predict!} re-applies the recorded
+standardization before the linear map and thus scores consistently
+across the train, validation, and test blocks of a
+\passthrough{\lstinline!three\_way\_split!}. Like
+\passthrough{\lstinline!ridge\_site\_fit!} the trainer draws no
+randomness of its own --- no shuffling, no stochastic gradient --- so
+its entire loss history is deterministic for fixed inputs: the same rows
+and hyperparameters replay the same loss curve to the last float, and
+the per-iteration record doubles as the divergence/plateau diagnostic
+that a scalar final loss cannot provide.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Convergence of the full-batch gradient-descent trainer. Per-iteration training loss (mean squared error, linear y-axis) of GradientDescentTrainer on a deterministic synthetic linear problem: a 40 \textbackslash times 3 standard-normal design matrix with true coefficients (1.5, -2.0, 0.75), intercept 0.5, and Gaussian target noise \textbackslash sigma = 0.05 (seed 0). Fitted with lr = 0.05, max\_iters = 300, tol = 1e-9; the loss falls from 6.23 at iteration 0 to the noise-floor scale \textbackslash sigma\^{}2 = 2.5\textbackslash times 10\^{}\{-3\}, flagged as converged after 126 iterations. Regenerate with quadmath/scripts/learning\_gallery.py.}]{../output/figures/learn_loss_history.png}}
+\caption{\textbf{Convergence of the full-batch gradient-descent
+trainer.} Per-iteration training loss (mean squared error, linear
+\(y\)-axis) of \protect\passthrough{\lstinline!GradientDescentTrainer!}
+on a deterministic synthetic linear problem: a \(40 \times 3\)
+standard-normal design matrix with true coefficients
+\((1.5, -2.0, 0.75)\), intercept \(0.5\), and Gaussian target noise
+\(\sigma = 0.05\) (seed \(0\)). Fitted with
+\protect\passthrough{\lstinline!lr = 0.05!},
+\protect\passthrough{\lstinline!max\_iters = 300!},
+\protect\passthrough{\lstinline!tol = 1e-9!}; the loss falls from
+\(6.23\) at iteration \(0\) to the noise-floor scale
+\(\sigma^2 = 2.5\times 10^{-3}\), flagged as converged after \(126\)
+iterations. Regenerate with
+\protect\passthrough{\lstinline!quadmath/scripts/learning\_gallery.py!}.}
+\end{figure}
+
+\subsection{Verification}\label{verification}
+
+\passthrough{\lstinline!tests/test\_learning\_eval.py!} pins all of the
+above with fixed seeds and no mocks: disjoint-exhaustive folds with
+exact fold sizes, seed-determinism and seed-sensitivity of the splits,
+the \(\lambda^{*}=0\) and \(\lambda^{*}>0\) regimes with their table
+identities (mean and standard deviation recomputed from the fold table;
+the refit reproduced by hand), exact-zero errors for the correctly
+specified dynamics against a \(> 2\times\) continuation blow-up for the
+misspecified one, manual recomputation of the one-step-ahead error,
+fraction clamping at both extremes, and the learning curve's
+final-below-first invariant. The module carries 100\% statement and
+branch coverage, and the validation rules of every entry point (distinct
+normalized sites, \(k \in
+[2, n]\), fractions in the open unit interval, non-empty grids, minimum
+row counts) are each exercised.
+
+\subsection{Cross-References}\label{cross-references}
+
+\begin{itemize}
+\tightlist
+\item
+  Coordinate foundations and the twelve-around-one shell:
+  \href{03_quadray_methods.md}{Quadray Methods}
+\item
+  The learner being evaluated: \href{11_ivm_field_learning.md}{Static
+  IVM Field Learning}
+\item
+  The dynamics being identified: \href{12_ivm_dynamics.md}{IVM Lattice
+  Dynamics}
+\item
+  Enumeration and search infrastructure:
+  \href{13_lattice_tooling.md}{Lattice Tooling}
+\end{itemize}
+
+\end{document}

@@ -73,6 +73,10 @@
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}
@@ -189,7 +193,7 @@
 
 \title{Appendix: Free Energy and Active Inference}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -231,32 +235,53 @@ linkage)}\label{mathematical-formulation-and-equation-callouts-equations-linkage
 \item
   Variational free energy (discrete states) --- see Eq.
   \eqref{eq:free_energy} in the equations appendix, implemented by
-  \href{08_equations_appendix.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}.
+  \href{03_quadray_methods.md\#code:free_energy}{\passthrough{\lstinline!free\_energy!}}:
+  \(\mathcal{F} = -\log P(o \mid s) + \mathrm{KL}[\,Q(s)\,\|\,P(s)\,]\),
+  where \(o\) are observations, \(s\) latent states, \(Q(s)\) the
+  variational posterior, and \(P(s)\) the prior; minimizing
+  \(\mathcal{F}\) drives perception.
 \item
   Expected free energy (action selection) --- see Eq.
   \eqref{eq:expected_free_energy} in the equations appendix, implemented
   by
   \href{03_quadray_methods.md\#code:expected_free_energy}{\passthrough{\lstinline!expected\_free\_energy!}}:
-  the canonical \(G\) combines the epistemic KL to the prior, the
-  posterior entropy with the variational-bound sign, ambiguity (negative
-  expected log-likelihood), and pragmatic preferences that lower \(G\)
-  for preferred outcomes.
+  \(G = \mathrm{KL}[\,Q(s)\,\|\,P(s)\,] - \mathbb{E}_{q}[\log P(o \mid s)] - \log P(o)\),
+  where the epistemic term is the KL divergence between posterior
+  \(Q(s)\) and prior \(P(s)\) over states (its entropy part,
+  \(\mathbb{E}_{q}[\log Q(s)] = -H[Q(s)]\), is already included, so
+  \(H\) is not subtracted again), the ambiguity term
+  \(-\mathbb{E}_{q}[\log P(o \mid s)]\) penalizes expected surprise
+  about outcomes \(o\), and the pragmatic preference \(-\log P(o)\)
+  lowers \(G\) for preferred outcomes; agents minimize \(G\) when
+  selecting actions.
 \item
   Fisher Information Matrix (FIM) as metric --- see Eq. \eqref{eq:fim}
   in the equations appendix and
-  \href{08_equations_appendix.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}.
+  \href{03_quadray_methods.md\#code:fisher_information_matrix}{\passthrough{\lstinline!fisher\_information\_matrix!}}:
+  \(F_{ij} = \mathbb{E}\big[\partial_{\theta_i} \log p(x;\theta)\, \partial_{\theta_j} \log p(x;\theta)\big]\),
+  the expected outer product of score functions
+  \(\partial_{\theta_i} \log p(x;\theta)\), serving as the Riemannian
+  metric on parameter space \(\theta\).
 \item
   Natural gradient descent under information geometry --- see Eq.
   \eqref{eq:natural_gradient} in the equations appendix and
-  \href{08_equations_appendix.md\#code:natural_gradient_step}{\passthrough{\lstinline!natural\_gradient\_step!}};
-  overview:
+  \href{03_quadray_methods.md\#code:natural_gradient_step}{\passthrough{\lstinline!natural\_gradient\_step!}}:
+  the update
+  \(\theta \leftarrow \theta - \eta\, F^{-1} \nabla_{\theta} L\)
+  preconditions the loss gradient \(\nabla_{\theta} L\) by the inverse
+  Fisher metric \(F^{-1}\) at step size \(\eta\); the implementation
+  solves the damped system
+  \((F + \varepsilon I)\,\delta = \nabla_{\theta} L\) and moves by
+  \(-\eta\,\delta\). Overview:
   \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
   gradient}.
 \end{itemize}
 
-Figures: The following Active Inference figures demonstrate the
-integration of natural gradient descent with Active Inference principles
-and the 4D framework context.
+Figures: three Active Inference figures follow --- the partition
+tetrahedron, the 4D natural-gradient trajectory
+(\passthrough{\lstinline!figure\_13\_4d\_trajectory.png!}), and the
+free-energy landscape
+(\passthrough{\lstinline!figure\_14\_free\_energy\_landscape.png!}).
 
 Discrete variational optimization on the quadray lattice:
 \passthrough{\lstinline!discrete\_ivm\_descent!} greedily descends a
@@ -267,87 +292,64 @@ trajectories. See the path animation artifact
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D. This 3D tetrahedral visualization demonstrates the geometric embedding of Active Inference's fundamental four-fold partition within the Quadray coordinate system. Tetrahedral structure: The four vertices of the regular tetrahedron represent the four components of the Active Inference framework: perception, action, internal states, and external states. Partition mapping: Each face of the tetrahedron corresponds to a specific partition of the four-fold system, with the edges representing the relationships and interactions between different components. Fuller.4D significance: This geometric representation leverages the tetrahedral nature of Quadray coordinates to provide an intuitive visualization of the Active Inference framework's structure. The tetrahedron serves as a natural container for the four-fold partition, emphasizing the interconnected nature of perception, action, and state representation in active inference. Optimization context: The tetrahedral geometry also suggests natural optimization strategies that respect the four-fold structure, potentially leading to more efficient inference algorithms that leverage the geometric relationships between different components. This visualization demonstrates how the Fuller.4D framework can provide insights into complex systems like Active Inference through geometric intuition.}]{../output/figures/partition_tetrahedron.png}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D. The four vertices of a regular tetrahedron, embedded in XYZ via the quadray embedding to\_xyz (axes range -2 to 2), carry the four partition components: \textbackslash mu internal states (blue), s sensory observations (orange), a actions (green), and \textbackslash psi external causes (red). The gray edges are the six pairwise couplings of the partition --- e.g., \textbackslash mu--s perceptual inference and a--\textbackslash psi control (see the partition section below). Generated by quadmath/scripts/active\_inference\_figures.py (MPLBACKEND=Agg, fixed seed 42).}]{../output/figures/partition_tetrahedron.png}}
 \caption{\textbf{Active Inference four-fold partition mapped to a
-Quadray tetrahedron in Fuller.4D}. This 3D tetrahedral visualization
-demonstrates the geometric embedding of Active Inference's fundamental
-four-fold partition within the Quadray coordinate system.
-\textbf{Tetrahedral structure}: The four vertices of the regular
-tetrahedron represent the four components of the Active Inference
-framework: perception, action, internal states, and external states.
-\textbf{Partition mapping}: Each face of the tetrahedron corresponds to
-a specific partition of the four-fold system, with the edges
-representing the relationships and interactions between different
-components. \textbf{Fuller.4D significance}: This geometric
-representation leverages the tetrahedral nature of Quadray coordinates
-to provide an intuitive visualization of the Active Inference
-framework's structure. The tetrahedron serves as a natural container for
-the four-fold partition, emphasizing the interconnected nature of
-perception, action, and state representation in active inference.
-\textbf{Optimization context}: The tetrahedral geometry also suggests
-natural optimization strategies that respect the four-fold structure,
-potentially leading to more efficient inference algorithms that leverage
-the geometric relationships between different components. This
-visualization demonstrates how the Fuller.4D framework can provide
-insights into complex systems like Active Inference through geometric
-intuition.}
+Quadray tetrahedron in Fuller.4D}. The four vertices of a regular
+tetrahedron, embedded in XYZ via the quadray embedding
+\protect\passthrough{\lstinline!to\_xyz!} (axes range \(-2\) to \(2\)),
+carry the four partition components: \(\mu\) internal states (blue),
+\(s\) sensory observations (orange), \(a\) actions (green), and \(\psi\)
+external causes (red). The gray edges are the six pairwise couplings of
+the partition --- e.g., \(\mu\)--\(s\) perceptual inference and
+\(a\)--\(\psi\) control (see the partition section below). Generated by
+\protect\passthrough{\lstinline!quadmath/scripts/active\_inference\_figures.py!}
+(\protect\passthrough{\lstinline!MPLBACKEND=Agg!}, fixed seed 42).}
 \end{figure}
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={4D Natural Gradient Trajectory with Active Inference Context. This comprehensive visualization demonstrates natural gradient descent operating within the Active Inference framework, showing how information-geometric optimization drives perception-action dynamics. 3D Trajectory: The main panel shows the 4D parameter evolution in 3D space with time encoded as color, representing the four-fold partition of Active Inference: perception (μ), action (a), internal states (s), and external causes (ψ). Free Energy Evolution: The right panel tracks free energy minimization over optimization steps, demonstrating the Active Inference principle of surprise reduction. Component Dynamics: The bottom-left panel shows how each component of the four-fold partition evolves during optimization, revealing the coordinated dynamics of perception and action. Optimization Diagnostics: The bottom-center panel displays step sizes and gradient norms, providing insights into the convergence behavior and numerical stability of the natural gradient algorithm. Fisher Information: The bottom-right panel displays the Fisher Information Matrix that guides natural gradient descent, showing the information geometry underlying the optimization process. This figure demonstrates how natural gradient descent implements geodesic motion on the information manifold, analogous to how particles follow geodesics in Einstein.4D spacetime, while operating within the tetrahedral structure of Fuller.4D coordinates. The optimization now shows stable convergence in just 11 steps with final parameter errors below 0.015, demonstrating the effectiveness of information-geometric optimization in Active Inference frameworks.}]{../output/figures/figure_13_4d_trajectory.png}}
-\caption{\textbf{4D Natural Gradient Trajectory with Active Inference
-Context}. This comprehensive visualization demonstrates natural gradient
-descent operating within the Active Inference framework, showing how
-information-geometric optimization drives perception-action dynamics.
-\textbf{3D Trajectory}: The main panel shows the 4D parameter evolution
-in 3D space with time encoded as color, representing the four-fold
-partition of Active Inference: perception (μ), action (a), internal
-states (s), and external causes (ψ). \textbf{Free Energy Evolution}: The
-right panel tracks free energy minimization over optimization steps,
-demonstrating the Active Inference principle of surprise reduction.
-\textbf{Component Dynamics}: The bottom-left panel shows how each
-component of the four-fold partition evolves during optimization,
-revealing the coordinated dynamics of perception and action.
-\textbf{Optimization Diagnostics}: The bottom-center panel displays step
-sizes and gradient norms, providing insights into the convergence
-behavior and numerical stability of the natural gradient algorithm.
-\textbf{Fisher Information}: The bottom-right panel displays the Fisher
-Information Matrix that guides natural gradient descent, showing the
-information geometry underlying the optimization process. This figure
-demonstrates how natural gradient descent implements geodesic motion on
-the information manifold, analogous to how particles follow geodesics in
-Einstein.4D spacetime, while operating within the tetrahedral structure
-of Fuller.4D coordinates. The optimization now shows stable convergence
-in just 11 steps with final parameter errors below 0.015, demonstrating
-the effectiveness of information-geometric optimization in Active
-Inference frameworks.}
+\pandocbounded{\includegraphics[keepaspectratio,alt={4D natural-gradient trajectory with Active Inference context (figure\_13\_4d\_trajectory.png). Top left: the trajectory of natural gradient descent in (\textbackslash mu, a, s) coordinates --- perception weight \textbackslash mu, action weight a, internal-state coordinate s --- from the initial state (green circle) through the converged state (red star) toward the true optimum (blue triangle), converging in 11 steps with final parameter errors below 0.015. Top right: free energy (squared loss, log scale) falling from about 10\^{}\{-1\} to 10\^{}\{-4\} over the 11 optimization steps. Bottom left: evolution of the four partition components \textbackslash mu, a, s, \textbackslash psi against their true values (dashed lines). Bottom middle: step size (linear scale) and gradient norm (log scale) per step. Bottom right: the 4 \textbackslash times 4 Fisher information matrix F\_\{ij\} (entries of order 10\^{}\{-7\}) that preconditions the updates via Eq. . Generated by quadmath/scripts/active\_inference\_figures.py (MPLBACKEND=Agg, fixed seed 42); raw data in figure\_13\_data.npz.}]{../output/figures/figure_13_4d_trajectory.png}}
+\caption{\textbf{4D natural-gradient trajectory with Active Inference
+context}
+(\protect\passthrough{\lstinline!figure\_13\_4d\_trajectory.png!}). Top
+left: the trajectory of natural gradient descent in \((\mu, a, s)\)
+coordinates --- perception weight \(\mu\), action weight \(a\),
+internal-state coordinate \(s\) --- from the initial state (green
+circle) through the converged state (red star) toward the true optimum
+(blue triangle), converging in 11 steps with final parameter errors
+below 0.015. Top right: free energy (squared loss, log scale) falling
+from about \(10^{-1}\) to \(10^{-4}\) over the 11 optimization steps.
+Bottom left: evolution of the four partition components
+\(\mu, a, s, \psi\) against their true values (dashed lines). Bottom
+middle: step size (linear scale) and gradient norm (log scale) per step.
+Bottom right: the \(4 \times 4\) Fisher information matrix \(F_{ij}\)
+(entries of order \(10^{-7}\)) that preconditions the updates via Eq.
+\eqref{eq:natural_gradient}. Generated by
+\protect\passthrough{\lstinline!quadmath/scripts/active\_inference\_figures.py!}
+(\protect\passthrough{\lstinline!MPLBACKEND=Agg!}, fixed seed 42); raw
+data in \protect\passthrough{\lstinline!figure\_13\_data.npz!}.}
 \end{figure}
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Free Energy Landscape in 4D Active Inference Framework. This comprehensive visualization explores the variational free energy surface over perception and action parameters. 3D landscape: The surface plot shows the free energy as a function of two variational parameters, revealing the complex topology that Active Inference optimization must navigate. Contour analysis: 2D contours provide detailed information about parameter sensitivity and optimization paths. Cross-sectional analysis: Multiple cross-sections at different parameter values demonstrate how free energy varies with respect to individual parameters, revealing the landscape's structure. Four-fold partition visualization: The text panel explains how Active Inference maps to tetrahedral structures in Fuller.4D, with the four components (μ, s, a, ψ) representing internal states, sensory observations, actions, and external causes. Information geometry metrics: Local curvature analysis reveals the Fisher information structure, showing how the information manifold's geometry influences optimization dynamics. Mathematical foundation: The visualization demonstrates the mathematical structure of variational inference, including variational posteriors Q(s), priors P(s), and likelihoods P(o\textbar s) that connect observations to latent states.}]{../output/figures/figure_14_free_energy_landscape.png}}
-\caption{\textbf{Free Energy Landscape in 4D Active Inference
-Framework}. This comprehensive visualization explores the variational
-free energy surface over perception and action parameters. \textbf{3D
-landscape}: The surface plot shows the free energy as a function of two
-variational parameters, revealing the complex topology that Active
-Inference optimization must navigate. \textbf{Contour analysis}: 2D
-contours provide detailed information about parameter sensitivity and
-optimization paths. \textbf{Cross-sectional analysis}: Multiple
-cross-sections at different parameter values demonstrate how free energy
-varies with respect to individual parameters, revealing the landscape's
-structure. \textbf{Four-fold partition visualization}: The text panel
-explains how Active Inference maps to tetrahedral structures in
-Fuller.4D, with the four components (μ, s, a, ψ) representing internal
-states, sensory observations, actions, and external causes.
-\textbf{Information geometry metrics}: Local curvature analysis reveals
-the Fisher information structure, showing how the information manifold's
-geometry influences optimization dynamics. \textbf{Mathematical
-foundation}: The visualization demonstrates the mathematical structure
-of variational inference, including variational posteriors Q(s), priors
-P(s), and likelihoods P(o\textbar s) that connect observations to latent
-states.}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Free-energy landscape over perception and action parameters (figure\_14\_free\_energy\_landscape.png). Top left: the variational free energy \textbackslash mathcal\{F\} of Eq.  as a surface over the perception parameter q\_1 and action parameter q\_2 (values in nats, about 1.2 to 2.4; color bar at right), with the global minimum starred. Top right: level contours of the same surface. Bottom left: one-dimensional cross-sections \textbackslash mathcal\{F\}(q\_1) at three fixed values of q\_2, showing sensitivity to each parameter. Bottom right: local curvature over (q\_1, q\_2) (Fisher information structure). The text panel summarizes the four-fold partition (\textbackslash mu, s, a, \textbackslash psi), the roles of Fuller.4D/Coxeter.4D/Einstein.4D, and the generative-model objects Q(s), P(s), P(o \textbackslash mid s). Generated by quadmath/scripts/active\_inference\_figures.py (MPLBACKEND=Agg, fixed seed 42); raw data in figure\_14\_data.npz.}]{../output/figures/figure_14_free_energy_landscape.png}}
+\caption{\textbf{Free-energy landscape over perception and action
+parameters}
+(\protect\passthrough{\lstinline!figure\_14\_free\_energy\_landscape.png!}).
+Top left: the variational free energy \(\mathcal{F}\) of Eq.
+\eqref{eq:free_energy} as a surface over the perception parameter
+\(q_1\) and action parameter \(q_2\) (values in nats, about 1.2 to 2.4;
+color bar at right), with the global minimum starred. Top right: level
+contours of the same surface. Bottom left: one-dimensional
+cross-sections \(\mathcal{F}(q_1)\) at three fixed values of \(q_2\),
+showing sensitivity to each parameter. Bottom right: local curvature
+over \((q_1, q_2)\) (Fisher information structure). The text panel
+summarizes the four-fold partition (\(\mu, s, a, \psi\)), the roles of
+Fuller.4D/Coxeter.4D/Einstein.4D, and the generative-model objects
+\(Q(s)\), \(P(s)\), \(P(o \mid s)\). Generated by
+\protect\passthrough{\lstinline!quadmath/scripts/active\_inference\_figures.py!}
+(\protect\passthrough{\lstinline!MPLBACKEND=Agg!}, fixed seed 42); raw
+data in \protect\passthrough{\lstinline!figure\_14\_data.npz!}.}
 \end{figure}
 
 \subsection{Four-Fold Partition and Tetrahedral Mapping (Quadrays;
@@ -378,13 +380,10 @@ Tetrahedral mapping via Quadrays (Fuller.4D): assign each state to a
 vertex of a tetrahedron, using Quadray coordinates
 \passthrough{\lstinline!(A,B,C,D)!} with non-negative components and at
 least one zero after normalization. One canonical mapping is
-\passthrough{\lstinline!A \\leftrightarrow Internal (\\mu)!},
-\passthrough{\lstinline!B \\leftrightarrow Sensory (s)!},
-\passthrough{\lstinline!C \\leftrightarrow Active (a)!},
-\passthrough{\lstinline!D \\leftrightarrow External (\\psi)!}. The edges
-capture the pairwise couplings (e.g.,
-\passthrough{\lstinline!\\mu\\text\{--\}s!} for perceptual inference;
-\passthrough{\lstinline!a\\text\{--\}\\psi!} for control). Integer
+\(A \leftrightarrow \mu\) (internal), \(B \leftrightarrow s\) (sensory),
+\(C \leftrightarrow a\) (active), \(D \leftrightarrow \psi\) (external).
+The edges capture the pairwise couplings (e.g., \(\mu\text{--}s\) for
+perceptual inference; \(a\text{--}\psi\) for control). Integer
 tetravolume then quantifies the ``coupled capacity'' region spanned by
 jointly feasible states in a time slice; see
 \passthrough{\lstinline!Quadray!} and tetravolume methods in
@@ -403,8 +402,8 @@ the computational implementations.
 
 Code linkage (no snippet): see
 \passthrough{\lstinline!example\_partition\_tetra\_volume!} in
-\passthrough{\lstinline!src/examples.py!} and the partition tetrahedron
-figure above.
+\passthrough{\lstinline!src/quadmath/core/examples.py!} and the
+partition tetrahedron figure above.
 
 \subsection{How the 4D namespaces relate
 here}\label{how-the-4d-namespaces-relate-here}
@@ -436,20 +435,24 @@ linkage)}\label{joint-optimization-in-the-tetrahedral-framework-methods-linkage}
 \tightlist
 \item
   Perception: update \(\mu\) to minimize prediction error on \(s\) under
-  the generative model (descending \(\nabla_{\mu} F\)).
+  the generative model; \passthrough{\lstinline!perception\_update!}
+  integrates the flow \(\dot{\mu} = D\,\mu - \partial_{\mu} F\), where
+  \(D\) is the model's derivative operator and \(F\) the free energy of
+  Eq. \eqref{eq:free_energy}.
 \item
-  Action: select \(a\) that steers \(\psi\) toward preferred outcomes
-  (descending \(\nabla_{a} F\)).
+  Action: select \(a\) that steers \(\psi\) toward preferred outcomes;
+  \passthrough{\lstinline!action\_update!} descends the action gradient,
+  \(a \leftarrow a - \eta\,\partial_{a} F\) at step size \(\eta\).
 \end{itemize}
 
 Continuous-time flows (Einstein.4D analogy for metric/geodesic
 intuition): see \passthrough{\lstinline!perception\_update!} and
 \passthrough{\lstinline!action\_update!} in
-\passthrough{\lstinline!src/information.py!}. Discrete Quadray moves
-connect to these flows via greedy descent on a local free-energy-like
-objective; see \passthrough{\lstinline!discrete\_ivm\_descent!} in
-\passthrough{\lstinline!src/discrete\_variational.py!} and the path
-artifacts in \passthrough{\lstinline!quadmath/output/!}.
+\passthrough{\lstinline!src/quadmath/inference/information.py!}; their
+discrete Quadray counterpart is
+\passthrough{\lstinline!discrete\_ivm\_descent!} in
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!},
+described above.
 
 \subsection{Implications for AI and Robust
 Computation}\label{implications-for-ai-and-robust-computation}
@@ -475,8 +478,8 @@ Cross-References}\label{code-reproducibility-and-cross-references}
 \passthrough{\lstinline!perception\_update!},
 \passthrough{\lstinline!action\_update!}, and
 \passthrough{\lstinline!discrete\_ivm\_descent!} in
-\passthrough{\lstinline!src/information.py!} and
-\passthrough{\lstinline!src/discrete\_variational.py!}.
+\passthrough{\lstinline!src/quadmath/inference/information.py!} and
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!}.
 
 Demo and figures generated by
 \passthrough{\lstinline!quadmath/scripts/information\_demo.py!} and
@@ -486,17 +489,17 @@ output to \passthrough{\lstinline!quadmath/output/!}:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Active Inference Visualizations}:
+  \textbf{Active Inference Visualizations (embedded above)}:
   \passthrough{\lstinline!figure\_13\_4d\_trajectory.png!},
-  \passthrough{\lstinline!figure\_14\_free\_energy\_landscape.png!}
-  demonstrating 4D framework integration
+  \passthrough{\lstinline!figure\_14\_free\_energy\_landscape.png!},
+  \passthrough{\lstinline!partition\_tetrahedron.png!}
 \item
-  \textbf{Information Geometry Visualizations}:
+  \textbf{Information Geometry Visualizations} (rendered in the
+  Optimization in 4D section):
   \passthrough{\lstinline!fisher\_information\_matrix.png!},
   \passthrough{\lstinline!fisher\_information\_eigenspectrum.png!},
   \passthrough{\lstinline!natural\_gradient\_path.png!},
-  \passthrough{\lstinline!free\_energy\_curve.png!},
-  \passthrough{\lstinline!partition\_tetrahedron.png!}
+  \passthrough{\lstinline!free\_energy\_curve.png!}
 \item
   \textbf{Raw data}: \passthrough{\lstinline!figure\_13\_data.npz!},
   \passthrough{\lstinline!figure\_14\_data.npz!},

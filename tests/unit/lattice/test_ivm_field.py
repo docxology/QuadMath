@@ -12,7 +12,7 @@ from quadmath.lattice.ivm_field import (
     IVM_NEIGHBOR_STEPS,
     IVMField,
     TetrahedronFit,
-    ball_sites,
+    shell_ball_sites,
     fit_geometry,
     is_ivm_site,
     quadray_shell_norm,
@@ -71,11 +71,11 @@ def test_shell_sites_negative_raises():
 
 def test_ball_sites_negative_raises():
     with pytest.raises(ValueError, match="non-negative"):
-        ball_sites(-2)
+        shell_ball_sites(-2)
 
 
 def test_ball_sites_shell_partition():
-    ball = ball_sites(2)
+    ball = shell_ball_sites(2)
     assert len(ball) == 1 + 12 + 42
     # Ordered by shell, lexicographic within shell
     norms = [quadray_shell_norm(q) for q in ball]
@@ -202,7 +202,7 @@ def test_learn_recovers_harmonic_linear_field():
     radius = 3
     truth = {
         q: 2.0 + 0.75 * _xyz(q)[0] - 0.5 * _xyz(q)[1] + 0.25 * _xyz(q)[2]
-        for q in ball_sites(radius)
+        for q in shell_ball_sites(radius)
     }
     field = IVMField.lattice_ball(radius)
     rng = np.random.default_rng(42)
@@ -219,14 +219,14 @@ def test_learn_denoises_noisy_observations():
     # Smooth weakly-curved field observed at half the sites with N(0, 0.3)
     # noise; the learned field must beat the raw observation MSE.
     radius = 3
-    truth = {q: 0.5 - 0.01 * float(_xyz(q) @ _xyz(q)) for q in ball_sites(radius)}
+    truth = {q: 0.5 - 0.01 * float(_xyz(q) @ _xyz(q)) for q in shell_ball_sites(radius)}
     rng = np.random.default_rng(7)
-    obs = [q for q in ball_sites(radius) if rng.random() < 0.5]
+    obs = [q for q in shell_ball_sites(radius) if rng.random() < 0.5]
     noisy = {q: truth[q] + rng.normal(0.0, 0.3) for q in obs}
     raw_mse = float(np.mean([(noisy[q] - truth[q]) ** 2 for q in obs]))
     field = IVMField.lattice_ball(radius)
     field.learn(obs, [noisy[q] for q in obs], lam=0.05, kernel_width=1.0)
-    learned_mse = float(np.mean([(field.predict(q) - truth[q]) ** 2 for q in ball_sites(radius)]))
+    learned_mse = float(np.mean([(field.predict(q) - truth[q]) ** 2 for q in shell_ball_sites(radius)]))
     assert learned_mse < raw_mse
     assert learned_mse < 0.05
 

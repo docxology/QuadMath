@@ -1,7 +1,7 @@
 """Typed, composable pipeline layer over the QuadMath analytical methods.
 
 A small structural-typing kit that composes the repo's existing analytical
-surfaces — lattice enumeration (``quadmath.lattice.ivm_field.ball_sites``), Laplacian-
+surfaces — lattice enumeration (``quadmath.lattice.ivm_field.shell_ball_sites``), Laplacian-
 regularized field learning (:meth:`IVMField.learn`), and discrete lattice
 dynamics (:func:`quadmath.lattice.ivm_dynamics.simulate`) — without modifying them.
 
@@ -45,7 +45,7 @@ from typing import (
 import numpy as np
 
 from quadmath.lattice.ivm_dynamics import DynamicsParams, Trajectory, simulate
-from quadmath.lattice.ivm_field import IVMField, ball_sites
+from quadmath.lattice.ivm_field import IVMField, shell_ball_sites
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
 
 __all__ = [
@@ -144,7 +144,7 @@ class LatticeBall:
 
     def sites(self) -> Tuple[Quadray, ...]:
         """Return the ball's sites in canonical (shell, lexicographic) order."""
-        return tuple(ball_sites(self.radius))
+        return tuple(shell_ball_sites(self.radius))
 
 
 @dataclass

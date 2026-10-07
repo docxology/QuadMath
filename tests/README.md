@@ -4,13 +4,13 @@ This directory contains the comprehensive test suite for QuadMath. All tests mai
 
 ## Test Statistics
 
-Counts drift; derive them live rather than trusting prose (verified
-2026-10-07: 40 test files on disk, 709 tests collected).
+Counts are not pinned in this file: they change with every test added. The
+commands in this block are the source of truth; this section records no snapshot.
 
 ```bash
 find tests/unit tests/tools -name "test_*.py" | wc -l              # test files
 grep -c "def test_" $(find tests/unit tests/tools -name "test_*.py") | awk -F: '{s+=$NF} END {print s}'   # test functions (approx; parametrize may vary)
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q --co | tail -1   # exact collected count
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest --co | tail -1   # exact collected count, prints "N tests collected"
 ```
 
 - **Coverage**: 100% of the `quadmath` package (`src/quadmath/`) required
@@ -73,12 +73,18 @@ tests `quadmath/<subpackage>/<module>.py`; package-root modules live in
 | `tests/unit/viz/test_vis_lattice.py` | `quadmath.viz.vis_lattice` | Lattice gallery |
 | `tests/unit/viz/test_vis_stats.py` | `quadmath.viz.vis_stats` | Statistics gallery |
 | `tests/unit/viz/test_animations.py` | `quadmath.viz.animations` | Frame-based animations and byte-stable GIF writer |
+| `tests/unit/viz/test_common.py` | `quadmath.viz._common`, `quadmath.viz.animations` | Atomic writes and save-figure helpers |
+| `tests/unit/viz/test_figure_lifecycle.py` | `quadmath.viz.{plots, animations, vis_lattice, vis_stats, visualize}` | Figures close and only final files remain on success or failure |
+| `tests/unit/viz/test_output_policy.py` | `quadmath.viz.{_common, animations, plots, vis_lattice, vis_stats, visualize}` | Output path policy shared by every viz saver |
+| `tests/unit/viz/test_mp4_reproducibility.py` | `quadmath.viz._common`, `quadmath.viz.visualize` | MP4 outputs byte-identical across repeated saves (skips without ffmpeg) |
 | `tests/unit/viz/test_plots.py` | `quadmath.viz.plots` | Standalone figure builders |
 | `tests/unit/tools/test_glossary_gen.py` | `quadmath.tools.glossary_gen` | API documentation |
+| `tests/unit/tools/test_atomic_write.py` | `quadmath.tools.atomic_write` | Atomic text and CSV writes |
 | `tests/unit/test_paths.py` | `quadmath.paths` | Path management |
 | `tests/unit/test_paths_cov.py` | `quadmath.paths` | Additional coverage |
 | `tests/unit/test_pipeline.py` | `quadmath.pipeline` | Typed pipeline composition |
 | `tests/unit/validate/test_validate.py` | `quadmath.validate.validate` | Quaternion property checks and validation reports |
+| `tests/tools/test_render_pdf.py` | `quadmath/scripts/render_pdf.sh` | Render module table and build helpers (stub pandoc/xelatex) |
 | `tests/tools/test_generate_glossary.py` | `quadmath/scripts/generate_glossary.py` | Glossary regeneration contract (script module) |
 | `tests/tools/test_make_all_figures.py` | `quadmath/scripts/make_all_figures.py` | Figure-manifest contract (script module) |
 | `tests/tools/test_sympy_formalisms.py` | `quadmath/scripts/sympy_formalisms.py` | Symbolic math (script module) |

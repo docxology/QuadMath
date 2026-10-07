@@ -60,7 +60,7 @@ suite pins the sequence exactly.
 
 `IVMField.lattice_ball(radius)` stores a scalar field over the lattice ball
 $B_R = \{ q : N(q) \leq 2R \}$ as a one-dimensional `numpy` array keyed by
-the deterministic site index of `ball_sites()` (shell-major, lexicographic
+the deterministic site index of `shell_ball_sites()` (shell-major, lexicographic
 within shell), with a dictionary mapping each normalized site to its array
 position. Two lattice-graph ingredients drive learning. The adjacency
 structure uses the twelve IVM neighbor moves — the permutations of

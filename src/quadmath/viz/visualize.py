@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from matplotlib import animation
 import numpy as np
@@ -11,7 +11,15 @@ from quadmath.core.quadray import Quadray, to_xyz, DEFAULT_EMBEDDING
 from quadmath.optimize.nelder_mead_quadray import SimplexState
 from quadmath.paths import get_data_dir, get_figure_dir
 from quadmath.optimize.discrete_variational import DiscretePath
-from quadmath.viz._common import atomic_target, embedding_array, figure_scope, save_figure, set_axes_equal
+from quadmath.viz._common import (
+    atomic_target,
+    embedding_array,
+    figure_scope,
+    mp4_writer,
+    resolve_output_path,
+    save_figure,
+    set_axes_equal,
+)
 
 __all__ = [
     "plot_ivm_neighbors",
@@ -22,15 +30,22 @@ __all__ = [
 ]
 
 
-def plot_ivm_neighbors(embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING, save: bool = True) -> str:
+def plot_ivm_neighbors(
+    embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
+    save: bool = True,
+    out_path: Optional[str] = None,
+) -> str:
     """Scatter the 12 IVM neighbor points in 3D.
 
     Parameters
     - embedding: 3x4 mapping from A,B,C,D to X,Y,Z (defaults to symmetric embedding).
-    - save: If True, write PNG to `quadmath/output/figures/`, else return empty string.
+    - save: If True, write the PNG and the CSV/NPZ data; else write nothing.
+    - out_path: PNG destination. A bare file name goes in `quadmath/output/figures/`;
+      a path with a directory component is used as given. Defaults to `ivm_neighbors.png`.
+      The data files always go to `quadmath/output/data/`.
 
     Returns
-    - str: Output file path if saved, else "".
+    - str: The PNG path when saved, else "" (the figure is closed; no handle is returned).
     """
     import itertools
 
@@ -52,9 +67,8 @@ def plot_ivm_neighbors(embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
 
         outpath = ""
         if save:
-            figure_dir = get_figure_dir()
             data_dir = get_data_dir()
-            outpath = f"{figure_dir}/ivm_neighbors.png"
+            outpath = resolve_output_path(out_path or "ivm_neighbors.png", get_figure_dir)
             save_figure(fig, outpath, dpi=160, bbox_inches="tight")
             # Save full raw data alongside the figure
             q_arr = np.array([p.as_tuple() for p in points], dtype=int)
@@ -62,23 +76,31 @@ def plot_ivm_neighbors(embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
             with atomic_target(os.path.join(data_dir, "ivm_neighbors_data.npz")) as tmp:
                 np.savez(tmp, quadrays=q_arr, xyz=xyz_arr, embedding=emb)
             with atomic_target(os.path.join(data_dir, "ivm_neighbors_data.csv")) as tmp, open(tmp, "w", newline="") as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, lineterminator="\n")
                 writer.writerow(["a", "b", "c", "d", "x", "y", "z"])
                 for (a, b, c, d), (x, y, z) in zip(q_arr.tolist(), xyz_arr.tolist()):
                     writer.writerow([a, b, c, d, x, y, z])
     return outpath
 
 
-def animate_simplex(vertices_list, embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING, save: bool = True) -> str:
+def animate_simplex(
+    vertices_list,
+    embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
+    save: bool = True,
+    out_path: Optional[str] = None,
+) -> str:
     """Animate simplex evolution across iterations.
 
     Parameters
     - vertices_list: Sequence of vertex lists (each of length 4) from optimization.
     - embedding: 3x4 mapping to XYZ for plotting.
-    - save: If True, write MP4 to `quadmath/output/`, else return empty string.
+    - save: If True, write the MP4 and the NPZ/CSV data; else write nothing.
+    - out_path: MP4 destination. A bare file name goes in `quadmath/output/figures/`;
+      a path with a directory component is used as given. Defaults to `simplex_animation.mp4`.
+      The data files always go to `quadmath/output/data/`.
 
     Returns
-    - str: Output file path if saved, else "".
+    - str: The MP4 path when saved, else "" (no animation is built).
     """
     # Avoid creating an Animation when not saving to prevent Matplotlib warnings
     if not save:
@@ -102,12 +124,10 @@ def animate_simplex(vertices_list, embedding: Sequence[Sequence[float]] = DEFAUL
             return []
 
         ani = animation.FuncAnimation(fig, update, frames=len(vertices_list), interval=400, blit=False)
-        outpath = ""
-        figure_dir = get_figure_dir()
         data_dir = get_data_dir()
-        outpath = f"{figure_dir}/simplex_animation.mp4"
+        outpath = resolve_output_path(out_path or "simplex_animation.mp4", get_figure_dir)
         with atomic_target(outpath) as tmp:
-            ani.save(tmp, writer="ffmpeg", fps=2)
+            ani.save(tmp, writer=mp4_writer(fps=2))
         # Save raw vertices and xyz trajectory
         verts_ivm = np.array([[v.as_tuple() for v in verts] for verts in vertices_list], dtype=int)
         verts_xyz = np.array(
@@ -118,7 +138,7 @@ def animate_simplex(vertices_list, embedding: Sequence[Sequence[float]] = DEFAUL
             np.savez(tmp, vertices_ivm=verts_ivm, vertices_xyz=verts_xyz, embedding=emb)
         # CSV (one row per vertex per frame)
         with atomic_target(os.path.join(data_dir, "simplex_animation_vertices.csv")) as tmp, open(tmp, "w", newline="") as f:
-            writer = csv.writer(f)
+            writer = csv.writer(f, lineterminator="\n")
             writer.writerow(["frame", "vertex_index", "a", "b", "c", "d", "x", "y", "z"])
             for t, verts in enumerate(vertices_list):
                 for j, v in enumerate(verts):
@@ -128,19 +148,22 @@ def animate_simplex(vertices_list, embedding: Sequence[Sequence[float]] = DEFAUL
     return outpath
 
 
-def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
+def plot_simplex_trace(state: SimplexState, save: bool = True, out_path: Optional[str] = None) -> str:
     """Plot per-iteration diagnostics for Nelder–Mead.
 
     Shows best/worst objective values and spread on the left axis and exact
     IVM tetra-volume on the right axis across iterations. Saves PNG and raw
-    CSV/NPZ data under `quadmath/output/` when save=True.
+    CSV/NPZ data when save=True.
 
     Parameters
     - state: SimplexState from `nelder_mead_quadray` containing diagnostics.
-    - save: If True, write outputs; else return empty string.
+    - save: If True, write outputs; else write nothing.
+    - out_path: PNG destination. A bare file name goes in `quadmath/output/figures/`;
+      a path with a directory component is used as given. Defaults to `simplex_trace.png`.
+      The data files always go to `quadmath/output/data/`.
 
     Returns
-    - str: Output PNG path if saved, else "".
+    - str: The PNG path when saved, else "" (the figure is closed; no handle is returned).
     """
     if not save:
         return ""
@@ -166,9 +189,8 @@ def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
         ax1.legend(lines + lines2, labels + labels2, loc="upper right")
         fig.tight_layout()
 
-        figure_dir = get_figure_dir()
         data_dir = get_data_dir()
-        png_path = os.path.join(figure_dir, "simplex_trace.png")
+        png_path = resolve_output_path(out_path or "simplex_trace.png", get_figure_dir)
         save_figure(fig, png_path, dpi=160, bbox_inches="tight")
 
         # Save raw arrays
@@ -182,7 +204,7 @@ def plot_simplex_trace(state: SimplexState, save: bool = True) -> str:
                 volumes=np.array(volumes, dtype=float),
             )
         with atomic_target(os.path.join(data_dir, "simplex_trace.csv")) as tmp, open(tmp, "w", newline="") as f:
-            writer = csv.writer(f)
+            writer = csv.writer(f, lineterminator="\n")
             writer.writerow(["iteration", "best", "worst", "spread", "volume"])
             for i, b, w, s, v in zip(iterations, state.best_values, state.worst_values, state.spreads, volumes):
                 writer.writerow([i, b, w, s, v])
@@ -196,16 +218,20 @@ def plot_partition_tetrahedron(
     psi: Sequence[int],
     embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
     save: bool = True,
+    out_path: Optional[str] = None,
 ) -> str:
     """Plot the four-fold partition as a labeled tetrahedron in 3D.
 
     Parameters
     - mu, s, a, psi: 4-tuples (A,B,C,D) of nonnegative integers mapped to Quadrays.
     - embedding: 3x4 mapping from A,B,C,D to X,Y,Z.
-    - save: If True, write PNG to `quadmath/output/partition_tetrahedron.png`.
+    - save: If True, write the PNG and the CSV/NPZ data; else write nothing.
+    - out_path: PNG destination. A bare file name goes in `quadmath/output/figures/`;
+      a path with a directory component is used as given. Defaults to `partition_tetrahedron.png`.
+      The data files always go to `quadmath/output/data/`.
 
     Returns
-    - str: Output file path if saved, else "".
+    - str: The PNG path when saved, else "" (the figure is closed; no handle is returned).
     """
     emb = embedding_array(embedding)
     points = {
@@ -240,9 +266,8 @@ def plot_partition_tetrahedron(
 
         outpath = ""
         if save:
-            figure_dir = get_figure_dir()
             data_dir = get_data_dir()
-            outpath = f"{figure_dir}/partition_tetrahedron.png"
+            outpath = resolve_output_path(out_path or "partition_tetrahedron.png", get_figure_dir)
             save_figure(fig, outpath, dpi=160, bbox_inches="tight")
             # Save raw named points as CSV and NPZ
             names = list(points.keys())
@@ -251,7 +276,7 @@ def plot_partition_tetrahedron(
             with atomic_target(os.path.join(data_dir, "partition_tetrahedron_data.npz")) as tmp:
                 np.savez(tmp, names=np.array(names), quadrays=q_arr, xyz=xyz_arr, embedding=emb)
             with atomic_target(os.path.join(data_dir, "partition_tetrahedron_data.csv")) as tmp, open(tmp, "w", newline="") as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, lineterminator="\n")
                 writer.writerow(["name", "a", "b", "c", "d", "x", "y", "z"])
                 for name, (a, b, c, d), (x, y, z) in zip(names, q_arr.tolist(), xyz_arr.tolist()):
                     writer.writerow([name, a, b, c, d, x, y, z])
@@ -262,10 +287,17 @@ def animate_discrete_path(
     path: DiscretePath,
     embedding: Sequence[Sequence[float]] = DEFAULT_EMBEDDING,
     save: bool = True,
+    out_path: Optional[str] = None,
 ) -> str:
     """Animate a point moving along a discrete quadray path.
 
-    Saves MP4 and CSV/NPZ trajectory data under `quadmath/output/` when save=True.
+    When save=True, writes the MP4 (`out_path`, default `discrete_path.mp4`),
+    a static PNG of the final step in `quadmath/output/figures/`, and CSV/NPZ
+    trajectory data in `quadmath/output/data/`.  A bare MP4 name goes in the
+    figure directory; a path with a directory component is used as given.
+
+    Returns
+    - str: The MP4 path when saved, else "" (also "" for an empty path).
     """
     if not save:
         return ""
@@ -292,9 +324,9 @@ def animate_discrete_path(
         ani = animation.FuncAnimation(fig, update, frames=len(path.path), interval=300, blit=False)
         figure_dir = get_figure_dir()
         data_dir = get_data_dir()
-        outpath = f"{figure_dir}/discrete_path.mp4"
+        outpath = resolve_output_path(out_path or "discrete_path.mp4", get_figure_dir)
         with atomic_target(outpath) as tmp:
-            ani.save(tmp, writer="ffmpeg", fps=3)
+            ani.save(tmp, writer=mp4_writer(fps=3))
 
         # Save raw data
 
@@ -304,7 +336,7 @@ def animate_discrete_path(
         with atomic_target(os.path.join(data_dir, "discrete_path.npz")) as tmp:
             np.savez(tmp, quadrays=q_arr, xyz=xyz_arr, values=vals, embedding=emb)
         with atomic_target(os.path.join(data_dir, "discrete_path.csv")) as tmp, open(tmp, "w", newline="") as f:
-            writer = csv.writer(f)
+            writer = csv.writer(f, lineterminator="\n")
             writer.writerow(["step", "a", "b", "c", "d", "x", "y", "z", "value"])
             for i, (q, (x, y, z), v) in enumerate(zip(path.path, xyz_arr.tolist(), vals.tolist())):
                 a, b, c, d = q.as_tuple()

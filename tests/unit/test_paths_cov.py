@@ -13,7 +13,6 @@ def test_paths_cover_helpers(tmp_path, monkeypatch):
 
 def test_paths_traversal_multiple_levels(tmp_path):
     """Test that get_repo_root traverses multiple parent directories (covers line 20)."""
-    import os
     
     # Create nested directories without .git or README.md
     nested = tmp_path / "a" / "b" / "c"

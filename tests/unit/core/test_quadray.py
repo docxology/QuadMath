@@ -201,6 +201,20 @@ def test_quadray_from_xyz_origin():
     assert q == Quadray(0, 0, 0, 0)
 
 
+def test_quadray_from_xyz_is_componentwise_not_xyz_nearest():
+    """Chosen contract (SPEC.md S30): component-wise rounding, not XYZ-nearest."""
+    xyz = (-0.25, 0.75, 0.75)
+
+    def sq_dist(q: Quadray) -> float:
+        return sum((p - t) ** 2 for p, t in zip(to_xyz(q, DEFAULT_EMBEDDING), xyz))
+
+    got = quadray_from_xyz(*xyz, DEFAULT_EMBEDDING)
+    assert got == Quadray(0, 0, 0, 0)
+    assert sq_dist(got) == pytest.approx(19.0 / 16.0, abs=1e-12)
+    assert sq_dist(Quadray(1, 1, 1, 0)) == pytest.approx(11.0 / 16.0, abs=1e-12)
+    assert sq_dist(Quadray(1, 1, 1, 0)) < sq_dist(got)
+
+
 # --------------- Quaternion rotation tests ---------------
 
 

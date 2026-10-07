@@ -73,6 +73,10 @@
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}
@@ -189,7 +193,7 @@
 
 \title{4D Namespaces: Coxeter.4D, Einstein.4D, Fuller.4D}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -206,16 +210,17 @@ Fuller.4D}\label{d-namespaces-coxeter.4d-einstein.4d-fuller.4d}
 This section provides the definitive reference for the three 4D
 frameworks used throughout this manuscript. Each namespace represents a
 distinct mathematical framework with specific applications in our
-quadray-based computational system.
+Quadray-based computational system.
 
 \subsection{Coxeter.4D (Euclidean
 E⁴)}\label{coxeter.4d-euclidean-eux2074}
 
-\textbf{Definition}: Standard E⁴ with orthogonal axes and Euclidean
-metric; the proper setting for classical regular polytopes. As Coxeter
-notes (Regular Polytopes, Dover ed., p.~119), this Euclidean 4D is not
-spacetime. Lattice/packing discussions connect to Conway \& Sloane's
-systematic treatment of higher-dimensional sphere packings and lattices
+\textbf{Definition}: Four-dimensional Euclidean space E⁴ with mutually
+orthogonal axes and a positive-definite metric --- the native setting of
+classical regular polytopes, and, per Coxeter (Regular Polytopes, Dover
+ed., p.~119), explicitly not spacetime. Lattice/packing discussions
+connect to Conway \& Sloane's systematic treatment of higher-dimensional
+sphere packings and lattices
 (\href{https://link.springer.com/book/10.1007/978-1-4757-6568-7}{Sphere
 Packings, Lattices and Groups (Springer)}).
 
@@ -226,16 +231,17 @@ parameterizations when a strictly Euclidean 4D setting is desired.
 (e.g., pentachora).
 
 \textbf{Mathematical context}: This framework is appropriate for
-standard Euclidean geometry, including the Cayley-Menger determinant for
-computing volumes from edge lengths.
+standard Euclidean geometry, including the Cayley--Menger determinant
+for computing volumes from edge lengths.
 
 \subsection{Einstein.4D (Relativistic
 spacetime)}\label{einstein.4d-relativistic-spacetime}
 
-\textbf{Definition}: Minkowski spacetime with indefinite metric
-signature, representing the geometric framework for special relativity.
-This namespace provides the mathematical foundation for understanding
-space-time relationships and relativistic phenomena.
+\textbf{Definition}: Minkowski spacetime --- three space dimensions
+joined to one time dimension by an indefinite metric of signature
+\((-,+,+,+)\) (mostly-plus convention) --- the geometric arena of
+special relativity; the sign of the squared line element classifies
+separations as timelike, lightlike, or spacelike.
 
 \textbf{Spacetime}: Minkowski metric signature.
 
@@ -258,11 +264,13 @@ not be mixed with IVM unit conventions.
 \subsection{Fuller.4D (Synergetics /
 Quadrays)}\label{fuller.4d-synergetics-quadrays}
 
-\textbf{Definition}: Tetrahedral coordinate system based on four
-non-negative components representing directions to the vertices of a
-regular tetrahedron from its center. This namespace embodies the
-synergetic approach to geometry, emphasizing shape relationships and
-integer tetravolumes within the IVM framework.
+\textbf{Definition}: The synergetic account of space built on Quadray
+coordinates --- four non-negative components (A, B, C, D) giving
+directions from the center of a reference regular tetrahedron to its
+vertices --- together with the IVM = CCP = FCC lattice correspondence,
+the regular tetrahedron as the unit of volume, and exact integer
+tetravolumes for lattice tetrahedra; it tracks shape and angle relations
+among containers, independent of time and energy.
 
 \textbf{Basis}: Four non-negative components A,B,C,D with at least one
 zero post-normalization, treated as a vector (direction and magnitude),

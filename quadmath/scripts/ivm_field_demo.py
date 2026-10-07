@@ -33,14 +33,14 @@ def main() -> None:
     import numpy as np  # noqa: WPS433
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401,WPS433  (registers 3d projection)
 
-    from quadmath.lattice.ivm_field import IVMField, ball_sites  # noqa: WPS433
+    from quadmath.lattice.ivm_field import IVMField, shell_ball_sites  # noqa: WPS433
     from quadmath.core.quadray import DEFAULT_EMBEDDING, to_xyz  # noqa: WPS433
     from quadmath.paths import get_figure_dir  # noqa: WPS433
 
     rng = np.random.default_rng(12)
     radius = 3
 
-    sites = ball_sites(radius)
+    sites = shell_ball_sites(radius)
     embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
     xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
 

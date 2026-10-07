@@ -1,6 +1,6 @@
 [project]
 name = "quadmath-project"
-version = "0.2.0"
+version = "0.3.0"
 description = "QuadMath: Quadray coordinates, optimization on tetrahedral lattices, and information geometry"
 authors = [{ name = "QuadMath Project" }]
 readme = "README.md"

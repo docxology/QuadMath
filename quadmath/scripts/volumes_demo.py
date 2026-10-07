@@ -78,7 +78,8 @@ def main() -> None:
     fig.tight_layout()
     fig.savefig(outpath, dpi=160, bbox_inches="tight")
     # Also save as vector graphics for print-quality
-    fig.savefig(os.path.join(figure_dir, "volumes_scale_plot.svg"))
+    with plt.rc_context({"svg.hashsalt": "quadmath-volumes-scale"}):
+        fig.savefig(os.path.join(figure_dir, "volumes_scale_plot.svg"), metadata={"Date": None})
     print(outpath)
 
     # Save raw data alongside the figure for reproducibility
@@ -88,8 +89,9 @@ def main() -> None:
         V_xyz=np.array(v_xyz_list, dtype=float),
         V_ivm=np.array(v_ivm_list, dtype=float),
     )
-    with open(os.path.join(data_dir, "volumes_scale_data.csv"), "w", newline="") as f:
-        writer = csv.writer(f)
+    from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
+    with atomic_open(os.path.join(data_dir, "volumes_scale_data.csv"), newline="") as f:
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["scale", "V_xyz", "V_ivm"])
         for s, vx, vi in zip(scales, v_xyz_list, v_ivm_list):
             writer.writerow([float(s), float(vx), float(vi)])

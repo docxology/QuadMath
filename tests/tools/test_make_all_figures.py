@@ -1,6 +1,9 @@
 """Tests for the figure-manifest contract (quadmath/scripts/make_all_figures.py)."""
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import pytest
 
 import make_all_figures
@@ -9,6 +12,7 @@ from make_all_figures import extract_output_paths, require_existing_output
 ROOT = "/work/QuadMath"
 FIG = f"{ROOT}/quadmath/output/figures"
 DATA = f"{ROOT}/quadmath/output/data"
+SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "quadmath" / "scripts"
 
 
 def test_extract_takes_path_token_from_prose_prefix():
@@ -114,8 +118,35 @@ def test_run_script_fails_when_printed_path_was_not_written(tmp_path, monkeypatc
         make_all_figures._run_script(str(script))
 
 
-def test_run_script_exempts_no_artifact_scripts(tmp_path, monkeypatch):
+def test_run_script_fails_when_script_prints_no_output_path(tmp_path, monkeypatch):
     scripts = _fake_repo(tmp_path, monkeypatch)
-    script = scripts / "gpu_acceleration_demo.py"
+    script = scripts / "timing_only.py"
     script.write_text("print('timing complete')\n")
-    assert make_all_figures._run_script(str(script)) == []
+    with pytest.raises(RuntimeError, match="timing_only.py emitted no existing output path"):
+        make_all_figures._run_script(str(script))
+
+
+def test_figure_scripts_exclude_gpu_benchmark_and_all_exist():
+    names = make_all_figures.FIGURE_SCRIPTS
+    assert "gpu_acceleration_demo.py" not in names
+    assert len(set(names)) == len(names)
+    for name in names:
+        assert os.path.isfile(os.path.join(SCRIPTS_DIR, name)), name
+
+
+def test_write_manifest_writes_header_and_paths(tmp_path):
+    target = tmp_path / "figure_manifest.txt"
+    make_all_figures.write_manifest(["quadmath/output/figures/a.png"], str(target))
+    assert target.read_text(encoding="utf-8") == (
+        "# Generated figure/data paths (relative to repo root)\n"
+        "quadmath/output/figures/a.png\n"
+    )
+
+
+def test_write_manifest_failure_keeps_previous_manifest_and_leaves_no_temp(tmp_path):
+    target = tmp_path / "figure_manifest.txt"
+    target.write_text("previous\n", encoding="utf-8")
+    with pytest.raises(TypeError):
+        make_all_figures.write_manifest(["ok.png", 3], str(target))  # type: ignore[list-item]
+    assert target.read_text(encoding="utf-8") == "previous\n"
+    assert os.listdir(tmp_path) == ["figure_manifest.txt"]

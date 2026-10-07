@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 
 from quadmath.lattice.ivm_dynamics import DynamicsParams, make_lattice, simulate, step
-from quadmath.lattice.ivm_field import IVMField, ball_sites
+from quadmath.lattice.ivm_field import IVMField, shell_ball_sites
 from quadmath.learn.learning_eval import (
     GradientDescentTrainer,
     RidgeSiteFit,
@@ -54,8 +54,8 @@ def _bowl_truth(sites, scale: float = 2.0, quad: float = 0.15):
 
 def test_enclosing_radius_values():
     assert enclosing_radius([Quadray(0, 0, 0, 0)]) == 0
-    assert enclosing_radius(ball_sites(1)) == 1
-    assert enclosing_radius(ball_sites(2)) == 2
+    assert enclosing_radius(shell_ball_sites(1)) == 1
+    assert enclosing_radius(shell_ball_sites(2)) == 2
     # Projective representatives agree: (3,2,2,1) ~ (2,1,1,0)
     assert enclosing_radius([Quadray(3, 2, 2, 1)]) == 1
 
@@ -74,7 +74,7 @@ def test_enclosing_radius_rejects_void_sites():
 
 
 def test_kfold_splits_are_disjoint_and_exhaustive():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     splits = kfold_site_splits(sites, 5, seed=3)
     assert len(splits) == 5
     assert [len(test) for _, test in splits] == [11] * 5
@@ -91,7 +91,7 @@ def test_kfold_splits_are_disjoint_and_exhaustive():
 
 
 def test_kfold_splits_deterministic_and_seed_sensitive():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     a = kfold_site_splits(sites, 5, seed=3)
     b = kfold_site_splits(sites, 5, seed=3)
     c = kfold_site_splits(sites, 5, seed=4)
@@ -100,14 +100,14 @@ def test_kfold_splits_deterministic_and_seed_sensitive():
 
 
 def test_kfold_uneven_fold_sizes():
-    sites = ball_sites(1)  # 13 sites
+    sites = shell_ball_sites(1)  # 13 sites
     splits = kfold_site_splits(sites, 3, seed=0)
     assert [len(test) for _, test in splits] == [5, 4, 4]
     assert [len(train) for train, _ in splits] == [8, 9, 9]
 
 
 def test_kfold_rejects_bad_k_and_duplicates():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     with pytest.raises(ValueError, match="k must be at least 2"):
         kfold_site_splits(sites, 1, seed=0)
     with pytest.raises(ValueError, match="cannot exceed the number of observed sites"):
@@ -123,7 +123,7 @@ def test_cross_validation_noise_free_selects_zero_lambda():
     # Exact observations of a harmonic field: the kernel-weighted
     # interpolator (lam = 0) generalizes best; any Laplacian smoothing only
     # biases the fit away from the data.
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _harmonic_truth(sites)
     rng = np.random.default_rng(5)
     obs = [q for q in sites if rng.random() < 0.8]
@@ -138,7 +138,7 @@ def test_cross_validation_noisy_selects_positive_lambda():
     # Noisy observations of a smooth field: pure interpolation carries the
     # observation noise into the fit, and moderate regularization wins on
     # the held-out folds (calibrated: kw=0.5 kernel, sigma=0.5 noise).
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _bowl_truth(sites, scale=0.5, quad=0.01)
     rng = np.random.default_rng(11)
     obs = [q for q in sites if rng.random() < 0.8]
@@ -153,7 +153,7 @@ def test_cross_validation_noisy_selects_positive_lambda():
 
 
 def test_cross_validation_table_and_refit_consistency():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _harmonic_truth(sites)
     rng = np.random.default_rng(5)
     obs = [q for q in sites if rng.random() < 0.8]
@@ -179,7 +179,7 @@ def test_cross_validation_table_and_refit_consistency():
 
 
 def test_cross_validation_radius_inference_and_explicit():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _bowl_truth(sites, scale=0.5, quad=0.01)
     rng = np.random.default_rng(11)
     obs = [q for q in sites if rng.random() < 0.8]
@@ -197,7 +197,7 @@ def test_cross_validation_inferred_radius_covers_scattered_sites():
     # Sites scattered across shells 0, 2, and 3 (a sparse, non-contiguous
     # observation set): the inferred ball must still contain every observed
     # site, so fitting and scoring never touch an out-of-ball site.
-    sites = [Quadray(0, 0, 0, 0), ball_sites(2)[-1], ball_sites(3)[-1]]
+    sites = [Quadray(0, 0, 0, 0), shell_ball_sites(2)[-1], shell_ball_sites(3)[-1]]
     values = [1.0, 2.0, 3.0]
     res = cross_validate_field(values, sites, 2, [0.0, 1.0], seed=3)
     assert res.refit_field.radius == 3
@@ -208,7 +208,7 @@ def test_cross_validation_inferred_radius_covers_scattered_sites():
 def test_cross_validation_rejects_nonfinite_values_before_selection():
     # A NaN observation is rejected by the learner in every training fold,
     # so the MSE table (and its argmin) never sees a NaN candidate.
-    sites = ball_sites(1)
+    sites = shell_ball_sites(1)
     values = [1.0] * len(sites)
     values[0] = float("nan")
     with pytest.raises(ValueError, match="must be finite"):
@@ -216,7 +216,7 @@ def test_cross_validation_rejects_nonfinite_values_before_selection():
 
 
 def test_cross_validation_rejects_invalid_inputs():
-    sites = ball_sites(1)
+    sites = shell_ball_sites(1)
     values = [1.0] * len(sites)
     with pytest.raises(ValueError, match="same length"):
         cross_validate_field(values[:-1], sites, 2, [0.0], seed=0)
@@ -321,7 +321,7 @@ def test_trajectory_split_rejects_invalid_inputs():
 def test_learning_curve_final_below_initial():
     # The classic data-coverage curve: held-out MSE falls as the observed
     # fraction grows (calibrated on the radius-2 ball, sigma=0.4 noise).
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _bowl_truth(sites)
     rng = np.random.default_rng(17)
     noisy = {q: truth[q] + rng.normal(0.0, 0.4) for q in sites}
@@ -335,7 +335,7 @@ def test_learning_curve_final_below_initial():
 
 
 def test_learning_curve_seed_changes_subsets():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _bowl_truth(sites)
     rng = np.random.default_rng(17)
     noisy = {q: truth[q] + rng.normal(0.0, 0.4) for q in sites}
@@ -348,7 +348,7 @@ def test_learning_curve_seed_changes_subsets():
 
 
 def test_learning_curve_extreme_fractions_clamp():
-    sites = ball_sites(2)
+    sites = shell_ball_sites(2)
     truth = _bowl_truth(sites)
     values = [truth[q] for q in sites]
     res = learning_curve(values, sites, (0.01, 0.99), seed=5, radius=2)
@@ -356,7 +356,7 @@ def test_learning_curve_extreme_fractions_clamp():
 
 
 def test_learning_curve_rejects_invalid_inputs():
-    sites = ball_sites(1)
+    sites = shell_ball_sites(1)
     values = [1.0] * len(sites)
     with pytest.raises(ValueError, match="same length"):
         learning_curve(values[:-1], sites, (0.5,), seed=0)

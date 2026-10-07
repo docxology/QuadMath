@@ -205,6 +205,11 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
     return float(math.acos(cos_theta))
 
 
+def _round_half_up(v: float) -> int:
+    """Round to the nearest integer, ties toward +infinity (``floor(v + 0.5)``)."""
+    return int(math.floor(v + 0.5))
+
+
 def centroid(*quads: Quadray) -> Quadray:
     """Component-wise mean of quadray points, rounded to the nearest lattice point.
 
@@ -229,10 +234,10 @@ def centroid(*quads: Quadray) -> Quadray:
     sc = sum(q.c for q in quads)
     sd = sum(q.d for q in quads)
     return Quadray(
-        math.floor(sa / n + 0.5),
-        math.floor(sb / n + 0.5),
-        math.floor(sc / n + 0.5),
-        math.floor(sd / n + 0.5),
+        _round_half_up(sa / n),
+        _round_half_up(sb / n),
+        _round_half_up(sc / n),
+        _round_half_up(sd / n),
     ).normalize()
 
 
@@ -255,7 +260,8 @@ def quadray_from_xyz(
     - embedding: 3x4 matrix used in to_xyz (Fuller.4D -> Coxeter.4D)
 
     Returns
-    - Quadray: Nearest normalized integer lattice point
+    - Quadray: Normalized integer point from component-wise half-up rounding
+      (not necessarily the XYZ-nearest lattice point)
     """
     import numpy as np
     rows = list(embedding)
@@ -270,7 +276,7 @@ def quadray_from_xyz(
     # the rounded point maps to a different XYZ location (edge-length errors).
     # floor(v + 0.5) provably stays in q's coset, making lattice round-trips
     # exact.
-    q_int = [int(math.floor(v + 0.5)) for v in q_real]
+    q_int = [_round_half_up(v) for v in q_real]
     return Quadray(q_int[0], q_int[1], q_int[2], q_int[3]).normalize()
 
 

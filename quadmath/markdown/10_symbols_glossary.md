@@ -163,7 +163,6 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
 | `quadmath.core.quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
 | `quadmath.core.quadray` | `Quadray` | class | `` | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
-| `quadmath.core.quadray` | `_QUAT_UNIT_TOL` | constant | `` |  |
 | `quadmath.core.quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
 | `quadmath.core.quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
 | `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Component-wise mean of quadray points, rounded to the nearest lattice point. |
@@ -216,22 +215,18 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.ivm_field` | `IVMField` | class | `` | Scalar field over an IVM lattice ball, stored on a deterministic site index. |
 | `quadmath.lattice.ivm_field` | `IVM_NEIGHBOR_STEPS` | constant | `` |  |
 | `quadmath.lattice.ivm_field` | `TetrahedronFit` | class | `` | Result of :func:`fit_geometry`. |
-| `quadmath.lattice.ivm_field` | `_WEIGHT_FLOOR` | constant | `` |  |
-| `quadmath.lattice.ivm_field` | `ball_sites` | function | `(radius)` | Enumerate the IVM lattice ball of the given shell radius, deterministically. |
 | `quadmath.lattice.ivm_field` | `fit_geometry` | function | `(points, labels, embedding)` | Least-squares recovery of a tetrahedron's orientation+scale from noisy 3D points. |
 | `quadmath.lattice.ivm_field` | `is_ivm_site` | function | `(q)` | Return True iff ``q`` (after normalization) is an IVM lattice site. |
 | `quadmath.lattice.ivm_field` | `quadray_shell_norm` | function | `(q)` | Return the IVM shell norm of ``q``: an even integer equal to ``2k``. |
+| `quadmath.lattice.ivm_field` | `shell_ball_sites` | function | `(radius)` | Enumerate the IVM lattice ball of the given shell radius, deterministically. |
 | `quadmath.lattice.ivm_field` | `shell_cardinalities` | function | `(max_shell)` | Cardinalities of shells ``0 .. max_shell`` (cuboctahedral numbers). |
 | `quadmath.lattice.ivm_field` | `shell_sites` | function | `(k)` | Enumerate all IVM lattice sites with quadray shell norm ``2k``. |
-| `quadmath.lattice.lattice_search` | `_EPS` | constant | `` |  |
 | `quadmath.lattice.lattice_search` | `nearest` | function | `(site, R, k)` | Return the ``k`` nearest IVM lattice sites within radius ``R``. |
 | `quadmath.lattice.lattice_search` | `squared_distance` | function | `(p, sites)` | Exact lattice squared distances from ``p`` to rows of ``sites``. |
 | `quadmath.lattice.lattice_search` | `within_radius` | function | `(site, R)` | Return all IVM lattice sites within Euclidean radius ``R`` of ``site``. |
 | `quadmath.lattice.omni_numbering` | `MAX_SHELL` | constant | `` |  |
 | `quadmath.lattice.omni_numbering` | `NEIGHBOR_MOVES` | constant | `` |  |
-| `quadmath.lattice.omni_numbering` | `_CACHE` | constant | `` |  |
-| `quadmath.lattice.omni_numbering` | `_IVM_MOVE_BASE` | constant | `` |  |
-| `quadmath.lattice.omni_numbering` | `_KEY_BITS` | constant | `` |  |
+| `quadmath.lattice.omni_numbering` | `clear_shell_cache` | function | `()` | Drop memoized shell enumerations so the next call recomputes them. |
 | `quadmath.lattice.omni_numbering` | `cumulative_count` | function | `(k)` | Return the total number of IVM sites through shell ``k`` (inclusive). |
 | `quadmath.lattice.omni_numbering` | `generate_shell` | function | `(k)` | Generate the sites of shell ``k`` of the omnidirectional close packing. |
 | `quadmath.lattice.omni_numbering` | `shell_count` | function | `(k)` | Return the number of IVM sites on shell ``k`` of the close packing. |
@@ -276,12 +271,6 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.pipeline` | `sites_step` | function | `(radius)` | Step producing the IVM ball sites of shell ``radius`` (ignores input). |
 | `quadmath.stats.benchmarks` | `BENCH_DEFAULTS` | constant | `` |  |
 | `quadmath.stats.benchmarks` | `BenchRow` | class | `` | One timed benchmark result. |
-| `quadmath.stats.benchmarks` | `_CONVERSION_SEED` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `_FIELD_RADIUS` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `_FIELD_SEED` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `_SEARCH_K` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `_SEARCH_RADIUS` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `_SEARCH_SEED` | constant | `` |  |
 | `quadmath.stats.benchmarks` | `bench_conversions` | function | `(n, trials)` | Benchmark quadray/XYZ conversions over ``n`` deterministic samples. |
 | `quadmath.stats.benchmarks` | `bench_field_fit` | function | `(n_sites, trials)` | Benchmark ``IVMField.learn`` on a synthetic field with a fixed seed. |
 | `quadmath.stats.benchmarks` | `bench_lattice_search` | function | `(n_sites, queries, trials)` | Benchmark nearest-site queries through the ``lattice_search`` ball index. |
@@ -289,10 +278,6 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.stats.benchmarks` | `run_all` | function | `()` | Run every benchmark with the module-level :data:`BENCH_DEFAULTS`. |
 | `quadmath.stats.benchmarks` | `summary_table` | function | `(rows)` | Render aligned fixed-width ASCII rows as a table. |
 | `quadmath.stats.benchmarks` | `time_callable` | function | `(fn, trials=, warmup=)` | Time ``fn`` with ``time.perf_counter`` and return per-trial wall seconds. |
-| `quadmath.stats.statistics` | `_BETA_EPS` | constant | `` |  |
-| `quadmath.stats.statistics` | `_BETA_MAX_ITERS` | constant | `` |  |
-| `quadmath.stats.statistics` | `_FPMIN` | constant | `` |  |
-| `quadmath.stats.statistics` | `_SQRT2` | constant | `` |  |
 | `quadmath.stats.statistics` | `benjamini_hochberg` | function | `(pvals)` | Benjamini-Hochberg FDR-adjusted p-values (step-up procedure). |
 | `quadmath.stats.statistics` | `bootstrap_ci` | function | `(x, stat, iters=, seed=, alpha=)` | Percentile bootstrap confidence interval for ``stat`` on ``x``. |
 | `quadmath.stats.statistics` | `cohens_d` | function | `(a, b)` | Pooled-standard-deviation Cohen's d between two samples. |
@@ -303,6 +288,8 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.stats.statistics` | `scaling_fit` | function | `(sizes, times)` | Power-law (log-log linear) fit of runtimes against input sizes. |
 | `quadmath.stats.statistics` | `summarize` | function | `(x)` | Descriptive summary of a sample. |
 | `quadmath.stats.statistics` | `welch_t_test` | function | `(a, b, alternative)` | Welch's unequal-variance two-sample t test. |
+| `quadmath.tools.atomic_write` | `atomic_open` | function | `(path, newline=)` | Yield a text handle whose contents replace ``path`` only if the block succeeds. |
+| `quadmath.tools.atomic_write` | `atomic_write_text` | function | `(path, text, newline=)` | Write ``text`` to ``path`` atomically (see :func:`atomic_open`). |
 | `quadmath.tools.glossary_gen` | `ApiEntry` | class | `` |  |
 | `quadmath.tools.glossary_gen` | `build_api_index` | function | `(src_dir)` |  |
 | `quadmath.tools.glossary_gen` | `generate_markdown_table` | function | `(entries)` |  |
@@ -318,38 +305,41 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.validate.validate` | `check_normalization` | function | `(q, tol)` | Verify the quaternion norm is within ``tol`` of 1 (norm of (a, b, c, d)). |
 | `quadmath.validate.validate` | `check_slerp_midpoint` | function | `(q0, q1, tol)` | Verify the shortest-arc slerp midpoint lies on the geodesic of (q0, q1). |
 | `quadmath.validate.validate` | `run_validation` | function | `(quaternions, checks)` | Run checks over ``quaternions`` and collect deterministic reports. |
+| `quadmath.viz._common` | `atomic_target` | function | `(path)` | Yield a temporary sibling of ``path``; move it onto ``path`` only on success. |
+| `quadmath.viz._common` | `embedding_array` | function | `(embedding)` | Return a 3x4 embedding as a float array. |
+| `quadmath.viz._common` | `encoded_angle` | function | `(quat)` | Return the rotation magnitude a unit quaternion ``(w, x, y, z)`` encodes. |
+| `quadmath.viz._common` | `figure_scope` | function | `(*args, **kwargs)` | Yield a new figure and close it on exit, including when a save fails. |
+| `quadmath.viz._common` | `mp4_writer` | function | `(fps)` | Return an ffmpeg writer whose MP4 bytes repeat for identical frames. |
+| `quadmath.viz._common` | `resolve_output_path` | function | `(path, figure_dir)` | Return the location to write ``path`` under the viz output policy. |
+| `quadmath.viz._common` | `save_figure` | function | `(fig, path, **kwargs)` | Write ``fig`` to ``path`` atomically; keyword arguments go to ``savefig``. |
+| `quadmath.viz._common` | `set_axes_equal` | function | `(ax)` | Scale a 3D axes box to the data spans so equal lengths match on every axis. |
 | `quadmath.viz.animations` | `Frame` | class | `` | A single animation frame. |
 | `quadmath.viz.animations` | `GRID_SIZE` | constant | `` |  |
-| `quadmath.viz.animations` | `_DIFFUSION_ALPHA` | constant | `` |  |
-| `quadmath.viz.animations` | `_HALF_EXTENT` | constant | `` |  |
-| `quadmath.viz.animations` | `_PULSE_AMP` | constant | `` |  |
-| `quadmath.viz.animations` | `_UNIT_TOL` | constant | `` |  |
 | `quadmath.viz.animations` | `diffusion_frames` | function | `(n_steps, seed)` | Render explicit heat diffusion on the IVM radius-3 ball adjacency. |
+| `quadmath.viz.animations` | `frames_strip` | function | `(frames, out_path, labels, save)` | Render frames as a single-row matplotlib strip, one panel per frame. |
 | `quadmath.viz.animations` | `frames_to_gif` | function | `(frames, out_path, fps, scale)` | Assemble frames into an animated GIF at ``out_path``. |
 | `quadmath.viz.animations` | `lattice_frames` | function | `(shells, n)` | Render a pulsing IVM lattice ball. |
 | `quadmath.viz.animations` | `simplex_frames` | function | `(q0, q1, n)` | Render a quaternion-slerp rotation of the IVM radius-1 ball. |
-| `quadmath.viz.plots` | `_DPI` | constant | `` |  |
-| `quadmath.viz.plots` | `_FIGSIZE` | constant | `` |  |
-| `quadmath.viz.plots` | `plot_error_histogram` | function | `(errors, bins, save)` | Plot a histogram of error values with a dashed vertical mean line. |
-| `quadmath.viz.plots` | `plot_lattice_shell_3d` | function | `(k, save)` | Scatter the sites of one IVM lattice shell in 3D (equal-aspect axes). |
-| `quadmath.viz.plots` | `plot_loss_history` | function | `(losses, save)` | Plot a training loss sequence as a line with markers. |
-| `quadmath.viz.plots` | `plot_shell_growth` | function | `(k_max, save)` | Plot IVM shell cardinalities (cuboctahedral numbers) versus shell index. |
+| `quadmath.viz.plots` | `plot_error_histogram` | function | `(errors, bins, save, out_path)` | Plot a histogram of error values with a dashed vertical mean line. |
+| `quadmath.viz.plots` | `plot_lattice_shell_3d` | function | `(k, save, out_path)` | Scatter the sites of one IVM lattice shell in 3D (equal-aspect axes). |
+| `quadmath.viz.plots` | `plot_loss_history` | function | `(losses, save, out_path)` | Plot a training loss sequence as a line with markers. |
+| `quadmath.viz.plots` | `plot_shell_growth` | function | `(k_max, save, out_path)` | Plot IVM shell cardinalities (cuboctahedral numbers) versus shell index. |
+| `quadmath.viz.plots` | `plot_slerp_path` | function | `(q0, q1, n_frames, site, save, out_path)` | Trace the 3D path of a fixed lattice site under shortest-arc slerp. |
 | `quadmath.viz.vis_lattice` | `DEFAULT_PLANE` | constant | `` |  |
 | `quadmath.viz.vis_lattice` | `GALLERY_FILES` | constant | `` |  |
-| `quadmath.viz.vis_lattice` | `_TETRA_LABELS` | constant | `` |  |
 | `quadmath.viz.vis_lattice` | `dynamics_strip` | function | `(axs, trajectory, t_indices, embedding=, cmap=, titles=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. |
 | `quadmath.viz.vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
 | `quadmath.viz.vis_lattice` | `gallery` | function | `(paths_out_dir, seed)` | Compose the three lattice-gallery figures deterministically. |
 | `quadmath.viz.vis_lattice` | `shell_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. |
 | `quadmath.viz.vis_stats` | `GALLERY_FILES` | constant | `` |  |
 | `quadmath.viz.vis_stats` | `gallery` | function | `(paths_out_dir, seed)` | Compose the four statistics-gallery figures deterministically. |
-| `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with symmetric confidence intervals as error bars. |
+| `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with confidence intervals ``[lows, highs]`` as error bars. |
 | `quadmath.viz.vis_stats` | `plot_ecdf` | function | `(values, ax, title=)` | Empirical cumulative distribution function as a sorted step plot. |
 | `quadmath.viz.vis_stats` | `plot_latency_hist` | function | `(times, ax, bins=, title=)` | Histogram of a latency sample with a dashed vertical mean line. |
 | `quadmath.viz.vis_stats` | `plot_scaling_loglog` | function | `(sizes, times, ax, title=)` | Log-log scatter of times versus sizes with the fitted power law. |
-| `quadmath.viz.visualize` | `animate_discrete_path` | function | `(path, embedding, save)` | Animate a point moving along a discrete quadray path. |
-| `quadmath.viz.visualize` | `animate_simplex` | function | `(vertices_list, embedding, save)` | Animate simplex evolution across iterations. |
-| `quadmath.viz.visualize` | `plot_ivm_neighbors` | function | `(embedding, save)` | Scatter the 12 IVM neighbor points in 3D. |
-| `quadmath.viz.visualize` | `plot_partition_tetrahedron` | function | `(mu, s, a, psi, embedding, save)` | Plot the four-fold partition as a labeled tetrahedron in 3D. |
-| `quadmath.viz.visualize` | `plot_simplex_trace` | function | `(state, save)` | Plot per-iteration diagnostics for Nelder–Mead. |
+| `quadmath.viz.visualize` | `animate_discrete_path` | function | `(path, embedding, save, out_path)` | Animate a point moving along a discrete quadray path. |
+| `quadmath.viz.visualize` | `animate_simplex` | function | `(vertices_list, embedding, save, out_path)` | Animate simplex evolution across iterations. |
+| `quadmath.viz.visualize` | `plot_ivm_neighbors` | function | `(embedding, save, out_path)` | Scatter the 12 IVM neighbor points in 3D. |
+| `quadmath.viz.visualize` | `plot_partition_tetrahedron` | function | `(mu, s, a, psi, embedding, save, out_path)` | Plot the four-fold partition as a labeled tetrahedron in 3D. |
+| `quadmath.viz.visualize` | `plot_simplex_trace` | function | `(state, save, out_path)` | Plot per-iteration diagnostics for Nelder–Mead. |
 <!-- END: AUTO-API-GLOSSARY -->

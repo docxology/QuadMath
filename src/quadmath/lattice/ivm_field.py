@@ -9,7 +9,7 @@ Pieces:
 - :func:`quadray_shell_norm` / :func:`is_ivm_site` — the IVM shell norm
   (centered L1 norm of the quadray's sum-zero representative) and the
   IVM-lattice membership test.
-- :func:`shell_sites` / :func:`ball_sites` / :func:`shell_cardinalities` —
+- :func:`shell_sites` / :func:`shell_ball_sites` / :func:`shell_cardinalities` —
   exact integer enumeration of lattice shells.  Shell ``k`` collects all
   IVM sites of quadray norm ``2k`` and has cardinality ``10k**2 + 2`` for
   ``k >= 1`` (the cuboctahedral numbers 1, 12, 42, 92, 162, ...).
@@ -47,7 +47,7 @@ __all__ = [
     "IVM_NEIGHBOR_STEPS",
     "IVMField",
     "TetrahedronFit",
-    "ball_sites",
+    "shell_ball_sites",
     "fit_geometry",
     "is_ivm_site",
     "quadray_shell_norm",
@@ -158,7 +158,7 @@ def shell_sites(k: int) -> List[Quadray]:
     return sites
 
 
-def ball_sites(radius: int) -> List[Quadray]:
+def shell_ball_sites(radius: int) -> List[Quadray]:
     """Enumerate the IVM lattice ball of the given shell radius, deterministically.
 
     The ball is the union of shells ``0 .. radius`` (all sites with quadray
@@ -196,7 +196,7 @@ def shell_cardinalities(max_shell: int) -> List[int]:
     Raises
     - ValueError: If ``max_shell`` is negative.
     """
-    ball = ball_sites(max_shell)
+    ball = shell_ball_sites(max_shell)
     return [sum(1 for q in ball if quadray_shell_norm(q) == 2 * k) for k in range(max_shell + 1)]
 
 
@@ -205,7 +205,7 @@ class IVMField:
     """Scalar field over an IVM lattice ball, stored on a deterministic site index.
 
     Sites are ordered by (shell, lexicographic quadray) — the output order of
-    :func:`ball_sites` — and ``values`` holds one float per site in that
+    :func:`shell_ball_sites` — and ``values`` holds one float per site in that
     order.  ``site_index`` maps each normalized site ``Quadray`` to its array
     position.  Use :meth:`lattice_ball` to construct instances.
     """
@@ -230,7 +230,7 @@ class IVMField:
         Raises
         - ValueError: If ``radius`` is negative.
         """
-        sites = tuple(ball_sites(radius))
+        sites = tuple(shell_ball_sites(radius))
         site_index = {q: i for i, q in enumerate(sites)}
         adjacency = []
         for q in sites:

@@ -109,6 +109,31 @@ def test_bootstrap_ci_rejects_empty_and_bad_iters():
         bootstrap_ci([1.0, 2.0], iters=0)
 
 
+def test_bootstrap_ci_accepts_one_dimensional_callable():
+    x = np.array([1.0, 2.0, 4.0, 8.0, 16.0])
+    lo_lambda, hi_lambda = bootstrap_ci(x, stat=lambda v: v.mean(), iters=300, seed=9)
+    lo_np, hi_np = bootstrap_ci(x, np.mean, iters=300, seed=9)
+    assert lo_lambda == pytest.approx(lo_np, rel=1e-12)
+    assert hi_lambda == pytest.approx(hi_np, rel=1e-12)
+
+
+def test_bootstrap_ci_passes_each_resample_as_one_dimensional_array():
+    x = np.array([1.0, 2.0, 4.0, 8.0, 16.0])
+    iters, seed = 100, 4
+    lo, hi = bootstrap_ci(x, stat=lambda v: float(np.ptp(v)), iters=iters, seed=seed)
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, x.size, size=(iters, x.size))
+    expected = np.percentile([float(np.ptp(x[row])) for row in idx], [2.5, 97.5])
+    assert (lo, hi) == pytest.approx(tuple(expected), rel=1e-12)
+
+
+def test_bootstrap_ci_rejects_nonfinite_values():
+    with pytest.raises(ValueError, match="only finite values"):
+        bootstrap_ci([1.0, np.nan, 3.0], iters=50, seed=0)
+    with pytest.raises(ValueError, match="only finite values"):
+        bootstrap_ci([1.0, np.inf, 3.0], iters=50, seed=0)
+
+
 def test_bootstrap_ci_rejects_alpha_outside_unit_interval():
     # alpha = 1.5 used to return an inverted (high < low) interval silently.
     for alpha in (0.0, 1.0, 1.5, -0.1):
@@ -154,6 +179,25 @@ def test_permutation_test_alternatives_directional():
     # cannot be rejected (p near 1).
     assert permutation_test(a, b, iters=200, seed=0, alternative="less") < 0.01
     assert permutation_test(a, b, iters=200, seed=0, alternative="greater") > 0.9
+
+def test_permutation_test_counts_rounding_level_ties_as_extreme():
+    # a holds the top three of the pool, so the observed difference is the
+    # maximum attainable and only the same partition, reshuffled, can tie it.
+    # Its reshuffled means differ from obs by rounding alone, and those
+    # permutations must still count as at-least-as-extreme.
+    a = np.array([2.3, 3.1, 4.7])
+    b = np.array([0.1, 0.9, 1.7])
+    iters, seed = 2000, 0
+    pool = np.concatenate([a, b])
+    rng = np.random.default_rng(seed)
+    same_partition = 0
+    for _ in range(iters):
+        perm = rng.permutation(pool)
+        same_partition += sorted(perm[:3].tolist()) == sorted(a.tolist())
+    expected = (same_partition + 1) / (iters + 1)
+    p = permutation_test(a, b, iters=iters, seed=seed, alternative="greater")
+    assert p == pytest.approx(expected, rel=0.0, abs=1e-15)
+
 
 def test_permutation_test_bounds():
     # Overlapping identical distributions: p stays strictly inside (0, 1]
@@ -290,6 +334,13 @@ def test_scaling_fit_requires_two_distinct_sizes():
         scaling_fit([4.0, 4.0, 4.0], [1.0, 2.0, 3.0])
 
 
+def test_scaling_fit_rejects_nonfinite_values():
+    with pytest.raises(ValueError, match="only finite values"):
+        scaling_fit([1.0, np.nan, 4.0], [1.0, 2.0, 3.0])
+    with pytest.raises(ValueError, match="only finite values"):
+        scaling_fit([1.0, 2.0, 4.0], [1.0, np.inf, 3.0])
+
+
 # --------------- jackknife_ci ---------------
 
 
@@ -315,6 +366,13 @@ def test_jackknife_ci_bias_recovers_unbiased_variance():
     assert 2.0 / 3.0 - bias == pytest.approx(1.0, abs=1e-12)
     assert lo == pytest.approx(-0.3133153, abs=1e-6)
     assert hi == pytest.approx(1.6466487, abs=1e-6)
+
+
+def test_jackknife_ci_accepts_one_dimensional_callable():
+    x = np.array([1.0, 2.0, 4.0, 8.0, 16.0])
+    lo_lambda, hi_lambda, bias_lambda = jackknife_ci(x, lambda v: v.mean())
+    lo_np, hi_np, bias_np = jackknife_ci(x, np.mean)
+    assert (lo_lambda, hi_lambda, bias_lambda) == pytest.approx((lo_np, hi_np, bias_np), rel=1e-12)
 
 
 def test_jackknife_ci_deterministic_without_seed():

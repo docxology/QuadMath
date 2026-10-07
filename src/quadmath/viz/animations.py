@@ -18,16 +18,15 @@ radius-3 IVM ball (max embedded norm 6) even while pulsing, with margin.
 from __future__ import annotations
 
 import math
-import os
 from dataclasses import dataclass
 from typing import List, Optional, Sequence
 
 import numpy as np
 
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, qrotate, slerp, to_xyz
-from quadmath.lattice.ivm_field import IVM_NEIGHBOR_STEPS, ball_sites, quadray_shell_norm
+from quadmath.lattice.ivm_field import IVM_NEIGHBOR_STEPS, shell_ball_sites, quadray_shell_norm
 from quadmath.paths import get_figure_dir
-from quadmath.viz._common import atomic_target, encoded_angle, figure_scope, save_figure
+from quadmath.viz._common import atomic_target, encoded_angle, figure_scope, resolve_output_path, save_figure
 
 __all__ = [
     "Frame",
@@ -163,7 +162,7 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
     The two unit quaternions ``q0`` and ``q1`` are interpolated on the
     shortest arc with :func:`quadmath.core.quadray.slerp`; at each
     ``t = i / (n - 1)`` the 13 lattice sites of
-    :func:`quadmath.lattice.ivm_field.ball_sites` radius 1 are rotated with
+    :func:`quadmath.lattice.ivm_field.shell_ball_sites` radius 1 are rotated with
     :func:`quadmath.core.quadray.qrotate` by ``q(t)``, projected with the fixed orthographic xy camera
     onto a 48x48 grid, and shaded by radial shell (see ``_ball_render_values``
     with ``shells = 1``).  Deterministic: no RNG, no wall clock.
@@ -184,7 +183,7 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
         raise ValueError(f"n must be at least 2, got {n}")
     q0_unit = _as_unit_quat(q0, "q0")
     q1_unit = _as_unit_quat(q1, "q1")
-    sites = ball_sites(1)
+    sites = shell_ball_sites(1)
     embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
     base_xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
     values = _ball_render_values(sites, shells=1)
@@ -202,7 +201,7 @@ def simplex_frames(q0: Sequence[float], q1: Sequence[float], n: int = 16) -> Lis
 def lattice_frames(shells: int = 3, n: int = 12) -> List[Frame]:
     """Render a pulsing IVM lattice ball.
 
-    Each frame shows the ball :func:`quadmath.lattice.ivm_field.ball_sites`
+    Each frame shows the ball :func:`quadmath.lattice.ivm_field.shell_ball_sites`
     of radius ``shells`` with its embedded coordinates scaled by a
     deterministic pulse ``1 + 0.25 * sin(2 * pi * i / n)`` for frame index
     ``i``, so the ball grows and contracts over one full cycle.  Brightness
@@ -223,7 +222,7 @@ def lattice_frames(shells: int = 3, n: int = 12) -> List[Frame]:
         raise ValueError(f"shells must be at least 1, got {shells}")
     if n < 2:
         raise ValueError(f"n must be at least 2, got {n}")
-    sites = ball_sites(shells)
+    sites = shell_ball_sites(shells)
     embedding = np.array(DEFAULT_EMBEDDING, dtype=float)
     base_xyz = np.array([to_xyz(q, embedding) for q in sites], dtype=float)
     values = _ball_render_values(sites, shells=shells)
@@ -238,7 +237,7 @@ def lattice_frames(shells: int = 3, n: int = 12) -> List[Frame]:
 def diffusion_frames(n_steps: int = 12, seed: int = 0) -> List[Frame]:
     """Render explicit heat diffusion on the IVM radius-3 ball adjacency.
 
-    The lattice ball :func:`quadmath.lattice.ivm_field.ball_sites` (radius 3,
+    The lattice ball :func:`quadmath.lattice.ivm_field.shell_ball_sites` (radius 3,
     147 sites) is turned into a graph using :data:`quadmath.lattice.ivm_field.IVM_NEIGHBOR_STEPS`:
     two sites are adjacent iff their difference normalizes to one of the 12
     IVM neighbor steps.  A ``np.random.default_rng(seed)`` draw picks the
@@ -265,7 +264,7 @@ def diffusion_frames(n_steps: int = 12, seed: int = 0) -> List[Frame]:
     """
     if n_steps < 1:
         raise ValueError(f"n_steps must be at least 1, got {n_steps}")
-    sites = ball_sites(3)
+    sites = shell_ball_sites(3)
     index = {q.normalize().as_tuple(): i for i, q in enumerate(sites)}
     neighbors: List[List[int]] = []
     for q in sites:
@@ -319,21 +318,22 @@ def frames_strip(
 
     Parameters
     - frames: Non-empty sequence of :class:`Frame`.
-    - out_path: Destination PNG.  A bare file name is resolved under
-      ``quadmath/output/figures/`` via :func:`quadmath.paths.get_figure_dir`;
-      a path containing a directory component is used verbatim.
+    - out_path: Destination PNG, required when ``save`` is True.  A bare file
+      name is resolved under ``quadmath/output/figures/``; a path with a
+      directory component (or an absolute path) is used as given.
     - labels: Optional per-panel titles; when given, its length must equal
       ``len(frames)``, otherwise panel titles fall back to the frames' own
       ``title`` values.
-    - save: When True and ``out_path`` is given, write the PNG and return
-      its path; otherwise render only.
+    - save: When True, write the PNG to ``out_path``; when False, render only
+      and ignore ``out_path``.
 
     Returns
-    - str: The written path when saved, else ``""``.
+    - str: The written PNG path when saved, else ``""`` (the figure is closed;
+      no handle is returned).
 
     Raises
-    - ValueError: If ``frames`` is empty or ``labels`` length mismatches
-      ``len(frames)``.
+    - ValueError: If ``frames`` is empty, ``labels`` length mismatches
+      ``len(frames)``, or ``save`` is True with ``out_path`` None.
     """
     if len(frames) == 0:
         raise ValueError("frames must not be empty")
@@ -341,6 +341,8 @@ def frames_strip(
         raise ValueError(
             f"labels length {len(labels)} does not match frames length {len(frames)}"
         )
+    if save and out_path is None:
+        raise ValueError("frames_strip needs out_path when save=True")
 
     titles = list(labels) if labels is not None else [f.title for f in frames]
     size = (_STRIP_PANEL_IN * len(frames), _STRIP_PANEL_IN + _STRIP_TITLE_IN)
@@ -357,13 +359,9 @@ def frames_strip(
         fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=0.9, wspace=0.0, hspace=0.0)
 
         outpath = ""
-        if save and out_path:
-            if os.path.dirname(out_path):
-                target = out_path
-            else:
-                target = os.path.join(get_figure_dir(), out_path)
-            save_figure(fig, target, dpi=_STRIP_DPI, bbox_inches="tight")
-            outpath = target
+        if save:
+            outpath = resolve_output_path(out_path, get_figure_dir)
+            save_figure(fig, outpath, dpi=_STRIP_DPI, bbox_inches="tight")
     return outpath
 
 
@@ -383,15 +381,18 @@ def frames_to_gif(
 
     Parameters
     - frames: Non-empty sequence of :class:`Frame`.
-    - out_path: Destination file path (parent directory must exist).
+    - out_path: Destination file.  A bare file name is resolved under
+      ``quadmath/output/figures/``; a path with a directory component is used
+      as given (its parent directory must exist).
     - fps: Frames per second; duration is ``1000 // fps`` ms.
     - scale: Integer upscale factor applied to every frame.
 
     Returns
-    - str: ``out_path``, unchanged.
+    - str: The written path (the resolved path when ``out_path`` was a bare name).
 
     Raises
-    - ValueError: If ``frames`` is empty, ``fps <= 0``, or ``scale <= 0``.
+    - ValueError: If ``frames`` is empty, ``fps <= 0``, ``scale <= 0``, or
+      ``out_path`` is empty.
     """
     if len(frames) == 0:
         raise ValueError("frames must not be empty")
@@ -399,6 +400,7 @@ def frames_to_gif(
         raise ValueError(f"fps must be positive, got {fps}")
     if scale <= 0:
         raise ValueError(f"scale must be positive, got {scale}")
+    target = resolve_output_path(out_path, get_figure_dir)
 
     from PIL import Image  # noqa: WPS433  (lazy import; Pillow is optional at import time)
 
@@ -415,7 +417,7 @@ def frames_to_gif(
         if scale != 1:
             img = img.resize((data.shape[1] * scale, data.shape[0] * scale), nearest)
         images.append(img)
-    with atomic_target(out_path) as tmp:
+    with atomic_target(target) as tmp:
         images[0].save(
             tmp,
             save_all=True,
@@ -423,4 +425,4 @@ def frames_to_gif(
             duration=duration_ms,
             loop=0,
         )
-    return out_path
+    return target

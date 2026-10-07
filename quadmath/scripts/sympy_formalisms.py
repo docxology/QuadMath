@@ -166,8 +166,9 @@ def compare_ace_vs_cm_examples() -> str:
     data_dir = _get_data_dir()
     figure_dir = _get_figure_dir()
     csv_path = os.path.join(data_dir, "bridging_vs_native.csv")
-    with open(csv_path, "w", newline="") as f:
-        writer = csv.writer(f)
+    from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
+    with atomic_open(csv_path, newline="") as f:
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerows(rows)
 
     # Plot comparison (improved styling)
@@ -240,7 +241,8 @@ def main() -> None:
     mag_expr = embedding_symbolic_magnitude()
     mag_vec_expr = magnitude_via_vector_module()
 
-    with open(os.path.join(data_dir, "sympy_symbolics.txt"), "w") as f:
+    from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
+    with atomic_open(os.path.join(data_dir, "sympy_symbolics.txt")) as f:
         f.write("V_xyz_unit_regular_tetra = " + V_xyz + "\n")
         f.write("V_ivm_unit_regular_tetra = " + V_ivm + "\n")
         f.write("magnitude_symbolic = " + mag_expr + "\n")

@@ -4,6 +4,11 @@ Template-layout manuscript tree for the shared docxology render pipeline, ported
 from `../../quadmath/markdown/`. Status: `../MANUSCRIPT_STATUS.md`.
 Re-port after source edits with: `uv run python docs/manuscript/port_from_source.py`.
 
+> **Canonical source:** `quadmath/markdown/`. This directory is generated: the
+> section files, `preamble.md`, and `figures/` are written by
+> `port_from_source.py`, so do not edit them here. `config.yaml`,
+> `references.bib`, and this README are maintained by hand.
+
 ## Layout
 
 | File | Origin | Role |
@@ -17,7 +22,7 @@ Re-port after source edits with: `uv run python docs/manuscript/port_from_source
 | `14_conversions_spec.md`, `15_learning_evaluation.md`, `16_lattice_gallery.md` | same-name sources, verbatim | Conversion/specification, learning & evaluation, and the visualization gallery (embeds `figures/vis_gallery_*.png`) |
 | `98_symbols_glossary.md` | `10_symbols_glossary.md`, verbatim | Template glossary bucket (`98_*.md`); snapshot of the auto-generated source |
 | `99_resources.md` | `07_resources.md`, verbatim | Template references bucket (`99_*.md`, rendered last) |
-| `figures/` | copies of `quadmath/output/figures/*.png` (25 files) | Figure images referenced by the sections |
+| `figures/` | copies of `quadmath/output/figures/*.png` (the names in `FIGURE_NAMES`) | Figure images referenced by the sections |
 | `port_from_source.py` | new | Reproducible re-port script (copies sections/figures, applies the rewrites, closes the preamble fence, verifies links) |
 
 ## Path rewrites applied during the port

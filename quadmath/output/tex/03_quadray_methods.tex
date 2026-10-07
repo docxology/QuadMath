@@ -56,9 +56,6 @@
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \newsavebox\pandoc@box
@@ -85,6 +82,10 @@
 \usepackage{newunicodechar}
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
+
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
 
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
@@ -202,7 +203,7 @@
 
 \title{Quadray Analytical Details and Methods}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -462,7 +463,7 @@ Programmatic check (neighbors, equal radii, adjacency):
 
 \begin{lstlisting}[language=Python]
 import numpy as np
-from examples import example_cuboctahedron_vertices_xyz
+from quadmath.core.examples import example_cuboctahedron_vertices_xyz
 
 xyz = np.array(example_cuboctahedron_vertices_xyz())
 r = np.linalg.norm(xyz[0])
@@ -490,7 +491,7 @@ Octahedron (V = 4): the octahedron with vertices \(\pm 2\hat e_i\) (edge
 origin-apex orthant tetras, each of volume \(\tfrac12\):
 
 \begin{lstlisting}[language=Python]
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
 axes = [
@@ -509,7 +510,7 @@ decomposes into the inscribed tetra on four alternating cube vertices (V
 = 1) plus four corner tetras (V = \(\tfrac12\) each):
 
 \begin{lstlisting}[language=Python]
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 inner = ace_tetravolume_5x5(
     Quadray(1,0,0,0), Quadray(0,1,0,0), Quadray(0,0,1,0), Quadray(0,0,0,1),
@@ -564,11 +565,12 @@ Notes.
 \item
   \(P_0,\ldots,P_3\) are tetrahedron vertices in Quadray coordinates.
 \item
-  \(V\) in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ) volume;
-  converting it to IVM tetra-units requires the synergetics scale factor
-  \(S3=\sqrt{9/8}\) in sphere-radius units (Eq. \eqref{eq:xyz_det}). For
-  lattice tetrahedra, the direct quadray formula Eq. \eqref{eq:gdj}
-  yields the IVM volume exactly, without unit conversion.
+  \(V_{xyz}\) in Eq. \eqref{eq:lattice_det} is the Euclidean (XYZ)
+  volume; converting it to IVM tetra-units requires the synergetics
+  scale factor \(S3=\sqrt{9/8}\) in sphere-radius units (Eq.
+  \eqref{eq:xyz_det}). For lattice tetrahedra, the direct quadray
+  formula Eq. \eqref{eq:gdj} yields the IVM volume exactly, without unit
+  conversion.
 \item
   Background and variations are discussed under Tetrahedron volume
   formulas:
@@ -698,10 +700,12 @@ Formulas}\label{alternative-volume-formulas}
   5×5):
 
   where each column is formed from Quadray component differences of
-  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected to a 3D slice
-  consistent with the synergetics convention; integer arithmetic is
-  exact and the factor \(\tfrac{1}{4}\) produces IVM tetravolumes. See
-  de Jong's Quadray notes and Urner's implementations for derivations
+  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected via
+  \(\pi(P) = (a - d,\, b - d,\, c - d)\) to the synergetics 3D slice
+  (matching \passthrough{\lstinline!integer\_tetra\_volume!}); integer
+  arithmetic is exact and the factor \(\tfrac{1}{4}\) produces IVM
+  tetravolumes. See de Jong's Quadray notes and Urner's implementations
+  for derivations
   (\href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
   coordinates}).
 \item
@@ -779,10 +783,12 @@ Space}\label{fisher-geometry-in-quadray-space}
   5×5):
 
   where each column is formed from Quadray component differences of
-  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected to a 3D slice
-  consistent with the synergetics convention; integer arithmetic is
-  exact and the factor \(\tfrac{1}{4}\) produces IVM tetravolumes. See
-  de Jong's Quadray notes and Urner's implementations for derivations
+  \(P_1-P_0\), \(P_2-P_0\), \(P_3-P_0\) projected via
+  \(\pi(P) = (a - d,\, b - d,\, c - d)\) to the synergetics 3D slice
+  (matching \passthrough{\lstinline!integer\_tetra\_volume!}); integer
+  arithmetic is exact and the factor \(\tfrac{1}{4}\) produces IVM
+  tetravolumes. See de Jong's Quadray notes and Urner's implementations
+  for derivations
   (\href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
   coordinates}).
 \end{itemize}
@@ -889,7 +895,7 @@ regular tetrahedron has tetravolume 1.}
 \subsubsection{Short Python snippets}\label{short-python-snippets}
 
 \begin{lstlisting}[language=Python]
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 o = Quadray(0,0,0,0)
 p = Quadray(2,1,0,1)
@@ -900,7 +906,7 @@ assert ace_tetravolume_5x5(o,p,q,r) == 1  # unit IVM tetra
 
 \begin{lstlisting}[language=Python]
 import numpy as np
-from cayley_menger import ivm_tetra_volume_cayley_menger
+from quadmath.core.cayley_menger import ivm_tetra_volume_cayley_menger
 
 # Example: regular tetrahedron with edge length 1 (XYZ units)
 d2 = np.ones((4,4)) - np.eye(4)  # squared distances
@@ -925,7 +931,7 @@ def qvolume(q0, q1, q2, q3):
 \begin{lstlisting}[language=Python]
 # Symbolic variant with SymPy (exact radicals)
 from sympy import Matrix, sqrt, simplify
-from symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
+from quadmath.core.symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
 
 d2 = Matrix([[0,1,1,1],[1,0,1,1],[1,1,0,1],[1,1,1,0]])
 V_xyz_sym = cayley_menger_volume_symbolic(d2)      # sqrt(2)/12
@@ -946,7 +952,7 @@ volumes)}\label{random-tetrahedra-in-the-ivm-integer-volumes}
 \begin{lstlisting}[language=Python]
 from itertools import permutations
 from random import choice
-from quadray import Quadray, ace_tetravolume_5x5
+from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
 
 moves = [Quadray(*p) for p in set(permutations((2,1,1,0)))]
 
@@ -1128,272 +1134,386 @@ throughout the development process.
 
 \paragraph{\texorpdfstring{\texttt{Quadray}}{Quadray}}\label{code:Quadray}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- Quadray vector
-class with non-negative components and at least one zero (Fuller.4D).
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+Quadray vector class with non-negative components and at least one zero
+(Fuller.4D).
 
 \paragraph{\texorpdfstring{\texttt{DEFAULT\_EMBEDDING}}{DEFAULT\_EMBEDDING}}\label{code:DEFAULT_EMBEDDING}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- canonical 3×4
-symmetric embedding matrix for Quadray to XYZ conversion.
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+canonical 3×4 symmetric embedding matrix for Quadray to XYZ conversion.
 
 \paragraph{\texorpdfstring{\texttt{to\_xyz}}{to\_xyz}}\label{code:to_xyz}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- map quadray to R³
-via a 3×4 embedding matrix (Fuller.4D → Coxeter.4D slice).
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} --- map
+quadray to R³ via a 3×4 embedding matrix (Fuller.4D → Coxeter.4D slice).
 
 \paragraph{\texorpdfstring{\texttt{magnitude}}{magnitude}}\label{code:magnitude}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- return Euclidean
-magnitude \textbar\textbar q\textbar\textbar{} under the given embedding
-(vector norm).
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+return the Euclidean magnitude of \passthrough{\lstinline!q!} under the
+given embedding (vector norm).
 
 \paragraph{\texorpdfstring{\texttt{dot}}{dot}}\label{code:dot}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- return Euclidean
-dot product \textless q1,q2\textgreater{} under the given embedding.
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+return Euclidean dot product \textless q1,q2\textgreater{} under the
+given embedding.
+
+\subsubsection{Quaternion operations}\label{code:quaternion_operations}
+
+\paragraph{\texorpdfstring{\texttt{qmul}}{qmul}}\label{code:qmul}
+
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+Hamilton product of two quaternions in scalar-first \((w, x, y, z)\)
+order (\(q = w + x\,i + y\,j + z\,k\)), an independent representation
+from the Quadray lattice components \((a, b, c, d)\) and from the XYZ
+triples produced by \passthrough{\lstinline!to\_xyz!}.
+
+\paragraph{\texorpdfstring{\texttt{qconjugate}}{qconjugate}}\label{code:qconjugate}
+
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+conjugate \((w, -x, -y, -z)\) of a quaternion; for a unit quaternion the
+conjugate is the multiplicative inverse, so
+\passthrough{\lstinline!q * qconjugate(q)!} equals \((1, 0, 0, 0)\) up
+to floating-point error.
+
+\paragraph{\texorpdfstring{\texttt{qrotate}}{qrotate}}\label{code:qrotate}
+
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+Rodrigues rotation of a 3-vector by a unit quaternion via
+\(v' = q\,(0, v)\,q^*\), composed with \passthrough{\lstinline!qmul!}
+and \passthrough{\lstinline!qconjugate!}; \passthrough{\lstinline!q!}
+must be unit (within 1e-9) and the rotation magnitude it encodes,
+\(2\,\mathrm{atan2}(\lVert (x, y, z) \rVert, w)\), must match
+\(|\mathrm{angle}|\) modulo \(2\pi\) within 1e-9, so a mismatched (q,
+angle) pair raises instead of silently rotating by the wrong amount.
+
+\paragraph{\texorpdfstring{\texttt{slerp}}{slerp}}\label{code:slerp}
+
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+shortest-arc spherical linear interpolation between unit quaternions:
+when \(\langle q_a, q_b\rangle < 0\) the second quaternion is negated
+first (\(q\) and \(-q\) encode the same rotation) so the path always
+takes the shorter arc on the rotation sphere; nearly parallel inputs
+(including exactly antipodal pairs after sign alignment) fall back to
+normalized lerp to avoid dividing by \(\sin\theta \approx 0\), and the
+endpoints are exact. The site path traced by these interpolations is
+visualized by \passthrough{\lstinline!plot\_slerp\_path!} in
+\passthrough{\lstinline!src/quadmath/viz/plots.py!} (figure below).
+
+\paragraph{\texorpdfstring{\texttt{rotate\_about\_axis}}{rotate\_about\_axis}}\label{code:rotate_about_axis}
+
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} ---
+axis-angle convenience wrapper: builds the unit quaternion
+\(q = (\cos(\theta/2),\, \sin(\theta/2)\,\hat{u})\) from the normalized
+rotation axis (any non-zero scale accepted; the zero vector is rejected)
+and delegates to \passthrough{\lstinline!qrotate!}, reducing the angle
+to \((-\pi, \pi]\) first so rotation is right-handed about the axis and
+\passthrough{\lstinline!qrotate!}'s encoded-angle validation stays
+exact.
+
+The property checks in
+\passthrough{\lstinline!src/quadmath/validate/validate.py!} ---
+normalization, conjugate-inverse, double cover, slerp midpoint, and
+associativity --- consume these operations over quaternion sequences via
+\passthrough{\lstinline!run\_validation!}, which collects the resulting
+deterministic validation reports.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Shortest-arc slerp geodesic from the identity to a \textbackslash pi/2 rotation about the z axis. The path traced by the canonical (2, 0, 0, 0) quadray axis point (embedded at (2, 2, 2) under DEFAULT\_EMBEDDING) as the rotation quaternion is interpolated from the identity (1, 0, 0, 0) to (\textbackslash cos\textbackslash frac\{\textbackslash pi\}\{4\}, 0, 0, \textbackslash sin\textbackslash frac\{\textbackslash pi\}\{4\}) --- a right-handed \textbackslash pi/2 rotation about the z axis --- over 16 samples of t \textbackslash in {[}0, 1{]}, rendered by plot\_slerp\_path in src/quadmath/viz/plots.py via the script quadmath/scripts/quaternion\_gallery.py. Because slerp negates the second quaternion whenever \textbackslash langle q\_0, q\_1 \textbackslash rangle \textless{} 0, the interpolation always follows the shorter arc of the geodesic on the rotation sphere: the rotation angle grows linearly from 0 to \textbackslash pi/2, so the site sweeps the quarter circle of radius 2\textbackslash sqrt\{2\} about the z axis at constant height z = 2 (blue line), from the start marker at t = 0 (green) to the end marker at t = 1 (red). Reproduce with uv run python quadmath/scripts/quaternion\_gallery.py.}]{../output/figures/quaternion_slerp_path.png}}
+\caption{\textbf{Shortest-arc slerp geodesic from the identity to a
+\(\pi/2\) rotation about the \(z\) axis.} The path traced by the
+canonical \((2, 0, 0, 0)\) quadray axis point (embedded at \((2, 2, 2)\)
+under \protect\passthrough{\lstinline!DEFAULT\_EMBEDDING!}) as the
+rotation quaternion is interpolated from the identity \((1, 0, 0, 0)\)
+to \((\cos\frac{\pi}{4}, 0, 0, \sin\frac{\pi}{4})\) --- a right-handed
+\(\pi/2\) rotation about the \(z\) axis --- over 16 samples of
+\(t \in [0, 1]\), rendered by
+\protect\passthrough{\lstinline!plot\_slerp\_path!} in
+\protect\passthrough{\lstinline!src/quadmath/viz/plots.py!} via the
+script
+\protect\passthrough{\lstinline!quadmath/scripts/quaternion\_gallery.py!}.
+Because \protect\passthrough{\lstinline!slerp!} negates the second
+quaternion whenever \(\langle q_0, q_1 \rangle < 0\), the interpolation
+always follows the shorter arc of the geodesic on the rotation sphere:
+the rotation angle grows linearly from \(0\) to \(\pi/2\), so the site
+sweeps the quarter circle of radius \(2\sqrt{2}\) about the \(z\) axis
+at constant height \(z = 2\) (blue line), from the start marker at
+\(t = 0\) (green) to the end marker at \(t = 1\) (red). Reproduce with
+\protect\passthrough{\lstinline!uv run python quadmath/scripts/quaternion\_gallery.py!}.}
+\end{figure}
+
+\subsubsection{Quaternion metrics}\label{code:quaternion_metrics}
+
+\paragraph{\texorpdfstring{\texttt{angle\_error}}{angle\_error}}\label{code:angle_error}
+
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+geodesic rotation angle \(2\arccos(|\langle q_1, q_2\rangle|)\) between
+two quaternions, in radians and confined to \([0, \pi]\) by clamping the
+acos argument; the metric is symmetric in its arguments and invariant
+under \(q \to -q\) (the quaternion double cover), with inputs normalized
+internally so non-unit but non-zero quaternions are accepted.
+
+\paragraph{\texorpdfstring{\texttt{quat\_log\_euclidean\_dispersion}}{quat\_log\_euclidean\_dispersion}}\label{code:quat_log_euclidean_dispersion}
+
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+root-mean-square chordal dispersion of a quaternion set about its
+normalized component-wise mean,
+\(\sqrt{\mathrm{mean}_i\,\|q_i - m\|^2}\) in \(\mathbb{R}^4\), with
+signs aligned to the first quaternion before averaging because \(q\) and
+\(-q\) encode the same rotation; returns 0 for a single quaternion and
+raises if the sign-aligned mean vanishes.
 
 \subsubsection{Volume calculations}\label{code:volume_calculations}
 
 \paragraph{\texorpdfstring{\texttt{integer\_tetra\_volume}}{integer\_tetra\_volume}}\label{code:integer_tetra_volume}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- exact projected
-\(3\times3\) determinant over 4, i.e.~the IVM tetravolume \(|\det|/4\)
-as a \passthrough{\lstinline!fractions.Fraction!}.
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} --- exact
+projected \(3\times3\) determinant over 4, i.e.~the IVM tetravolume
+\(|\det|/4\) as a \passthrough{\lstinline!fractions.Fraction!}.
 
 \paragraph{\texorpdfstring{\texttt{ace\_tetravolume\_5x5}}{ace\_tetravolume\_5x5}}\label{code:ace_tetravolume_5x5}
 
-Source: \passthrough{\lstinline!src/quadray.py!} --- Tom Ace 5×5
-determinant in IVM units.
+Source: \passthrough{\lstinline!src/quadmath/core/quadray.py!} --- Tom
+Ace 5×5 determinant in IVM units.
 
 \paragraph{\texorpdfstring{\texttt{tetra\_volume\_cayley\_menger}}{tetra\_volume\_cayley\_menger}}\label{code:tetra_volume_cayley_menger}
 
-Source: \passthrough{\lstinline!src/cayley\_menger.py!} --- length-based
-formula (XYZ units).
+Source: \passthrough{\lstinline!src/quadmath/core/cayley\_menger.py!}
+--- length-based formula (XYZ units).
 
 \paragraph{\texorpdfstring{\texttt{ivm\_tetra\_volume\_cayley\_menger}}{ivm\_tetra\_volume\_cayley\_menger}}\label{code:ivm_tetra_volume_cayley_menger}
 
-Source: \passthrough{\lstinline!src/cayley\_menger.py!} ---
-Cayley--Menger volume converted to IVM units.
+Source: \passthrough{\lstinline!src/quadmath/core/cayley\_menger.py!}
+--- Cayley--Menger volume converted to IVM units.
 
 \subsubsection{Coordinate
 conversions}\label{code:coordinate_conversions}
 
 \paragraph{\texorpdfstring{\texttt{urner\_embedding}}{urner\_embedding}}\label{code:urner_embedding}
 
-Source: \passthrough{\lstinline!src/conversions.py!} --- canonical XYZ
-embedding.
+Source: \passthrough{\lstinline!src/quadmath/lattice/conversions.py!}
+--- canonical XYZ embedding.
 
 \paragraph{\texorpdfstring{\texttt{quadray\_to\_xyz}}{quadray\_to\_xyz}}\label{code:quadray_to_xyz}
 
-Source: \passthrough{\lstinline!src/conversions.py!} --- apply embedding
-matrix to map Quadray to XYZ.
+Source: \passthrough{\lstinline!src/quadmath/lattice/conversions.py!}
+--- apply embedding matrix to map Quadray to XYZ.
 
 \subsubsection{Linear algebra utilities}\label{code:linear_algebra}
 
 \paragraph{\texorpdfstring{\texttt{bareiss\_determinant\_int}}{bareiss\_determinant\_int}}\label{code:bareiss_determinant_int}
 
-Source: \passthrough{\lstinline!src/linalg\_utils.py!} --- exact integer
-Bareiss determinant.
+Source: \passthrough{\lstinline!src/quadmath/core/linalg\_utils.py!} ---
+exact integer Bareiss determinant.
 
 \subsubsection{Optimization methods}\label{code:optimization}
 
 \paragraph{\texorpdfstring{\texttt{nelder\_mead\_quadray}}{nelder\_mead\_quadray}}\label{code:nelder_mead_quadray}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
-Nelder--Mead optimization adapted to the integer quadray lattice.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- Nelder--Mead optimization adapted to the integer quadray lattice.
 
 \paragraph{\texorpdfstring{\texttt{discrete\_ivm\_descent}}{discrete\_ivm\_descent}}\label{code:discrete_ivm_descent}
 
-Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
-greedy integer-valued descent over the IVM using canonical neighbor
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!}
+--- greedy integer-valued descent over the IVM using canonical neighbor
 moves; returns a \passthrough{\lstinline!DiscretePath!} with visited
 Quadrays and objective values.
 
 \paragraph{\texorpdfstring{\texttt{neighbor\_moves\_ivm}}{neighbor\_moves\_ivm}}\label{code:neighbor_moves_ivm}
 
-Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
-return the 12 canonical IVM neighbor moves as Quadray deltas.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!}
+--- return the 12 canonical IVM neighbor moves as Quadray deltas.
 
 \paragraph{\texorpdfstring{\texttt{apply\_move}}{apply\_move}}\label{code:apply_move}
 
-Source: \passthrough{\lstinline!src/discrete\_variational.py!} --- apply
-a lattice move and normalize to the canonical representative.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!}
+--- apply a lattice move and normalize to the canonical representative.
 
 \subsubsection{Information geometry
 methods}\label{code:information_geometry}
 
 \paragraph{\texorpdfstring{\texttt{fisher\_information\_matrix}}{fisher\_information\_matrix}}\label{code:fisher_information_matrix}
 
-Source: \passthrough{\lstinline!src/information.py!} --- empirical
-outer-product estimator.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- empirical outer-product estimator.
 
 \paragraph{\texorpdfstring{\texttt{fisher\_information\_quadray}}{fisher\_information\_quadray}}\label{code:fisher_information_quadray}
 
-Source: \passthrough{\lstinline!src/information.py!} --- compute Fisher
-information matrix in both Cartesian and Quadray coordinates.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- compute Fisher information matrix in both Cartesian and Quadray
+coordinates.
 
 \paragraph{\texorpdfstring{\texttt{natural\_gradient\_step}}{natural\_gradient\_step}}\label{code:natural_gradient_step}
 
-Source: \passthrough{\lstinline!src/information.py!} --- damped
-inverse-Fisher step.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- damped inverse-Fisher step.
 
 \paragraph{\texorpdfstring{\texttt{free\_energy}}{free\_energy}}\label{code:free_energy}
 
-Source: \passthrough{\lstinline!src/information.py!} --- discrete-state
-variational free energy.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- discrete-state variational free energy.
 
 \paragraph{\texorpdfstring{\texttt{expected\_free\_energy}}{expected\_free\_energy}}\label{code:expected_free_energy}
 
-Source: \passthrough{\lstinline!src/information.py!} --- canonical
-expected free energy \(G\) for Active Inference (epistemic KL +
-ambiguity − pragmatic; see the equations appendix).
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- canonical expected free energy \(G\) for Active Inference (epistemic
+KL + ambiguity − pragmatic; see the equations appendix).
 
 \paragraph{\texorpdfstring{\texttt{active\_inference\_step}}{active\_inference\_step}}\label{code:active_inference_step}
 
-Source: \passthrough{\lstinline!src/information.py!} --- joint
-perception-action update step in Active Inference.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- joint perception-action update step in Active Inference.
 
 \paragraph{\texorpdfstring{\texttt{information\_geometric\_distance}}{information\_geometric\_distance}}\label{code:information_geometric_distance}
 
-Source: \passthrough{\lstinline!src/information.py!} --- compute
-information-geometric distance between two points.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- compute information-geometric distance between two points.
 
 \paragraph{\texorpdfstring{\texttt{perception\_update}}{perception\_update}}\label{code:perception_update}
 
-Source: \passthrough{\lstinline!src/information.py!} --- continuous-time
-perception update: dμ/dt = D μ - dF/dμ.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- continuous-time perception update: dμ/dt = D μ - dF/dμ.
 
 \paragraph{\texorpdfstring{\texttt{action\_update}}{action\_update}}\label{code:action_update}
 
-Source: \passthrough{\lstinline!src/information.py!} --- continuous-time
-action update: da/dt = -dF/da.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- continuous-time action update: da/dt = -dF/da.
 
 \paragraph{\texorpdfstring{\texttt{finite\_difference\_gradient}}{finite\_difference\_gradient}}\label{code:finite_difference_gradient}
 
-Source: \passthrough{\lstinline!src/information.py!} --- compute
-numerical gradient of a scalar function via central differences.
+Source: \passthrough{\lstinline!src/quadmath/inference/information.py!}
+--- compute numerical gradient of a scalar function via central
+differences.
 
 \subsubsection{Metrics and analysis}\label{code:metrics}
 
 \paragraph{\texorpdfstring{\texttt{shannon\_entropy}}{shannon\_entropy}}\label{code:shannon_entropy}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- Shannon entropy
-H(p) for a discrete distribution.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+Shannon entropy H(p) for a discrete distribution.
 
 \paragraph{\texorpdfstring{\texttt{information\_length}}{information\_length}}\label{code:information_length}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- path length in
-information space via gradient-weighted arc length.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} --- path
+length in information space via gradient-weighted arc length.
 
 \paragraph{\texorpdfstring{\texttt{fim\_eigenspectrum}}{fim\_eigenspectrum}}\label{code:fim_eigenspectrum}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- eigen-decomposition
-of a Fisher information matrix.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+eigen-decomposition of a Fisher information matrix.
 
 \paragraph{\texorpdfstring{\texttt{fisher\_condition\_number}}{fisher\_condition\_number}}\label{code:fisher_condition_number}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- compute the
-condition number of the Fisher information matrix.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+compute the condition number of the Fisher information matrix.
 
 \paragraph{\texorpdfstring{\texttt{fisher\_curvature\_analysis}}{fisher\_curvature\_analysis}}\label{code:fisher_curvature_analysis}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- comprehensive
-analysis of Fisher information matrix curvature.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+comprehensive analysis of Fisher information matrix curvature.
 
 \paragraph{\texorpdfstring{\texttt{fisher\_quadray\_comparison}}{fisher\_quadray\_comparison}}\label{code:fisher_quadray_comparison}
 
-Source: \passthrough{\lstinline!src/metrics.py!} --- compare Fisher
-information matrices between coordinate systems.
+Source: \passthrough{\lstinline!src/quadmath/core/metrics.py!} ---
+compare Fisher information matrices between coordinate systems.
 
 \subsubsection{Examples and utilities}\label{code:examples}
 
 \paragraph{\texorpdfstring{\texttt{example\_ivm\_neighbors}}{example\_ivm\_neighbors}}\label{code:example_ivm_neighbors}
 
-Source: \passthrough{\lstinline!src/examples.py!} --- return the 12
-nearest IVM neighbors as permutations of \{2,1,1,0\} (neighbor-move-set
-role).
+Source: \passthrough{\lstinline!src/quadmath/core/examples.py!} ---
+return the 12 nearest IVM neighbors as permutations of \{2,1,1,0\}
+(neighbor-move-set role).
 
 \paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_neighbors}}{example\_cuboctahedron\_neighbors}}\label{code:example_cuboctahedron_neighbors}
 
-Source: \passthrough{\lstinline!src/examples.py!} --- return
-twelve-around-one IVM neighbors (vector-equilibrium-shell role). Same
-set as \passthrough{\lstinline!example\_ivm\_neighbors!}; both public
-names are documented API sharing one sorted, deterministic
+Source: \passthrough{\lstinline!src/quadmath/core/examples.py!} ---
+return twelve-around-one IVM neighbors (vector-equilibrium-shell role).
+Same set as \passthrough{\lstinline!example\_ivm\_neighbors!}; both
+public names are documented API sharing one sorted, deterministic
 implementation.
 
 \paragraph{\texorpdfstring{\texttt{example\_cuboctahedron\_vertices\_xyz}}{example\_cuboctahedron\_vertices\_xyz}}\label{code:example_cuboctahedron_vertices_xyz}
 
-Source: \passthrough{\lstinline!src/examples.py!} --- return XYZ
-coordinates for the twelve-around-one neighbors.
+Source: \passthrough{\lstinline!src/quadmath/core/examples.py!} ---
+return XYZ coordinates for the twelve-around-one neighbors.
 
 \paragraph{\texorpdfstring{\texttt{example\_partition\_tetra\_volume}}{example\_partition\_tetra\_volume}}\label{code:example_partition_tetra_volume}
 
-Source: \passthrough{\lstinline!src/examples.py!} --- construct a
-tetrahedron from the four-fold partition and return the exact IVM
-tetravolume (\passthrough{\lstinline!fractions.Fraction!}).
+Source: \passthrough{\lstinline!src/quadmath/core/examples.py!} ---
+construct a tetrahedron from the four-fold partition and return the
+exact IVM tetravolume (\passthrough{\lstinline!fractions.Fraction!}).
 
 \subsubsection{Symbolic computation}\label{code:symbolic}
 
 \paragraph{\texorpdfstring{\texttt{cayley\_menger\_volume\_symbolic}}{cayley\_menger\_volume\_symbolic}}\label{code:cayley_menger_volume_symbolic}
 
-Source: \passthrough{\lstinline!src/symbolic.py!} --- return symbolic
-Euclidean tetrahedron volume from squared distances.
+Source: \passthrough{\lstinline!src/quadmath/core/symbolic.py!} ---
+return symbolic Euclidean tetrahedron volume from squared distances.
 
 \paragraph{\texorpdfstring{\texttt{convert\_xyz\_volume\_to\_ivm\_symbolic}}{convert\_xyz\_volume\_to\_ivm\_symbolic}}\label{code:convert_xyz_volume_to_ivm_symbolic}
 
-Source: \passthrough{\lstinline!src/symbolic.py!} --- convert a symbolic
-Euclidean volume to IVM tetravolume via S3.
+Source: \passthrough{\lstinline!src/quadmath/core/symbolic.py!} ---
+convert a symbolic Euclidean volume to IVM tetravolume via S3.
 
 \subsubsection{Visualization and animation}\label{code:visualization}
 
 \paragraph{\texorpdfstring{\texttt{animate\_discrete\_path}}{animate\_discrete\_path}}\label{code:animate_discrete_path}
 
-Source: \passthrough{\lstinline!src/visualize.py!} --- animate a
-\passthrough{\lstinline!DiscretePath!} to MP4; saves CSV/NPZ trajectory
-to \passthrough{\lstinline!quadmath/output/!}.
+Source: \passthrough{\lstinline!src/quadmath/viz/visualize.py!} ---
+animate a \passthrough{\lstinline!DiscretePath!} to MP4; saves CSV/NPZ
+trajectory to \passthrough{\lstinline!quadmath/output/!}.
 
 \paragraph{\texorpdfstring{\texttt{plot\_ivm\_neighbors}}{plot\_ivm\_neighbors}}\label{code:plot_ivm_neighbors}
 
-Source: \passthrough{\lstinline!src/visualize.py!} --- scatter the 12
-IVM neighbor points in 3D.
+Source: \passthrough{\lstinline!src/quadmath/viz/visualize.py!} ---
+scatter the 12 IVM neighbor points in 3D.
 
 \paragraph{\texorpdfstring{\texttt{plot\_partition\_tetrahedron}}{plot\_partition\_tetrahedron}}\label{code:plot_partition_tetrahedron}
 
-Source: \passthrough{\lstinline!src/visualize.py!} --- plot the
-four-fold partition as a labeled tetrahedron in 3D.
+Source: \passthrough{\lstinline!src/quadmath/viz/visualize.py!} --- plot
+the four-fold partition as a labeled tetrahedron in 3D.
 
 \paragraph{\texorpdfstring{\texttt{animate\_simplex}}{animate\_simplex}}\label{code:animate_simplex}
 
-Source: \passthrough{\lstinline!src/visualize.py!} --- animate simplex
-evolution across iterations.
+Source: \passthrough{\lstinline!src/quadmath/viz/visualize.py!} ---
+animate simplex evolution across iterations.
 
 \paragraph{\texorpdfstring{\texttt{plot\_simplex\_trace}}{plot\_simplex\_trace}}\label{code:plot_simplex_trace}
 
-Source: \passthrough{\lstinline!src/visualize.py!} --- plot
+Source: \passthrough{\lstinline!src/quadmath/viz/visualize.py!} --- plot
 per-iteration diagnostics for Nelder--Mead.
 
 \subsubsection{Path and file utilities}\label{code:utilities}
 
 \paragraph{\texorpdfstring{\texttt{get\_repo\_root}}{get\_repo\_root}}\label{code:get_repo_root}
 
-Source: \passthrough{\lstinline!src/paths.py!} --- heuristically find
-repository root by walking up from start.
+Source: \passthrough{\lstinline!src/quadmath/paths.py!} ---
+heuristically find repository root by walking up from start.
 
 \paragraph{\texorpdfstring{\texttt{get\_output\_dir}}{get\_output\_dir}}\label{code:get_output_dir}
 
-Source: \passthrough{\lstinline!src/paths.py!} --- return
+Source: \passthrough{\lstinline!src/quadmath/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output!} path at the repo root and
 ensure it exists.
 
 \paragraph{\texorpdfstring{\texttt{get\_data\_dir}}{get\_data\_dir}}\label{code:get_data_dir}
 
-Source: \passthrough{\lstinline!src/paths.py!} --- return
+Source: \passthrough{\lstinline!src/quadmath/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output/data!} path and ensure it
 exists.
 
 \paragraph{\texorpdfstring{\texttt{get\_figure\_dir}}{get\_figure\_dir}}\label{code:get_figure_dir}
 
-Source: \passthrough{\lstinline!src/paths.py!} --- return
+Source: \passthrough{\lstinline!src/quadmath/paths.py!} --- return
 \passthrough{\lstinline!quadmath/output/figures!} path and ensure it
 exists.
 
@@ -1402,62 +1522,70 @@ components}\label{code:nelder_mead_components}
 
 \paragraph{\texorpdfstring{\texttt{SimplexState}}{SimplexState}}\label{code:SimplexState}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
-optimization trajectory state containing vertices, values, volume, and
-history.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- optimization trajectory state containing vertices, values, volume,
+and history.
 
 \paragraph{\texorpdfstring{\texttt{order\_simplex}}{order\_simplex}}\label{code:order_simplex}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} --- sort
-vertices by objective value ascending and return paired lists.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- sort vertices by objective value ascending and return paired lists.
 
 \paragraph{\texorpdfstring{\texttt{centroid\_excluding}}{centroid\_excluding}}\label{code:centroid_excluding}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
-integer centroid of three vertices, excluding the specified index.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- integer centroid of three vertices, excluding the specified index.
 
 \paragraph{\texorpdfstring{\texttt{project\_to\_lattice}}{project\_to\_lattice}}\label{code:project_to_lattice}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} ---
-project a quadray to the canonical lattice representative via normalize.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- project a quadray to the canonical lattice representative via
+normalize.
 
 \paragraph{\texorpdfstring{\texttt{compute\_volume}}{compute\_volume}}\label{code:compute_volume}
 
-Source: \passthrough{\lstinline!src/nelder\_mead\_quadray.py!} --- exact
-IVM tetra-volume (\passthrough{\lstinline!fractions.Fraction!},
-\(|\det|/4\)) from the first four vertices.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/nelder\_mead\_quadray.py!}
+--- exact IVM tetra-volume
+(\passthrough{\lstinline!fractions.Fraction!}, \(|\det|/4\)) from the
+first four vertices.
 
 \subsubsection{Discrete variational
 components}\label{code:discrete_variational}
 
 \paragraph{\texorpdfstring{\texttt{DiscretePath}}{DiscretePath}}\label{code:DiscretePath}
 
-Source: \passthrough{\lstinline!src/discrete\_variational.py!} ---
-optimization trajectory on the integer quadray lattice.
+Source:
+\passthrough{\lstinline!src/quadmath/optimize/discrete\_variational.py!}
+--- optimization trajectory on the integer quadray lattice.
 
 \subsubsection{Glossary generation}\label{code:glossary}
 
 \paragraph{\texorpdfstring{\texttt{build\_api\_index}}{build\_api\_index}}\label{code:build_api_index}
 
-Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- build API
-index from source directory.
+Source: \passthrough{\lstinline!src/quadmath/tools/glossary\_gen.py!}
+--- build API index from source directory.
 
 \paragraph{\texorpdfstring{\texttt{generate\_markdown\_table}}{generate\_markdown\_table}}\label{code:generate_markdown_table}
 
-Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- generate
-markdown table from API entries.
+Source: \passthrough{\lstinline!src/quadmath/tools/glossary\_gen.py!}
+--- generate markdown table from API entries.
 
 \paragraph{\texorpdfstring{\texttt{inject\_between\_markers}}{inject\_between\_markers}}\label{code:inject_between_markers}
 
-Source: \passthrough{\lstinline!src/glossary\_gen.py!} --- inject
-payload between markers in markdown text.
+Source: \passthrough{\lstinline!src/quadmath/tools/glossary\_gen.py!}
+--- inject payload between markers in markdown text.
 
 \subsubsection{Geometry utilities}\label{code:geometry}
 
 \paragraph{\texorpdfstring{\texttt{minkowski\_interval}}{minkowski\_interval}}\label{code:minkowski_interval}
 
-Source: \passthrough{\lstinline!src/geometry.py!} --- return the
-Minkowski interval squared ds² (Einstein.4D).
+Source: \passthrough{\lstinline!src/quadmath/core/geometry.py!} ---
+return the Minkowski interval squared ds² (Einstein.4D).
 
 Relevant tests (\passthrough{\lstinline!tests/!}):
 

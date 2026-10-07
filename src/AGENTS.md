@@ -112,8 +112,7 @@ Each subpackage `__init__.py` star-re-exports its modules
 public names against the sibling modules: if two modules in the same
 subpackage export the same top-level name, import the colliding modules
 explicitly in that `__init__` instead of star-importing both. Known
-collisions (already handled): `ball_sites` (`lattice.ivm_field` vs
-`lattice.ivm_dynamics`), `MAX_SHELL` (`lattice.omni_numbering` vs
+collisions (already handled): `MAX_SHELL` (`lattice.omni_numbering` vs
 `lattice.lattice_search`), `gallery`/`GALLERY_FILES`
 (`viz.vis_lattice` vs `viz.vis_stats`). New public names in a module must be
 added to the re-export list in `src/quadmath/__init__.py` (and its
@@ -232,7 +231,7 @@ def new_quadray_operation(q: Quadray) -> Quadray:
 ```python
 import os
 
-from quadmath.viz.visualize import _set_axes_equal
+from quadmath.viz._common import set_axes_equal
 from quadmath.paths import get_figure_dir
 import matplotlib.pyplot as plt
 

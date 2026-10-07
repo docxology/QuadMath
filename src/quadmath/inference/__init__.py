@@ -6,4 +6,4 @@ Note: the active-inference functions (``active_inference_step``,
 ``active_inference`` module in the repository.
 """
 
-from .information import *
+from .information import *  # noqa: F403

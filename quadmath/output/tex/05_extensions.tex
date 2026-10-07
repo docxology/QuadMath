@@ -58,6 +58,10 @@
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}
@@ -174,7 +178,7 @@
 
 \title{Extensions of 4D and Quadrays}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -199,10 +203,20 @@ Optimization}\label{multi-objective-optimization}
 \begin{itemize}
 \tightlist
 \item
-  Simplex faces encode trade-offs; integer volume measures solution
-  diversity.
+  A candidate \(\mathbf{q}\) Pareto-dominates \(\mathbf{q}'\) when
+  \(f_k(\mathbf{q}) \le f_k(\mathbf{q}')\) for every objective \(k\),
+  with strict inequality for at least one; the Pareto front is the set
+  of undominated candidates. Simplex faces of a candidate vertex set
+  encode these trade-offs, each face selecting one non-dominated
+  combination.
 \item
-  Pareto front exploration via tetrahedral traversal.
+  Pareto front exploration via tetrahedral traversal: walking
+  edge-adjacent simplices over the candidate set enumerates neighboring
+  non-dominated combinations without a continuous relaxation.
+\item
+  Integer tetravolume of the solution simplex serves as a discrete
+  diversity measure: larger volume corresponds to more mutually
+  separated trade-off points.
 \end{itemize}
 
 \subsection{Machine Learning and
@@ -297,8 +311,9 @@ Energy}\label{active-inference-and-free-energy}
 \item
   Links to metabolic efficiency and biologically plausible computation.
 \item
-  For more information, see the Appendix: The Free Energy Principle and
-  Active Inference.
+  For the full treatment, see
+  \passthrough{\lstinline!09\_free\_energy\_active\_inference.md!}
+  (Appendix: The Free Energy Principle and Active Inference).
 \end{itemize}
 
 \subsection{Complex Systems and Collective
@@ -409,10 +424,12 @@ Decompositions}\label{higher-dimensions-and-decompositions}
 \begin{itemize}
 \tightlist
 \item
-  Decompose higher-dimensional simplexes into tetrahedra; sum integer
-  volumes to maintain quantization.
+  Decompose an \(n\)-simplex (\(n > 3\)) into tetrahedra and sum their
+  signed integer volumes; the sum extends the quantized tetravolume of
+  Section 3 to higher-dimensional content.
 \item
-  Tessellations support parallel/distributed implementations.
+  Tessellations support parallel and distributed implementations (cells
+  processed independently).
 \end{itemize}
 
 \subsection{Limitations and Future

@@ -148,7 +148,8 @@ stays in the $\mathbf{1}$-coset of the exact preimage, where per-component round
 it). For points on
 the lattice it round-trips exactly; for general $\mathbb{R}^3$ points it returns the nearest lattice
 point in quadray coordinates (component-wise — not always nearest in embedded XYZ distance), which
-is a snapping operation, not an inverse. `quadray_roundtrip(q,
+is a snapping operation, not an inverse. The component-wise rule is the chosen contract; an XYZ-nearest
+variant would be a separate function that searches neighboring classes. `quadray_roundtrip(q,
 M=None)` pins the round-trip contract
 
 \begin{equation}

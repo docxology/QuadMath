@@ -25,9 +25,9 @@ importable entrypoints under `src/`.
 
 | Script | Delegates to |
 |--------|--------------|
-| `render_pdf.sh` | all scripts below (its `scripts` array) + `pandoc`/`xelatex` |
+| `render_pdf.sh` | `make_all_figures.py`, `generate_glossary.py`, `validate_markdown.py` (its `scripts` array); `pandoc`/`xelatex` |
 | `clean_output.sh` | filesystem only |
-| `make_all_figures.py` | 20 figure scripts (subprocess); `quadmath.paths` |
+| `make_all_figures.py` | 19 figure scripts in `FIGURE_SCRIPTS` (subprocess); `quadmath.paths`; `quadmath.tools.atomic_write` (manifest) |
 | `validate_markdown.py` | none (stdlib only) |
 | `generate_glossary.py` | `quadmath.tools.glossary_gen` |
 | `information_demo.py` | `quadmath.inference.information`, `quadmath.optimize.discrete_variational`, `quadmath.core.metrics`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
@@ -40,7 +40,7 @@ importable entrypoints under `src/`.
 | `polyhedra_quadray_constructions.py` | `quadmath.paths` (figure construction inline) |
 | `graphical_abstract_quadray.py` | `quadmath.core.quadray`, `quadmath.paths` |
 | `sympy_formalisms.py` | `quadmath.core.symbolic`, `quadmath.core.quadray` |
-| `gpu_acceleration_demo.py` | `quadmath.core.quadray` |
+| `gpu_acceleration_demo.py` | `quadmath.core.quadray`; manual benchmark, not in `FIGURE_SCRIPTS` |
 | `ivm_field_demo.py` | `quadmath.lattice.ivm_field`, `quadmath.core.quadray`, `quadmath.paths` |
 | `ivm_dynamics_demo.py` | `quadmath.lattice.ivm_dynamics` |
 | `lattice_gallery.py` | `quadmath.viz.vis_lattice` (`gallery` composer), `quadmath.paths` |
@@ -63,18 +63,35 @@ importable entrypoints under `src/`.
 - `make_all_figures.py` writes `figure_manifest.txt` from stdout lines ending
   in `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` — generators MUST print absolute output
   paths under the repo root. The path is the last token of the line; paths are
-  stored repo-relative and deduplicated. Each script must emit at least one
-  existing path, except scripts in `NO_ARTIFACT_SCRIPTS`.
+  stored repo-relative and deduplicated. Each `FIGURE_SCRIPTS` entry must emit
+  at least one existing path; there are no exemptions. The manifest is written
+  with `atomic_write_text`.
+- Atomic data writes: use `quadmath.tools.atomic_write.atomic_open(path,
+  newline=...)` or `atomic_write_text` for CSV/TXT outputs. Pass
+  `newline=""` for `csv.writer` so rows end in `\r\n` as before. Converted:
+  `volumes_demo.py`, `ivm_neighbors.py`, `sympy_formalisms.py` (two outputs),
+  `information_demo.py` (CSV and `np.savetxt` via `_savetxt_atomic`). Not
+  converted: `np.savez` outputs and `generate_glossary.py` markdown.
+- `render_pdf.sh` structure: `MODULES` and `EXCLUDED_MODULES` (both
+  `file|reason`) are checked by `check_module_coverage` before any build. The
+  script is sourced by tests, so `main` is behind a `BASH_SOURCE` guard. Shared
+  helpers are `pandoc_to_tex` (one pandoc option set, margins `1cm` on all
+  sides), `compile_tex_to_pdf` (three xelatex passes, extra pass when aux
+  holds `\@ref`/`\@cite`), `build_one`, and `build_combined`. Titles are passed
+  to pandoc `-V` raw, so they must not contain LaTeX special characters.
+  `tests/tools/test_render_pdf.py` runs these helpers against stub pandoc and
+  xelatex.
 - `validate_markdown.py --strict` exits 1 on any warning (plain `sys.argv`
   check; there is no argparse).
 - `render_pdf.sh` requires `pandoc` + `xelatex`; `LOG_LEVEL=0..3` controls
   verbosity (0 = debug, default 1 = info).
 - Who runs what: `render_pdf.sh` directly runs 3 scripts
   (`make_all_figures.py`, `generate_glossary.py`,
-  `validate_markdown.py`); all 20 figure/data/GIF generators are reached
-  via `make_all_figures.py`. When adding a script, update that list —
-  see "Adding a script" below.
+  `validate_markdown.py`); all 19 figure/data/GIF generators are reached
+  via `make_all_figures.py`. `gpu_acceleration_demo.py` is run by hand only.
+  When adding a script, update `FIGURE_SCRIPTS` — see "Adding a script" below.
 - Never commit `__pycache__/` or `.DS_Store`; `.gitignore` covers both
   (force-added `.pyc` files were removed in the 2026-09 scripts audit).
-- Adding a script: follow the README template, then register it in the
-  `make_all_figures.py` list and/or the `render_pdf.sh` array as appropriate.
+- Adding a script: follow the README template, then register a figure
+  generator in the `FIGURE_SCRIPTS` tuple in `make_all_figures.py`. Do not add
+  it to the `render_pdf.sh` array; that array only holds the three direct steps.

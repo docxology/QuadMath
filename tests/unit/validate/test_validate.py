@@ -10,6 +10,7 @@ expectations are exact or float-deterministic; no randomness, no mocks.
 import dataclasses
 import math
 
+import numpy as np
 import pytest
 
 from quadmath.core.quadray import Quadray
@@ -121,13 +122,39 @@ def test_check_slerp_midpoint_passes_on_shared_hemisphere_pairs():
         assert report.detail
 
 
-def test_check_slerp_midpoint_fails_for_opposite_hemisphere_pair():
-    # Unit q1 with dot(e, q1) = -cos(pi/6) < 0: the shortest-arc midpoint is
-    # equidistant from -q1 instead, so angle(m, q1) = pi - angle(q0, m)
+def test_check_slerp_midpoint_passes_for_q_and_negated_q():
+    # q and -q are the same rotation; the shorter-arc midpoint is q itself
+    q = Quadray(0.6, 0.8, 0, 0)
+    neg_q = Quadray(-0.6, -0.8, 0, 0)
+    for q0, q1 in ((q, neg_q), (neg_q, q), (E, Quadray(-1, 0, 0, 0))):
+        report = check_slerp_midpoint(q0, q1)
+        assert report.passed is True, report.detail
+
+
+def test_check_slerp_midpoint_passes_for_known_opposite_hemisphere_midpoint():
+    # dot(e, q1) = -cos(pi/6) < 0; the shorter arc from e to -q1 has its
+    # midpoint at angle pi/12 from e, which the check must accept.
     q1 = Quadray(-math.sqrt(3.0) / 2.0, 0.5, 0, 0)
     report = check_slerp_midpoint(E, q1)
-    assert report.passed is False
+    assert report.passed is True
     assert report.detail
+
+
+def test_check_slerp_midpoint_passes_on_seeded_random_pairs_of_both_signs():
+    rng = np.random.default_rng(3)
+    saw_negative_dot = saw_nonnegative_dot = False
+    for _ in range(50):
+        v0 = rng.normal(size=4)
+        v1 = rng.normal(size=4)
+        v0 /= np.linalg.norm(v0)
+        v1 /= np.linalg.norm(v1)
+        dot = float(np.dot(v0, v1))
+        saw_negative_dot = saw_negative_dot or dot < 0.0
+        saw_nonnegative_dot = saw_nonnegative_dot or dot >= 0.0
+        q0 = Quadray(*(float(c) for c in v0))
+        q1 = Quadray(*(float(c) for c in v1))
+        assert check_slerp_midpoint(q0, q1).passed is True
+    assert saw_negative_dot and saw_nonnegative_dot
 
 
 def test_check_slerp_midpoint_propagates_non_unit_error():
@@ -217,6 +244,12 @@ def test_run_validation_propagates_non_value_error_exceptions():
 
     with pytest.raises(RuntimeError, match="not a validation failure"):
         run_validation([E], checks=[broken])
+
+
+def test_check_slerp_midpoint_fails_when_tolerance_cannot_be_met():
+    report = check_slerp_midpoint(E, I, tol=-1.0)
+    assert report.passed is False
+    assert "beyond tol" in report.detail
 
 
 def test_run_validation_empty_quaternions_yields_no_reports():

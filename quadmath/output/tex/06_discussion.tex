@@ -58,6 +58,10 @@
 \newunicodechar{⁴}{\textsuperscript{4}}
 \newunicodechar{₄}{\textsubscript{4}}
 
+% Math notation macros
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
 % Enhanced code block styling for better contrast and readability
 \usepackage{fancyvrb}
 \usepackage{xcolor}
@@ -174,7 +178,7 @@
 
 \title{Discussion}
 \author{Daniel Ari Friedman\\ ORCID: 0000-0001-6232-9096\\ Email: daniel@activeinference.institute\\ DOI: 10.5281/zenodo.16887791}
-\date{September 10, 2026}
+\date{October 07, 2026}
 
 \begin{document}
 \maketitle
@@ -188,62 +192,65 @@
 \section{Discussion}\label{discussion}
 
 Quadray geometry (Fuller.4D) offers an interpretable, quantized view of
-geometry, topology, information, and optimization. Integer volumes
-enforce discrete dynamics, acting as a structural prior that can
-regularize optimization, reduce overfitting, prevent numerical
-fragility, and enable integer-based accelerated methods. Information
-geometry provides a right language for optimization in the synergetic
-tradition: optimization proceeds not through arbitrary parameter-space
-moves in continuous space, but along geodesics defined by information
-content (see Eq. \eqref{eq:fim} and Eq. \eqref{eq:natural_gradient} in
-the equations appendix; overview:
+geometry, topology, information, and optimization. The claim this
+discussion defends is that two mechanisms carry most of the weight.
+First, integer volumes enforce discrete dynamics, acting as a structural
+prior that regularizes optimization, prevents numerical fragility, and
+enables exact integer-based accelerated methods (Sections 3--5 present
+the evidence). Second, information geometry supplies the right
+optimization language for the synergetic tradition: updates proceed not
+through arbitrary parameter-space moves in continuous space, but along
+geodesics defined by information content (see Eq. \eqref{eq:fim} and Eq.
+\eqref{eq:natural_gradient} in the equations appendix; overview:
 \href{https://en.wikipedia.org/wiki/Natural_gradient}{Natural
-gradient}).
+gradient}). The subsections below state what follows from combining the
+two mechanisms, what remains unestablished, and where external
+validation stands.
 
-Limitations and considerations:
+\subsection{Scope and Limitations}\label{scope-and-limitations}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Embeddings and distances}: Mapping between quadray and
-  Euclidean coordinates must be selected carefully for distance
-  calculations.
+  \textbf{Embeddings and distances}: distance calculations are
+  embedding-dependent --- the quadray-to-Euclidean map must be selected
+  and reported deliberately (Section 5 catalogs the comparison agenda);
+  no single embedding is privileged.
 \item
-  \textbf{Hybrid strategies}: Some problems may require hybrid
-  strategies (continuous steps with periodic lattice projection).
+  \textbf{Hybrid strategies}: some problems need both worlds ---
+  continuous steps interleaved with periodic lattice projection balance
+  curvature-aware efficiency against discrete robustness.
 \item
-  \textbf{Benchmarking}: Empirical benchmarking remains important to
-  quantify benefits across domains.
+  \textbf{Benchmarking}: the structural-prior benefits above remain
+  hypotheses until benchmarked per domain; Section 5 lists the breadth
+  and ablation gaps.
 \end{itemize}
 
 In practical analysis and simulation, numerical precision matters.
 Integer-volume reasoning is exact in theory, but empirical evaluation
 (e.g., determinants, Fisher Information, geodesics) can benefit from
-high-precision arithmetic. When double precision is insufficient,
-quad-precision arithmetic (binary128) via GCC's
-\passthrough{\lstinline!libquadmath!} provides the
-\passthrough{\lstinline!\_\_float128!} type and a rich math API for
-robust computation. See the official documentation for details on
-functions and I/O:
-\href{https://gcc.gnu.org/onlinedocs/libquadmath/index.html}{GCC
-libquadmath}.
+high-precision arithmetic when double precision is insufficient; the
+High-Precision Arithmetic Note in the equations appendix covers quad
+precision (\passthrough{\lstinline!libquadmath!},
+\passthrough{\lstinline!\_\_float128!}) and symbolic (SymPy) evaluation
+routes.
 
 \subsection{Fisher Information and
 Curvature}\label{fisher-information-and-curvature}
 
-The Fisher Information Matrix (FIM) defines a Riemannian metric on
-parameter space and quantifies local curvature of the statistical
-manifold. High curvature directions (large eigenvalues of
-\passthrough{\lstinline!F!}) indicate parameters to which the model is
-most sensitive; small eigenvalues indicate sloppy directions. Our
-eigenspectrum visualization (see the Fisher Information Matrix
-eigenspectrum figure above) highlights these scales. Background:
+Claim: the Fisher Information Matrix (FIM) defines a Riemannian metric
+on parameter space whose eigenspectrum is a readable map of the loss
+surface --- large eigenvalues of \passthrough{\lstinline!F!} mark
+sensitive (high-curvature) directions, small eigenvalues mark sloppy
+ones. Evidence: the eigenspectrum and curvature panels of Section 4 (the
+``Fisher Information eigenspectrum and parameter-space curvature''
+figure) display these scales for the empirical estimate of Eq.
+\eqref{eq:fim_empirical} in the equations appendix. Implication:
+curvature-aware steps using Eq. \eqref{eq:natural_gradient} in the
+equations appendix adaptively scale updates by the inverse metric,
+improving conditioning relative to vanilla gradient descent. Background:
 \href{https://en.wikipedia.org/wiki/Fisher_information}{Fisher
 information}.
-
-Implication: curvature-aware steps using Eq. \eqref{eq:natural_gradient}
-in the equations appendix adaptively scale updates by the inverse
-metric, improving conditioning relative to vanilla gradient descent.
 
 A curious connection unites geodesics in information geometry, the
 physical principle of least action, and Buckminster Fuller's tensegrity
@@ -261,23 +268,26 @@ an extremal path emerges by trading off cost (action or information
 length) against structure (metric curvature or tensegrity
 compatibility). The shared economy---optimal routing through low-cost
 directions---links geodesic shells in architecture to geodesic flows in
-parameter spaces; see background on tensegrity/geodesic domes @Web.
+parameter spaces; see background on tensegrity/geodesic domes online.
 
 \subsection{Quadray Coordinates and 4D Structure (Fuller.4D vs
 Coxeter.4D vs
 Einstein.4D)}\label{quadray-coordinates-and-4d-structure-fuller.4d-vs-coxeter.4d-vs-einstein.4d}
 
 Quadray coordinates provide a tetrahedral basis with projective
-normalization, aligning with close-packed sphere centers (IVM).
-Symmetries common in quadray parameterizations often yield near
-block-diagonal structure in \passthrough{\lstinline!F!}, simplifying
-inversion and preconditioning. Overview:
+normalization, aligning with close-packed sphere centers (IVM);
+overview:
 \href{https://en.wikipedia.org/wiki/Quadray_coordinates}{Quadray
-coordinates} and synergetics background. We stress the namespace
-boundaries: (i) Fuller.4D for lattice and integer volumes, (ii)
-Coxeter.4D for Euclidean embeddings, lengths, and simplex families,
-(iii) Einstein.4D for metric analogies only --- not for interpreting
-synergetic tetravolumes.
+coordinates} and synergetics background. The optimization-relevant
+consequence: symmetries common in quadray parameterizations often yield
+near block-diagonal structure in \passthrough{\lstinline!F!},
+simplifying inversion and preconditioning (Section 4 develops this
+observation; the appendix's namespaces summary fixes the definitions).
+We stress the boundaries because category errors here are the
+framework's main failure mode: (i) Fuller.4D for lattice and integer
+volumes, (ii) Coxeter.4D for Euclidean embeddings, lengths, and simplex
+families, (iii) Einstein.4D for metric analogies only --- not for
+interpreting synergetic tetravolumes.
 
 \subsection{Integrating FIM with Quadray
 Models}\label{integrating-fim-with-quadray-models}
@@ -329,14 +339,15 @@ dimensions}\label{clarifications-on-frequencytime-dimensions}
 \begin{itemize}
 \tightlist
 \item
-  When volumes are computed from edge lengths, PdF and Cayley--Menger
-  operate in Euclidean length space and are converted to IVM
-  tetravolumes via the S3 factor. In contrast, the Gerald de Jong
-  formula computes IVM tetravolumes natively, agreeing numerically with
-  PdF/CM after S3 without explicit XYZ intermediates. Tom Ace's 5×5
-  determinant sits in the same native camp as de Jong's method. See
-  references under the methods section for links to Urner's code
-  notebooks and discussion.
+  The bridging-vs-native dichotomy of Section 3 reduces to a practical
+  rule: when inputs are edge lengths, compute with PdF or Cayley--Menger
+  in Euclidean length space and convert via the S3 factor (Eqs.
+  \eqref{eq:pdf}, \eqref{eq:cayley_menger} in the equations appendix);
+  when inputs are integer quadrays, use the native determinants of Tom
+  Ace or Gerald de Jong (Eqs. \eqref{eq:ace5x5}, \eqref{eq:gdj}), which
+  return IVM tetravolumes directly with no XYZ intermediates. All routes
+  agree numerically on shared cases, so the choice is driven by input
+  type and desired exactness, not by the answer.
 \end{itemize}
 
 \subsubsection{Symbolic analysis (bridging vs native) (Results
@@ -344,12 +355,14 @@ linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}
 
 \begin{itemize}
 \item
-  Exact (SymPy) comparisons confirm that CM+S3 and Ace 5×5 produce
-  identical IVM tetravolumes on canonical small integer-quadray
-  examples. See the bridging vs native comparison figure above and the
-  manifest \passthrough{\lstinline!sympy\_symbolics.txt!} alongside
-  \passthrough{\lstinline!bridging\_vs\_native.csv!} in
-  \passthrough{\lstinline!quadmath/output/!}.
+  Evidence: exact (SymPy) comparisons confirm that CM+S3 and Ace 5×5
+  produce identical IVM tetravolumes on canonical small integer-quadray
+  examples --- see the bridging vs native validation figure in Section 3
+  and the manifest \passthrough{\lstinline!sympy\_symbolics.txt!}
+  alongside \passthrough{\lstinline!bridging\_vs\_native.csv!} in
+  \passthrough{\lstinline!quadmath/output/!}. Implication: the two
+  computational cultures are interchangeable on the lattice, so
+  exactness can be chosen per call site.
 \item
   Curvature-aware optimizers: Kronecker-factored approximations (K-FAC)
   leverage structure in \passthrough{\lstinline!F!} to accelerate
@@ -369,14 +382,13 @@ linkage)}\label{symbolic-analysis-bridging-vs-native-results-linkage}
 \subsection{Community Ecosystem and
 Validation}\label{community-ecosystem-and-validation}
 
-The extensive computational ecosystem around Quadrays and synergetic
-geometry provides validation, pedagogical context, and practical
-implementations that complement and extend the methods developed in this
-manuscript. Cross-language implementations serve as independent
-verification of algorithmic correctness while educational materials
-demonstrate practical applications across diverse computational
-environments. See the Resources section for comprehensive details on the
-4dsolutions organization, cross-language implementations, educational
-frameworks, and community platforms.
+The computational ecosystem around Quadrays and synergetic geometry ---
+chiefly the 4dsolutions organization (Section 7) --- is treated here as
+an external validation surface: its cross-language implementations
+independently verify algorithmic correctness against this manuscript's
+codebase, and its educational materials document applications across
+environments this paper does not attempt to survey. The claim worth
+stating explicitly: agreement between independent implementations is
+evidence for the mathematics, not merely for the code.
 
 \end{document}

@@ -1,15 +1,48 @@
-"""Shared helpers for the viz modules: 3D axes scaling and atomic figure output."""
+"""Shared helpers for the viz modules: output paths, MP4 writer, 3D axes scaling, atomic output."""
 from __future__ import annotations
 
 import os
 import uuid
 from contextlib import contextmanager
-from typing import Iterator, Sequence
+from typing import Callable, Iterator, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import animation
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+
+#: ffmpeg flags that stop the MP4 bytes depending on the ffmpeg build or the clock.
+_BITEXACT_ARGS = ["-fflags", "+bitexact", "-flags:v", "+bitexact", "-flags:a", "+bitexact"]
+
+
+def resolve_output_path(path: str, figure_dir: Callable[[], str]) -> str:
+    """Return the location to write ``path`` under the viz output policy.
+
+    A path that is absolute or has a directory component (``sub/x.png``,
+    ``./x.png``, ``figs/``, ``.``, ``..``) is returned unchanged.  A bare file
+    name is joined to ``figure_dir()``, which is called only in that case.
+
+    Parameters
+    - path: Output file name or path.
+    - figure_dir: Zero-argument callable returning the figure directory.
+
+    Returns
+    - str: The path to write to.
+
+    Raises
+    - ValueError: If ``path`` is empty.
+    """
+    if not path:
+        raise ValueError("output path must be a non-empty string")
+    if os.path.isabs(path) or os.path.basename(path) != path or path in (os.curdir, os.pardir):
+        return path
+    return os.path.join(figure_dir(), path)
+
+
+def mp4_writer(fps: int) -> animation.FFMpegWriter:
+    """Return an ffmpeg writer whose MP4 bytes repeat for identical frames."""
+    return animation.FFMpegWriter(fps=fps, extra_args=_BITEXACT_ARGS)
 
 
 @contextmanager
