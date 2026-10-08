@@ -74,6 +74,7 @@ def main() -> None:
     ax.text(0.02, 0.98, r"$S3=\sqrt{9/8}$", transform=ax.transAxes, va="top", ha="left")
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     outpath = os.path.join(figure_dir, "volumes_scale_plot.png")
     fig.tight_layout()
     fig.savefig(outpath, dpi=160, bbox_inches="tight")
@@ -83,7 +84,7 @@ def main() -> None:
     print(outpath)
 
     # Save raw data alongside the figure for reproducibility
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "volumes_scale_data.npz"),
         scales=np.array(scales, dtype=float),
         V_xyz=np.array(v_xyz_list, dtype=float),

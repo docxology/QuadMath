@@ -59,7 +59,9 @@ All commands run from the repository root.
   and no temp file behind. Used by `make_all_figures.py` (manifest),
   `volumes_demo.py`, `ivm_neighbors.py`, `sympy_formalisms.py` (CSV and
   symbolics text), and `information_demo.py` (CSV and `np.savetxt` output).
-  `.npz` outputs and the glossary markdown are still written directly.
+  `.npz` outputs use `atomic_savez`, which also pins ZIP timestamps so a
+  regenerated archive is byte-identical. The glossary markdown uses
+  `atomic_write_text`.
 
 ## Script Development
 

@@ -44,8 +44,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     if new_text != text:
-        with open(glossary_md, "w", encoding="utf-8") as fh:
-            fh.write(new_text)
+        from quadmath.tools.atomic_write import atomic_write_text  # noqa: WPS433
+        atomic_write_text(glossary_md, new_text)
         print(f"Updated glossary: {glossary_md}")
     else:
         print("Glossary up-to-date")

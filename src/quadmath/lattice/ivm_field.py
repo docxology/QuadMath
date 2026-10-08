@@ -41,7 +41,7 @@ from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
-from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
+from quadmath.core.quadray import DEFAULT_EMBEDDING, IVM_NEIGHBOR_MOVES, Quadray, to_xyz
 
 __all__ = [
     "IVM_NEIGHBOR_STEPS",
@@ -59,20 +59,7 @@ __all__ = [
 #: The 12 IVM neighbor moves from any lattice site: all permutations of
 #: (2, 1, 1, 0), normalized.  Two sites are graph-adjacent iff their
 #: difference normalizes to one of these steps.
-IVM_NEIGHBOR_STEPS: Tuple[Quadray, ...] = tuple(
-    Quadray(*p).normalize()
-    for p in sorted(
-        {
-            (a, b, c, d)
-            for a, b, c, d in (
-                (2, 1, 1, 0), (2, 1, 0, 1), (2, 0, 1, 1),
-                (1, 2, 1, 0), (1, 2, 0, 1), (1, 0, 2, 1),
-                (1, 1, 2, 0), (1, 0, 1, 2), (0, 1, 1, 2),
-                (0, 1, 2, 1), (0, 2, 1, 1), (1, 1, 0, 2),
-            )
-        }
-    )
-)
+IVM_NEIGHBOR_STEPS: Tuple[Quadray, ...] = tuple(Quadray(*p).normalize() for p in IVM_NEIGHBOR_MOVES)
 
 #: Numerical floor for kernel confidence weights; keeps the normal-equation
 #: matrix ``W + lam * L`` positive definite on the connected lattice ball.

@@ -10,6 +10,7 @@ import os
 from quadmath.core.quadray import Quadray, to_xyz, DEFAULT_EMBEDDING
 from quadmath.optimize.nelder_mead_quadray import SimplexState
 from quadmath.paths import get_data_dir, get_figure_dir
+from quadmath.tools.atomic_write import atomic_savez
 from quadmath.optimize.discrete_variational import DiscretePath
 from quadmath.viz._common import (
     atomic_target,
@@ -73,8 +74,7 @@ def plot_ivm_neighbors(
             # Save full raw data alongside the figure
             q_arr = np.array([p.as_tuple() for p in points], dtype=int)
             xyz_arr = np.array(xyz, dtype=float)
-            with atomic_target(os.path.join(data_dir, "ivm_neighbors_data.npz")) as tmp:
-                np.savez(tmp, quadrays=q_arr, xyz=xyz_arr, embedding=emb)
+            atomic_savez(os.path.join(data_dir, "ivm_neighbors_data.npz"), quadrays=q_arr, xyz=xyz_arr, embedding=emb)
             with atomic_target(os.path.join(data_dir, "ivm_neighbors_data.csv")) as tmp, open(tmp, "w", newline="") as f:
                 writer = csv.writer(f, lineterminator="\n")
                 writer.writerow(["a", "b", "c", "d", "x", "y", "z"])
@@ -134,8 +134,7 @@ def animate_simplex(
             [[[to_xyz(v, emb)[i] for i in range(3)] for v in verts] for verts in vertices_list],
             dtype=float,
         )
-        with atomic_target(os.path.join(data_dir, "simplex_animation_vertices.npz")) as tmp:
-            np.savez(tmp, vertices_ivm=verts_ivm, vertices_xyz=verts_xyz, embedding=emb)
+        atomic_savez(os.path.join(data_dir, "simplex_animation_vertices.npz"), vertices_ivm=verts_ivm, vertices_xyz=verts_xyz, embedding=emb)
         # CSV (one row per vertex per frame)
         with atomic_target(os.path.join(data_dir, "simplex_animation_vertices.csv")) as tmp, open(tmp, "w", newline="") as f:
             writer = csv.writer(f, lineterminator="\n")
@@ -194,15 +193,14 @@ def plot_simplex_trace(state: SimplexState, save: bool = True, out_path: Optiona
         save_figure(fig, png_path, dpi=160, bbox_inches="tight")
 
         # Save raw arrays
-        with atomic_target(os.path.join(data_dir, "simplex_trace.npz")) as tmp:
-            np.savez(
-                tmp,
-                iterations=np.array(iterations, dtype=int),
-                best_values=np.array(state.best_values, dtype=float),
-                worst_values=np.array(state.worst_values, dtype=float),
-                spreads=np.array(state.spreads, dtype=float),
-                volumes=np.array(volumes, dtype=float),
-            )
+        atomic_savez(
+            os.path.join(data_dir, "simplex_trace.npz"),
+            iterations=np.array(iterations, dtype=int),
+            best_values=np.array(state.best_values, dtype=float),
+            worst_values=np.array(state.worst_values, dtype=float),
+            spreads=np.array(state.spreads, dtype=float),
+            volumes=np.array(volumes, dtype=float),
+        )
         with atomic_target(os.path.join(data_dir, "simplex_trace.csv")) as tmp, open(tmp, "w", newline="") as f:
             writer = csv.writer(f, lineterminator="\n")
             writer.writerow(["iteration", "best", "worst", "spread", "volume"])
@@ -273,8 +271,7 @@ def plot_partition_tetrahedron(
             names = list(points.keys())
             q_arr = np.array([points[n].as_tuple() for n in names], dtype=int)
             xyz_arr = np.array([xyz[n] for n in names], dtype=float)
-            with atomic_target(os.path.join(data_dir, "partition_tetrahedron_data.npz")) as tmp:
-                np.savez(tmp, names=np.array(names), quadrays=q_arr, xyz=xyz_arr, embedding=emb)
+            atomic_savez(os.path.join(data_dir, "partition_tetrahedron_data.npz"), names=np.array(names), quadrays=q_arr, xyz=xyz_arr, embedding=emb)
             with atomic_target(os.path.join(data_dir, "partition_tetrahedron_data.csv")) as tmp, open(tmp, "w", newline="") as f:
                 writer = csv.writer(f, lineterminator="\n")
                 writer.writerow(["name", "a", "b", "c", "d", "x", "y", "z"])
@@ -333,8 +330,7 @@ def animate_discrete_path(
         q_arr = np.array([q.as_tuple() for q in path.path], dtype=int)
         xyz_arr = np.array([to_xyz(q, emb) for q in path.path], dtype=float)
         vals = np.array(path.values, dtype=float)
-        with atomic_target(os.path.join(data_dir, "discrete_path.npz")) as tmp:
-            np.savez(tmp, quadrays=q_arr, xyz=xyz_arr, values=vals, embedding=emb)
+        atomic_savez(os.path.join(data_dir, "discrete_path.npz"), quadrays=q_arr, xyz=xyz_arr, values=vals, embedding=emb)
         with atomic_target(os.path.join(data_dir, "discrete_path.csv")) as tmp, open(tmp, "w", newline="") as f:
             writer = csv.writer(f, lineterminator="\n")
             writer.writerow(["step", "a", "b", "c", "d", "x", "y", "z", "value"])

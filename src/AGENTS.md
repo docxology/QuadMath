@@ -22,7 +22,7 @@ src/quadmath/
 ├── stats/             # statistics, benchmarks
 ├── learn/             # learning_eval
 ├── viz/               # visualize, vis_lattice, vis_stats
-└── tools/             # glossary_gen
+└── tools/             # glossary_gen, atomic_write
 ```
 
 ## Agent Guidelines
@@ -180,6 +180,7 @@ def test_volume():
 ### Utility Modules (`quadmath/tools/`, top level)
 
 - `glossary_gen.py` - API documentation generation
+- `atomic_write.py` - Atomic text and `.npz` writes (`atomic_open`, `atomic_write_text`, `atomic_savez`)
 - `pipeline.py` (top level) - Typed composable pipeline layer
 
 ## Dependency Graph

@@ -39,3 +39,10 @@ def test_check_exits_0_when_up_to_date(tmp_path, monkeypatch):
     regenerated = glossary.read_text(encoding="utf-8")
     assert generate_glossary.main(["--check"]) == 0
     assert glossary.read_text(encoding="utf-8") == regenerated
+
+
+def test_default_run_leaves_only_the_glossary_in_its_directory(tmp_path, monkeypatch):
+    repo, glossary = _make_repo(tmp_path, f"# Glossary\n{BEGIN}\nold\n{END}\n")
+    monkeypatch.setattr(generate_glossary, "_repo_root", lambda: str(repo))
+    assert generate_glossary.main([]) == 0
+    assert sorted(p.name for p in glossary.parent.iterdir()) == ["10_symbols_glossary.md"]

@@ -25,12 +25,11 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from itertools import permutations
 from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
+from quadmath.core.quadray import DEFAULT_EMBEDDING, IVM_NEIGHBOR_MOVES, Quadray, to_xyz
 
 
 def neighbor_shifts() -> List[Quadray]:
@@ -40,9 +39,7 @@ def neighbor_shifts() -> List[Quadray]:
     `DEFAULT_EMBEDDING` each shift has integer squared radius 8, i.e. the
     close-packing (sphere-touching) distance of the 12-around-one cluster.
     """
-    base = (2, 1, 1, 0)
-    uniq = sorted(set(permutations(base)))
-    return [Quadray(*u) for u in uniq]
+    return [Quadray(*move) for move in IVM_NEIGHBOR_MOVES]
 
 
 def site_radius_sq(q: Quadray) -> int:

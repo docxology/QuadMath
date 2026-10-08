@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from fractions import Fraction
-from itertools import permutations
 from typing import List, Iterable
 
-from quadmath.core.quadray import Quadray, DEFAULT_EMBEDDING, to_xyz, integer_tetra_volume, ace_tetravolume_5x5
+from quadmath.core.quadray import IVM_NEIGHBOR_MOVES, Quadray, DEFAULT_EMBEDDING, to_xyz, integer_tetra_volume, ace_tetravolume_5x5
 from quadmath.optimize.nelder_mead_quadray import nelder_mead_quadray, SimplexState
 
 
@@ -16,7 +15,7 @@ def _ivm_neighbor_permutations() -> List[Quadray]:
     roles documented in the manuscript (neighbor-move set vs. shell positions).
     Sorted output keeps results deterministic regardless of set ordering.
     """
-    return [Quadray(*perm) for perm in sorted(set(permutations((2, 1, 1, 0))))]
+    return [Quadray(*perm) for perm in IVM_NEIGHBOR_MOVES]
 
 
 def example_ivm_neighbors() -> List[Quadray]:

@@ -121,6 +121,7 @@ def main() -> None:
 
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     outpath2 = os.path.join(figure_dir, "ivm_neighbors_edges.png")
     # Avoid tight_layout with 3D subplots; set margins manually
     fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.06, wspace=0.08, hspace=0.12)
@@ -132,7 +133,7 @@ def main() -> None:
     import csv  # noqa: WPS433
     q_arr = np.array([p.as_tuple() for p in points], dtype=int)
     xyz_arr = np.array(xyz, dtype=float)
-    np.savez(os.path.join(data_dir, "ivm_neighbors_edges_data.npz"), quadrays=q_arr, xyz=xyz_arr, radius=r)
+    atomic_savez(os.path.join(data_dir, "ivm_neighbors_edges_data.npz"), quadrays=q_arr, xyz=xyz_arr, radius=r)
     # Also provide a simple CSV of neighbor coordinates (both Quadray and XYZ)
     csv_path = os.path.join(data_dir, "ivm_neighbors_data.csv")
     from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433

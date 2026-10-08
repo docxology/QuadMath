@@ -163,6 +163,7 @@ def main() -> None:
     
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     fim_path = os.path.join(figure_dir, "fisher_information_matrix.png")
     fig.savefig(fim_path, dpi=300, bbox_inches='tight')
     print(fim_path)
@@ -170,7 +171,7 @@ def main() -> None:
 
     # Save raw data alongside the figure for reproducibility and downstream use
     _savetxt_atomic(os.path.join(data_dir, "fisher_information_matrix.csv"), F)
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "fisher_information_matrix.npz"),
         F=F,
         grads=grads,
@@ -321,12 +322,15 @@ def main() -> None:
     # Save eigen-data
     _savetxt_atomic(os.path.join(data_dir, "fisher_information_eigenvalues.csv"), evals[None, :])
     print(os.path.join(data_dir, "fisher_information_eigenvalues.csv"))
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "fisher_information_eigensystem.npz"),
         eigenvalues=evals,
         eigenvectors=evecs,
         F=F,
-        curvature_analysis=curvature_analysis,
+        condition_number=curvature_analysis["condition_number"],
+        trace=curvature_analysis["trace"],
+        determinant=curvature_analysis["determinant"],
+        anisotropy_index=curvature_analysis["anisotropy_index"],
     )
 
     # Partition tetrahedron plot for appendix
@@ -378,7 +382,7 @@ def main() -> None:
         for row in path:
             writer.writerow([float(row[0]), float(row[1]), float(row[2])])
     print(ng_csv)
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "natural_gradient_path.npz"),
         path=path,
         A=A,

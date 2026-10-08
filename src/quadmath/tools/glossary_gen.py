@@ -102,9 +102,9 @@ def generate_markdown_table(entries: List[ApiEntry]) -> str:
     rows: List[str] = []
     # Stable sort by module then name
     for e in sorted(entries, key=lambda x: (x.module, x.name)):
-        sig = e.signature or ""
+        sig = f"`{e.signature}`" if e.signature else ""
         summary = e.summary.replace("|", "\\|")
-        rows.append(f"| `{e.module}` | `{e.name}` | {e.kind} | `{sig}` | {summary} |")
+        rows.append(f"| `{e.module}` | `{e.name}` | {e.kind} | {sig} | {summary} |")
     return "\n".join([header, *rows])
 
 

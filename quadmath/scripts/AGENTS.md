@@ -70,8 +70,11 @@ importable entrypoints under `src/`.
   newline=...)` or `atomic_write_text` for CSV/TXT outputs. Pass
   `newline=""` for `csv.writer` so rows end in `\r\n` as before. Converted:
   `volumes_demo.py`, `ivm_neighbors.py`, `sympy_formalisms.py` (two outputs),
-  `information_demo.py` (CSV and `np.savetxt` via `_savetxt_atomic`). Not
-  converted: `np.savez` outputs and `generate_glossary.py` markdown.
+  `information_demo.py` (CSV and `np.savetxt` via `_savetxt_atomic`).
+- Archives: write every `.npz` with `quadmath.tools.atomic_savez(path,
+  **arrays)`. It is atomic and stamps fixed ZIP timestamps, so regenerated
+  archives are byte-identical. Do not call `np.savez` directly. The glossary
+  markdown is written with `atomic_write_text`.
 - `render_pdf.sh` structure: `MODULES` and `EXCLUDED_MODULES` (both
   `file|reason`) are checked by `check_module_coverage` before any build. The
   script is sourced by tests, so `main` is behind a `BASH_SOURCE` guard. Shared

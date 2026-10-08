@@ -3,6 +3,7 @@ from fractions import Fraction
 import pytest
 
 from quadmath.core.quadray import (
+    IVM_NEIGHBOR_MOVES,
     Quadray,
     integer_tetra_volume,
     to_xyz,
@@ -400,3 +401,10 @@ def test_qrotate_accepts_negated_quaternion_as_same_rotation():
     got = qrotate(neg, v, math.pi / 2.0)
     expected = qrotate(qz90, v, math.pi / 2.0)
     assert all(abs(g - e) < 1e-12 for g, e in zip(got, expected))
+
+
+def test_ivm_neighbor_moves_are_the_twelve_sorted_permutations_of_2110():
+    from itertools import permutations
+
+    assert IVM_NEIGHBOR_MOVES == tuple(sorted(set(permutations((2, 1, 1, 0)))))
+    assert len(IVM_NEIGHBOR_MOVES) == 12

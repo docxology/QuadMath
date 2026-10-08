@@ -67,6 +67,7 @@ def main() -> None:
 
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     outpath = os.path.join(figure_dir, "quadray_clouds.png")
     # Avoid tight_layout on 3D subplots; set margins manually
     fig.subplots_adjust(left=0.03, right=0.98, top=0.92, bottom=0.08, wspace=0.08)
@@ -82,7 +83,7 @@ def main() -> None:
     emb_default = np.array(DEFAULT_EMBEDDING, dtype=float)
     emb_scaled = np.array(scaled, dtype=float)
     emb_urner = np.array(urner_embedding(scale=1.0), dtype=float)
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "quadray_clouds_data.npz"),
         quadrays=q_arr,
         xyz_default=xyz1_arr,

@@ -17,6 +17,7 @@ Saves to quadmath/output/ and prints saved paths.
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
 import numpy as np
@@ -312,6 +313,7 @@ def create_4d_trajectory_visualization():
     # Save the figure
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     
     fig13_path = os.path.join(figure_dir, "figure_13_4d_trajectory.png")
     fig.savefig(fig13_path, dpi=300, bbox_inches='tight')
@@ -319,7 +321,7 @@ def create_4d_trajectory_visualization():
     plt.close(fig)
     
     # Save raw data with metadata
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "figure_13_data.npz"),
         path=path,
         free_energy_trace=free_energy_trace,
@@ -333,13 +335,13 @@ def create_4d_trajectory_visualization():
         F_final=F_final,
         w_true=w_true,
         w_est=w_est,
-        metadata={
+        metadata_json=json.dumps({
             'description': '4D Natural Gradient Trajectory for Active Inference',
             'parameters': ['perception_weight', 'action_weight', 'internal_state', 'external_state'],
             'framework': ['Coxeter.4D', 'Einstein.4D', 'Fuller.4D'],
             'optimization_steps': len(free_energy_trace),
             'convergence_achieved': len(free_energy_trace) < max_steps
-        }
+        }, sort_keys=True)
     )
     
     return fig13_path
@@ -536,6 +538,7 @@ Mathematical Structure:
     # Save the figure
     figure_dir = get_figure_dir()
     data_dir = get_data_dir()
+    from quadmath.tools.atomic_write import atomic_savez  # noqa: WPS433
     
     outpath = os.path.join(figure_dir, "figure_14_free_energy_landscape.png")
     fig.savefig(outpath, dpi=300, bbox_inches='tight')
@@ -544,7 +547,7 @@ Mathematical Structure:
     print(f"Figure 14 saved to: {outpath}")
     
     # Save raw data with metadata
-    np.savez(
+    atomic_savez(
         os.path.join(data_dir, "figure_14_data.npz"),
         Q1=Q1,
         Q2=Q2,
@@ -554,12 +557,12 @@ Mathematical Structure:
         min_q2=min_q2,
         min_F=min_F,
         curvature_at_min=curvature_at_min,
-        metadata={
+        metadata_json=json.dumps({
             'description': 'Free Energy Landscape for Active Inference',
             'parameters': ['perception_parameter', 'action_parameter'],
             'framework': ['Fuller.4D', 'Coxeter.4D', 'Einstein.4D'],
             'resolution': [len(q1_vals), len(q2_vals)]
-        }
+        }, sort_keys=True)
     )
     
     return outpath

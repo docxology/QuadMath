@@ -1794,8 +1794,9 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.metrics` | `kl_divergence` | function | `(p, q, eps)` | Kullback–Leibler divergence between two discrete distributions. |
 | `quadmath.core.metrics` | `quat_log_euclidean_dispersion` | function | `(quats)` | Root-mean-square chordal dispersion of quaternions about their mean. |
 | `quadmath.core.metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
-| `quadmath.core.quadray` | `DEFAULT_EMBEDDING` | constant | `` |  |
-| `quadmath.core.quadray` | `Quadray` | class | `` | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
+| `quadmath.core.quadray` | `DEFAULT_EMBEDDING` | constant |  |  |
+| `quadmath.core.quadray` | `IVM_NEIGHBOR_MOVES` | constant |  |  |
+| `quadmath.core.quadray` | `Quadray` | class |  | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
 | `quadmath.core.quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
 | `quadmath.core.quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
 | `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Component-wise mean of quadray points, rounded to the nearest lattice point. |
@@ -1829,10 +1830,10 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.conversions` | `quadray_to_xyz` | function | `(q, M)` | Map a `Quadray` to Cartesian XYZ via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `quadmath.lattice.conversions` | `urner_embedding` | function | `(scale)` | Return a 3x4 Urner-style symmetric embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `quadmath.lattice.conversions` | `xyz_to_quadray_canonical` | function | `(xyz, M)` | Recover the canonical integer quadray for an XYZ point in the embedding image, EXACTLY. |
-| `quadmath.lattice.ivm_dynamics` | `DynamicsParams` | class | `` | Parameters of a discrete IVM lattice dynamics run. |
-| `quadmath.lattice.ivm_dynamics` | `FitResult` | class | `` | Outcome of gradient-free coupling identification. |
-| `quadmath.lattice.ivm_dynamics` | `IVMLattice` | class | `` | Finite IVM lattice ball with neighbor adjacency and diffusion operators. |
-| `quadmath.lattice.ivm_dynamics` | `Trajectory` | class | `` | Deterministic simulation record. |
+| `quadmath.lattice.ivm_dynamics` | `DynamicsParams` | class |  | Parameters of a discrete IVM lattice dynamics run. |
+| `quadmath.lattice.ivm_dynamics` | `FitResult` | class |  | Outcome of gradient-free coupling identification. |
+| `quadmath.lattice.ivm_dynamics` | `IVMLattice` | class |  | Finite IVM lattice ball with neighbor adjacency and diffusion operators. |
+| `quadmath.lattice.ivm_dynamics` | `Trajectory` | class |  | Deterministic simulation record. |
 | `quadmath.lattice.ivm_dynamics` | `ball_sites` | function | `(radius)` | Enumerate canonical quadray sites with squared IVM radius <= radius**2. |
 | `quadmath.lattice.ivm_dynamics` | `fit_trajectory` | function | `(observed, grid, lattice, kind, refine_rounds)` | Identify the coupling alpha from an observed trajectory (gradient-free). |
 | `quadmath.lattice.ivm_dynamics` | `heat_step` | function | `(u, lattice, alpha)` | One heat-diffusion step u <- (1 - alpha) u + alpha S u. |
@@ -1845,9 +1846,9 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.ivm_dynamics` | `site_radius_sq` | function | `(q)` | Integer squared IVM radius of a quadray site (squared embedding norm). |
 | `quadmath.lattice.ivm_dynamics` | `step` | function | `(u, lattice, params)` | Apply one update of the dynamics in `params` to the field. |
 | `quadmath.lattice.ivm_dynamics` | `sum_of_squares` | function | `(u)` | Sum of squares of a field — the observable of the heat lemma. |
-| `quadmath.lattice.ivm_field` | `IVMField` | class | `` | Scalar field over an IVM lattice ball, stored on a deterministic site index. |
-| `quadmath.lattice.ivm_field` | `IVM_NEIGHBOR_STEPS` | constant | `` |  |
-| `quadmath.lattice.ivm_field` | `TetrahedronFit` | class | `` | Result of :func:`fit_geometry`. |
+| `quadmath.lattice.ivm_field` | `IVMField` | class |  | Scalar field over an IVM lattice ball, stored on a deterministic site index. |
+| `quadmath.lattice.ivm_field` | `IVM_NEIGHBOR_STEPS` | constant |  |  |
+| `quadmath.lattice.ivm_field` | `TetrahedronFit` | class |  | Result of :func:`fit_geometry`. |
 | `quadmath.lattice.ivm_field` | `fit_geometry` | function | `(points, labels, embedding)` | Least-squares recovery of a tetrahedron's orientation+scale from noisy 3D points. |
 | `quadmath.lattice.ivm_field` | `is_ivm_site` | function | `(q)` | Return True iff ``q`` (after normalization) is an IVM lattice site. |
 | `quadmath.lattice.ivm_field` | `quadray_shell_norm` | function | `(q)` | Return the IVM shell norm of ``q``: an even integer equal to ``2k``. |
@@ -1857,8 +1858,8 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.lattice_search` | `nearest` | function | `(site, R, k)` | Return the ``k`` nearest IVM lattice sites within radius ``R``. |
 | `quadmath.lattice.lattice_search` | `squared_distance` | function | `(p, sites)` | Exact lattice squared distances from ``p`` to rows of ``sites``. |
 | `quadmath.lattice.lattice_search` | `within_radius` | function | `(site, R)` | Return all IVM lattice sites within Euclidean radius ``R`` of ``site``. |
-| `quadmath.lattice.omni_numbering` | `MAX_SHELL` | constant | `` |  |
-| `quadmath.lattice.omni_numbering` | `NEIGHBOR_MOVES` | constant | `` |  |
+| `quadmath.lattice.omni_numbering` | `MAX_SHELL` | constant |  |  |
+| `quadmath.lattice.omni_numbering` | `NEIGHBOR_MOVES` | constant |  |  |
 | `quadmath.lattice.omni_numbering` | `clear_shell_cache` | function | `()` | Drop memoized shell enumerations so the next call recomputes them. |
 | `quadmath.lattice.omni_numbering` | `cumulative_count` | function | `(k)` | Return the total number of IVM sites through shell ``k`` (inclusive). |
 | `quadmath.lattice.omni_numbering` | `generate_shell` | function | `(k)` | Generate the sites of shell ``k`` of the omnidirectional close packing. |
@@ -1866,11 +1867,11 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.omni_numbering` | `site_at_index` | function | `(index, max_shell)` | Return the IVM site at a canonical global index. |
 | `quadmath.lattice.omni_numbering` | `site_index` | function | `(site, max_shell)` | Return the canonical global index of an IVM site, or -1 if absent. |
 | `quadmath.lattice.omni_numbering` | `sites_through_shell` | function | `(max_shell)` | Return all IVM sites through shell ``max_shell`` in canonical order. |
-| `quadmath.learn.learning_eval` | `CrossValidationResult` | class | `` | K-fold cross-validation table for the IVM field learner. |
-| `quadmath.learn.learning_eval` | `GradientDescentTrainer` | class | `` | Full-batch gradient-descent fit of a linear model on standardized features. |
-| `quadmath.learn.learning_eval` | `LearningCurveResult` | class | `` | Data-coverage curve for the IVM field learner. |
-| `quadmath.learn.learning_eval` | `RidgeSiteFit` | class | `` | Closed-form ridge fit of a single linear site model. |
-| `quadmath.learn.learning_eval` | `TrajectorySplitResult` | class | `` | Outcome of a temporal train/test evaluation of dynamics identification. |
+| `quadmath.learn.learning_eval` | `CrossValidationResult` | class |  | K-fold cross-validation table for the IVM field learner. |
+| `quadmath.learn.learning_eval` | `GradientDescentTrainer` | class |  | Full-batch gradient-descent fit of a linear model on standardized features. |
+| `quadmath.learn.learning_eval` | `LearningCurveResult` | class |  | Data-coverage curve for the IVM field learner. |
+| `quadmath.learn.learning_eval` | `RidgeSiteFit` | class |  | Closed-form ridge fit of a single linear site model. |
+| `quadmath.learn.learning_eval` | `TrajectorySplitResult` | class |  | Outcome of a temporal train/test evaluation of dynamics identification. |
 | `quadmath.learn.learning_eval` | `cross_validate_field` | function | `(field_values, sites, k, lam_grid, seed, radius=, kernel_width=)` | Cross-validate the Laplacian-regularized field learner over k folds. |
 | `quadmath.learn.learning_eval` | `enclosing_radius` | function | `(sites)` | Return the smallest IVM ball radius containing every given site. |
 | `quadmath.learn.learning_eval` | `kfold_site_splits` | function | `(observed_sites, k, seed)` | Partition observed lattice sites into ``k`` seeded folds. |
@@ -1878,11 +1879,11 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.learn.learning_eval` | `ridge_site_fit` | function | `(features, values, lam)` | Fit a closed-form ridge regression with intercept on tabular rows. |
 | `quadmath.learn.learning_eval` | `three_way_split` | function | `(n, train_frac, val_frac, seed)` | Split ``range(n)`` into seeded, disjoint train/val/test index lists. |
 | `quadmath.learn.learning_eval` | `trajectory_train_test` | function | `(observed, split_frac, lattice, kind=, grid=, refine_rounds=)` | Identify dynamics parameters on a training prefix, score the held-out suffix. |
-| `quadmath.optimize.discrete_variational` | `DiscretePath` | class | `` | Optimization trajectory on the integer quadray lattice. |
+| `quadmath.optimize.discrete_variational` | `DiscretePath` | class |  | Optimization trajectory on the integer quadray lattice. |
 | `quadmath.optimize.discrete_variational` | `apply_move` | function | `(q, delta)` | Apply a lattice move and normalize to the canonical representative. |
 | `quadmath.optimize.discrete_variational` | `discrete_ivm_descent` | function | `(objective, start, moves=, max_iter=, on_step=)` | Greedy discrete descent over the quadray integer lattice. |
 | `quadmath.optimize.discrete_variational` | `neighbor_moves_ivm` | function | `()` | Return the 12 canonical IVM neighbor moves as Quadray deltas. |
-| `quadmath.optimize.nelder_mead_quadray` | `SimplexState` | class | `` |  |
+| `quadmath.optimize.nelder_mead_quadray` | `SimplexState` | class |  |  |
 | `quadmath.optimize.nelder_mead_quadray` | `centroid_excluding` | function | `(vertices, exclude_idx)` | Integer centroid of three vertices, excluding the specified index. |
 | `quadmath.optimize.nelder_mead_quadray` | `compute_volume` | function | `(vertices)` | Exact IVM tetra-volume (a Fraction, absolute determinant divided by 4) of the first four vertices. |
 | `quadmath.optimize.nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
@@ -1892,18 +1893,18 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.paths` | `get_figure_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. |
 | `quadmath.paths` | `get_output_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. |
 | `quadmath.paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
-| `quadmath.pipeline` | `FieldLearner` | class | `` | Laplacian-regularized field learner over an IVM ball; satisfies :class:`Fittable`. |
-| `quadmath.pipeline` | `FieldModel` | class | `` | Anything that predicts a scalar field value at a lattice site. |
-| `quadmath.pipeline` | `Fittable` | class | `` | Anything that can fit a field model from data, then predict. |
-| `quadmath.pipeline` | `LatticeBall` | class | `` | Immutable view of an IVM lattice ball; satisfies :class:`LatticeSource`. |
-| `quadmath.pipeline` | `LatticeSource` | class | `` | Anything that can enumerate IVM lattice sites (structural). |
-| `quadmath.pipeline` | `Pipeline` | class | `` | Immutable sequence of :class:`Step` objects; monoid-style composition. |
-| `quadmath.pipeline` | `Step` | class | `` | A named, typed callable unit of a :class:`Pipeline`. |
+| `quadmath.pipeline` | `FieldLearner` | class |  | Laplacian-regularized field learner over an IVM ball; satisfies :class:`Fittable`. |
+| `quadmath.pipeline` | `FieldModel` | class |  | Anything that predicts a scalar field value at a lattice site. |
+| `quadmath.pipeline` | `Fittable` | class |  | Anything that can fit a field model from data, then predict. |
+| `quadmath.pipeline` | `LatticeBall` | class |  | Immutable view of an IVM lattice ball; satisfies :class:`LatticeSource`. |
+| `quadmath.pipeline` | `LatticeSource` | class |  | Anything that can enumerate IVM lattice sites (structural). |
+| `quadmath.pipeline` | `Pipeline` | class |  | Immutable sequence of :class:`Step` objects; monoid-style composition. |
+| `quadmath.pipeline` | `Step` | class |  | A named, typed callable unit of a :class:`Pipeline`. |
 | `quadmath.pipeline` | `dynamics_step` | function | `(params, T)` | Step simulating the discrete IVM dynamics in ``params`` (ignores input). |
 | `quadmath.pipeline` | `learn_step` | function | `(lam, seed, radius)` | Step fitting an :class:`IVMField` by Laplacian-regularized learning. |
 | `quadmath.pipeline` | `sites_step` | function | `(radius)` | Step producing the IVM ball sites of shell ``radius`` (ignores input). |
-| `quadmath.stats.benchmarks` | `BENCH_DEFAULTS` | constant | `` |  |
-| `quadmath.stats.benchmarks` | `BenchRow` | class | `` | One timed benchmark result. |
+| `quadmath.stats.benchmarks` | `BENCH_DEFAULTS` | constant |  |  |
+| `quadmath.stats.benchmarks` | `BenchRow` | class |  | One timed benchmark result. |
 | `quadmath.stats.benchmarks` | `bench_conversions` | function | `(n, trials)` | Benchmark quadray/XYZ conversions over ``n`` deterministic samples. |
 | `quadmath.stats.benchmarks` | `bench_field_fit` | function | `(n_sites, trials)` | Benchmark ``IVMField.learn`` on a synthetic field with a fixed seed. |
 | `quadmath.stats.benchmarks` | `bench_lattice_search` | function | `(n_sites, queries, trials)` | Benchmark nearest-site queries through the ``lattice_search`` ball index. |
@@ -1922,16 +1923,17 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.stats.statistics` | `summarize` | function | `(x)` | Descriptive summary of a sample. |
 | `quadmath.stats.statistics` | `welch_t_test` | function | `(a, b, alternative)` | Welch's unequal-variance two-sample t test. |
 | `quadmath.tools.atomic_write` | `atomic_open` | function | `(path, newline=)` | Yield a text handle whose contents replace ``path`` only if the block succeeds. |
+| `quadmath.tools.atomic_write` | `atomic_savez` | function | `(**arrays)` | Write ``arrays`` as an ``.npz`` archive at ``path`` atomically and byte-reproducibly. |
 | `quadmath.tools.atomic_write` | `atomic_write_text` | function | `(path, text, newline=)` | Write ``text`` to ``path`` atomically (see :func:`atomic_open`). |
-| `quadmath.tools.glossary_gen` | `ApiEntry` | class | `` |  |
+| `quadmath.tools.glossary_gen` | `ApiEntry` | class |  |  |
 | `quadmath.tools.glossary_gen` | `build_api_index` | function | `(src_dir)` |  |
 | `quadmath.tools.glossary_gen` | `generate_markdown_table` | function | `(entries)` |  |
 | `quadmath.tools.glossary_gen` | `inject_between_markers` | function | `(markdown_text, begin, end, payload)` |  |
-| `quadmath.validate.validate` | `DEFAULT_CHECKS` | constant | `` |  |
-| `quadmath.validate.validate` | `DEFAULT_TOLERANCE` | constant | `` |  |
-| `quadmath.validate.validate` | `NOTES` | constant | `` |  |
-| `quadmath.validate.validate` | `SKIPPED_CHECKS` | constant | `` |  |
-| `quadmath.validate.validate` | `ValidationReport` | class | `` | Immutable outcome of a single validation check. |
+| `quadmath.validate.validate` | `DEFAULT_CHECKS` | constant |  |  |
+| `quadmath.validate.validate` | `DEFAULT_TOLERANCE` | constant |  |  |
+| `quadmath.validate.validate` | `NOTES` | constant |  |  |
+| `quadmath.validate.validate` | `SKIPPED_CHECKS` | constant |  |  |
+| `quadmath.validate.validate` | `ValidationReport` | class |  | Immutable outcome of a single validation check. |
 | `quadmath.validate.validate` | `check_associativity` | function | `(a, b, c, tol)` | Verify (a*b)*c == a*(b*c) within ``tol`` via the core Hamilton product. |
 | `quadmath.validate.validate` | `check_conjugate_inverse` | function | `(q, tol)` | Verify q * conj(q) equals the identity (1, 0, 0, 0) within ``tol``. |
 | `quadmath.validate.validate` | `check_double_cover` | function | `(q1, q2, tol)` | Verify the SO(3) homomorphism R(q1*q2) == R(q1) R(q2) within ``tol``. |
@@ -1946,8 +1948,8 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.viz._common` | `resolve_output_path` | function | `(path, figure_dir)` | Return the location to write ``path`` under the viz output policy. |
 | `quadmath.viz._common` | `save_figure` | function | `(fig, path, **kwargs)` | Write ``fig`` to ``path`` atomically; keyword arguments go to ``savefig``. |
 | `quadmath.viz._common` | `set_axes_equal` | function | `(ax)` | Scale a 3D axes box to the data spans so equal lengths match on every axis. |
-| `quadmath.viz.animations` | `Frame` | class | `` | A single animation frame. |
-| `quadmath.viz.animations` | `GRID_SIZE` | constant | `` |  |
+| `quadmath.viz.animations` | `Frame` | class |  | A single animation frame. |
+| `quadmath.viz.animations` | `GRID_SIZE` | constant |  |  |
 | `quadmath.viz.animations` | `diffusion_frames` | function | `(n_steps, seed)` | Render explicit heat diffusion on the IVM radius-3 ball adjacency. |
 | `quadmath.viz.animations` | `frames_strip` | function | `(frames, out_path, labels, save)` | Render frames as a single-row matplotlib strip, one panel per frame. |
 | `quadmath.viz.animations` | `frames_to_gif` | function | `(frames, out_path, fps, scale)` | Assemble frames into an animated GIF at ``out_path``. |
@@ -1958,13 +1960,13 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.viz.plots` | `plot_loss_history` | function | `(losses, save, out_path)` | Plot a training loss sequence as a line with markers. |
 | `quadmath.viz.plots` | `plot_shell_growth` | function | `(k_max, save, out_path)` | Plot IVM shell cardinalities (cuboctahedral numbers) versus shell index. |
 | `quadmath.viz.plots` | `plot_slerp_path` | function | `(q0, q1, n_frames, site, save, out_path)` | Trace the 3D path of a fixed lattice site under shortest-arc slerp. |
-| `quadmath.viz.vis_lattice` | `DEFAULT_PLANE` | constant | `` |  |
-| `quadmath.viz.vis_lattice` | `GALLERY_FILES` | constant | `` |  |
+| `quadmath.viz.vis_lattice` | `DEFAULT_PLANE` | constant |  |  |
+| `quadmath.viz.vis_lattice` | `GALLERY_FILES` | constant |  |  |
 | `quadmath.viz.vis_lattice` | `dynamics_strip` | function | `(axs, trajectory, t_indices, embedding=, cmap=, titles=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. |
 | `quadmath.viz.vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
 | `quadmath.viz.vis_lattice` | `gallery` | function | `(paths_out_dir, seed)` | Compose the three lattice-gallery figures deterministically. |
 | `quadmath.viz.vis_lattice` | `shell_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. |
-| `quadmath.viz.vis_stats` | `GALLERY_FILES` | constant | `` |  |
+| `quadmath.viz.vis_stats` | `GALLERY_FILES` | constant |  |  |
 | `quadmath.viz.vis_stats` | `gallery` | function | `(paths_out_dir, seed)` | Compose the four statistics-gallery figures deterministically. |
 | `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with confidence intervals ``[lows, highs]`` as error bars. |
 | `quadmath.viz.vis_stats` | `plot_ecdf` | function | `(values, ax, title=)` | Empirical cumulative distribution function as a sorted step plot. |

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import csv
 import os
+import zipfile
 
+import numpy as np
 import pytest
 
-from quadmath.tools.atomic_write import atomic_open, atomic_write_text
+from quadmath.tools.atomic_write import atomic_open, atomic_savez, atomic_write_text
 
 
 def _names(directory) -> list[str]:
@@ -71,3 +73,33 @@ def test_atomic_open_accepts_pathlike_target(tmp_path):
     target = tmp_path / "pathlike.txt"
     atomic_write_text(target, "ok")  # type: ignore[arg-type]
     assert target.read_text(encoding="utf-8") == "ok"
+
+
+def test_atomic_savez_round_trips_arrays(tmp_path):
+    target = tmp_path / "data.npz"
+    atomic_savez(str(target), xs=np.arange(3), ys=np.array([[1.5, 2.5]]))
+    with np.load(target) as archive:
+        assert sorted(archive.files) == ["xs", "ys"]
+        assert archive["xs"].tolist() == [0, 1, 2]
+        assert archive["ys"].tolist() == [[1.5, 2.5]]
+    assert _names(tmp_path) == ["data.npz"]
+
+
+def test_atomic_savez_uses_fixed_zip_timestamps_for_byte_reproducibility(tmp_path):
+    target = tmp_path / "data.npz"
+    atomic_savez(str(target), xs=np.arange(3))
+    first = target.read_bytes()
+    atomic_savez(str(target), xs=np.arange(3))
+    assert target.read_bytes() == first
+    with zipfile.ZipFile(target) as archive:
+        assert {info.date_time for info in archive.infolist()} == {(1980, 1, 1, 0, 0, 0)}
+
+
+def test_failed_savez_keeps_previous_target_and_leaves_no_temp_file(tmp_path):
+    target = tmp_path / "data.npz"
+    atomic_savez(str(target), xs=np.arange(3))
+    before = target.read_bytes()
+    with pytest.raises(ValueError):
+        atomic_savez(str(target), bad=np.array([object()], dtype=object))
+    assert target.read_bytes() == before
+    assert _names(tmp_path) == ["data.npz"]

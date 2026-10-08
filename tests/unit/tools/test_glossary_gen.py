@@ -48,7 +48,8 @@ def test_generate_markdown_table_formats_rows():
     table = generate_markdown_table(rows)  # type: ignore[arg-type]
     assert "| Module | Symbol | Kind | Signature | Summary |" in table
     assert "`m` | `f` | function | `(x)` | do f" in table
-    assert "`m` | `C` | class | `` | class C" in table
+    assert "| `m` | `C` | class |  | class C |" in table
+    assert "``" not in table
 
 
 def test_inject_between_markers_inserts_payload_when_missing_markers():

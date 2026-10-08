@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from fractions import Fraction
 from dataclasses import dataclass
+from itertools import permutations
 from typing import Iterable, Tuple
 from quadmath.core.linalg_utils import bareiss_determinant_int
 
@@ -103,6 +104,13 @@ def ace_tetravolume_5x5(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> F
     ]
     det = bareiss_determinant_int(A)
     return Fraction(abs(det), 4)
+
+
+#: The 12 IVM neighbor moves: distinct permutations of (2, 1, 1, 0), sorted.
+#: Single source for the lattice modules and the core neighbor examples.
+IVM_NEIGHBOR_MOVES: Tuple[Tuple[int, int, int, int], ...] = tuple(
+    sorted(set(permutations((2, 1, 1, 0))))
+)
 
 
 DEFAULT_EMBEDDING: Tuple[Tuple[float, float, float, float], ...] = (
@@ -464,6 +472,7 @@ __all__ = [
     "integer_tetra_volume",
     "ace_tetravolume_5x5",
     "DEFAULT_EMBEDDING",
+    "IVM_NEIGHBOR_MOVES",
     "magnitude",
     "dot",
     "distance",

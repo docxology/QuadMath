@@ -27,20 +27,14 @@ Conventions
 """
 from __future__ import annotations
 
-from itertools import permutations
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
 
-from quadmath.core.quadray import Quadray
-
-#: Base move of the 12 canonical IVM neighbors (vector equilibrium shell).
-_IVM_MOVE_BASE: Tuple[int, int, int, int] = (2, 1, 1, 0)
+from quadmath.core.quadray import IVM_NEIGHBOR_MOVES, Quadray
 
 #: The 12 canonical IVM neighbor moves as an (12, 4) integer array.
-NEIGHBOR_MOVES: np.ndarray = np.array(
-    sorted(set(permutations(_IVM_MOVE_BASE))), dtype=np.int64
-)
+NEIGHBOR_MOVES: np.ndarray = np.array(IVM_NEIGHBOR_MOVES, dtype=np.int64)
 
 #: Per-site bit width used to pack (a, b, c, d) rows into single int64 keys.
 #: Four 16-bit fields fill an int64 exactly, so keys are injective for
