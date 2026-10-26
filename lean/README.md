@@ -6,7 +6,7 @@ quadray-coordinate foundations used by QuadMath. Package name: `Quadlean`.
 ## Build and run
 
 Requires [elan](https://elan.lean-lang.org) (the toolchain is pinned in
-`lean-toolchain`, currently `leanprover/lean4:v4.33.1`; `elan show` resolves
+`lean-toolchain`, currently `leanprover/lean4:v4.35.0`; `elan show` resolves
 the same default). No other dependencies:
 
 ```bash
@@ -24,12 +24,12 @@ editor.
 
 | Module | Formalizes | Python correspondence |
 |---|---|---|
-| `QuadMath.Quadray` | Quadray coordinates as integer 4-tuples: projective normalization by subtracting the minimum component, and the exact integer tetra-volume via the `(a-d, b-d, c-d)` projected 3x3 determinant identity (`|det| / 4`; unit IVM tetra `det = 4`, volume `1`; primitive tetra `det = 1`, volume `1/4`). Proves normalization is idempotent, lands in the class (`q ~ q + t(1,1,1,1)`), and that the determinant is class-invariant. | `src/quadray.py` — `Quadray` dataclass, `normalize` (`src/quadray.py:29-36`), `integer_tetra_volume` (`src/quadray.py:60-82`); determinant arithmetic mirrors `bareiss_determinant_int` in `src/linalg_utils.py:6-56`. |
-| `QuadMath.IVM` | The IVM (FCC/CCP) lattice in quadray coordinates: the 12 canonical neighbor moves (permutations of `(2,1,1,0)`), a computable membership predicate `IsIVMSite` (normalized ∧ component sum divisible by 4 — the `(1,0,0,0)`-type tetrahedral-void directions are excluded), the L1-centered shell norm `shellNorm4` (4x-scaled `quadray_shell_norm`; shell `k` ⟺ `shellNorm4 = 8k`), and a computable shell enumeration `shellSites` over the `[0, 2k]^4` scan box. Proves the scan-box completeness bound (`shellNorm4_component_bound`), the exact enumeration characterization (`mem_shellSites_iff`), that membership and shell norm are projective-class properties (`isIVMSite_normalize`, `shellNorm4_sameClass`), that shell membership determines the shell index (`shellSites_unique`), and machine-checks the shell cardinalities `10k² + 2` through frequency 8 (`shellSites_card_target_*`). | `src/ivm_field.py` — `IVM_NEIGHBOR_STEPS` (`:61-74`), `is_ivm_site` (`:81-89`), `quadray_shell_norm` (`:92-118`), `shell_sites` (`:121-157`); `neighbor_moves_ivm` in `src/discrete_variational.py:10-14`. |
-| `QuadMath.Distance` | The exact squared Euclidean distance under `DEFAULT_EMBEDDING`: proves, universally over integer deltas, `d² = 4·(δa² + δb² + δc² + δd²) − (δa + δb + δc + δd)²` (`deltaDist2_eq`), plus symmetry, zero self-distance, and the twelve-around-one instance (every neighbor move at squared distance `8` from the origin). | `src/quadray.py` — `DEFAULT_EMBEDDING` (`:108-113`), `distance` (`:156-176`); the exact `d² = 4Σδ² − (Σδ)²` identity used by `src/lattice_search.py`. |
-| `QuadMath.Lattice` | The omnidirectional close-packing numbering: `omniNumber k = 10k^2 + 2` (shell `k ≥ 1`) and cumulative counts, cross-checked against the concrete `shellSites` enumeration — kernel-checked realization on shells 1-3 (`shellSites_omni_*`; shell 3 rides on the kernel-decided `shellSites_card_target_3`), `#eval` agreement through shell 8. | `src/omni_numbering.py` (frequency shells, `10k^2 + 2`). |
+| `QuadMath.Quadray` | Quadray coordinates as integer 4-tuples: projective normalization by subtracting the minimum component, and the exact integer tetra-volume via the `(a-d, b-d, c-d)` projected 3x3 determinant identity (`|det| / 4`; unit IVM tetra `det = 4`, volume `1`; primitive tetra `det = 1`, volume `1/4`). Proves normalization is idempotent, lands in the class (`q ~ q + t(1,1,1,1)`), and that the determinant is class-invariant. | `src/quadmath/core/quadray.py` — `Quadray` dataclass, `normalize` (`src/quadmath/core/quadray.py:30-37`), `integer_tetra_volume` (`src/quadmath/core/quadray.py:61-83`); determinant arithmetic mirrors `bareiss_determinant_int` in `src/quadmath/core/linalg_utils.py:6-56`. |
+| `QuadMath.IVM` | The IVM (FCC/CCP) lattice in quadray coordinates: the 12 canonical neighbor moves (permutations of `(2,1,1,0)`), a computable membership predicate `IsIVMSite` (normalized ∧ component sum divisible by 4 — the `(1,0,0,0)`-type tetrahedral-void directions are excluded), the L1-centered shell norm `shellNorm4` (4x-scaled `quadray_shell_norm`; shell `k` ⟺ `shellNorm4 = 8k`), and a computable shell enumeration `shellSites` over the `[0, 2k]^4` scan box. Proves the scan-box completeness bound (`shellNorm4_component_bound`), the exact enumeration characterization (`mem_shellSites_iff`), that membership and shell norm are projective-class properties (`isIVMSite_normalize`, `shellNorm4_sameClass`), that shell membership determines the shell index (`shellSites_unique`), and machine-checks the shell cardinalities `10k² + 2` through frequency 8 (`shellSites_card_target_*`). | `src/quadmath/lattice/ivm_field.py` — `IVM_NEIGHBOR_STEPS` (`:61-74`), `is_ivm_site` (`:69-77`), `quadray_shell_norm` (`:80-106`), `shell_sites` (`:121-157`); `neighbor_moves_ivm` in `src/quadmath/optimize/discrete_variational.py:10-14`. |
+| `QuadMath.Distance` | The exact squared Euclidean distance under `DEFAULT_EMBEDDING`: proves, universally over integer deltas, `d² = 4·(δa² + δb² + δc² + δd²) − (δa + δb + δc + δd)²` (`deltaDist2_eq`), plus symmetry, zero self-distance, and the twelve-around-one instance (every neighbor move at squared distance `8` from the origin). | `src/quadmath/core/quadray.py` — `DEFAULT_EMBEDDING` (`:116-121`), `distance` (`:165-179`); the exact `d² = 4Σδ² − (Σδ)²` identity used by `src/quadmath/lattice/lattice_search.py:109-125`. |
+| `QuadMath.Lattice` | The omnidirectional close-packing numbering: `omniNumber k = 10k^2 + 2` (shell `k ≥ 1`) and cumulative counts, cross-checked against the concrete `shellSites` enumeration — kernel-checked realization on shells 1-3 (`shellSites_omni_*`; shell 3 rides on the kernel-decided `shellSites_card_target_3`), `#eval` agreement through shell 8. | `src/quadmath/lattice/omni_numbering.py` (frequency shells, `10k^2 + 2`). |
 
-`src/geometry.py` (Minkowski interval, Lorentz factor, proper time — the
+`src/quadmath/core/geometry.py` (Minkowski interval, Lorentz factor, proper time — the
 Einstein.4D namespace) has **no counterpart in this formalization**: it is
 relativistic geometry, not quadray/lattice math, and is cited here only to
 state that absence.
@@ -40,10 +40,10 @@ state that absence.
   subtracts `k = min(a, b, c, d)`, selecting the canonical representative of
   the projective class `q ~ q + t(1,1,1,1)`.
 * An IVM lattice site is a normalized quadray whose component sum is
-  divisible by 4 (`src/ivm_field.py:81-89`). Membership is decidable;
+  divisible by 4 (`src/quadmath/lattice/ivm_field.py:69-77`). Membership is decidable;
   normalization shifts the sum by a multiple of 4, so it is a class property.
 * Shell `k` collects sites with L1-centered shell norm `N(q) = 2k`
-  (`src/ivm_field.py:92-118`), encoded here integrally as
+  (`src/quadmath/lattice/ivm_field.py:80-106`), encoded here integrally as
   `shellNorm4 q = 8k`, enumerated over the box `[0, 2k]^4` exactly as
   `shell_sites` does.
 
@@ -62,7 +62,7 @@ Proved in Lean (kernel-checked, core only — no Mathlib):
 * **Scan-box completeness** (`shellNorm4_component_bound`): every IVM site
   with shell norm `8k` has all four components in `[0, 2k]`, so the
   `[0, 2k]^4` scan box of `shell_sites` loses no shell sites — the
-  bounding-box claim of `src/ivm_field.py:124-125`, proved here rather than
+  bounding-box claim of `src/quadmath/lattice/ivm_field.py:112-113`, proved here rather than
   taken from the Python reference.
 * **Enumeration characterization** (`mem_shellSites_iff`): `shellSites k`
   contains exactly the IVM sites whose shell norm is `8k` — the
@@ -102,7 +102,7 @@ Stated but **not** proved: the universal shell-count theorem itself —
 proposition-valued definition (`def shellSites_card_target`), so the tree
 ends with zero unproved declarations while the general claim remains open in
 this formalization. The Python reference machine-checks the corresponding claim
-through frequency 6 (`src/ivm_field.py:97-98`, `src/omni_numbering.py:24-26`).
+through frequency 6 (`src/quadmath/lattice/omni_numbering.py:24-26`).
 Proof sketch for the general case, for future work: via the sum-zero
 representative `w = q − (s/4)·(1,1,1,1)` of each site, shell `k` is in
 bijection with the integer 4-vectors `w` satisfying `Σw = 0` and

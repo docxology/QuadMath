@@ -8,10 +8,10 @@
   source of truth; content changes happen there and are re-ported.
 - `development/` — test/coverage workflow (`README.md`) and the docs-tree
   link checker (`check_links.py`).
-- `learning/` — docs for the landed IVM learning surface (`src/ivm_field.py`,
-  `src/ivm_dynamics.py`, `src/learning_eval.py`, `src/vis_lattice.py`).
+- `learning/` — docs for the landed IVM learning surface (`src/quadmath/lattice/ivm_field.py`,
+  `src/quadmath/lattice/ivm_dynamics.py`, `src/quadmath/learn/learning_eval.py`, `src/quadmath/viz/vis_lattice.py`).
 - `analysis/` — docs for the landed benchmarks/statistics surface
-  (`src/benchmarks.py`, `src/statistics.py`, `src/vis_stats.py`).
+  (`src/quadmath/stats/benchmarks.py`, `src/quadmath/stats/statistics.py`, `src/quadmath/viz/vis_stats.py`).
 - `lean/` — docs for the landed Lean 4 formalization at `lean/` (build
   command, module map, proof status: zero sorries; universal shell count
   machine-checked through shell 8, universal distance identity proved).
@@ -35,5 +35,5 @@
   `uv run python quadmath/scripts/validate_markdown.py`.
 - Keep claims traceable to root `README.md` / `pyproject.toml`; the DOI and
   title live in the root `README.md` and `docs/manuscript/config.yaml`.
-- `manuscript/MANUSCRIPT_STATUS.md` tracks render parity between the two
+- `docs/MANUSCRIPT_STATUS.md` tracks render parity between the two
   manuscript trees; update it when either tree changes structurally.

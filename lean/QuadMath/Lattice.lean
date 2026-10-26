@@ -3,7 +3,7 @@ import QuadMath.IVM
 # Omnidirectional close-packing numbering: `10k^2 + 2`
 
 Lean 4 formalization of the close-packing numbering sequence.  Mirrors
-`src/omni_numbering.py` (shell counts, `10k² + 2`) and cross-checks the
+`src/quadmath/lattice/omni_numbering.py` (shell counts, `10k² + 2`) and cross-checks the
 abstract numbering function against the concrete lattice enumeration of
 `QuadMath.IVM.shellSites`.
 
@@ -15,7 +15,7 @@ coordinates — forming the cuboctahedron (vector equilibrium).
 -/
 
 /-- Number of lattice sites on frequency shell `k ≥ 1` of the omnidirectional
-close packing (`src/omni_numbering.py:4-9`); shell 0 is the lone central
+close packing (`src/quadmath/lattice/omni_numbering.py:4-9`); shell 0 is the lone central
 site and is not described by this function. -/
 def omniNumber (k : Nat) : Nat := 10 * k * k + 2
 

@@ -5,8 +5,8 @@ import QuadMath.IVM
 # Exact squared distance under `DEFAULT_EMBEDDING`
 
 Lean 4 formalization of the exact integer squared-distance identity used by
-`src/quadray.py` (`DEFAULT_EMBEDDING` at `src/quadray.py:108-113`, `distance`
-at `src/quadray.py:156-176`).  The embedding sends an integer delta
+`src/quadmath/core/quadray.py` (`DEFAULT_EMBEDDING` at `src/quadmath/core/quadray.py:116-121`, `distance`
+at `src/quadmath/core/quadray.py:165-179`).  The embedding sends an integer delta
 `δ = p - q = (da, db, dc, dd)` to the three projected rows
 
 * row 1 `(1, -1, -1, 1)`:  `da - db - dc + dd`,
@@ -26,7 +26,7 @@ same class) the correction vanishes and `d² = 4·Σδ²` exactly.
 
 /-- Projected row 1 of `DEFAULT_EMBEDDING` applied to integer delta
 components `(da, db, dc, dd)`: `(1, -1, -1, 1) · δ`
-(`src/quadray.py:108-113`). -/
+(`src/quadmath/core/quadray.py:116-121`). -/
 def deltaRow1 (da db dc dd : Int) : Int := da - db - dc + dd
 
 /-- Projected row 2 of `DEFAULT_EMBEDDING`: `(1, 1, -1, -1) · δ`. -/
@@ -44,7 +44,7 @@ def deltaDist2 (da db dc dd : Int) : Int :=
     + (deltaRow3 da db dc dd) * (deltaRow3 da db dc dd)
 
 /-- Exact squared Euclidean distance between lattice points `p` and `q` under
-`DEFAULT_EMBEDDING` (`distance` in `src/quadray.py:156-176`). -/
+`DEFAULT_EMBEDDING` (`distance` in `src/quadmath/core/quadray.py:165-179`). -/
 def dist2 (p q : Quadray) : Int :=
   deltaDist2 (p.a - q.a) (p.b - q.b) (p.c - q.c) (p.d - q.d)
 

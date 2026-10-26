@@ -12,7 +12,7 @@ close-packing numbering `10k² + 2`.
 cd lean && lake build
 ```
 
-- Toolchain pinned in `lean/lean-toolchain`: `leanprover/lean4:v4.33.1`.
+- Toolchain pinned in `lean/lean-toolchain`: `leanprover/lean4:v4.35.0`.
 - **Core Lean 4 only** — zero external packages (`lake-manifest.json` has an
   empty `packages` list); no Mathlib. Proofs rely on `Int`/`Nat`/`List`,
   `decide`, and `rfl`.
@@ -23,11 +23,11 @@ cd lean && lake build
 
 | Module | Mirrors | Contents |
 |---|---|---|
-| `lean/QuadMath/Quadray.lean` | `src/quadray.py`, `src/linalg_utils.py` | `Quadray` structure (integer 4-tuple), projective normalization (classes differ by multiples of `(1,1,1,1)`), exact tetra-volume determinant `|det| / 4`; unit IVM tetrahedron has determinant `4` and volume exactly `1` |
-| `lean/QuadMath/IVM.lean` | `src/ivm_field.py` | The 12 neighbor moves (permutations of `(2,1,1,0)`), computable site membership `IsIVMSite` (normalized quadray with component sum ≡ 0 mod 4), L1-centered shell norm, computable `shellSites` enumeration via a bounded `quadBox` filter |
-| `lean/QuadMath/Lattice.lean` | `src/omni_numbering.py` | `omniNumber k = 10k² + 2` (shells `k ≥ 1`), cumulative site counts, and cross-checks of the numbering function against the concrete `IVM.shellSites` enumeration |
-| `lean/QuadMath/Distance.lean` | `src/lattice_search.py` | Universal squared-distance identity `d² = 4Σδ² − (Σδ)²` over integer deltas (`deltaDist2_eq`), neighbor-move distances (all 12 moves at d² = 8) |
-| `lean/Quadlean.lean` | — | Root module importing the three modules above |
+| `lean/QuadMath/Quadray.lean` | `src/quadmath/core/quadray.py`, `src/quadmath/core/linalg_utils.py` | `Quadray` structure (integer 4-tuple), projective normalization (classes differ by multiples of `(1,1,1,1)`), exact tetra-volume determinant `|det| / 4`; unit IVM tetrahedron has determinant `4` and volume exactly `1` |
+| `lean/QuadMath/IVM.lean` | `src/quadmath/lattice/ivm_field.py` | The 12 neighbor moves (permutations of `(2,1,1,0)`), computable site membership `IsIVMSite` (normalized quadray with component sum ≡ 0 mod 4), L1-centered shell norm, computable `shellSites` enumeration via a bounded `quadBox` filter |
+| `lean/QuadMath/Lattice.lean` | `src/quadmath/lattice/omni_numbering.py` | `omniNumber k = 10k² + 2` (shells `k ≥ 1`), cumulative site counts, and cross-checks of the numbering function against the concrete `IVM.shellSites` enumeration |
+| `lean/QuadMath/Distance.lean` | `src/quadmath/core/quadray.py` (`DEFAULT_EMBEDDING`, `distance`); identity used by `src/quadmath/lattice/lattice_search.py` | Universal squared-distance identity `d² = 4Σδ² − (Σδ)²` over integer deltas (`deltaDist2_eq`), neighbor-move distances (all 12 moves at d² = 8) |
+| `lean/Quadlean.lean` | — | Root module importing the four modules above |
 
 ## Proof status (checked 2026-09-10)
 
@@ -45,7 +45,7 @@ cd lean && lake build
   `mem_shellSites_iff` (exact enumeration characterization),
   `shellSites_unique`, `isIVMSite_normalize`, `shellNorm4_sameClass`, and
   `Distance.deltaDist2_eq` — the universal squared-distance identity
-  `d² = 4Σδ² − (Σδ)²` matching `src/lattice_search.py`.
+  `d² = 4Σδ² − (Σδ)²` matching `src/quadmath/lattice/lattice_search.py`.
 - The universal shell count remains an explicit open obligation (proof sketch
   in `lean/README.md`: sum-zero representative bijection; missing step =
   composition counting in core Lean).
@@ -63,4 +63,4 @@ the analytical text: volume identities in
 structure and dynamics in
 [12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md) (with the field-learning
 treatment in source section `11_ivm_field_learning.md`), and the `10k² + 2`
-sequence mirrored in `src/omni_numbering.py`.
+sequence mirrored in `src/quadmath/lattice/omni_numbering.py`.

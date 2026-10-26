@@ -101,7 +101,7 @@ the two panels read as one distribution in two renderings.
   missing) and returns their paths.  Every panel is fully seeded — the
   script fixes `seed=32` — and the PNGs carry no timestamp metadata, so
   re-renders are byte-identical.
-- Tests: `tests/test_vis_stats.py` pins the contract with deterministic
+- Tests: `tests/unit/viz/test_vis_stats.py` pins the contract with deterministic
   assertions, no mocks, and no pixel diffs — artist placement on
   caller-provided axes, input-agnostic behavior over plain arrays, and the
   invariants of each primitive (monotone non-decreasing ECDF steps, CI

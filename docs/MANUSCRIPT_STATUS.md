@@ -110,11 +110,13 @@ The manuscript exists in **two coordinated trees**:
   `03_quadray_methods.md` (an upstream link defect). The port repoints the
   three affected links (`free_energy`, `fisher_information_matrix`,
   `natural_gradient_step`) to `03#code:*`. Everything else is verbatim.
-- **Upstream defect**: `quadmath/markdown/00_preamble.md` opens a
-  ` ```latex ` fence that is never closed. The local `render_pdf.sh` sed
-  extractor tolerates this; the template `extract_preamble` does not
-  (silently drops the whole preamble). `preamble.md` here ships with the
-  closing fence appended; fix upstream when touching the source tree.
+- **Fixed (2026-10-25)**: `quadmath/markdown/00_preamble.md` opens a
+  ` ```latex ` fence that was never closed until 2026-10-25: the local
+  `render_pdf.sh` sed extractor then dropped the file's last line, and the
+  template `extract_preamble`
+  drops an unclosed-fence preamble entirely. `preamble.md` here already
+  matches the closed-fence source, so source tree and port are now
+  byte-identical.
 - `MANUSCRIPT_STATUS.md` was relocated out of the render tree to
   `docs/MANUSCRIPT_STATUS.md` (2026-09-11): the template `EXCLUDE_NAMES` set
   does not cover it, so keeping it beside the sections would sweep it into

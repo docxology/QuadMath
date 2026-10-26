@@ -55,6 +55,14 @@ bash quadmath/scripts/clean_output.sh
 | `08_equations_appendix.md` | Mathematical equations |
 | `09_free_energy_active_inference.md` | Active inference application |
 | `10_symbols_glossary.md` | Auto-generated API glossary |
+| `11_ivm_field_learning.md` | Static IVM field learning |
+| `12_ivm_dynamics.md` | Dynamics and learning on the IVM lattice |
+| `13_lattice_tooling.md` | Lattice tooling: omnidirectional numbering and nearest-site search |
+| `14_conversions_spec.md` | Conversions and specification |
+| `15_learning_evaluation.md` | Learning and evaluation on the IVM lattice |
+| `16_lattice_gallery.md` | Lattice visualization gallery |
+| `17_benchmarks_statistics.md` | Benchmarks and statistics |
+| `18_stats_gallery.md` | Statistics and scaling gallery |
 
 ## Generation Scripts
 

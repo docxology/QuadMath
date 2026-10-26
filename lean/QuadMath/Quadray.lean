@@ -3,20 +3,20 @@
 
 Lean 4 formalization of the integer quadray coordinates used throughout
 QuadMath.  This module mirrors the Python reference implementation in
-`src/quadray.py` (the `Quadray` dataclass, projective normalization, and the
-exact integer tetra-volume determinant) and `src/linalg_utils.py`
+`src/quadmath/core/quadray.py` (the `Quadray` dataclass, projective normalization, and the
+exact integer tetra-volume determinant) and `src/quadmath/core/linalg_utils.py`
 (`bareiss_determinant_int`).
 
-Conventions (see `src/quadray.py`):
+Conventions (see `src/quadmath/core/quadray.py`):
 
 * A quadray is an integer 4-tuple `(a, b, c, d)`.
 * Two quadrays are *projectively equivalent* when they differ by a multiple
   of `(1, 1, 1, 1)`; `Quadray.normalize` selects the canonical representative
-  of the class by subtracting the minimum component (`src/quadray.py:29-36`).
+  of the class by subtracting the minimum component (`src/quadmath/core/quadray.py:30-37`).
 * The exact IVM tetra-volume of the lattice tetrahedron spanned by `p0, p1,
   p2, p3` is `|det| / 4`, where `det` is the 3x3 integer determinant of the
   `(a - d, b - d, c - d)` projections of the edge vectors `p1 - p0`,
-  `p2 - p0`, `p3 - p0` (`src/quadray.py:60-82`).  The unit IVM tetrahedron
+  `p2 - p0`, `p3 - p0` (`src/quadmath/core/quadray.py:61-83`).  The unit IVM tetrahedron
   (origin plus three permutations of `(2, 1, 1, 0)`) has determinant `4` and
   volume exactly `1`; the primitive tetrahedron spanned by the origin and the
   basis vectors has determinant `1` and volume exactly `1/4`.
@@ -34,15 +34,15 @@ structure Quadray where
   d : Int
 deriving Repr, DecidableEq
 
-/-- Component-wise sum (`src/quadray.py:38-40`). -/
+/-- Component-wise sum (`src/quadmath/core/quadray.py:38-40`). -/
 def Quadray.add (q r : Quadray) : Quadray :=
   ⟨q.a + r.a, q.b + r.b, q.c + r.c, q.d + r.d⟩
 
-/-- Component-wise difference (`src/quadray.py:42-44`). -/
+/-- Component-wise difference (`src/quadmath/core/quadray.py:42-44`). -/
 def Quadray.sub (q r : Quadray) : Quadray :=
   ⟨q.a - r.a, q.b - r.b, q.c - r.c, q.d - r.d⟩
 
-/-- Minimum of the four components (`src/quadray.py:35`). -/
+/-- Minimum of the four components (`src/quadmath/core/quadray.py:35`). -/
 def quadMin (q : Quadray) : Int :=
   min q.a (min q.b (min q.c q.d))
 
@@ -92,12 +92,12 @@ theorem quadMin_eq (q : Quadray) :
       exact Or.inr (Or.inr (min2_eq q.c q.d))
 
 /-- Projective normalization: translate by `-(k,k,k,k)` so at least one
-component is zero (`src/quadray.py:29-36`). -/
+component is zero (`src/quadmath/core/quadray.py:30-37`). -/
 def Quadray.normalize (q : Quadray) : Quadray :=
   ⟨q.a - quadMin q, q.b - quadMin q, q.c - quadMin q, q.d - quadMin q⟩
 
 /-- Projective quadray equivalence `q ~ q + t(1,1,1,1)`
-(`src/quadray.py:32-34`). -/
+(`src/quadmath/core/quadray.py:32-34`). -/
 def SameClass (q r : Quadray) : Prop :=
   ∃ t : Int, r.a = q.a + t ∧ r.b = q.b + t ∧ r.c = q.c + t ∧ r.d = q.d + t
 
@@ -161,12 +161,12 @@ theorem normalize_idem (q : Quadray) : q.normalize.normalize = q.normalize := by
   rw [e1, e2, e3, e4]
 
 /-- Row of the projected 3x3 volume matrix: the `(a - d, b - d, c - d)`
-projection (`src/quadray.py:77-78`). -/
+projection (`src/quadmath/core/quadray.py:77-78`). -/
 def proj (q : Quadray) : Int × Int × Int := (q.a - q.d, q.b - q.d, q.c - q.d)
 
 /-- Exact 3x3 integer determinant (cofactor expansion along the first row),
 the arithmetic core of `bareiss_determinant_int` for 3x3 inputs
-(`src/linalg_utils.py:6-56`). -/
+(`src/quadmath/core/linalg_utils.py:6-56`). -/
 def det3 (r1 r2 r3 : Int × Int × Int) : Int :=
   r1.1 * (r2.2.1 * r3.2.2 - r2.2.2 * r3.2.1)
     - r1.2.1 * (r2.1 * r3.2.2 - r2.2.2 * r3.1)
@@ -174,12 +174,12 @@ def det3 (r1 r2 r3 : Int × Int × Int) : Int :=
 
 /-- Exact IVM tetra-determinant of the lattice tetrahedron `(p0, p1, p2, p3)`:
 the 3x3 integer determinant of the `(a-d, b-d, c-d)` projections of the edge
-vectors `p1 - p0`, `p2 - p0`, `p3 - p0` (`src/quadray.py:60-82`). -/
+vectors `p1 - p0`, `p2 - p0`, `p3 - p0` (`src/quadmath/core/quadray.py:61-83`). -/
 def tetraDet (p0 p1 p2 p3 : Quadray) : Int :=
   det3 (proj (Quadray.sub p1 p0)) (proj (Quadray.sub p2 p0))
     (proj (Quadray.sub p3 p0))
 
-/-- Exact IVM tetra-volume `|det| / 4` (`src/quadray.py:60-82`); general
+/-- Exact IVM tetra-volume `|det| / 4` (`src/quadmath/core/quadray.py:61-83`); general
 lattice tetrahedra may have non-integral volume, so no integrality is
 assumed. -/
 def tetraVolume (p0 p1 p2 p3 : Quadray) : Rat :=
@@ -199,7 +199,7 @@ theorem tetraDet_congr (t : Int) (p0 p1 p2 p3 : Quadray) :
 
 /-- The unit IVM tetrahedron (origin plus three `(2,1,1,0)`-type neighbor
 moves) has determinant `4` and IVM volume exactly `1`
-(`src/quadray.py:67-69`, `tests/test_quadray.py:25-35`). -/
+(`src/quadmath/core/quadray.py:67-69`, `tests/unit/core/test_quadray.py:33-40`). -/
 theorem tetraDet_unit :
     tetraDet ⟨0, 0, 0, 0⟩ ⟨2, 1, 1, 0⟩ ⟨1, 2, 1, 0⟩ ⟨1, 1, 2, 0⟩ = 4 := by decide
 
@@ -207,8 +207,8 @@ theorem tetraVolume_unit :
     tetraVolume ⟨0, 0, 0, 0⟩ ⟨2, 1, 1, 0⟩ ⟨1, 2, 1, 0⟩ ⟨1, 1, 2, 0⟩ = 1 := by decide
 
 /-- The primitive tetrahedron spanned by the origin and the basis vectors has
-determinant `1` and IVM volume exactly `1/4` (`src/quadray.py:69-71`,
-`tests/test_quadray.py:36-43`). -/
+determinant `1` and IVM volume exactly `1/4` (`src/quadmath/core/quadray.py:69-71`,
+`tests/unit/core/test_quadray.py:43-50`). -/
 theorem tetraDet_primitive :
     tetraDet ⟨0, 0, 0, 0⟩ ⟨1, 0, 0, 0⟩ ⟨0, 1, 0, 0⟩ ⟨0, 0, 1, 0⟩ = 1 := by decide
 

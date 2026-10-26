@@ -1,9 +1,10 @@
 # analysis/ — Agent Notes
 
 Documentation for the landed benchmarks/statistics surface:
-`src/benchmarks.py` (perf_counter timing harness), `src/statistics.py`
+`src/quadmath/stats/benchmarks.py` (perf_counter timing harness),
+`src/quadmath/stats/statistics.py`
 (bootstrap, permutation tests, effect sizes, scaling fits), and
-`src/vis_stats.py` (input-agnostic gallery rendering primitives).
+`src/quadmath/viz/vis_stats.py` (input-agnostic gallery rendering primitives).
 Manuscript treatments: `quadmath/markdown/17_benchmarks_statistics.md` and
 `quadmath/markdown/18_stats_gallery.md`.
 

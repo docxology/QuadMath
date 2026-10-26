@@ -13,7 +13,7 @@ in the `learning_eval.py` module (`kfold_site_splits()`,
 `cross_validate_field()`, `trajectory_train_test()`, `learning_curve()`,
 `enclosing_radius()`), use `numpy` only, and are fully deterministic for
 fixed seeds. Every behavioral claim below is pinned in
-`tests/test_learning_eval.py` with fixed RNG seeds and real numerics.
+`tests/unit/learn/test_learning_eval.py` with fixed RNG seeds and real numerics.
 
 ## Why held-out evaluation is harder on a lattice
 
@@ -282,7 +282,7 @@ after $126$ iterations. Regenerate with
 
 ## Verification
 
-`tests/test_learning_eval.py` pins all of the above with fixed seeds and no
+`tests/unit/learn/test_learning_eval.py` pins all of the above with fixed seeds and no
 mocks: disjoint-exhaustive folds with exact fold sizes, seed-determinism and
 seed-sensitivity of the splits, the $\lambda^{*}=0$ and $\lambda^{*}>0$
 regimes with their table identities (mean and standard deviation recomputed

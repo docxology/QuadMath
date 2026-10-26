@@ -116,3 +116,4 @@ This file contains LaTeX preamble commands that will be inserted at the beginnin
 
 % Simple page break support for document structure
 % Note: Page breaks are handled in the markdown generation, not here
+```

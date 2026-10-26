@@ -3,20 +3,20 @@ import QuadMath.Quadray
 # The IVM lattice (isotropic vector matrix, FCC/CCP) in quadray coordinates
 
 Lean 4 formalization of the IVM lattice as QuadMath defines it.  Mirrors
-`src/ivm_field.py` (membership test, L1-centered shell norm, shell
-enumeration) and `src/discrete_variational.py` (`neighbor_moves_ivm`).
+`src/quadmath/lattice/ivm_field.py` (membership test, L1-centered shell norm, shell
+enumeration) and `src/quadmath/optimize/discrete_variational.py` (`neighbor_moves_ivm`).
 
-Conventions (see `src/ivm_field.py` and the manuscript sections):
+Conventions (see `src/quadmath/lattice/ivm_field.py` and the manuscript sections):
 
 * A *normalized* quadray has non-negative components and minimum zero — the
-  canonical representative of its projective class (`src/quadray.py:29-36`).
+  canonical representative of its projective class (`src/quadmath/core/quadray.py:30-37`).
 * An *IVM lattice site* is a normalized quadray whose component sum is
-  divisible by 4 (`src/ivm_field.py:81-89`).  Normalization shifts the sum by
+  divisible by 4 (`src/quadmath/lattice/ivm_field.py:69-77`).  Normalization shifts the sum by
   a multiple of 4, so this is a property of the projective class; the
   `(1,0,0,0)`-type void directions (sum `1` mod 4) are *not* sites.
 * The *shell norm* of an IVM site is the L1 magnitude of its sum-zero
   representative, `N(q) = Σ|q_i - s/4|` with `s = a+b+c+d`
-  (`src/ivm_field.py:92-118`).  Shell `k` collects the sites with `N(q) = 2k`
+  (`src/quadmath/lattice/ivm_field.py:80-106`).  Shell `k` collects the sites with `N(q) = 2k`
   and has `10k² + 2` sites for `k ≥ 1` (cuboctahedral numbers) — the universal
   count is stated as `shellSites_card_target` and machine-checked through
   shell 8, while the scan-box completeness bound (`[0, 2k]^4`) is proved
@@ -26,7 +26,7 @@ Conventions (see `src/ivm_field.py` and the manuscript sections):
 
 /-- The 12 canonical IVM neighbor moves: all distinct permutations of
 `(2, 1, 1, 0)` (already normalized), in lexicographic order
-(`src/ivm_field.py:61-74`, `src/discrete_variational.py:10-14`). -/
+(`src/quadmath/lattice/ivm_field.py:61-74`, `src/quadmath/optimize/discrete_variational.py:10-14`). -/
 def neighborMoves : List Quadray :=
   [⟨0, 1, 1, 2⟩, ⟨0, 1, 2, 1⟩, ⟨0, 2, 1, 1⟩, ⟨1, 0, 1, 2⟩, ⟨1, 0, 2, 1⟩,
     ⟨1, 1, 0, 2⟩, ⟨1, 1, 2, 0⟩, ⟨1, 2, 0, 1⟩, ⟨1, 2, 1, 0⟩, ⟨2, 0, 1, 1⟩,
@@ -47,7 +47,7 @@ def IsNormalized (q : Quadray) : Prop :=
     (q.a = 0 ∨ q.b = 0 ∨ q.c = 0 ∨ q.d = 0)
 
 /-- IVM lattice site: a normalized quadray whose component sum is divisible
-by 4 (`src/ivm_field.py:81-89`).  Decidable, hence a computable membership
+by 4 (`src/quadmath/lattice/ivm_field.py:69-77`).  Decidable, hence a computable membership
 predicate; well-defined on projective classes because normalization shifts
 the sum by a multiple of 4 (`ivmSum_normalize` below). -/
 def IsIVMSite (q : Quadray) : Prop :=
@@ -76,7 +76,7 @@ theorem neighborMoves_all_sites :
     (neighborMoves.all fun m => decide (IsIVMSite m)) = true := rfl
 
 /-- `4 * N(q)` for the L1-centered shell norm `N(q) = Σ|q_i - s/4|` of
-`src/ivm_field.py:92-118`: on IVM sites, shell `k` is exactly
+`src/quadmath/lattice/ivm_field.py:80-106`: on IVM sites, shell `k` is exactly
 `shellNorm4 q = 8k`.  Defined for all quadrays (the Python reference raises
 on non-sites instead). -/
 def shellNorm4 (q : Quadray) : Nat :=
@@ -88,7 +88,7 @@ private def intRange (n : Nat) : List Int :=
   (List.range (n + 1)).map (fun (x : Nat) => (x : Int))
 
 /-- All quadrays with components in `[0, n]`, lexicographic order — the scan
-box used by `shell_sites` (`src/ivm_field.py:143-146`). -/
+box used by `shell_sites` (`src/quadmath/lattice/ivm_field.py:143-146`). -/
 def quadBox (n : Nat) : List Quadray :=
   (intRange n).flatMap fun a =>
     (intRange n).flatMap fun b =>
@@ -96,7 +96,7 @@ def quadBox (n : Nat) : List Quadray :=
         (intRange n).map fun d => ⟨a, b, c, d⟩
 
 /-- All IVM lattice sites on shell `k`, in lexicographic order — computable
-mirror of `shell_sites` (`src/ivm_field.py:121-157`): scan the box
+mirror of `shell_sites` (`src/quadmath/lattice/ivm_field.py:121-157`): scan the box
 `[0, 2k]^4` (any shell-`k` site has components at most `2k` after
 normalization), keep normalized quadrays whose component sum is divisible by
 4 and whose L1-centered shell norm is `2k`, i.e. `shellNorm4 q = 8k`. -/
@@ -104,20 +104,20 @@ def shellSites (k : Nat) : List Quadray :=
   (quadBox (2 * k)).filter fun q =>
     decide (IsIVMSite q ∧ shellNorm4 q = 8 * k)
 
-/-- Shell 0 is the lone central site (`src/ivm_field.py:127-128`). -/
+/-- Shell 0 is the lone central site (`src/quadmath/lattice/ivm_field.py:115-116`). -/
 theorem shellSites_0_length : (shellSites 0).length = 1 := by decide
 
 /-- Shell 1 is the twelve-around-one cuboctahedron
-(`src/omni_numbering.py:5-9`). -/
+(`src/quadmath/lattice/omni_numbering.py:5-9`). -/
 theorem shellSites_1_length : (shellSites 1).length = 12 := by decide
 
 /-- Shell-2 cardinality is the cuboctahedral number `42`
-(`src/ivm_field.py:127-128`). -/
+(`src/quadmath/lattice/ivm_field.py:115-116`). -/
 theorem shellSites_2_length : (shellSites 2).length = 42 := by decide
 
 /-- **Scan-box completeness (proved).**  Every IVM site with shell norm `8k`
 has all four components in `[0, 2k]`, so the `[0, 2k]^4` scan box used by
-`shell_sites` (`src/ivm_field.py:124-125`) and by `shellSites` loses no shell
+`shell_sites` (`src/quadmath/lattice/ivm_field.py:112-113`) and by `shellSites` loses no shell
 sites.  Proof: normalization gives a zero component, whose centered
 contribution is `|−s| = s` (with `s = ivmSum q ≥ 0`); every other component
 `i` satisfies `4·q_i ≤ |4·q_i − s| + s ≤ 8k`. -/
@@ -213,8 +213,8 @@ theorem shellSites_unique (q : Quadray) {k k' : Nat}
 
 /- **The shell-count theorem, stated but not proved in this tree.**  For
 every `k ≥ 1` the IVM shell of frequency `k` contains exactly the
-cuboctahedral number `10k² + 2` sites (`src/ivm_field.py:97-98`;
-`src/omni_numbering.py:4-9`).  This formalization keeps the universal claim
+cuboctahedral number `10k² + 2` sites (`src/quadmath/lattice/omni_numbering.py:24-26`;
+`src/quadmath/lattice/omni_numbering.py:4-9`).  This formalization keeps the universal claim
 as a proposition and **machine-checks** the instances through shell 8
 (see `lean/README.md`, "What is proved vs. machine-checked"):
 shells 1-4 by kernel-evaluated `decide`, shells 5-8 by `native_decide`

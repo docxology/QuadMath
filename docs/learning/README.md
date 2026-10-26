@@ -3,13 +3,13 @@
 Documentation for the machine-learning modules over the IVM lattice — all
 landed on disk (checked 2026-09-10):
 
-- `src/ivm_field.py` — static field learning on the lattice
-- `src/ivm_dynamics.py` — field dynamics + coupling identification
-- `src/learning_eval.py` — training/testing methodology (honest evaluation)
-- `src/vis_lattice.py` — the matplotlib rendering primitives behind the
+- `src/quadmath/lattice/ivm_field.py` — static field learning on the lattice
+- `src/quadmath/lattice/ivm_dynamics.py` — field dynamics + coupling identification
+- `src/quadmath/learn/learning_eval.py` — training/testing methodology (honest evaluation)
+- `src/quadmath/viz/vis_lattice.py` — the matplotlib rendering primitives behind the
   visualization gallery (see section `16_lattice_gallery.md`)
 
-Design lineage: quadray coordinates (`src/quadray.py`) → IVM lattice geometry
+Design lineage: quadray coordinates (`src/quadmath/core/quadray.py`) → IVM lattice geometry
 → field evolution → learning/identification → evaluation, all numpy-only and
 deterministic (no ML frameworks; seeded `numpy.random.default_rng`).
 
@@ -19,26 +19,26 @@ Manuscript treatments (ported copies live under
 [15_learning_evaluation.md](../manuscript/15_learning_evaluation.md), and
 [16_lattice_gallery.md](../manuscript/16_lattice_gallery.md).
 
-## `src/ivm_field.py` — static field learning on the lattice
+## `src/quadmath/lattice/ivm_field.py` — static field learning on the lattice
 
 Public API (`__all__`): `IVM_NEIGHBOR_STEPS`, `IVMField`, `TetrahedronFit`,
-`ball_sites`, `fit_geometry`, `is_ivm_site`, `quadray_shell_norm`,
+`shell_ball_sites`, `fit_geometry`, `is_ivm_site`, `quadray_shell_norm`,
 `shell_sites`, `shell_cardinalities`.
 
 - **Geometry**: a lattice site is a normalized quadray (non-negative, one
   zero) whose component sum is divisible by 4 — exactly the close-packed
   sphere centers. `quadray_shell_norm` is the centered L1 shell norm;
   shell `k` has cardinality `10k² + 2` (cuboctahedral numbers 1, 12, 42, …).
-  `shell_sites` / `ball_sites` enumerate exactly (integers only).
+  `shell_sites` / `shell_ball_sites` enumerate exactly (integers only).
 - **`IVMField`**: scalar field over a lattice ball; sites ordered by
-  (shell, lexicographic quadray) via `ball_sites`. Methods: `learn`
+  (shell, lexicographic quadray) via `shell_ball_sites`. Methods: `learn`
   (Laplacian-regularized kernel-weighted least squares on the lattice
   graph), `predict(site)`, `score(sites, values)`.
 - **`fit_geometry`**: least-squares recovery of best-fit tetrahedron
   orientation+scale from noisy 3D points through the quadray basis
   (`to_xyz`); returns a `TetrahedronFit`.
 
-## `src/ivm_dynamics.py` — dynamics and coupling identification
+## `src/quadmath/lattice/ivm_dynamics.py` — dynamics and coupling identification
 
 Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
 `make_lattice`, `sum_of_squares`, `is_nonincreasing`, `heat_step`,
@@ -53,7 +53,7 @@ Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
 - **Heat update** (`heat_step`): `u ← (1−α)u + α·S·u` with the symmetric
   normalization `S = D^{-1/2} A D^{-1/2}`; provably non-increasing in ‖u‖²
   (lemma in the manuscript section, asserted per step in
-  `tests/test_ivm_dynamics.py::test_heat_update_l2_nonincreasing_per_step`).
+  `tests/unit/lattice/test_ivm_dynamics.py::test_heat_update_l2_nonincreasing_per_step`).
   No claim is made for plain row-average diffusion.
 - **Majority update** (`majority_step`): rounded neighbor averaging on
   integer fields; range-preserving (max non-increasing, min non-decreasing).
@@ -65,11 +65,13 @@ Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
   at machine precision (`render_dynamics_demo` produces
   `quadmath/output/figures/ivm_dynamics_demo.png`).
 
-## `src/learning_eval.py` — honest evaluation methodology
+## `src/quadmath/learn/learning_eval.py` — honest evaluation methodology
 
 Public API (`__all__`): `CrossValidationResult`, `LearningCurveResult`,
 `TrajectorySplitResult`, `cross_validate_field`, `enclosing_radius`,
-`kfold_site_splits`, `learning_curve`, `trajectory_train_test`.
+`kfold_site_splits`, `learning_curve`, `trajectory_train_test`,
+`RidgeSiteFit`, `three_way_split`, `ridge_site_fit`,
+`GradientDescentTrainer`.
 
 Principle: spatial autocorrelation makes naive resampling optimistic, and
 time-ordered dynamics data must never be shuffled — every surface here holds
@@ -102,7 +104,7 @@ confined to fold/subset assignment, never to the fits themselves.
 3. [manuscript/15_learning_evaluation.md](../manuscript/15_learning_evaluation.md)
    — the evaluation methodology this folder implements
 4. This README — API map
-5. `tests/test_ivm_field.py`, `tests/test_ivm_dynamics.py`,
-   `tests/test_learning_eval.py` — the contracts as executable assertions
+5. `tests/unit/lattice/test_ivm_field.py`, `tests/unit/lattice/test_ivm_dynamics.py`,
+   `tests/unit/learn/test_learning_eval.py` — the contracts as executable assertions
    (100% coverage, fixed seeds, no mocks — see
    [development](../development/README.md))

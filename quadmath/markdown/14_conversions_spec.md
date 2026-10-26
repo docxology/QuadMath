@@ -11,7 +11,7 @@ distances exact, and an **exact rational inversion** that answers "which lattice
 point?" with `fractions.Fraction` arithmetic instead of floating-point rounding.
 
 The full mathematical specification of this layer is the repository-root file `SPEC.md`; the
-`tests/test_spec_examples.py` pins its worked examples numerically. This section is the
+`tests/unit/lattice/test_spec_examples.py` pins its worked examples numerically. This section is the
 manuscript projection of that specification: same definitions, same error taxonomy, same
 guarantees, prose instead of source. The analytical foundations it draws on are
 [Quadray Methods](03_quadray_methods.md) (normalization, the `Quadray` class), the shell machinery
@@ -230,7 +230,7 @@ query machinery respectively.
 
 ## Verification
 
-`tests/test_conversions.py` covers the layer end to end: round-trips of
+`tests/unit/lattice/test_conversions.py` covers the layer end to end: round-trips of
 \eqref{eq:conv-roundtrip} over shells 0–4 (309 enumerated sites, center included) and at scaled
 embeddings per \eqref{eq:conv-roundtrip-scale}, exact canonical
 recovery of every site through \eqref{eq:conv-canonical}, the Gram identities
@@ -238,7 +238,7 @@ recovery of every site through \eqref{eq:conv-canonical}, the Gram identities
 \eqref{eq:conv-distance} cross-checked against float embeddings and `quadray.distance`, and the
 fail-closed error taxonomy (`ValueError` for off-image points, bad shapes, zero determinants and
 non-zero row sums; `TypeError` for inexact-foreign entry types such as `numpy.float32`). The
-repository-root `SPEC.md` (the full mathematical specification) and `tests/test_spec_examples.py`
+repository-root `SPEC.md` (the full mathematical specification) and `tests/unit/lattice/test_spec_examples.py`
 pin the worked examples of this section numerically as they land. Run the suite:
 
 ```bash

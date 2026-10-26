@@ -14,8 +14,10 @@ into ``docs/manuscript/``, applying the layout rewrites this tree requires:
    ``08_equations_appendix.md`` (which defines only {#eq:*} anchors); the
    targets live in ``03_quadray_methods.md``
 5. ``00_preamble.md`` -> ``preamble.md``; upstream the ``​```latex`` fence is
-   never closed (local render_pdf.sh tolerates this; the template's
-   ``extract_preamble`` does not), so the closing fence is appended when absent
+   now closed (2026-10-25): an unclosed fence made the local render_pdf.sh
+   sed extractor drop the file's last line, and the template's
+   ``extract_preamble`` drops the whole preamble.  A closing fence is still
+   appended whenever it is absent, so the port stays idempotent
 
 Usage (from the repository root)::
 

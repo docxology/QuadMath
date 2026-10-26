@@ -3,17 +3,17 @@
 Documentation for the measurement and analysis modules over the manuscript's
 numerical surfaces — all landed on disk (checked 2026-09-11):
 
-- `src/benchmarks.py` — `perf_counter` timing harness over the core
+- `src/quadmath/stats/benchmarks.py` — `perf_counter` timing harness over the core
   surfaces (`BenchRow`, `time_callable`, the four `bench_*` constructors,
   `run_all`, `summary_table`)
-- `src/statistics.py` — resampling-based inference on standalone numpy
+- `src/quadmath/stats/statistics.py` — resampling-based inference on standalone numpy
   (`summarize`, `bootstrap_ci`, `permutation_test`, `cohens_d`,
   `p_adjust_bonferroni`, `scaling_fit`)
-- `src/vis_stats.py` — the input-agnostic matplotlib rendering primitives
+- `src/quadmath/viz/vis_stats.py` — the input-agnostic matplotlib rendering primitives
   behind the statistics gallery (see section `18_stats_gallery.md`)
 
-Design lineage: measured surfaces (`src/quadray.py`, `src/omni_numbering.py`,
-`src/lattice_search.py`, `src/ivm_field.py`) → timing harness → statistical
+Design lineage: measured surfaces (`src/quadmath/core/quadray.py`, `src/quadmath/lattice/omni_numbering.py`,
+`src/quadmath/lattice/lattice_search.py`, `src/quadmath/lattice/ivm_field.py`) → timing harness → statistical
 analysis → rendering, all numpy + matplotlib only and deterministic (no new
 dependencies; seeded `numpy.random.default_rng` everywhere).
 
@@ -21,7 +21,7 @@ Manuscript treatments (source of truth under `quadmath/markdown/`):
 `17_benchmarks_statistics.md` (methodology and a reproducible numeric
 example) and `18_stats_gallery.md` (the four-figure gallery).
 
-## `src/benchmarks.py` — perf_counter timing harness
+## `src/quadmath/stats/benchmarks.py` — perf_counter timing harness
 
 Public API: `BenchRow` (frozen dataclass: `name`, `n`, `trials`, `total_s`,
 `mean_s`, `median_s`, `p95_s`, `ops_per_s`, with `as_dict()`),
@@ -42,12 +42,14 @@ trials=5)`, `bench_shell_enumeration(k_max=4, trials=5)`,
 - **The harness measures only** — it never asserts; timing claims live in
   the manuscript, not in test assertions.
 
-## `src/statistics.py` — honest analysis methodology
+## `src/quadmath/stats/statistics.py` — honest analysis methodology
 
 Public API: `summarize(x)`, `bootstrap_ci(x, stat=np.mean, *, iters=2000,
 seed=0, alpha=0.05)`, `permutation_test(a, b, *, iters=2000, seed=0,
 alternative="two-sided")`, `cohens_d(a, b)`, `p_adjust_bonferroni(pvals)`,
-`scaling_fit(sizes, times) -> (slope, intercept, r2)`.
+`scaling_fit(sizes, times) -> (slope, intercept, r2)`, `jackknife_ci(x, ...)`,
+`benjamini_hochberg(pvals)`, `welch_t_test(a, b, ...)`,
+`rotation_stats(angles)`.
 
 - **`bootstrap_ci`**: percentile bootstrap over vectorized resampling
   indices (`rng.integers(0, n, size=(iters, n))`); no distributional
@@ -64,7 +66,7 @@ alternative="two-sided")`, `cohens_d(a, b)`, `p_adjust_bonferroni(pvals)`,
 - All numpy-only and exactly reproducible for fixed seeds: every draw comes
   from `numpy.random.default_rng(seed)`.
 
-## `src/vis_stats.py` — input-agnostic stats rendering
+## `src/quadmath/viz/vis_stats.py` — input-agnostic stats rendering
 
 Public API: `plot_latency_hist(times, ax=None, *, bins=20, title=...)`,
 `plot_scaling_loglog(sizes, times, ax=None, *, title=...)`,
@@ -87,7 +89,7 @@ Public API: `plot_latency_hist(times, ax=None, *, bins=20, title=...)`,
 uv run python quadmath/scripts/stats_gallery.py
 
 # Run the benchmark suite and print its summary table
-uv run python -c "import sys, os; sys.path.insert(0, os.path.join('src')); from benchmarks import run_all, summary_table; print(summary_table(run_all()))"
+uv run python -c "import sys; sys.path.insert(0, 'src'); from quadmath.stats.benchmarks import run_all, summary_table; print(summary_table(run_all()))"
 ```
 
 ## Invariants
@@ -101,8 +103,8 @@ uv run python -c "import sys, os; sys.path.insert(0, os.path.join('src')); from 
 - **No timing assertions in tests**: `tests/` pins structure and
   determinism (artist placement, ECDF monotonicity, exact statistics), but
   never asserts wall-clock performance values.
-- **100% coverage**: `tests/test_benchmarks.py`, `tests/test_statistics.py`,
-  and `tests/test_vis_stats.py` fully cover the three modules (the repo's
+- **100% coverage**: `tests/unit/stats/test_benchmarks.py`, `tests/unit/stats/test_statistics.py`,
+  and `tests/unit/viz/test_vis_stats.py` fully cover the three modules (the repo's
   `test_<module>.py` convention; workflow in
   [development](../development/README.md)).
 
@@ -112,6 +114,6 @@ uv run python -c "import sys, os; sys.path.insert(0, os.path.join('src')); from 
    the reproducible numeric example
 2. `quadmath/markdown/18_stats_gallery.md` — the four-figure gallery
 3. This README — API map
-4. `tests/test_benchmarks.py`, `tests/test_statistics.py`,
-   `tests/test_vis_stats.py` — the contracts as executable assertions
+4. `tests/unit/stats/test_benchmarks.py`, `tests/unit/stats/test_statistics.py`,
+   `tests/unit/viz/test_vis_stats.py` — the contracts as executable assertions
    (fixed seeds, no mocks — see [development](../development/README.md))

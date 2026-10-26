@@ -121,7 +121,7 @@ confidence weighting degrades gracefully to pure Laplacian propagation as
 observation density falls. Because observed rows carry unit weight, the
 estimator interpolates exact data as $\lambda \to 0$ and denoises noisy data
 for moderate $\lambda$ — both behaviors are verified numerically in
-`tests/test_ivm_field.py` with fixed seeds.
+`tests/unit/lattice/test_ivm_field.py` with fixed seeds.
 
 Two structural facts justify the estimator. A linear field in the embedded
 XYZ coordinates (the `to_xyz()` image of `quadray.py`) is harmonic on the
