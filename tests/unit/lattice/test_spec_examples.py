@@ -433,9 +433,9 @@ def test_roundtrip_identity_shells_0_to_4():
 
 
 def test_roundtrip_scale_robustness():
-    """S27: exact at Urner scales 1/2 and 2; pinv(cM)(cM q) = q - (sum q/4)*1."""
+    """S27: scale-independent float reconstruction, including nondyadic signed scales."""
     sites = [q for k in range(5) for q in shell_sites(k)]
-    for c in (0.5, 2.0):
+    for c in (0.5, 2.0, 0.1, 1 / 3, -0.1, 1e-300, 1e300):
         m = urner_embedding(c)
         for q in sites:
             assert quadray_roundtrip(q, m) == q
@@ -455,7 +455,7 @@ def test_roundtrip_documented_failure_unnormalized():
 
 
 def test_quadray_from_xyz_coset_preserving_roundtrip():
-    """S29: round-half-up preserves the (1,1,1,1)-coset at scales 1 and 1/2."""
+    """S29: all four residue classes preserve their gauge through scaled inversion."""
     classes = (
         Quadray(1, 1, 0, 0),  # sum ≡ 2 (mod 4): exact half-integer ties
         Quadray(1, 0, 0, 0),  # sum ≡ 1 (mod 4)
@@ -463,7 +463,7 @@ def test_quadray_from_xyz_coset_preserving_roundtrip():
         Quadray(0, 1, 1, 2),  # IVM site, sum ≡ 0 (mod 4)
         Quadray(2, 2, 2, 1),  # unnormalized representative of (1,1,1,0)
     )
-    for c in (1.0, 0.5):
+    for c in (1.0, 0.5, 0.1, 1 / 3, -0.1, 1e-300, 1e300):
         m = urner_embedding(c)
         for q in classes:
             x, y, z = to_xyz(q, m)

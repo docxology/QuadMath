@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 from quadmath.core.linalg_utils import bareiss_determinant_int, bareiss_rank, integer_adjugate
@@ -112,3 +113,25 @@ def test_integer_adjugate_non_square_error():
 
 def test_integer_adjugate_empty():
     assert integer_adjugate([]) == []
+
+
+@pytest.mark.parametrize("dtype", (np.int64, np.uint64))
+def test_bareiss_promotes_fixed_width_inputs_before_products(dtype):
+    diagonal = dtype(2**32)
+    zero = dtype(0)
+    matrix = [[diagonal, zero], [zero, diagonal]]
+    assert bareiss_determinant_int(matrix) == 2**64
+    assert bareiss_rank(matrix) == 2
+
+    matrix3 = [
+        [diagonal, zero, zero],
+        [zero, diagonal, zero],
+        [zero, zero, diagonal],
+    ]
+    assert bareiss_determinant_int(matrix3) == 2**96
+    assert bareiss_rank(matrix3) == 3
+    assert integer_adjugate(matrix3) == [
+        [2**64, 0, 0],
+        [0, 2**64, 0],
+        [0, 0, 2**64],
+    ]

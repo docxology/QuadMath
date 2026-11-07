@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import numbers
 from fractions import Fraction
 from dataclasses import dataclass
 from itertools import permutations
@@ -10,7 +11,7 @@ from quadmath.core.linalg_utils import bareiss_determinant_int
 
 @dataclass(frozen=True)
 class Quadray:
-    """Quadray vector with non-negative components and at least one zero (Fuller.4D).
+    """Four-component quadray vector; ``normalize`` chooses its min-zero gauge.
 
     Utilities to support examples discussed in the paper:
     - normalization via adding/subtracting (k,k,k,k)
@@ -22,6 +23,13 @@ class Quadray:
     b: int
     c: int
     d: int
+
+    def __post_init__(self) -> None:
+        """Store integral scalar inputs as unbounded Python integers."""
+        for name in ("a", "b", "c", "d"):
+            value = getattr(self, name)
+            if type(value) is not int and isinstance(value, numbers.Integral):
+                object.__setattr__(self, name, int(value))
 
     def as_tuple(self) -> Tuple[int, int, int, int]:
         """Return (a,b,c,d)."""
@@ -45,17 +53,43 @@ class Quadray:
         return Quadray(self.a - other.a, self.b - other.b, self.c - other.c, self.d - other.d)
 
 
+def _exact_fraction(value: float) -> Fraction:
+    """Retain integral/rational values and exact binary floating coefficients."""
+    if isinstance(value, numbers.Integral):
+        return Fraction(int(value))
+    if isinstance(value, Fraction):
+        return value
+    return Fraction(float(value))
+
+
+def _row_sum_is_zero(row: Iterable[float]) -> bool:
+    """Test exact gauge compatibility without overflow or cancellation."""
+    return sum((_exact_fraction(value) for value in row), Fraction()) == 0
+
+
+def _embed_row(row: Tuple[float, ...], values: Tuple[int, ...]) -> float:
+    """Evaluate a row, retaining scaled integers too large for float coercion."""
+    try:
+        return row[0] * values[0] + row[1] * values[1] + row[2] * values[2] + row[3] * values[3]
+    except OverflowError:
+        return float(sum((_exact_fraction(weight) * _exact_fraction(value)
+                          for weight, value in zip(row, values)), Fraction()))
+
+
 def to_xyz(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[float, float, float]:
     """Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice).
 
-    embedding rows r0,r1,r2; columns correspond to (a,b,c,d)
+    Rows correspond to X,Y,Z and columns to a,b,c,d. If every row sums to
+    exactly zero, remove the common integer gauge before any floating-point
+    multiplication. Arbitrarily large gauge aliases then have the same
+    image without converting their irrelevant common offset to float.
+    Other embeddings retain their ordinary, gauge-dependent linear map.
     """
-    a, b, c, d = q.as_tuple()
-    r0, r1, r2 = embedding
-    x = r0[0] * a + r0[1] * b + r0[2] * c + r0[3] * d
-    y = r1[0] * a + r1[1] * b + r1[2] * c + r1[3] * d
-    z = r2[0] * a + r2[1] * b + r2[2] * c + r2[3] * d
-    return (x, y, z)
+    r0, r1, r2 = _xyz_tuple(embedding)
+    if all(_row_sum_is_zero(row) for row in (r0, r1, r2)):
+        q = q.normalize()
+    values = q.as_tuple()
+    return (_embed_row(r0, values), _embed_row(r1, values), _embed_row(r2, values))
 
 
 def integer_tetra_volume(p0: Quadray, p1: Quadray, p2: Quadray, p3: Quadray) -> Fraction:
@@ -129,7 +163,7 @@ def _xyz_tuple(embedding: Iterable[Iterable[float]]) -> Tuple[Tuple[float, float
 
 def _to_xyz_array(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[float, float, float]:
     """Internal helper returning XYZ triple for vector ops."""
-    return to_xyz(q, _xyz_tuple(embedding))
+    return to_xyz(q, embedding)
 
 
 def magnitude(q: Quadray, embedding: Iterable[Iterable[float]]) -> float:
@@ -143,7 +177,7 @@ def magnitude(q: Quadray, embedding: Iterable[Iterable[float]]) -> float:
     - float: Euclidean norm of the embedded vector
     """
     x, y, z = _to_xyz_array(q, embedding)
-    return float((x * x + y * y + z * z) ** 0.5)
+    return math.hypot(x, y, z)
 
 
 def dot(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float:
@@ -170,13 +204,11 @@ def distance(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> 
     - embedding: 3x4 matrix mapping Fuller.4D -> Coxeter.4D/XYZ slice
 
     Returns
-    - float: Non-negative Euclidean distance in R^3
+    - float: Non-negative Euclidean distance in R^3. Integer displacement is
+      formed before embedding, preserving large spatial translations.
     """
-    embedding = _xyz_tuple(embedding)
-    x1, y1, z1 = _to_xyz_array(q1, embedding)
-    x2, y2, z2 = _to_xyz_array(q2, embedding)
-    dx, dy, dz = x2 - x1, y2 - y1, z2 - z1
-    return float((dx * dx + dy * dy + dz * dz) ** 0.5)
+    dx, dy, dz = _to_xyz_array(q2.sub(q1), embedding)
+    return math.hypot(dx, dy, dz)
 
 
 def angle(q1: Quadray, q2: Quadray, q3: Quadray,
@@ -185,7 +217,8 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
 
     Uses the embedded dot-product formula:
         cos(theta) = <v1, v2> / (|v1| |v2|)
-    where v1 = q1 - q2 and v2 = q3 - q2 in R^3.
+    where v1 = q1 - q2 and v2 = q3 - q2 are formed before embedding to
+    preserve integer displacements under large spatial translations.
 
     Parameters
     - q1, q2, q3: Quadray points; angle is measured at q2
@@ -198,15 +231,16 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
     - ValueError: If q1==q2 or q3==q2 (degenerate angle)
     """
     embedding = _xyz_tuple(embedding)
-    ax, ay, az = _to_xyz_array(q1, embedding)
-    bx, by, bz = _to_xyz_array(q2, embedding)
-    cx, cy, cz = _to_xyz_array(q3, embedding)
-    v1x, v1y, v1z = ax - bx, ay - by, az - bz
-    v2x, v2y, v2z = cx - bx, cy - by, cz - bz
-    len1 = (v1x * v1x + v1y * v1y + v1z * v1z) ** 0.5
-    len2 = (v2x * v2x + v2y * v2y + v2z * v2z) ** 0.5
-    if len1 == 0.0 or len2 == 0.0:
+    v1x, v1y, v1z = _to_xyz_array(q1.sub(q2), embedding)
+    v2x, v2y, v2z = _to_xyz_array(q3.sub(q2), embedding)
+    scale1 = max(abs(v1x), abs(v1y), abs(v1z))
+    scale2 = max(abs(v2x), abs(v2y), abs(v2z))
+    if scale1 == 0.0 or scale2 == 0.0:
         raise ValueError("Degenerate angle: vertex coincides with an endpoint")
+    v1x, v1y, v1z = v1x / scale1, v1y / scale1, v1z / scale1
+    v2x, v2y, v2z = v2x / scale2, v2y / scale2, v2z / scale2
+    len1 = math.hypot(v1x, v1y, v1z)
+    len2 = math.hypot(v2x, v2y, v2z)
     cos_theta = (v1x * v2x + v1y * v2y + v1z * v2z) / (len1 * len2)
     # Clamp for numerical safety
     cos_theta = max(-1.0, min(1.0, cos_theta))
@@ -214,19 +248,23 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
 
 
 def _round_half_up(v: float) -> int:
-    """Round to the nearest integer, ties toward +infinity (``floor(v + 0.5)``)."""
-    return int(math.floor(v + 0.5))
+    """Round to the nearest integer, ties toward +infinity, without adding 0.5."""
+    lower = math.floor(v)
+    return lower + int(v - lower >= 0.5)
 
 
 def centroid(*quads: Quadray) -> Quadray:
-    """Component-wise mean of quadray points, rounded to the nearest lattice point.
+    """Round the component-wise mean of canonical representatives, exactly.
 
-    Computes the arithmetic mean of each component (a, b, c, d) across all
-    input quadrays, rounds half up (so the result is invariant under adding
-    the same integer to every component of every input), and normalizes.
+    Each input is normalized independently before integer accumulation, so
+    replacing any point by q + t*(1,1,1,1) leaves the result unchanged.
+    Component means are rounded half up using integer division, then the
+    result is normalized. This is a discrete component-wise centroid, not
+    necessarily the XYZ-nearest lattice point to the Euclidean centroid.
+    No float conversion occurs, even for arbitrarily large integer inputs.
 
     Parameters
-    - *quads: Two or more Quadray points
+    - *quads: One or more integer Quadray points, in any gauges
 
     Returns
     - Quadray: Normalized lattice-point centroid
@@ -237,31 +275,34 @@ def centroid(*quads: Quadray) -> Quadray:
     if len(quads) == 0:
         raise ValueError("At least one Quadray is required")
     n = len(quads)
-    sa = sum(q.a for q in quads)
-    sb = sum(q.b for q in quads)
-    sc = sum(q.c for q in quads)
-    sd = sum(q.d for q in quads)
-    return Quadray(
-        _round_half_up(sa / n),
-        _round_half_up(sb / n),
-        _round_half_up(sc / n),
-        _round_half_up(sd / n),
-    ).normalize()
+    totals = [0, 0, 0, 0]
+    for q in quads:
+        components = tuple(int(value) for value in q.as_tuple())
+        minimum = min(components)
+        for i, value in enumerate(components):
+            totals[i] += value - minimum
+    return Quadray(*((2 * total + n) // (2 * n) for total in totals)).normalize()
 
 
 def quadray_from_xyz(
     x: float, y: float, z: float,
     embedding: Iterable[Iterable[float]],
 ) -> Quadray:
-    """Map an R^3 point back to the quadray lattice via pseudoinverse rounding.
+    """Map an R^3 point back by minimum-norm, component-wise half-up rounding.
 
-    Computes the pseudoinverse of the 3x4 embedding matrix to find the
-    min-norm real-valued quadray coordinates, rounds half up to integers, and
-    normalizes. For points that lie exactly on the lattice this round-trips
-    exactly (the rounded point stays in the preimage's (1,1,1,1)-coset). For
-    general R^3 points the result is the nearest lattice point in quadray
-    coordinates (component-wise), which is not always the nearest in embedded
-    XYZ distance.
+    The embedding and XYZ are scaled together before solving, avoiding
+    overflow/underflow from normal equations and their squared condition
+    number. For gauge-compatible rank-three embeddings, the minimum-norm
+    preimage is the unique solution with component sum zero.
+
+    Integer-image reconstruction keeps half-integer ties in the same gauge
+    class despite solve roundoff. A reconstructed class is accepted only
+    when the actual forward map reproduces the input XYZ floats exactly;
+    magnitude-only error estimates cannot certify off-lattice points.
+    This is not XYZ-nearest projection; off-lattice points retain the
+    component-wise rule. Float round-trips require finite intermediate
+    coordinates and enough precision to distinguish the lattice points;
+    use the exact rational inverse for strict image membership.
 
     Parameters
     - x, y, z: Cartesian coordinates (Coxeter.4D)
@@ -272,20 +313,36 @@ def quadray_from_xyz(
       (not necessarily the XYZ-nearest lattice point)
     """
     import numpy as np
-    rows = list(embedding)
-    M = np.array([list(r) for r in rows], dtype=float)  # shape (3, 4)
-    xyz = np.array([x, y, z], dtype=float)
-    # Pseudoinverse: M^+ = M^T (M M^T)^{-1}
-    q_real = M.T @ np.linalg.solve(M @ M.T, xyz)
-    # Round half up (floor(v + 0.5)), NOT banker's rounding: when the exact
-    # preimage q has sum(q) % 4 == 2, the projection lands exactly on
-    # half-integer ties in all four components. Per-component round-half-even
-    # breaks ties inconsistently and can leave the (1,1,1,1)-coset of q, so
-    # the rounded point maps to a different XYZ location (edge-length errors).
-    # floor(v + 0.5) provably stays in q's coset, making lattice round-trips
-    # exact.
-    q_int = [_round_half_up(v) for v in q_real]
-    return Quadray(q_int[0], q_int[1], q_int[2], q_int[3]).normalize()
+
+    M = np.array([list(row) for row in embedding], dtype=float)
+    scale = float(np.max(np.abs(M)))
+    if scale == 0.0:
+        raise np.linalg.LinAlgError("Singular embedding")
+    scaled = M / scale
+    xyz = np.array([x, y, z], dtype=float) / scale
+    gauge_compatible = all(_row_sum_is_zero(row) for row in M)
+    if gauge_compatible:
+        # ker(M) = span(1,1,1,1): sum(q)=0 selects the minimum-norm
+        # solution. Solve this square system directly, not M @ M.T.
+        system = np.vstack((scaled, np.ones(4)))
+        q_real = np.linalg.solve(system, np.append(xyz, 0.0))
+
+        # Differences of lattice preimages are integers, regardless of the
+        # shared fractional part (0, 1/4, 1/2 or 3/4 at Urner scales).
+        minimum = float(np.min(q_real))
+        candidate = Quadray(*(_round_half_up(float(v) - minimum) for v in q_real))
+        # Replay the public forward arithmetic, rather than admitting a
+        # magnitude-sized residual. A large common Cartesian component must
+        # not hide a resolved off-lattice displacement in another component.
+        if to_xyz(candidate, M) == (float(x), float(y), float(z)):
+            return candidate
+    else:
+        # Preserve the minimum-norm behavior for full-rank embeddings whose
+        # kernel is not the quadray gauge, without forming normal equations.
+        q_real, _, rank, _ = np.linalg.lstsq(scaled, xyz, rcond=None)
+        if rank < 3:
+            raise np.linalg.LinAlgError("Singular embedding")
+    return Quadray(*(_round_half_up(float(v)) for v in q_real)).normalize()
 
 
 # --------------- Quaternion helpers ---------------

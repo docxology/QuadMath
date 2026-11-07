@@ -4,6 +4,11 @@ import os
 from quadmath.paths import get_repo_root, get_output_dir, get_data_dir, get_figure_dir
 
 
+@pytest.fixture(autouse=True)
+def isolated_output_configuration(monkeypatch):
+    monkeypatch.delenv("QUADMATH_OUTPUT_DIR", raising=False)
+
+
 def test_paths_helpers_basic():
     root = get_repo_root()
     assert isinstance(root, str) and root
@@ -49,3 +54,21 @@ def test_get_data_and_figure_dirs():
     figure_dir = get_figure_dir()
     assert data_dir == os.path.join(out, "data") and os.path.isdir(data_dir)
     assert figure_dir == os.path.join(out, "figures") and os.path.isdir(figure_dir)
+
+
+def test_explicit_output_root_works_outside_a_checkout(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / "generated"
+    monkeypatch.setenv("QUADMATH_OUTPUT_DIR", str(target))
+    assert get_output_dir() == str(target)
+    assert get_data_dir() == str(target / "data")
+    assert get_figure_dir() == str(target / "figures")
+    assert (target / "data").is_dir()
+    assert (target / "figures").is_dir()
+
+
+def test_relative_output_root_is_resolved_from_the_calling_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("QUADMATH_OUTPUT_DIR", "results")
+    assert get_output_dir() == str(tmp_path / "results")
+    assert (tmp_path / "results").is_dir()

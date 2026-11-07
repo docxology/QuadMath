@@ -1,8 +1,9 @@
 [project]
 name = "quadmath-project"
-version = "0.3.0"
+version = "0.4.0"
 description = "QuadMath: Quadray coordinates, optimization on tetrahedral lattices, and information geometry"
 authors = [{ name = "QuadMath Project" }]
+license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -31,3 +32,13 @@ dev = [
     "coverage>=7.0",
 ]
 
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quadmath"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/quadmath/output/**", "/docs/manuscript/figures/**"]

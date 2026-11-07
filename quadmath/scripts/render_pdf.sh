@@ -34,7 +34,7 @@ done
 # CONFIGURATION AND PATHS
 # =============================================================================
 
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 MARKDOWN_DIR="$REPO_ROOT/quadmath/markdown"
 OUTPUT_DIR="$REPO_ROOT/quadmath/output"
 PREAMBLE_MD="$MARKDOWN_DIR/00_preamble.md"
@@ -248,7 +248,7 @@ run_generation_scripts() {
       extra_args+=("--strict")
     fi
     log_info "Running: $script"
-    if $runner "$script_path" ${extra_args[@]+"${extra_args[@]}"} >/dev/null 2>&1; then
+    if $runner "$script_path" ${extra_args[@]+"${extra_args[@]}"}; then
       log_info "✅ Success: $script"
     else
       log_error "❌ Failed: $script"
@@ -271,13 +271,23 @@ pandoc_to_tex() {
   local title="$2"
   local preamble_tex="$3"
   local out_tex="$4"
+  local build_date
+  if [ -n "${SOURCE_DATE_EPOCH:-}" ]; then
+    if [ "$(uname -s)" = "Darwin" ]; then
+      build_date="$(LC_ALL=C date -u -r "$SOURCE_DATE_EPOCH" '+%B %d, %Y')" || return 1
+    else
+      build_date="$(LC_ALL=C date -u -d "@$SOURCE_DATE_EPOCH" '+%B %d, %Y')" || return 1
+    fi
+  else
+    build_date="$(LC_ALL=C date '+%B %d, %Y')" || return 1
+  fi
 
   local pandoc_args=(
     -f markdown+implicit_figures+tex_math_dollars+tex_math_single_backslash+raw_tex+autolink_bare_uris
     -s
     -V title="$title"
     -V author="$AUTHOR_TEX"
-    -V date="$(date '+%B %d, %Y')"
+    -V date="$build_date"
     --pdf-engine=xelatex
     --toc
     --toc-depth=3
@@ -313,24 +323,26 @@ pandoc_to_tex() {
   pandoc "$in_md" "${pandoc_args[@]}"
 }
 
-# Three-pass xelatex build of $TEX_DIR/<base>.tex into $PDF_DIR/<base>.pdf.
-# A second pass runs only when the first aux file shows unresolved references;
-# otherwise the build runs two passes when there is no aux file. A non-zero exit
-# from any pass fails the build. Returns 0 only if the PDF exists.
-compile_tex_to_pdf() {
+# Compile in a private directory and publish only after every required pass
+# succeeds. Failed attempts must not leave a canonical PDF, even if XeTeX wrote
+# one before returning nonzero.
+compile_tex_to_pdf() (
   local base="$1"
   local tex_file="$TEX_DIR/${base}.tex"
   local pdf_out="$PDF_DIR/${base}.pdf"
-  local aux_file="$PDF_DIR/${base}.aux"
   local xelatex_log="$LATEX_TEMP_DIR/${base}.xelatex.log"
-  rm -f "$pdf_out" "$xelatex_log"
+  rm -f "$pdf_out" "$xelatex_log" || return 1
+  local stage
+  stage="$(mktemp -d "$PDF_DIR/.${base}.XXXXXX")" || return 1
+  trap 'rm -rf "$stage"' EXIT
+  local aux_file="$stage/${base}.aux"
 
   local compile_status=0
   (
-    cd "$OUTPUT_DIR"
+    cd "$OUTPUT_DIR" || exit 1
 
     run_xelatex() {
-      xelatex -interaction=nonstopmode -output-directory="$PDF_DIR" "$tex_file" >>"$xelatex_log" 2>&1
+      xelatex -interaction=nonstopmode -output-directory="$stage" "$tex_file" >>"$xelatex_log" 2>&1
     }
 
     # First run - generate initial PDF
@@ -339,7 +351,7 @@ compile_tex_to_pdf() {
       log_info "First xelatex run completed: $base"
     else
       xelatex_status=$?
-      log_warn "First xelatex run had warnings (continuing): $base"
+      log_warn "First xelatex run failed (collecting remaining pass diagnostics): $base"
     fi
 
     # Check if we need additional runs by looking for unresolved references
@@ -359,12 +371,11 @@ compile_tex_to_pdf() {
       run_xelatex || xelatex_status=$?
     fi
 
-    # Clean up auxiliary files
-    rm -f "$PDF_DIR/${base}.aux" "$PDF_DIR/${base}.log" "$PDF_DIR/${base}.toc" 2>/dev/null || true
     exit "$xelatex_status"
   ) || compile_status=$?
 
-  if [ "$compile_status" -eq 0 ] && [ -f "$pdf_out" ]; then
+  if [ "$compile_status" -eq 0 ] && [ -s "$stage/${base}.pdf" ]; then
+    mv -f "$stage/${base}.pdf" "$pdf_out" || return 1
     rm -f "$xelatex_log"
     log_info "✅ Built: $pdf_out"
     return 0
@@ -375,7 +386,7 @@ compile_tex_to_pdf() {
     tail -n 20 "$xelatex_log" >&2
   fi
   return 1
-}
+)
 
 build_one() {
   local in_md="$1"
@@ -383,6 +394,7 @@ build_one() {
   local preamble_tex="$3"
   local base="${in_md%.md}"
   local tex_out="$TEX_DIR/${base}.tex"
+  rm -f "$PDF_DIR/${base}.pdf" "$tex_out" || return 1
 
   log_info "Building: $in_md -> $base.pdf"
   if pandoc_to_tex "$MARKDOWN_DIR/$in_md" "$title" "$preamble_tex" "$tex_out"; then
@@ -396,28 +408,33 @@ build_one() {
   compile_tex_to_pdf "$base"
 }
 
-build_combined() {
+build_combined() (
   local preamble_tex="$1"
   local combined_md="$OUTPUT_DIR/quadmath_review.md"
   local combined_tex="$TEX_DIR/quadmath_review.tex"
+  rm -f "$PDF_DIR/quadmath_review.pdf" "$combined_tex" || return 1
+  local combined_stage
+  combined_stage="$(mktemp "$combined_md.XXXXXX")" || return 1
+  trap 'rm -f "$combined_stage"' EXIT
 
   log_info "Building combined document..."
 
-  # Build combined markdown with page breaks
-  {
-    : > "$combined_md"
-    for i in "${!MODULES[@]}"; do
-      # Add page break before each section (except the first)
-      if [ $i -gt 0 ]; then
-        printf '\n\\newpage\n\n' >> "$combined_md"
-      fi
-      cat "$MARKDOWN_DIR/${MODULES[$i]%%|*}" >> "$combined_md"
-      # Add extra spacing after each section for better separation
-      if [ $i -lt $((${#MODULES[@]} - 1)) ]; then
-        printf '\n\n' >> "$combined_md"
-      fi
-    done
-  }
+  # Check each write explicitly: callers use this helper in an if, disabling
+  # errexit inside it. Never publish a partial concatenation or compile it.
+  local i
+  for i in "${!MODULES[@]}"; do
+    if [ "$i" -gt 0 ]; then
+      printf '\n\\newpage\n\n' >> "$combined_stage" || return 1
+    fi
+    if ! cat "$MARKDOWN_DIR/${MODULES[$i]%%|*}" >> "$combined_stage"; then
+      log_error "Failed to read combined section: ${MODULES[$i]%%|*}"
+      return 1
+    fi
+    if [ "$i" -lt $((${#MODULES[@]} - 1)) ]; then
+      printf '\n\n' >> "$combined_stage" || return 1
+    fi
+  done
+  mv -f "$combined_stage" "$combined_md" || return 1
 
   log_info "Generated combined markdown: $combined_md"
 
@@ -431,7 +448,7 @@ build_combined() {
 
   log_info "Compiling combined PDF..."
   compile_tex_to_pdf "quadmath_review"
-}
+)
 
 # =============================================================================
 # MAIN EXECUTION
@@ -439,6 +456,7 @@ build_combined() {
 
 main() {
   local start_time=$(date +%s)
+  cd "$REPO_ROOT" || return 1
 
   log_info "Starting QuadMath PDF generation..."
   log_info "Repository root: $REPO_ROOT"

@@ -18,6 +18,10 @@
 
 set -e  # Exit on first error
 
+# Resolve the project before invoking uv or any repository-relative command.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$REPO_ROOT"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -115,6 +119,9 @@ print_success "All figures generated"
 # =============================================================================
 
 print_header "Phase 3: Validating Markdown"
+
+print_info "Checking API glossary freshness..."
+uv run python quadmath/scripts/generate_glossary.py --check
 
 print_info "Running validate_markdown.py --strict..."
 uv run python quadmath/scripts/validate_markdown.py --strict

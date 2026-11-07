@@ -27,16 +27,10 @@ def test_quadray_to_xyz_known_image():
     assert (x, y, z) == (0.0, 2.0, 2.0)
 
 
-def test_quadray_to_xyz_delegates_and_defaults():
-    # Delegation: explicit urner_embedding() must equal to_xyz under
-    # DEFAULT_EMBEDDING exactly, over the origin and every shell-1 site.
-    q0 = Quadray(0, 0, 0, 0)
-    for q in [q0] + shell_sites(1):
-        assert quadray_to_xyz(q, urner_embedding()) == to_xyz(q, DEFAULT_EMBEDDING)
-    # M=None default path: same triple, numerically identical.
-    assert quadray_to_xyz(q0) == (0.0, 0.0, 0.0)
-    q = shell_sites(1)[0]
-    assert quadray_to_xyz(q) == to_xyz(q, DEFAULT_EMBEDDING)
+def test_quadray_to_xyz_default_and_scaled_coordinate_units():
+    q = Quadray(3, 1, 0, 2)
+    assert quadray_to_xyz(q) == (4.0, 2.0, 0.0)
+    assert quadray_to_xyz(q, urner_embedding(-0.1)) == pytest.approx((-0.4, -0.2, 0.0))
 
 
 @pytest.mark.parametrize("shape_arg", [(2, 4), (3, 3)])
@@ -66,13 +60,14 @@ def test_roundtrip_raises_unnormalized():
         quadray_roundtrip(Quadray(2, 2, 2, 1))
 
 
-def test_roundtrip_exact_across_scales():
-    # pinv(cM).(cM.q) = q - (sum(q)/4)*(1,1,1,1) is scale-independent, so
-    # the same-rows roundtrip is exact at any Urner scale.
-    for scale in (0.5, 2.0):
-        M = urner_embedding(scale)
-        for q in shell_sites(1):
-            assert quadray_roundtrip(q, M) == q
+@pytest.mark.parametrize("scale", (0.5, 2.0, 0.1, 1 / 3, -0.1, 1e-300, 1e300))
+def test_roundtrip_exact_across_scales(scale):
+    M = urner_embedding(scale)
+    for q in shell_sites(1):
+        assert quadray_roundtrip(q, M) == q
+    # IVM shells alone cover sum(q) == 0 (mod 4); include the other classes.
+    for q in (Quadray(1, 0, 0, 0), Quadray(1, 1, 0, 0), Quadray(1, 1, 1, 0)):
+        assert quadray_roundtrip(q, M) == q
     M_half = urner_embedding(0.5)
     for q in shell_sites(2):
         assert quadray_roundtrip(q, M_half) == q
@@ -123,6 +118,19 @@ def test_xyz_to_quadray_canonical_rejects_non_image():
         xyz_to_quadray_canonical((0.5, 0.5, 0.5))
     with pytest.raises(ValueError, match="not in the embedding image"):
         xyz_to_quadray_canonical((0.1, 0.0, 0.0))
+
+
+def test_strict_inverse_keeps_exact_binary_scale_and_fraction_membership():
+    scale = Fraction(0.1)
+    M = urner_embedding(0.1)
+    # Fractions retain the exact binary value of the supplied float matrix.
+    assert xyz_to_quadray_canonical((scale, scale, 3 * scale), M) == Quadray(2, 0, 1, 0)
+    # Decimal 0.3 is not exactly three copies of the binary float 0.1.
+    with pytest.raises(ValueError, match="not in the embedding image"):
+        xyz_to_quadray_canonical((0.1, 0.1, 0.3), M)
+    # No tolerance is introduced, even far below floating resolution.
+    with pytest.raises(ValueError, match="not in the embedding image"):
+        xyz_to_quadray_canonical((Fraction(1) + Fraction(1, 10**100), 1, 1))
 
 
 def test_xyz_to_quadray_canonical_rejects_bad_length():

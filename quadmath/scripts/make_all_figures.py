@@ -36,7 +36,7 @@ FIGURE_SCRIPTS = (
     "animation_stills.py",
     "stats_diagnostics_gallery.py",
 )
-_PATH_TOKEN = re.compile(r"(?:^|\s)(/\S+)\s*$")
+_PATH_TOKEN = re.compile(r"(?:^|\s)(/.*?)\s*$")
 
 
 def extract_output_paths(stdout: str, repo_root: str) -> List[str]:

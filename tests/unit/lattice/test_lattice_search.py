@@ -11,8 +11,6 @@ import numpy as np
 import pytest
 
 from quadmath.lattice.lattice_search import (
-    _build_through_shell as _search_build,  # re-exported via omni_numbering
-    _max_shell_for,
     nearest,
     squared_distance,
     within_radius,
@@ -24,9 +22,11 @@ _E = np.asarray(DEFAULT_EMBEDDING, dtype=np.float64)
 
 
 def _brute_force_within(center: np.ndarray, R: float, max_shell: int):
-    """Reference: filter the whole enumeration with the exact identity."""
+    """Reference: filter the whole enumeration in independent XYZ coordinates."""
     sites = sites_through_shell(max_shell)
-    d2 = squared_distance(center.astype(np.float64), sites)
+    xyz = sites @ _E.T
+    center_xyz = center @ _E.T
+    d2 = np.sum((xyz - center_xyz) ** 2, axis=1)
     keep = np.flatnonzero(d2 <= R * R)
     return sites[keep], d2[keep]
 
@@ -52,16 +52,59 @@ def test_squared_distance_integer_exact():
     assert np.all(d2[1:13] == 8.0)
 
 
-# --------------- _max_shell_for bound ----------
+
+@pytest.mark.parametrize("gauge", [2**40, 2**60, -(2**60), 2**100, -(2**100)])
+def test_squared_distance_preserves_large_independent_integer_gauges(gauge):
+    center = (2, 1, 1, 0)
+    rows = [(0, 0, 0, 0), (2, 1, 1, 0), (1, 2, 1, 0), (0, 2, 4, 2)]
+    p = np.asarray([v + gauge for v in center])
+    sites = np.asarray([[v - gauge for v in row] for row in rows])
+    expected = []
+    for row in rows:
+        a, b, c, d = (s - p for s, p in zip(row, center))
+        xyz = (a - b - c + d, a + b - c - d, a - b + c - d)
+        expected.append(sum(v * v for v in xyz))
+    np.testing.assert_array_equal(squared_distance(p, sites), expected)
 
 
-def test_max_shell_for_zero_center():
-    assert _max_shell_for(0.0, 0.0) >= 0
+def test_squared_distance_large_float_gauge_cannot_erase_separation():
+    p = np.full(4, float(2**40))
+    sites = np.array([[2, 1, 1, 0], [0, 0, 0, 0]])
+    np.testing.assert_array_equal(squared_distance(p, sites), [8.0, 0.0])
 
 
-def test_max_shell_for_growth():
-    assert _max_shell_for(0.0, 10.0) > _max_shell_for(0.0, 1.0)
-    assert _max_shell_for(5.0, 2.0) > _max_shell_for(0.0, 2.0)
+def test_squared_distance_subtracts_integer_positions_before_float_conversion():
+    k = 2**60
+    p = np.array([0, k, k, k], dtype=np.int64)
+    sites = np.array([[0, k + 1, k, k]], dtype=np.int64)
+    # The XYZ displacement is (-1, 1, -1), even though float(k+1) == float(k).
+    np.testing.assert_array_equal(squared_distance(p, sites), [3.0])
+
+
+@pytest.mark.parametrize("gauge", [2**40, 2**60, -(2**60), 2**100, -(2**100)])
+@pytest.mark.parametrize("center", [(0, 0, 0, 0), (2, 1, 1, 0)])
+def test_zero_radius_queries_remove_integer_gauge_before_float(gauge, center):
+    shifted = tuple(v + gauge for v in center)
+    for query in (within_radius, nearest):
+        sites, d2 = query(shifted, 0.0)
+        np.testing.assert_array_equal(sites, [center])
+        np.testing.assert_array_equal(d2, [0.0])
+
+
+def test_large_gauge_queries_match_independent_spatial_oracle():
+    center = np.array([2.25, 1.0, 1.5, 0.0])
+    gauge = float(2**40)
+    radius = 3.5
+    exp_sites, exp_d2 = _brute_force_within(center, radius, 8)
+    order = np.lexsort((exp_sites[:, 3], exp_sites[:, 2], exp_sites[:, 1],
+                       exp_sites[:, 0], exp_d2))
+    exp_sites, exp_d2 = exp_sites[order], exp_d2[order]
+    got_sites, got_d2 = within_radius(center + gauge, radius)
+    np.testing.assert_array_equal(got_sites, exp_sites)
+    np.testing.assert_allclose(got_d2, exp_d2, rtol=1e-14, atol=0.0)
+    got_sites, got_d2 = nearest(center + gauge, radius, k=7)
+    np.testing.assert_array_equal(got_sites, exp_sites[:7])
+    np.testing.assert_allclose(got_d2, exp_d2[:7], rtol=1e-14, atol=0.0)
 
 
 # --------------- within_radius ---------------
@@ -141,6 +184,9 @@ def test_within_radius_rejects_bad_center():
         within_radius((1, 2, 3, float("nan")), 1.0)
     with pytest.raises(TypeError):
         within_radius(None, 1.0)  # type: ignore[arg-type]
+    # Individually finite inputs can have unrepresentable gauge-free deltas.
+    with pytest.raises(ValueError, match="finite"):
+        within_radius((-1e308, 1e308, 0.0, 0.0), 0.0)
 
 
 def test_within_radius_caps_enumeration_depth():
@@ -252,9 +298,11 @@ def test_quadray_object_input():
     assert d2[0] == 0.0
 
 
-def test_reexport_consistency():
-    # The _build_through_shell name visible through lattice_search is the
-    # same function object as omni_numbering's.
-    from quadmath.lattice.omni_numbering import _build_through_shell as _omni_build
 
-    assert _search_build is _omni_build
+
+def test_float32_gauge_subtraction_preserves_resolved_displacement():
+    center = np.array([-2**24, 1, 0, 0], dtype=np.float32)
+    sites = np.array([[-2**24, 0, 0, 0]], dtype=np.float32)
+    # The original float32 arrays retain the unit B-axis displacement.
+    # Subtracting their minima in float32 would erase it before widening.
+    np.testing.assert_array_equal(squared_distance(center, sites), [3.0])

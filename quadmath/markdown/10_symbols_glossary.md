@@ -163,10 +163,10 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.metrics` | `shannon_entropy` | function | `(p, eps)` | Shannon entropy H(p) for a discrete distribution. |
 | `quadmath.core.quadray` | `DEFAULT_EMBEDDING` | constant |  |  |
 | `quadmath.core.quadray` | `IVM_NEIGHBOR_MOVES` | constant |  |  |
-| `quadmath.core.quadray` | `Quadray` | class |  | Quadray vector with non-negative components and at least one zero (Fuller.4D). |
+| `quadmath.core.quadray` | `Quadray` | class |  | Four-component quadray vector; ``normalize`` chooses its min-zero gauge. |
 | `quadmath.core.quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
 | `quadmath.core.quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
-| `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Component-wise mean of quadray points, rounded to the nearest lattice point. |
+| `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Round the component-wise mean of canonical representatives, exactly. |
 | `quadmath.core.quadray` | `distance` | function | `(q1, q2, embedding)` | Euclidean distance between two quadray points under the given embedding. |
 | `quadmath.core.quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
 | `quadmath.core.quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
@@ -174,7 +174,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.quadray` | `qconjugate` | function | `(q)` | Conjugate (w, -x, -y, -z) of a quaternion in (w, x, y, z) order. |
 | `quadmath.core.quadray` | `qmul` | function | `(a, b)` | Hamilton product of two quaternions. |
 | `quadmath.core.quadray` | `qrotate` | function | `(q, v_xyz, angle)` | Rotate a 3-vector by a unit quaternion via Rodrigues (v' = q v q*). |
-| `quadmath.core.quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back to the quadray lattice via pseudoinverse rounding. |
+| `quadmath.core.quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back by minimum-norm, component-wise half-up rounding. |
 | `quadmath.core.quadray` | `rotate_about_axis` | function | `(v_xyz, axis_xyz, angle)` | Rotate a 3-vector about an axis by an angle (axis-angle convenience). |
 | `quadmath.core.quadray` | `slerp` | function | `(qa, qb, t)` | Shortest-arc spherical linear interpolation between unit quaternions. |
 | `quadmath.core.quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
@@ -193,7 +193,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.inference.information` | `natural_gradient_step` | function | `(gradient, fisher, step_size, ridge)` | Compute a natural gradient step using a damped inverse Fisher. |
 | `quadmath.inference.information` | `perception_update` | function | `(mu, derivative_operator, free_energy_fn, step_size, epsilon)` | Continuous-time perception update: dmu/dt = D mu - dF/dmu. |
 | `quadmath.lattice.conversions` | `embedding_basis` | function | `(M)` | Return the four embedding COLUMNS as a (4,3) basis matrix (Fuller.4D axes). |
-| `quadmath.lattice.conversions` | `quadray_roundtrip` | function | `(q, M)` | Assert the exact round-trip identity recon == q for q -> XYZ -> quadray. |
+| `quadmath.lattice.conversions` | `quadray_roundtrip` | function | `(q, M)` | Assert the integer identity recon == q through the floating XYZ boundary. |
 | `quadmath.lattice.conversions` | `quadray_to_xyz` | function | `(q, M)` | Map a `Quadray` to Cartesian XYZ via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `quadmath.lattice.conversions` | `urner_embedding` | function | `(scale)` | Return a 3x4 Urner-style symmetric embedding matrix (Fuller.4D -> Coxeter.4D slice). |
 | `quadmath.lattice.conversions` | `xyz_to_quadray_canonical` | function | `(xyz, M)` | Recover the canonical integer quadray for an XYZ point in the embedding image, EXACTLY. |
@@ -223,7 +223,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.ivm_field` | `shell_cardinalities` | function | `(max_shell)` | Cardinalities of shells ``0 .. max_shell`` (cuboctahedral numbers). |
 | `quadmath.lattice.ivm_field` | `shell_sites` | function | `(k)` | Enumerate all IVM lattice sites with quadray shell norm ``2k``. |
 | `quadmath.lattice.lattice_search` | `nearest` | function | `(site, R, k)` | Return the ``k`` nearest IVM lattice sites within radius ``R``. |
-| `quadmath.lattice.lattice_search` | `squared_distance` | function | `(p, sites)` | Exact lattice squared distances from ``p`` to rows of ``sites``. |
+| `quadmath.lattice.lattice_search` | `squared_distance` | function | `(p, sites)` | Euclidean squared distances from ``p`` to rows of ``sites``. |
 | `quadmath.lattice.lattice_search` | `within_radius` | function | `(site, R)` | Return all IVM lattice sites within Euclidean radius ``R`` of ``site``. |
 | `quadmath.lattice.omni_numbering` | `MAX_SHELL` | constant |  |  |
 | `quadmath.lattice.omni_numbering` | `NEIGHBOR_MOVES` | constant |  |  |
@@ -256,9 +256,9 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.optimize.nelder_mead_quadray` | `nelder_mead_quadray` | function | `(f, initial_vertices, alpha, gamma, rho, sigma, max_iter, tol, on_step)` | Nelder–Mead on the integer quadray lattice. |
 | `quadmath.optimize.nelder_mead_quadray` | `order_simplex` | function | `(vertices, f)` | Sort vertices by objective value ascending and return paired lists. |
 | `quadmath.optimize.nelder_mead_quadray` | `project_to_lattice` | function | `(q)` | Project a quadray to the canonical lattice representative via normalize. |
-| `quadmath.paths` | `get_data_dir` | function | `()` | Return `quadmath/output/data` path and ensure it exists. |
-| `quadmath.paths` | `get_figure_dir` | function | `()` | Return `quadmath/output/figures` path and ensure it exists. |
-| `quadmath.paths` | `get_output_dir` | function | `()` | Return `quadmath/output` path at the repo root and ensure it exists. |
+| `quadmath.paths` | `get_data_dir` | function | `()` | Return ``data`` under the selected output root and ensure it exists. |
+| `quadmath.paths` | `get_figure_dir` | function | `()` | Return ``figures`` under the selected output root and ensure it exists. |
+| `quadmath.paths` | `get_output_dir` | function | `()` | Return the explicit output root, or ``quadmath/output`` in a checkout. |
 | `quadmath.paths` | `get_repo_root` | function | `(start)` | Heuristically find repository root by walking up from `start`. |
 | `quadmath.pipeline` | `FieldLearner` | class |  | Laplacian-regularized field learner over an IVM ball; satisfies :class:`Fittable`. |
 | `quadmath.pipeline` | `FieldModel` | class |  | Anything that predicts a scalar field value at a lattice site. |

@@ -198,9 +198,11 @@ their images is the exact integer
 $$d^{2}(p, q) \;=\; \sum_i (M\delta)_i^{2} \;=\; 4\sum_j \delta_j^{2} \;-\; \Bigl(\sum_j \delta_j\Bigr)^{2},$$
 
 the expansion of $\delta^{\mathsf T}(M^{\mathsf T}M)\delta$ under (S9).
-`lattice_search.squared_distance(p, sites)` evaluates exactly this identity (float64
-arithmetic; exact for the integer magnitudes used in search). Because the identity is
-exact on integers, nearest-site decisions never suffer floating-point boundary errors.
+`lattice_search.squared_distance(p, sites)` evaluates the equivalent sum of
+gauge-free Cartesian squares in float64, rather than subtracting two large
+quadratic terms. Integer gauge offsets are removed before conversion where
+possible. The algebraic identity is exact; arbitrary float inputs and distances
+beyond float64's exact-integer range are not exact-arithmetic guarantees.
 Worked values: $d^2\big(0, (2,1,1,0)\big) = 4\cdot 6 - 16 = 8$;
 $d^2\big(0, (4,2,2,0)\big) = 4\cdot 24 - 64 = 32$. The identity is cross-validated
 against the float pipeline `quadray.distance` (e.g.
@@ -389,39 +391,47 @@ bare `assert`, so the check survives `python -O`) when it fails.
 
 ### 6.2 Scale robustness (S27)
 
-The identity is scale-independent across the whole Urner family: for $M = c\,M_0$ with
-any $c \neq 0$,
+The identity is scale-independent in exact arithmetic across the Urner family:
+for $M = c\,M_0$ with any $c \neq 0$,
 
-$$\operatorname{pinv}(cM)\,(cM\,q) \;=\; q \;-\; \frac{\sum_i q_i}{4}\,\mathbf{1},$$
+$$\operatorname{pinv}(cM)\,(cM\,q) \;=\; q \;-\; \frac{\sum_i q_i}{4}\,\mathbf{1}.$$
 
-because $\operatorname{pinv}(cM) = \tfrac{1}{c}\operatorname{pinv}(M)$ and the $(1/c)$
-cancels the scale of the image. The projection lands on the same sum-zero representative
-at every scale, and round-half-up preserves the $(1,1,1,1)$-coset (S29), so
-`quadray_roundtrip(q, urner_embedding(c))` is exact for all 309 shell-0..4 sites at
-$c = 1/2$ and $c = 2$ (the half-integer FCC picture round-trips through the same scaled
-embedding).
+The factors $1/c$ and $c$ cancel algebraically. Floating-point implementation
+must additionally control scaling, conditioning and coherent lattice recovery:
+independent half-integer rounding after normal equations can break the identity
+even at ordinary scales such as $0.1$ or $1/3$. Regression cases include those
+non-dyadic scales, both signs and all component-sum residue classes. The
+round-trip claim is limited to finite, numerically resolvable lattice images;
+it cannot recover integer information already lost in an XYZ float.
 
 ### 6.3 The documented failure (S28)
 
-The single documented `AssertionError` case is an **unnormalized** input: the inverse
-canonicalizes to the min-0 representative. `quadray_roundtrip(Quadray(2,2,2,1))` raises
-`AssertionError` with message "roundtrip is not the identity", because
-$(2,2,2,1) \mapsto (-1,1,1) \mapsto (1,1,1,0) = \mathrm{normalize}(2,2,2,1)$. Embeddings
-whose rows do not sum to zero lie outside the Urner family (S6) and outside this
-guarantee.
+An **unnormalized** input is an intentional `AssertionError` case: the inverse
+canonicalizes to the min-0 representative. `quadray_roundtrip(Quadray(2,2,2,1))`
+raises with message "roundtrip is not the identity", because
+$(2,2,2,1) \mapsto (-1,1,1) \mapsto (1,1,1,0)$. Non-gauge-compatible or
+rank-deficient embeddings lie outside this round-trip contract. Floating
+overflow, loss of input precision and unresolved ill-conditioning are not
+covered by an exact-real identity.
 
 ### 6.4 Pseudoinverse + round-half-up preserves the coset (S29)
 
-`quadray.quadray_from_xyz(x, y, z, embedding)` computes the minimum-norm real preimage
-$q_{\mathrm{real}} = M^{+}\,\mathrm{xyz}$ (the sum-zero representative
-$w = q - \frac{s}{4}\mathbf{1}$ of the true class, since $\sum_i q_{\mathrm{real},i} = 0$
-by (S6)), rounds **half-up** (`floor(v + 0.5)`, not banker's rounding), and normalizes.
-For points that lie exactly on the quadray lattice — of any residue class — the rounded
-point stays in the input's $(1,1,1,1)$-coset, so the round trip through `quadray_from_xyz` is
-exact. Worked cases, exact at scales $c = 1$ and $c = 1/2$ alike: $(1,1,0,0)$ (sum
-$\equiv 2 \pmod 4$: the projection lands on exact half-integer ties in all four
-components, and half-up keeps the class), $(1,0,0,0)$, $(1,1,1,0)$, the unnormalized
-$(2,2,2,1)$ (returned as its canonical $(1,1,1,0)$), and the site $(0,1,1,2)$.
+`quadray.quadray_from_xyz(x, y, z, embedding)` retains component-wise
+**half-up** snapping of the minimum-norm real preimage, followed by
+normalization. On an exact lattice image, all half-integer ties share one
+common-offset phase, so coherent rounding preserves the class. Floating
+roundoff must not split that phase between components.
+
+The implementation handles numerically resolvable lattice recovery before
+off-lattice snapping; it does not change the latter into XYZ-nearest search.
+Worked residue classes include $(1,1,0,0)$ (sum $\equiv 2 \pmod 4$),
+$(1,0,0,0)$, $(1,1,1,0)$ and $(0,1,1,2)$. Strict rational lattice membership
+remains the separate S20 contract and has no tolerance.
+
+An integer reconstruction is accepted only if its actual forward XYZ floats
+equal the supplied XYZ floats. A magnitude-only residual allowance is not a
+membership certificate: large Cartesian components must not hide a resolved
+off-lattice displacement on a different axis.
 
 ### 6.5 Snapping, not inversion, for general points (S30)
 

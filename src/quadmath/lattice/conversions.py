@@ -259,36 +259,38 @@ def xyz_to_quadray_canonical(
 
 
 def quadray_roundtrip(q: Quadray, M: Optional[np.ndarray] = None) -> Quadray:
-    """Assert the exact round-trip identity recon == q for q -> XYZ -> quadray.
+    """Assert the integer identity recon == q through the floating XYZ boundary.
 
-    Both legs use the SAME embedding rows: the forward leg maps q to R^3
-    with rows = :func:`_embedding_rows` of M (M=None ->
-    :data:`quadray.DEFAULT_EMBEDDING`), and the inverse leg inverts that
-    same image with the same rows via :func:`quadray.quadray_from_xyz`.
+    Both legs use the same embedding rows: the forward leg maps q to R^3
+    with :func:`_embedding_rows`, and the inverse leg uses
+    :func:`quadray.quadray_from_xyz`. The latter is a discrete floating-point
+    reconstruction, not the strict rational image-membership inverse
+    :func:`xyz_to_quadray_canonical`.
 
-    recon == q holds EXACTLY for every normalized integer quadray at ANY
-    Urner scale c != 0: pinv(cM)*(cM*q) = q - (sum(q)/4)*(1,1,1,1) is
-    scale-independent (pinv(cM) = (1/c)*pinv(M)), and round-half-up
-    preserves the (1,1,1,1)-coset (see quadray_from_xyz, src/quadmath/core/quadray.py).
-    At c = 1/2 the image is the half-integer FCC picture of the same sites
-    and round-trips through the same scaled embedding.
+    For the Urner family c*M, c != 0, the minimum-norm preimage is
+    q - (sum(q)/4)*(1,1,1,1), independent of scale. Component-wise half-up
+    rounding preserves this gauge class. The floating inverse reconstructs
+    lattice gauge classes within the forward arithmetic's error budget,
+    including the shared half-integer ties when sum(q) % 4 == 2. Thus ordinary
+    non-dyadic and signed scales also round-trip, provided forward coordinates
+    remain finite and floating precision still distinguishes the sites.
+    Arbitrarily large integers or scales that lose this information cannot
+    have an unconditional float round-trip guarantee.
 
-    Documented failure that raises AssertionError: q not normalized --
-    quadray_from_xyz returns quadray.normalize(q), e.g. Quadray(2,2,2,1)
-    comes back as Quadray(1,1,1,0).  Embeddings whose rows do not sum to
-    exactly 0 are outside the Urner family and outside this guarantee.
+    A noncanonical q fails the assertion: the inverse always returns the
+    min-zero representative, e.g. (2,2,2,1) returns (1,1,1,0).
 
     Parameters
-    - q: Input quadray (normalized integer for the exact round-trip).
-    - M: 3x4 embedding used by BOTH legs, or None for the default.
+    - q: Canonical integer Quadray point.
+    - M: 3x4 embedding used by both legs, or None for the default.
 
     Returns
-    - Quadray: The round-tripped recon, equal to q exactly.
+    - Quadray: The reconstructed point, equal to q exactly.
 
     Raises
     - ValueError: If M does not have shape (3, 4).
-    - AssertionError: If the round-trip is not the identity (q not
-      normalized).
+    - AssertionError: If floating reconstruction is not the identity, including
+      when q is not canonical or the float boundary has lost information.
     """
     forward_rows = _embedding_rows(M)
     x, y, z = quadray.to_xyz(q, forward_rows)

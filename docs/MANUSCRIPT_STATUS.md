@@ -59,10 +59,12 @@ The manuscript exists in **two coordinated trees**:
   `infrastructure.rendering`. Discovery contract met by this tree:
   top-level numbered `NN_*.md` sections, `preamble.md` (```latex block),
   `config.yaml`, top-level `*.bib`.
-- **Local pipeline**: `quadmath/scripts/render_pdf.sh` remains the working
-  local render path (unchanged, builds from `quadmath/markdown/`).
-- The published v1 PDF stays on Zenodo (DOI 10.5281/zenodo.16887791);
-  neither pipeline is wired into CI here.
+- **Local pipeline**: `quadmath/scripts/render_pdf.sh` builds from
+  `quadmath/markdown/`, checks combined-source construction and publishes PDFs
+  only after successful compiler passes.
+- The published v1 PDF stays on Zenodo (DOI 10.5281/zenodo.16887791).
+  [Linux verification](../.github/workflows/verify.yml) now provisions the real
+  font/TeX/video/Pandoc toolchain and runs the complete local manuscript pipeline.
 
 ## Evidence checked
 

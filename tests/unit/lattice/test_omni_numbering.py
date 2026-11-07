@@ -255,3 +255,79 @@ def test_sites_through_shell_returns_independent_copy():
     first = sites_through_shell(1)
     first[:] = 99
     assert not np.any(sites_through_shell(1) == 99)
+
+
+@pytest.mark.parametrize(
+    "dtype", (np.int8, np.uint8, np.int16, np.uint16, np.int32, np.uint32, np.int64, np.uint64)
+)
+def test_count_polynomials_promote_narrow_integer_arrays(dtype):
+    shells = np.array([[0, 3], [6, 7]], dtype=dtype)
+    populations = shell_count(shells)
+    totals = cumulative_count(shells)
+    assert populations.tolist() == [[1, 92], [362, 492]]
+    assert totals.tolist() == [[1, 147], [923, 1415]]
+    assert populations.dtype == totals.dtype == np.dtype(np.int64)
+
+
+@pytest.mark.parametrize("counter", (shell_count, cumulative_count))
+@pytest.mark.parametrize("shell", (2**20, 2**21, 2**32, 2**63 - 1, 2**64 - 1, 2**100))
+def test_counts_are_exact_beyond_fixed_width_intermediates(counter, shell):
+    expected = (
+        10 * shell * shell + 2
+        if counter is shell_count
+        else 1 + 2 * shell + 10 * shell * (shell + 1) * (2 * shell + 1) // 6
+    )
+    assert counter(shell) == expected
+    assert isinstance(counter(shell), int)
+    array = counter(np.array([[0, shell]], dtype=object))
+    assert array.shape == (1, 2)
+    assert array.tolist() == [[1, expected]]
+    expected_dtype = np.int64 if expected <= np.iinfo(np.int64).max else object
+    assert array.dtype == np.dtype(expected_dtype)
+
+
+@pytest.mark.parametrize("counter", (shell_count, cumulative_count))
+def test_counts_accept_unsigned_extreme_and_preserve_empty_array_shape(counter):
+    maximum = int(np.iinfo(np.uint64).max)
+    assert counter(np.array([maximum], dtype=np.uint64))[0] == counter(maximum)
+    for dtype in (np.int8, object):
+        result = counter(np.empty((0, 2), dtype=dtype))
+        assert result.shape == (0, 2)
+        assert result.dtype == np.dtype(np.int64)
+
+
+@pytest.mark.parametrize("counter", (shell_count, cumulative_count))
+def test_counts_validate_unbounded_object_inputs(counter):
+    with pytest.raises(ValueError, match="non-negative"):
+        counter(-(2**100))
+    with pytest.raises(TypeError, match="must be integers"):
+        counter(np.array([2**100, 1.5], dtype=object))
+
+
+@pytest.mark.parametrize("gauge", (2**100, -(2**100), 10**1100, -(10**1100)))
+def test_site_index_normalizes_unbounded_gauges_before_lookup(gauge):
+    canonical = (2, 1, 1, 0)
+    expected = site_index(canonical, 3)
+    alias = tuple(value + gauge for value in canonical)
+    assert site_index(alias, 3) == expected
+    assert site_index(Quadray(*alias), 3) == expected
+    assert site_at_index(expected, 3).as_tuple() == canonical
+    assert site_index((gauge, gauge, gauge, gauge), 3) == 0
+    assert site_index((gauge + 2**100, gauge, gauge, gauge), 3) == -1
+
+
+@pytest.mark.parametrize("dtype", (np.int64, np.uint64))
+def test_site_index_normalizes_fixed_width_integer_gauges(dtype):
+    gauge = int(np.iinfo(dtype).max) - 2
+    assert site_index(np.array([gauge + 2, gauge + 1, gauge + 1, gauge], dtype=dtype), 3) == 12
+    limits = np.iinfo(dtype)
+    assert site_index(np.array([limits.min, limits.max, 0, 0], dtype=dtype), 3) == -1
+
+
+@pytest.mark.parametrize("counter,expected", (
+    (shell_count, 184467440737095516162),
+    (cumulative_count, 264093875139781512362775805953),
+))
+def test_count_object_arrays_unbox_fixed_width_integral_elements(counter, expected):
+    shells = np.array([[np.int64(2**32)]], dtype=object)
+    assert counter(shells).tolist() == [[expected]]

@@ -1,5 +1,7 @@
 from fractions import Fraction
+from itertools import permutations
 
+import numpy as np
 import pytest
 
 from quadmath.core.quadray import (
@@ -86,6 +88,54 @@ def test_to_xyz_known_image():
     assert (x, y, z) == (0.0, 2.0, 2.0)
 
 
+@pytest.mark.parametrize("gauge", (10**20, -(10**20), 10**1100, -(10**1100)))
+def test_forward_embedding_and_metrics_ignore_arbitrary_size_gauges(gauge):
+    q = Quadray(1, 0, 0, 0)
+    alias = Quadray(gauge + 1, gauge, gauge, gauge)
+    origin_alias = Quadray(-gauge, -gauge, -gauge, -gauge)
+    other_alias = Quadray(2 * gauge, 2 * gauge + 1, 2 * gauge, 2 * gauge)
+    assert to_xyz(alias, DEFAULT_EMBEDDING) == (1.0, 1.0, 1.0)
+    assert to_xyz(origin_alias, DEFAULT_EMBEDDING) == (0.0, 0.0, 0.0)
+    assert magnitude(alias, DEFAULT_EMBEDDING) == pytest.approx(math.sqrt(3))
+    assert distance(q, alias, DEFAULT_EMBEDDING) == 0.0
+    assert distance(alias, other_alias, DEFAULT_EMBEDDING) == pytest.approx(math.sqrt(8))
+    assert dot(q, alias, DEFAULT_EMBEDDING) == 3.0
+    assert dot(alias, other_alias, DEFAULT_EMBEDDING) == -1.0
+    assert angle(alias, origin_alias, other_alias, DEFAULT_EMBEDDING) == pytest.approx(
+        math.acos(-1 / 3)
+    )
+    with pytest.raises(ValueError, match="Degenerate angle"):
+        angle(q, alias, other_alias, DEFAULT_EMBEDDING)
+
+
+def test_forward_gauge_removal_supports_general_zero_sum_rows():
+    embedding = ((2.0, 1.0, -4.0, 1.0), (3.0, -2.0, 1.0, -2.0), (0.0, 1.0, 2.0, -3.0))
+    gauge = 10**1100
+    alias = Quadray(gauge + 1, gauge, gauge, gauge)
+    assert to_xyz(alias, embedding) == (2.0, 3.0, 0.0)
+
+
+def test_forward_gauge_removal_preserves_exact_fraction_embeddings():
+    embedding = (
+        (Fraction(1, 10), Fraction(1, 10), Fraction(1, 10), Fraction(-3, 10)),
+        (Fraction(1, 3), Fraction(-1, 3), 0, 0),
+        (0, 0, Fraction(1, 7), Fraction(-1, 7)),
+    )
+    gauge = 10**1100
+    alias = Quadray(gauge + 1, gauge, gauge, gauge)
+    assert to_xyz(alias, embedding) == (Fraction(1, 10), Fraction(1, 3), Fraction(0))
+
+
+def test_forward_embedding_preserves_genuinely_gauge_dependent_maps():
+    embedding = ((1.0, -1.0, 0.0, 0.0), (0.0, 1.0, 0.0, 0.0), (0.0, 0.0, 1.0, -1.0))
+    assert to_xyz(Quadray(2, 1, 1, 1), embedding) == (1.0, 1.0, 0.0)
+    assert to_xyz(Quadray(1, 0, 0, 0), embedding) == (1.0, 0.0, 0.0)
+    # Row sums must be checked before any float conversion, too.
+    large = 2**60
+    integer_embedding = ((large + 1, -large, 0, 0), (0, 1, -1, 0), (0, 0, 1, -1))
+    assert to_xyz(Quadray(1, 1, 1, 1), integer_embedding) == (1, 0, 0)
+
+
 def test_vector_magnitude_and_dot():
     q1 = Quadray(1, 0, 0, 0)
     q2 = Quadray(0, 1, 0, 0)
@@ -165,7 +215,7 @@ def test_centroid_multiple_points():
     q1 = Quadray(2, 0, 0, 0)
     q2 = Quadray(0, 2, 0, 0)
     c = centroid(q1, q2)
-    assert min(c.as_tuple()) == 0  # Normalized
+    assert c == Quadray(1, 1, 0, 0)
 
 
 def test_centroid_empty():
@@ -197,6 +247,67 @@ def test_quadray_from_xyz_roundtrip_half_integer_ties():
         assert to_xyz(q_back, DEFAULT_EMBEDDING) == (x, y, z)
 
 
+@pytest.mark.parametrize(
+    "scale",
+    (0.1, 1 / 3, -0.1, 1e-300, -1e-300, 1e307, -1e307, 1e-320, -1e-320),
+)
+def test_quadray_from_xyz_scaled_signed_permutations_all_residues(scale):
+    embedding = tuple(tuple(scale * entry for entry in row) for row in DEFAULT_EMBEDDING)
+    for residue in range(4):
+        for components in sorted(set(permutations((0, 1, 2, 3 + residue)))):
+            for sign in (-1, 1):
+                signed = tuple(sign * value for value in components)
+                q = Quadray(*signed)
+                expected = Quadray(*(value - min(signed) for value in signed))
+                xyz = to_xyz(q, embedding)
+                assert quadray_from_xyz(*xyz, embedding) == expected
+
+
+@pytest.mark.parametrize("scale", (0.1, -0.1, 1e-200, 1e200))
+def test_quadray_from_xyz_does_not_square_embedding_condition_number(scale):
+    # The second row differs from the first by about 1e-9. Forming M M.T
+    # erases that independent direction, although the embedding is rank three.
+    delta = 2.0 ** -30
+    rows = ((1, -1, -1, 1), (1, -1 + delta, -1 - delta, 1), (1, -1, 1, -1))
+    embedding = tuple(tuple(scale * entry for entry in row) for row in rows)
+    for q in (Quadray(1, 1, 0, 0), Quadray(2, 1, 0, 0), Quadray(0, 0, 1, 1)):
+        assert quadray_from_xyz(*to_xyz(q, embedding), embedding) == q
+
+
+def test_quadray_from_xyz_preserves_nongauge_minimum_norm_projection():
+    embedding = ((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0))
+    assert quadray_from_xyz(1.25, -0.5, 2.5, embedding) == Quadray(1, 0, 3, 0)
+
+
+@pytest.mark.parametrize(
+    "embedding",
+    (
+        ((0, 0, 0, 0),) * 3,
+        ((1, -1, 0, 0), (2, -2, 0, 0), (0, 0, 0, 0)),
+        ((1, 0, 0, 0), (0, 1, 0, 0), (1, 1, 0, 0)),
+    ),
+)
+def test_quadray_from_xyz_rejects_singular_embeddings(embedding):
+    import numpy as np
+
+    with pytest.raises(np.linalg.LinAlgError):
+        quadray_from_xyz(1.0, 2.0, 3.0, embedding)
+
+
+@pytest.mark.parametrize(
+    ("component", "expected"),
+    (
+        (0.5 - 1e-9, Quadray(0, 0, 0, 0)),
+        (0.5, Quadray(1, 0, 0, 0)),
+        (0.5 + 1e-9, Quadray(2, 1, 1, 0)),
+    ),
+)
+def test_quadray_from_xyz_off_lattice_half_up_boundaries(component, expected):
+    # Minimum-norm preimage is (component, 0, 0, -component).
+    assert quadray_from_xyz(0.0, 2 * component, 2 * component, DEFAULT_EMBEDDING) == expected
+
+
+
 def test_quadray_from_xyz_origin():
     q = quadray_from_xyz(0.0, 0.0, 0.0, DEFAULT_EMBEDDING)
     assert q == Quadray(0, 0, 0, 0)
@@ -214,6 +325,13 @@ def test_quadray_from_xyz_is_componentwise_not_xyz_nearest():
     assert sq_dist(got) == pytest.approx(19.0 / 16.0, abs=1e-12)
     assert sq_dist(Quadray(1, 1, 1, 0)) == pytest.approx(11.0 / 16.0, abs=1e-12)
     assert sq_dist(Quadray(1, 1, 1, 0)) < sq_dist(got)
+
+
+@pytest.mark.parametrize("scale", (0.1, 1 / 3, -0.1, 1e-300, 1e300, 1e-320))
+def test_quadray_from_xyz_scaled_off_lattice_contract(scale):
+    embedding = tuple(tuple(scale * entry for entry in row) for row in DEFAULT_EMBEDDING)
+    xyz = tuple(scale * value for value in (-0.25, 0.75, 0.75))
+    assert quadray_from_xyz(*xyz, embedding) == Quadray(0, 0, 0, 0)
 
 
 # --------------- Quaternion rotation tests ---------------
@@ -388,10 +506,46 @@ def test_dot_distance_angle_accept_one_shot_iterable_embedding():
     assert angle(q1, Quadray(0, 0, 0, 0), q2, rows()) == pytest.approx(angle(q1, Quadray(0, 0, 0, 0), q2, DEFAULT_EMBEDDING))
 
 
-def test_centroid_rounds_half_up_and_is_shift_invariant():
-    assert centroid(Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0)) == Quadray(1, 0, 0, 0)
-    shifted = centroid(Quadray(2, 1, 1, 1), Quadray(1, 1, 1, 1))
-    assert shifted == centroid(Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0))
+@pytest.mark.parametrize("gauges", ((0, 1), (-17, 5), (2**100, -(2**140))))
+def test_centroid_rounds_half_up_under_independent_gauges(gauges):
+    points = (Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0))
+    shifted = tuple(
+        Quadray(*(value + gauge for value in q.as_tuple()))
+        for q, gauge in zip(points, gauges)
+    )
+    assert centroid(*points) == Quadray(1, 0, 0, 0)
+    assert centroid(*shifted) == Quadray(1, 0, 0, 0)
+
+
+def test_centroid_independent_gauges_with_three_distinct_points():
+    points = (Quadray(5, 0, 1, 2), Quadray(0, 3, 2, 1), Quadray(2, 1, 0, 4))
+    shifted = tuple(
+        Quadray(*(value + gauge for value in q.as_tuple()))
+        for q, gauge in zip(points, (2**200, -37, -(2**250)))
+    )
+    assert centroid(*points) == Quadray(1, 0, 0, 1)
+    assert centroid(*shifted) == Quadray(1, 0, 0, 1)
+
+
+@pytest.mark.parametrize("large", (2**53 + 1, 2**200 + 17, 2**1100 + 1))
+def test_centroid_preserves_arbitrary_size_integer_identity_and_half_ties(large):
+    q = Quadray(large, large + 2, 1, 0)
+    assert centroid(q) == q
+    assert centroid(q, q, q) == q
+    assert centroid(Quadray(large, 1, 0, 0), Quadray(large + 1, 0, 0, 0)) == Quadray(
+        large + 1, 1, 0, 0
+    )
+
+
+@pytest.mark.parametrize(
+    ("points", "expected"),
+    (
+        ((Quadray(1, 0, 0, 0),) + (Quadray(0, 0, 0, 0),) * 2, Quadray(0, 0, 0, 0)),
+        ((Quadray(1, 0, 0, 0),) * 2 + (Quadray(0, 0, 0, 0),), Quadray(1, 0, 0, 0)),
+    ),
+)
+def test_centroid_exact_division_on_either_side_of_half(points, expected):
+    assert centroid(*points) == expected
 
 
 def test_qrotate_accepts_negated_quaternion_as_same_rotation():
@@ -408,3 +562,136 @@ def test_ivm_neighbor_moves_are_the_twelve_sorted_permutations_of_2110():
 
     assert IVM_NEIGHBOR_MOVES == tuple(sorted(set(permutations((2, 1, 1, 0)))))
     assert len(IVM_NEIGHBOR_MOVES) == 12
+
+
+def test_centroid_promotes_numpy_integers_before_normalization_and_accumulation():
+    import numpy as np
+
+    rows = (
+        np.array([2**62, 0, 0, 0], dtype=np.int64),
+        np.array([-2**63, 2**63 - 1, 0, -1], dtype=np.int64),
+        np.array([2**64 - 1, 0, 1, 2], dtype=np.uint64),
+    )
+    for row in rows:
+        minimum = min(int(value) for value in row)
+        expected = Quadray(*(int(value) - minimum for value in row))
+        assert centroid(Quadray(*row)) == expected
+
+
+def test_large_resolved_off_lattice_displacement_keeps_component_rounding():
+    large = 2**40
+    # Exact minimum-norm components are
+    # (large+511/1024, -large+511/1024, -511/1024, -511/1024).
+    # A large X/Z must not hide the resolved Y residual of 1/256.
+    assert quadray_from_xyz(2 * large, 511 / 256, 2 * large, DEFAULT_EMBEDDING) == Quadray(
+        2 * large, 0, large, large
+    )
+
+
+@pytest.mark.parametrize("dtype", (np.int64, np.uint64))
+def test_exact_volumes_promote_fixed_width_components(dtype):
+    length = 2**22
+    points = [
+        Quadray(*(dtype(value) for value in row))
+        for row in (
+            (0, 0, 0, 0), (length, 0, 0, 0),
+            (0, length, 0, 0), (0, 0, length, 0),
+        )
+    ]
+    expected = Fraction(2**66, 4)
+    assert integer_tetra_volume(*points) == expected
+    assert ace_tetravolume_5x5(*points) == expected
+
+
+@pytest.mark.parametrize("dtype", (np.int64, np.uint64))
+def test_exact_volumes_promote_before_edge_and_projection_subtraction(dtype):
+    limits = np.iinfo(dtype)
+    low, high = int(limits.min), int(limits.max)
+    for rows in (
+        ((low, 0, 0, 0), (high, 0, 0, 0), (low, 1, 0, 0), (low, 0, 1, 0)),
+        ((0, 0, 0, 0), (high, 0, 0, low), (0, 1, 0, 0), (0, 0, 1, 0)),
+    ):
+        points = [Quadray(*(dtype(value) for value in row)) for row in rows]
+        expected = Fraction(high - low, 4)
+        assert integer_tetra_volume(*points) == expected
+        assert ace_tetravolume_5x5(*points) == expected
+
+
+@pytest.mark.parametrize("dtype", (int, np.int64))
+def test_relative_geometry_preserves_large_spatial_translations(dtype):
+    offset = 2**60
+    origin, a, b, c = (
+        Quadray(*(dtype(value) for value in row))
+        for row in (
+            (offset, 0, 0, 0), (offset + 1, 0, 0, 0),
+            (offset, 1, 0, 0), (offset, 0, 1, 0),
+        )
+    )
+    assert distance(origin, a, DEFAULT_EMBEDDING) == pytest.approx(math.sqrt(3))
+    assert angle(a, origin, b, DEFAULT_EMBEDDING) == pytest.approx(math.acos(-1 / 3))
+    assert integer_tetra_volume(origin, a, b, c) == Fraction(1, 4)
+    assert ace_tetravolume_5x5(origin, a, b, c) == Fraction(1, 4)
+
+
+def test_relative_geometry_preserves_fractional_vector_components():
+    origin = Quadray(0.25, 0.0, 0.0, 0.0)
+    a = Quadray(0.75, 0.0, 0.0, 0.0)
+    b = Quadray(0.25, 0.5, 0.0, 0.0)
+    assert distance(origin, a, DEFAULT_EMBEDDING) == pytest.approx(math.sqrt(3) / 2)
+    assert angle(a, origin, b, DEFAULT_EMBEDDING) == pytest.approx(math.acos(-1 / 3))
+
+
+def test_geometry_accepts_single_use_embedding_rows_and_outer_iterable():
+    def embedding():
+        return (iter(row) for row in DEFAULT_EMBEDDING)
+
+    origin = Quadray(0, 0, 0, 0)
+    a = Quadray(1, 0, 0, 0)
+    b = Quadray(0, 1, 0, 0)
+    assert to_xyz(a, embedding()) == (1.0, 1.0, 1.0)
+    assert distance(origin, a, embedding()) == pytest.approx(math.sqrt(3))
+    assert angle(a, origin, b, embedding()) == pytest.approx(math.acos(-1 / 3))
+
+
+@pytest.mark.parametrize("scale", (1e-200, 1e200))
+def test_norms_preserve_finite_values_when_squaring_would_underflow_or_overflow(scale):
+    embedding = np.asarray(DEFAULT_EMBEDDING) * scale
+    expected = math.sqrt(3) * scale
+    assert magnitude(Quadray(1, 0, 0, 0), embedding) == pytest.approx(expected, abs=0)
+    translation = 2**60
+    actual = distance(Quadray(translation + 1, 0, 0, 0),
+                      Quadray(translation, 0, 0, 0), embedding)
+    assert actual == pytest.approx(expected, abs=0)
+
+
+@pytest.mark.parametrize("scale", (1e-200, 1e200, 1e308))
+def test_angle_is_unit_invariant_for_finite_embedded_components(scale):
+    embedding = np.asarray(DEFAULT_EMBEDDING) * scale
+    actual = angle(Quadray(1, 0, 0, 0), Quadray(0, 0, 0, 0),
+                   Quadray(0, 1, 0, 0), embedding)
+    assert actual == pytest.approx(math.acos(-1 / 3))
+
+
+@pytest.mark.parametrize("dtype", (np.int64, np.uint64))
+def test_fixed_width_components_preserve_exact_normalization_addition_and_xyz(dtype):
+    limits = np.iinfo(dtype)
+    q = Quadray(dtype(limits.min), dtype(limits.max), dtype(limits.min), dtype(limits.min))
+    span = int(limits.max) - int(limits.min)
+    assert q.normalize().as_tuple() == (0, span, 0, 0)
+    assert to_xyz(q, DEFAULT_EMBEDDING) == (-float(span), float(span), -float(span))
+    assert Quadray(dtype(limits.max), 0, 0, 0).add(Quadray(1, 0, 0, 0)).a == int(limits.max) + 1
+
+
+def test_scaled_integer_displacements_can_exceed_float_coercion_range():
+    from quadmath.core.cayley_menger import squared_distances_from_quadrays, tetra_volume_cayley_menger
+
+    length = 2**1023
+    embedding = np.asarray(DEFAULT_EMBEDDING) * 2.0**-1023
+    origin = Quadray(-length, 0, 0, 0)
+    a = Quadray(length, 0, 0, 0)
+    b = Quadray(-length, length, 0, 0)
+    c = Quadray(-length, 0, length, 0)
+    assert distance(origin, a, embedding) == pytest.approx(2 * math.sqrt(3))
+    assert angle(a, origin, b, embedding) == pytest.approx(math.acos(-1 / 3))
+    squared = squared_distances_from_quadrays(origin, a, b, c, embedding)
+    assert tetra_volume_cayley_menger(squared) == pytest.approx(4 / 3)

@@ -1,11 +1,53 @@
 from __future__ import annotations
 
+from math import frexp, ldexp, sqrt
 from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
 
 if TYPE_CHECKING:
     from quadmath.core.quadray import Quadray
+
+
+def _normalized_distances(d2: np.ndarray) -> tuple[np.ndarray, float]:
+    """Separate dimensionless squared distances from their squared-length scale."""
+    distances = np.asarray(d2, dtype=np.float64)
+    if distances.shape != (4, 4):
+        raise ValueError("d2 must be 4x4")
+    scale = float(np.max(np.abs(distances)))
+    return (distances / scale if scale > 0.0 else distances), scale
+
+
+def _cayley_menger_matrix(d2: np.ndarray) -> np.ndarray:
+    """Build a dimensionless Cayley–Menger matrix."""
+    matrix = np.ones((5, 5))
+    matrix[0, 0] = 0.0
+    matrix[1:, 1:] = d2
+    return matrix
+
+
+def _normalized_volume(d2: np.ndarray) -> float:
+    """Compute volume before restoring dimensional units."""
+    determinant = float(np.linalg.det(_cayley_menger_matrix(d2)))
+    if determinant <= 0.0:
+        return 0.0
+    return sqrt(determinant) / sqrt(288.0)
+
+
+def _restore_units(value: float, squared_scale: float, dimension: int) -> float:
+    """Multiply by scale**(dimension/2) without overflowing intermediate powers."""
+    if value == 0.0:
+        return 0.0
+    value_mantissa, value_exponent = frexp(value)
+    scale_mantissa, scale_exponent = frexp(squared_scale)
+    exponent, odd = divmod(scale_exponent * dimension, 2)
+    mantissa = value_mantissa * scale_mantissa ** (dimension / 2.0)
+    if odd:
+        mantissa *= sqrt(2.0)
+    try:
+        return ldexp(mantissa, value_exponent + exponent)
+    except OverflowError:
+        return float("inf")
 
 
 def tetra_volume_cayley_menger(d2: np.ndarray) -> float:
@@ -16,22 +58,18 @@ def tetra_volume_cayley_menger(d2: np.ndarray) -> float:
     288 V^2 = det(CM). Negative or zero determinant implies a degenerate
     configuration, for which this function returns 0.0.
 
+    Squared distances are normalized before taking the determinant. Units are
+    restored with exponent scaling, so uniformly tiny or huge tetrahedra do
+    not underflow or overflow unless the final volume itself is out of range.
+
     Parameters
     - d2: 4x4 ndarray of squared distances between vertices (zeros on diagonal).
 
     Returns
     - float: Non-negative Euclidean volume (Coxeter.4D/E^3 slice).
     """
-    if d2.shape != (4, 4):
-        raise ValueError("d2 must be 4x4")
-    CM = np.ones((5, 5))
-    CM[0, 0] = 0.0
-    CM[1:, 1:] = d2
-    det = np.linalg.det(CM)
-    V2 = det / 288.0
-    if V2 <= 0:
-        return 0.0
-    return float(np.sqrt(V2))
+    normalized, scale = _normalized_distances(d2)
+    return _restore_units(_normalized_volume(normalized), scale, 3)
 
 
 def ivm_tetra_volume_cayley_menger(d2: np.ndarray) -> float:
@@ -54,9 +92,9 @@ def ivm_tetra_volume_cayley_menger(d2: np.ndarray) -> float:
     Returns
     - float: Non-negative tetravolume in IVM units.
     """
-    v_xyz = tetra_volume_cayley_menger(d2)
+    normalized, scale = _normalized_distances(d2)
     S3 = float(np.sqrt(9.0 / 8.0))
-    return S3 * v_xyz
+    return _restore_units(S3 * _normalized_volume(normalized), scale, 3)
 
 
 def squared_distances_from_quadrays(
@@ -65,9 +103,10 @@ def squared_distances_from_quadrays(
 ) -> np.ndarray:
     """Build the 4x4 squared-distance matrix from four quadray vertices.
 
-    Maps each quadray to R^3 via the given embedding and computes all pairwise
-    squared Euclidean distances.  The result can be passed directly to
-    ``tetra_volume_cayley_menger`` or ``ivm_tetra_volume_cayley_menger``.
+    Embeds each integer pairwise displacement, rather than subtracting
+    floating images of absolute positions, preserving spatial translations.
+    The result can be passed directly to ``tetra_volume_cayley_menger`` or
+    ``ivm_tetra_volume_cayley_menger``.
 
     Parameters
     - p0, p1, p2, p3: Quadray vertices (Fuller.4D)
@@ -82,11 +121,12 @@ def squared_distances_from_quadrays(
     `ivm_tetra_volume_cayley_menger`.
     """
     from quadmath.core.quadray import to_xyz
-    pts = [np.array(to_xyz(p, embedding)) for p in (p0, p1, p2, p3)]
+    embedding = tuple(tuple(row) for row in embedding)
+    pts = (p0, p1, p2, p3)
     d2 = np.zeros((4, 4))
     for i in range(4):
         for j in range(i + 1, 4):
-            diff = pts[i] - pts[j]
+            diff = np.asarray(to_xyz(pts[i].sub(pts[j]), embedding))
             val = float(diff @ diff)
             d2[i, j] = val
             d2[j, i] = val
@@ -96,10 +136,10 @@ def squared_distances_from_quadrays(
 def tetra_circumradius(d2: np.ndarray) -> float:
     """Circumscribed sphere radius of a tetrahedron from squared distances.
 
-    Uses the Cayley–Menger determinant relation:
-        R = sqrt( -det(CM_ext) / (2 * det(CM)) )
-    where CM is the standard 5x5 Cayley–Menger matrix and CM_ext is the
-    bordered matrix that yields the circumradius.
+    Uses the Cayley–Menger relation
+    ``R^2 = -det(d2) / (2 * det(CM))`` on dimensionless squared distances,
+    then restores length units. There is no dimensional determinant cutoff:
+    uniform scaling cannot turn a nondegenerate tetrahedron into a zero.
 
     For degenerate tetrahedra (zero volume) the circumradius is undefined
     and this function returns 0.0.
@@ -110,24 +150,13 @@ def tetra_circumradius(d2: np.ndarray) -> float:
     Returns
     - float: Non-negative circumradius in Euclidean units.
     """
-    if d2.shape != (4, 4):
-        raise ValueError("d2 must be 4x4")
-    # Build standard 5x5 CM matrix
-    CM = np.ones((5, 5))
-    CM[0, 0] = 0.0
-    CM[1:, 1:] = d2
-    det_CM = np.linalg.det(CM)
-    if abs(det_CM) < 1e-30:
+    normalized, scale = _normalized_distances(d2)
+    det_CM = float(np.linalg.det(_cayley_menger_matrix(normalized)))
+    if det_CM <= 0.0:
         return 0.0
-    # Circumradius formula: R^2 = -CM_cofactor(0,0) / (2 * det(CM)), where the
-    # cofactor is det(minor(0,0)) of the 4x4 minor obtained by deleting row 0
-    # and column 0 of the 5x5 Cayley-Menger matrix.
-    minor_00 = CM[1:, 1:]
-    det_minor = np.linalg.det(minor_00)
+    det_minor = float(np.linalg.det(normalized))
     R2 = -det_minor / (2.0 * det_CM)
-    if R2 <= 0:
-        return 0.0
-    return float(np.sqrt(R2))
+    return _restore_units(sqrt(R2), scale, 1)
 
 
 def tetra_inradius(d2: np.ndarray) -> float:
@@ -135,7 +164,9 @@ def tetra_inradius(d2: np.ndarray) -> float:
 
     Uses the relation r = 3V / A where V is the volume and A is the total
     surface area.  Surface area is computed by summing the areas of the four
-    triangular faces using Heron's formula.
+    triangular faces using Heron's formula. Volume and face areas are
+    evaluated with dimensionless squared distances before restoring length
+    units; dimensional volumes or areas need not fit in float64.
 
     For degenerate tetrahedra (zero volume) returns 0.0.
 
@@ -145,9 +176,8 @@ def tetra_inradius(d2: np.ndarray) -> float:
     Returns
     - float: Non-negative inradius in Euclidean units.
     """
-    if d2.shape != (4, 4):
-        raise ValueError("d2 must be 4x4")
-    V = tetra_volume_cayley_menger(d2)
+    normalized, scale = _normalized_distances(d2)
+    V = _normalized_volume(normalized)
     if V <= 0.0:
         return 0.0
 
@@ -156,13 +186,13 @@ def tetra_inradius(d2: np.ndarray) -> float:
     faces = [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
     total_area = 0.0
     for i, j, k in faces:
-        a = np.sqrt(max(0.0, d2[i, j]))
-        b = np.sqrt(max(0.0, d2[i, k]))
-        c = np.sqrt(max(0.0, d2[j, k]))
+        a = np.sqrt(max(0.0, normalized[i, j]))
+        b = np.sqrt(max(0.0, normalized[i, k]))
+        c = np.sqrt(max(0.0, normalized[j, k]))
         s = (a + b + c) / 2.0
         area2 = s * (s - a) * (s - b) * (s - c)
         total_area += np.sqrt(max(0.0, area2))
 
     # Note: if V > 0, at least one face must have positive area,
     # so total_area > 0 is guaranteed here.
-    return float(3.0 * V / total_area)
+    return _restore_units(float(3.0 * V / total_area), scale, 1)

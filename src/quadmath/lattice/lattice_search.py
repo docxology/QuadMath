@@ -14,10 +14,11 @@ integer
 
     d2(p, q) = 4 * sum_j (p_j - q_j)^2 - (sum_j (p_j - q_j))^2,
 
-which the test suite cross-validates against the float pipeline
-``quadmath.core.quadray.distance``.  Every site ``s`` on frequency shell ``g`` of the
-close packing satisfies ``d2(origin, s) >= 8g`` (verified by exhaustive
-breadth-first enumeration through shell 8 in the tests); this bound
+The implementation evaluates the equivalent embedded sum of three squares,
+after removing each input's gauge before float conversion.  Every site ``s``
+on frequency shell ``g`` of the close packing satisfies
+``d2(origin, s) >= 8g`` (verified by exhaustive breadth-first enumeration
+through shell 8 in the tests); this bound
 makes shell-ordered sweeps safe to truncate:
 
 - ``within_radius`` enumerates exactly through shell
@@ -59,28 +60,50 @@ __all__ = [
 ]
 
 
+def _remove_gauge(components: np.ndarray) -> np.ndarray:
+    """Subtract row minima without rounding away an integer gauge."""
+    arr = np.asarray(components)
+    if arr.dtype.kind == "f":
+        # Preserve float32/float16 displacements when subtracting a large gauge.
+        arr = arr.astype(np.float64, copy=False)
+    minimum = np.min(arr, axis=-1, keepdims=True)
+    if arr.dtype.kind == "u" or (arr.dtype.kind == "i" and np.any(minimum < 0)):
+        # Python integers avoid overflow when the signed range is crossed.
+        arr = arr.astype(object)
+        minimum = minimum.astype(object)
+    return arr - minimum
+
+
 def _validate_center(
     site: Union[Quadray, Tuple[int, int, int, int], List[int], np.ndarray]
 ) -> np.ndarray:
-    """Validate and convert a query center to a length-4 numeric array.
+    """Validate and remove the gauge before converting a query to float.
 
     Parameters
     - site: Quadray vector or 4-sequence of real components.
 
     Returns
-    - np.ndarray: (4,) float64 array of quadray components.
+    - np.ndarray: (4,) float64 canonical quadray components. Integer inputs
+      retain their exact differences even when the common gauge exceeds
+      float64's consecutive-integer range.
 
     Raises
     - TypeError: If the input is not numeric.
     - ValueError: If the shape is not (4,).
     """
     raw = site.as_tuple() if isinstance(site, Quadray) else tuple(site)
-    arr = np.asarray(raw, dtype=np.float64)
+    arr = np.asarray(
+        tuple(int(v) if isinstance(v, np.integer) else v for v in raw),
+        dtype=object,
+    )
     if arr.shape != (4,):
         raise ValueError(f"center must have exactly 4 components, got shape {arr.shape}")
-    if not np.all(np.isfinite(arr)):
+    if any(isinstance(v, (float, np.floating)) and not np.isfinite(v) for v in arr):
         raise ValueError("center components must be finite")
-    return arr
+    center = np.asarray(_remove_gauge(arr), dtype=np.float64)
+    if not np.all(np.isfinite(center)):
+        raise ValueError("center components must be finite")
+    return center
 
 
 def _validate_radius(R: float) -> float:
@@ -107,12 +130,13 @@ def _validate_radius(R: float) -> float:
 
 
 def squared_distance(p: np.ndarray, sites: np.ndarray) -> np.ndarray:
-    """Exact lattice squared distances from ``p`` to rows of ``sites``.
+    """Euclidean squared distances from ``p`` to rows of ``sites``.
 
-    Uses the integer-exact identity
-    ``d2 = 4*sum_j delta_j^2 - (sum_j delta_j)^2`` implied by the
-    ``DEFAULT_EMBEDDING`` Gram matrix (``4I - J``); for float inputs the
-    same identity is evaluated in float64.
+    Remove each input's common quadray gauge before taking differences and
+    converting to float64. Evaluate the three embedded Cartesian components
+    as a nonnegative sum of squares, rather than subtracting large quadratic
+    forms. Integer differences are retained exactly until float conversion;
+    the returned distances themselves have float64 precision.
 
     Parameters
     - p: (4,) query components.
@@ -121,8 +145,12 @@ def squared_distance(p: np.ndarray, sites: np.ndarray) -> np.ndarray:
     Returns
     - np.ndarray: (n,) squared Euclidean distances.
     """
-    delta = sites.astype(np.float64) - p
-    return 4.0 * np.sum(delta * delta, axis=1) - np.sum(delta, axis=1) ** 2
+    delta = np.asarray(_remove_gauge(sites) - _remove_gauge(p), dtype=np.float64)
+    a, b, c, d = delta.T
+    x = (a - b) - (c - d)
+    y = (a - c) + (b - d)
+    z = (a - b) + (c - d)
+    return x * x + y * y + z * z
 
 
 def _max_shell_for(center_norm: float, R: float) -> int:
@@ -152,7 +180,7 @@ def within_radius(
 
     The search enumerates the close packing exactly through the shell
     depth required by the triangle-inequality bound, then filters with
-    exact squared distances.  Results are sorted by squared distance,
+    squared distances.  Results are sorted by squared distance,
     with lexicographic ``(a, b, c, d)`` order as the deterministic
     tie-break.
 

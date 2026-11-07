@@ -64,6 +64,19 @@ def test_extract_rejects_paths_outside_repo_root():
         extract_output_paths(f"saved: {stale}\n", ROOT)
 
 
+def test_extract_spaced_paths_keeps_suffix_containment_and_deduplication():
+    root = "/work/Quad Math"
+    path = f"{root}/quadmath/output/figures/a figure.png"
+    stdout = f"Generated: {path}\n{path}\nSaved: {root}/progress log\n"
+    assert extract_output_paths(stdout, root) == [
+        "quadmath/output/figures/a figure.png",
+    ]
+    with pytest.raises(ValueError, match="outside repo root"):
+        extract_output_paths("Saved: /work/Quad Math Elsewhere/a figure.png", root)
+    with pytest.raises(ValueError, match="outside repo root"):
+        extract_output_paths(f"Saved: {root}/../outside/a figure.png", root)
+
+
 def test_require_existing_output_passes_when_one_path_exists(tmp_path):
     (tmp_path / "quadmath" / "output" / "figures").mkdir(parents=True)
     (tmp_path / "quadmath" / "output" / "figures" / "x.png").write_bytes(b"png")
@@ -104,6 +117,28 @@ def test_run_script_returns_repo_relative_paths_of_written_outputs(tmp_path, mon
     script.write_text(body)
     assert make_all_figures._run_script(str(script)) == [
         "quadmath/output/figures/fake.png",
+    ]
+
+
+def test_run_script_accepts_real_spaced_output_from_unrelated_cwd(tmp_path, monkeypatch):
+    root = tmp_path / "Quad Math"
+    root.mkdir()
+    scripts = _fake_repo(root, monkeypatch)
+    script = scripts / "spaced_demo.py"
+    script.write_text(
+        "from pathlib import Path\n"
+        "out = Path.cwd() / 'quadmath/output/figures/a figure.png'\n"
+        "out.parent.mkdir(parents=True)\n"
+        "out.write_bytes(b'png')\n"
+        "print('Generated: ' + str(out))\n"
+        "print(out)\n",
+        encoding="utf-8",
+    )
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+    assert make_all_figures._run_script(str(script)) == [
+        "quadmath/output/figures/a figure.png",
     ]
 
 

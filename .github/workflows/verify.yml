@@ -1,0 +1,90 @@
+name: mathematical-verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
+    env:
+      MPLBACKEND: Agg
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install reproducible runner and video prerequisite
+        run: |
+          python -m pip install uv==0.13.7
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install locked dependencies
+        run: uv sync --frozen --python '${{ matrix.python }}' --group dev
+      - name: Tests and complete statement/branch coverage
+        run: |
+          uv run --frozen coverage run -m pytest -q
+          uv run --frozen coverage report
+      - name: Documentation contracts
+        run: |
+          uv run --frozen python quadmath/scripts/generate_glossary.py --check
+          uv run --frozen python quadmath/scripts/validate_markdown.py --strict
+          uv run --frozen python docs/development/check_links.py
+      - name: Build source distribution and wheel
+        run: uv build --python '${{ matrix.python }}'
+      - name: Exercise installed wheel outside the checkout
+        run: |
+          uv venv --python '${{ matrix.python }}' /tmp/quadmath-wheel
+          uv pip install --python /tmp/quadmath-wheel/bin/python dist/*.whl
+          /tmp/quadmath-wheel/bin/python -I -c "from fractions import Fraction; from quadmath.core.quadray import Quadray, integer_tetra_volume; assert integer_tetra_volume(Quadray(0,0,0,0),Quadray(1,0,0,0),Quadray(0,1,0,0),Quadray(0,0,1,0)) == Fraction(1,4)"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: matrix.python == '3.13'
+        with:
+          name: quadmath-distributions
+          path: dist/*
+          if-no-files-found: error
+
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      MPLBACKEND: Agg
+      UV_PYTHON: '3.13'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Pin manuscript date to source commit
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Install manuscript toolchain
+        run: |
+          python -m pip install uv==0.13.7
+          sudo apt-get update && sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-dejavu-core ffmpeg
+      - name: Install locked dependencies
+        run: uv sync --frozen --python 3.13 --group dev
+      - name: Regenerate figures, data and PDFs
+        run: bash quadmath/scripts/render_pdf.sh
+      - name: Port and validate generated documentation
+        run: |
+          uv run --frozen python docs/manuscript/port_from_source.py
+          uv run --frozen python docs/development/check_links.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quadmath-manuscript
+          path: |
+            quadmath/output/pdf/quadmath_review.pdf
+            quadmath/output/tex/quadmath_review.tex
+          if-no-files-found: error

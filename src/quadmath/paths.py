@@ -31,15 +31,22 @@ def get_repo_root(start: str | None = None) -> str:
 
 
 def get_output_dir() -> str:
-    """Return `quadmath/output` path at the repo root and ensure it exists."""
-    root = get_repo_root()
-    out = os.path.join(root, "quadmath", "output")
+    """Return the explicit output root, or ``quadmath/output`` in a checkout.
+
+    ``QUADMATH_OUTPUT_DIR`` may be an absolute or current-directory-relative
+    path. Installed wheels can use it without requiring a repository checkout.
+    """
+    out = os.environ.get("QUADMATH_OUTPUT_DIR")
+    if out:
+        out = os.path.abspath(os.path.expanduser(out))
+    else:
+        out = os.path.join(get_repo_root(), "quadmath", "output")
     os.makedirs(out, exist_ok=True)
     return out
 
 
 def get_data_dir() -> str:
-    """Return `quadmath/output/data` path and ensure it exists."""
+    """Return ``data`` under the selected output root and ensure it exists."""
     out = get_output_dir()
     data_dir = os.path.join(out, "data")
     os.makedirs(data_dir, exist_ok=True)
@@ -47,7 +54,7 @@ def get_data_dir() -> str:
 
 
 def get_figure_dir() -> str:
-    """Return `quadmath/output/figures` path and ensure it exists."""
+    """Return ``figures`` under the selected output root and ensure it exists."""
     out = get_output_dir()
     figure_dir = os.path.join(out, "figures")
     os.makedirs(figure_dir, exist_ok=True)

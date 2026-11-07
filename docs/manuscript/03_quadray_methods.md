@@ -55,8 +55,21 @@ This multi-framework approach allows us to:
 - **References**: Urner provides practical conversion write-ups and matrices; see:
   - Quadrays and XYZ: [Urner – Quadrays and XYZ](https://www.grunch.net/synergetics/quadxyz.html)
   - Introduction with examples: [Urner – Quadray intro](https://www.grunch.net/synergetics/quadintro.html)
-- **Implementation**: choose a fixed tetrahedral embedding; construct a 3×4 matrix M that maps (a,b,c,d) to (x,y,z), respecting A,B,C,D directions to tetra vertices. The inverse map can be defined up to projective normalization (adding (k,k,k,k)). When comparing volumes, use the `S3=\sqrt{9/8}` scale to convert XYZ (Euclidean) volumes to IVM (Fuller.4D) units.
+- **Implementation**: choose a fixed tetrahedral 3×4 embedding. Adding `(k,k,k,k)` preserves the point when the embedding annihilates the all-ones vector. The `S3=sqrt(9/8)` XYZ-to-IVM volume factor assumes sphere-radius-one units (unit tetrahedron edge 2); rescale `DEFAULT_EMBEDDING` by `1/sqrt(2)` before applying that convention.
 - **Vector view**: treat `q` as a vector with magnitude and direction; define dot products and norms by pushing to XYZ via `M`.
+
+The numerical Cayley–Menger routines normalize squared-distance scale before
+evaluating determinants, radii and face areas, then restore physical units.
+This avoids dimensionful degeneracy thresholds and avoidable determinant
+overflow/underflow. It does not make nearly degenerate floating geometry exact.
+
+`centroid` canonicalizes each input independently and rounds component means
+half-up with integer arithmetic, preserving arbitrary-size integer inputs.
+It is a quantized quadray centroid, not necessarily the XYZ-nearest point to
+the continuous Euclidean centroid.
+
+Cross-project orientation, precision boundaries and executable comparisons are
+documented in the [Synergetics suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
 
 ### Integer-coordinate constructions (compact derivation box)
 

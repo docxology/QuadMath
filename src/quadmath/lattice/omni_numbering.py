@@ -27,6 +27,7 @@ Conventions
 """
 from __future__ import annotations
 
+from numbers import Integral
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
@@ -70,13 +71,17 @@ def _validate_shells(arr: np.ndarray, name: str = "shell index") -> np.ndarray:
     - name: Name used in the error message.
 
     Returns
-    - np.ndarray: The validated integer array.
+    - np.ndarray: Validated indices with unbounded Python integer elements.
     """
-    if not np.issubdtype(arr.dtype, np.integer):
+    if not (
+        np.issubdtype(arr.dtype, np.integer)
+        or (arr.dtype == object and all(isinstance(value, Integral) for value in arr.flat))
+    ):
         raise TypeError(f"{name} must be integers, got dtype {arr.dtype}")
     if np.any(arr < 0):
         raise ValueError(f"{name} must be non-negative")
-    return arr
+    return np.fromiter((int(value) for value in arr.flat), dtype=object,
+                       count=arr.size).reshape(arr.shape)
 
 
 def shell_count(k: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
@@ -90,13 +95,18 @@ def shell_count(k: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
     - k: Shell index or array of shell indices (non-negative integers).
 
     Returns
-    - int or np.ndarray: Shell population(s), matching the shape of ``k``.
+    - int or np.ndarray: Exact shell population(s), matching the shape of
+      ``k``. Arrays use object dtype only when required by the result size.
     """
     arr = _validate_shells(np.asarray(k))
-    counts = np.where(arr == 0, 1, 10 * arr * arr + 2)
+    counts = np.asarray(10 * arr * arr + 2, dtype=object)
+    counts[arr == 0] = 1
     if np.ndim(arr) == 0:
         return int(counts)
-    return counts
+    return counts.astype(
+        np.int64 if np.all(counts <= np.iinfo(np.int64).max) else object,
+        copy=False,
+    )
 
 
 def cumulative_count(k: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
@@ -111,13 +121,17 @@ def cumulative_count(k: Union[int, np.ndarray]) -> Union[int, np.ndarray]:
     - k: Shell index or array of shell indices (non-negative integers).
 
     Returns
-    - int or np.ndarray: Cumulative site count(s) through shell ``k``.
+    - int or np.ndarray: Exact cumulative count(s) through shell ``k``.
+      Arrays use object dtype only when required by the result size.
     """
     arr = _validate_shells(np.asarray(k))
     totals = 1 + 2 * arr + 10 * arr * (arr + 1) * (2 * arr + 1) // 6
     if np.ndim(arr) == 0:
         return int(totals)
-    return totals
+    return totals.astype(
+        np.int64 if np.all(totals <= np.iinfo(np.int64).max) else object,
+        copy=False,
+    )
 
 
 def _normalize_rows(q: np.ndarray) -> np.ndarray:
@@ -236,8 +250,8 @@ def site_index(site: Union[Quadray, Tuple[int, int, int, int], List[int]],
 
     The global index enumerates ``sites_through_shell(max_shell)``: index 0
     is the center, then shell 1 sites in lexicographic order, and so on.
-    The input is normalized (translated by -(k, k, k, k)) before lookup, so
-    any representative of the projective class is accepted.
+    The input is normalized in unbounded integer arithmetic before the bounded
+    int64 lookup, so arbitrarily large integer projective gauges are accepted.
 
     Parameters
     - site: Quadray vector or integer 4-sequence.
@@ -248,13 +262,14 @@ def site_index(site: Union[Quadray, Tuple[int, int, int, int], List[int]],
       the site is not an IVM site within that depth.
     """
     sites, _, _ = _build_through_shell(max_shell)
-    q = np.asarray(
-        site.as_tuple() if isinstance(site, Quadray) else tuple(site),
-        dtype=np.int64,
-    ).reshape(4)
-    q = q - q.min()
-    if int(q.max()) >= (1 << _KEY_BITS):
+    components = tuple(int(value) for value in (
+        site.as_tuple() if isinstance(site, Quadray) else site
+    ))
+    minimum = min(components)
+    canonical = tuple(value - minimum for value in components)
+    if max(canonical) >= (1 << _KEY_BITS):
         return -1
+    q = np.asarray(canonical, dtype=np.int64).reshape(4)
     hits = np.flatnonzero(np.all(sites == q, axis=1))
     return int(hits[0]) if hits.size else -1
 

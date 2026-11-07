@@ -18,19 +18,34 @@ This repository organizes a comprehensive review of Quadray coordinates, integer
 - **Verification**: `./run_all.sh --test-only` (tests + 100% coverage gate).
   Full pipeline: `./run_all.sh --with-pdf`.
 
+## Synergetics suite
+
+QuadMath supplies the mathematical specification, exact determinants, lattice
+algorithms and Lean formalization. Its companion projects are
+[symergetics](https://github.com/docxology/symergetics) for rational geometry and
+research workflows, and [QuadCraft](https://github.com/docxology/QuadCraft) for
+interactive/native/browser applications.
+
+The [suite interoperability guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md)
+defines gauge equivalence, embedding orientation, length/volume units and the
+different inverse contracts. Its
+[executable example](https://github.com/docxology/symergetics/blob/main/examples/suite_interoperability.py)
+exercises the real Python, JavaScript and C++ implementations without adding a
+runtime dependency between repositories.
+
 ## Quick Start
 
 ```bash
 # Clone and setup
 git clone https://github.com/docxology/QuadMath.git
 cd QuadMath
-uv sync
+uv sync --python 3.13
 
 # Run tests to ensure everything works
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
 
 # Generate all outputs (figures, PDFs, LaTeX)
-bash quadmath/scripts/render_pdf.sh
+UV_PYTHON=3.13 bash quadmath/scripts/render_pdf.sh
 
 # Clean all generated outputs (regeneratable)
 bash quadmath/scripts/clean_output.sh
@@ -39,6 +54,20 @@ bash quadmath/scripts/clean_output.sh
 > The published version-1 PDF (`QuadMath_v1_DAF_08-16-2025.pdf`) is not kept in
 > git (8.5MB; canonical copy on Zenodo via the DOI above). Generate a fresh
 > copy with `bash quadmath/scripts/render_pdf.sh`.
+
+### Installed package
+
+Release wheels contain the `quadmath` package; the manuscript scripts remain
+source-checkout tools. Build distributions with `uv build --python 3.13`.
+For installed plotting code, set `QUADMATH_OUTPUT_DIR=/path/to/results` to
+select an output root without requiring a checkout. Without the override,
+source-checkout tools retain `quadmath/output/`.
+
+The coordinated release notes are in [CHANGELOG.md](CHANGELOG.md). The
+[suite verifier](https://github.com/docxology/symergetics/blob/main/verify_suite.py)
+runs frozen environments, coverage gates, games, native tests, interoperability
+and documentation checks across all three projects.
+
 
 ## Repository Architecture: The render_pdf.sh Paradigm
 

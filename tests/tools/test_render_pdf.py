@@ -9,6 +9,8 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import shutil
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -28,6 +30,11 @@ for a in "$@"; do
   if [ "$prev" = "-o" ]; then out="$a"; fi
   prev="$a"
 done
+if [ -n "${PANDOC_FAIL:-}" ]; then
+  printf 'partial tex\n' > "$out"
+  echo "pandoc fixture cannot convert input" >&2
+  exit 1
+fi
 printf '%s\n' "$@" > "$out"
 """
 
@@ -45,8 +52,8 @@ done
 base="$(basename "$tex" .tex)"
 echo "$base" >> "$XELATEX_CALLS"
 if [ -n "${XELATEX_AUX:-}" ]; then printf '\\@ref{x}\n' > "$outdir/$base.aux"; fi
-if [ -n "${XELATEX_FAIL:-}" ]; then echo "fake failure" >&2; exit 1; fi
 printf 'stub pdf for %s\n' "$base" > "$outdir/$base.pdf"
+if [ -n "${XELATEX_FAIL:-}" ]; then echo "fake failure after PDF write" >&2; exit 1; fi
 """
 
 
@@ -87,6 +94,7 @@ def sandbox(tmp_path) -> SimpleNamespace:
     env["XELATEX_CALLS"] = str(tmp_path / "xelatex_calls.txt")
     env.pop("XELATEX_AUX", None)
     env.pop("XELATEX_FAIL", None)
+    env.pop("PANDOC_FAIL", None)
     return SimpleNamespace(
         markdown=markdown,
         output=tmp_path / "output",
@@ -214,6 +222,122 @@ def test_build_one_reports_failure_and_leaves_no_pdf(sandbox):
     result = _render(sandbox, body, XELATEX_FAIL="1")
     assert "BUILD_FAILED" in result.stdout, result.stdout + result.stderr
     assert not (sandbox.output / "pdf" / "13_broken.pdf").exists()
+    assert "fake failure after PDF write" in result.stderr
+    assert list((sandbox.output / "pdf").iterdir()) == []
+
+
+@pytest.mark.parametrize("combined", [False, True])
+def test_pandoc_failure_invalidates_stale_pdf_without_running_xelatex(sandbox, combined):
+    (sandbox.markdown / "01_a.md").write_text("Alpha\n", encoding="utf-8")
+    pdf_dir = sandbox.output / "pdf"
+    pdf_dir.mkdir(parents=True)
+    base = "quadmath_review" if combined else "01_a"
+    previous = pdf_dir / f"{base}.pdf"
+    previous.write_bytes(b"stale prior pdf")
+    command = (
+        f'MODULES=("01_a.md|Alpha"); build_combined "{sandbox.preamble}"'
+        if combined else f'build_one "01_a.md" "Alpha" "{sandbox.preamble}"'
+    )
+    result = _render(sandbox, f"if {command}; then echo BUILD_OK; else echo BUILD_FAILED; fi", PANDOC_FAIL="1")
+    assert "BUILD_FAILED" in result.stdout, result.stdout + result.stderr
+    assert "pandoc fixture cannot convert input" in result.stderr
+    assert not previous.exists()
+    assert _calls(sandbox) == []
+
+
+def test_combined_input_failure_keeps_prior_markdown_but_no_current_pdf(sandbox):
+    (sandbox.markdown / "01_a.md").write_text("Alpha\n", encoding="utf-8")
+    sandbox.output.mkdir()
+    previous_md = sandbox.output / "quadmath_review.md"
+    previous_md.write_text("previous complete manuscript\n", encoding="utf-8")
+    pdf_dir = sandbox.output / "pdf"
+    pdf_dir.mkdir()
+    previous_pdf = pdf_dir / "quadmath_review.pdf"
+    previous_pdf.write_bytes(b"stale")
+    result = _render(
+        sandbox,
+        'MODULES=("01_a.md|Alpha" "02_missing.md|Missing"); '
+        f'if build_combined "{sandbox.preamble}"; then echo BUILD_OK; else echo BUILD_FAILED; fi',
+    )
+    assert "BUILD_FAILED" in result.stdout
+    assert "02_missing.md" in result.stderr
+    assert previous_md.read_text(encoding="utf-8") == "previous complete manuscript\n"
+    assert not previous_pdf.exists()
+    assert list(sandbox.output.glob("quadmath_review.md.*")) == []
+    assert _calls(sandbox) == []
+
+
+def test_generation_failure_preserves_child_stdout_and_stderr(tmp_path):
+    scripts = tmp_path / "repo space" / "quadmath" / "scripts"
+    scripts.mkdir(parents=True)
+    (scripts / "make_all_figures.py").write_text(
+        "import sys\n"
+        "print('generator reached data import')\n"
+        "print('required data file is missing', file=sys.stderr)\n"
+        "raise SystemExit(7)\n",
+        encoding="utf-8",
+    )
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    launcher = bin_dir / "uv"
+    launcher.write_text(f'#!/bin/bash\nshift 2\nexec "{sys.executable}" "$@"\n', encoding="utf-8")
+    launcher.chmod(0o755)
+    env = dict(os.environ, PATH=f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}")
+    result = subprocess.run(
+        ["bash", "-c", f'source "{RENDER}"\nREPO_ROOT="{scripts.parents[1]}"\nrun_generation_scripts'],
+        cwd=tmp_path, env=env, capture_output=True, text=True, check=False,
+    )
+    assert result.returncode != 0
+    assert "generator reached data import" in result.stdout
+    assert "required data file is missing" in result.stderr
+
+
+def test_renderer_entrypoint_uses_repository_cwd_from_spaced_nonroot_path(tmp_path):
+    root = tmp_path / "Quad Math"
+    scripts = root / "quadmath" / "scripts"
+    scripts.mkdir(parents=True)
+    shutil.copy2(RENDER, scripts / "render_pdf.sh")
+    markdown = root / "quadmath" / "markdown"
+    markdown.mkdir()
+    for name, _ in _pairs("MODULES"):
+        (markdown / name).write_text("# Section\n", encoding="utf-8")
+    (markdown / "00_preamble.md").write_text("```latex\n% preamble\n```\n", encoding="utf-8")
+    (scripts / "make_all_figures.py").write_text(
+        "raise SystemExit('unexpected figure generation')\n", encoding="utf-8",
+    )
+    (scripts / "generate_glossary.py").write_text(
+        "from pathlib import Path\n"
+        "import sys\n"
+        "root = Path(__file__).resolve().parents[2]\n"
+        "if Path.cwd() != root:\n"
+        "    raise SystemExit('wrong project cwd')\n"
+        "(root / 'generation-started').write_text('correct project')\n"
+        "raise SystemExit('stop before document build')\n",
+        encoding="utf-8",
+    )
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fixtures = {
+        "pandoc": "#!/bin/bash\nexit 99\n",
+        "xelatex": "#!/bin/bash\nexit 99\n",
+        "fc-list": "#!/bin/bash\nprintf 'DejaVu Serif\\nDejaVu Sans Mono\\n'\n",
+        "uv": f'#!/bin/bash\nshift 2\nexec "{sys.executable}" "$@"\n',
+    }
+    for name, body in fixtures.items():
+        executable = bin_dir / name
+        executable.write_text(body, encoding="utf-8")
+        executable.chmod(0o755)
+    elsewhere = tmp_path / "other project"
+    elsewhere.mkdir()
+    result = subprocess.run(
+        ["bash", str(scripts / "render_pdf.sh"), "--skip-figures"],
+        cwd=elsewhere, env=dict(os.environ, PATH=f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}"),
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode != 0
+    assert (root / "generation-started").read_text() == "correct project"
+    assert "stop before document build" in result.stderr
+    assert not (elsewhere / "generation-started").exists()
 
 
 def test_build_combined_joins_module_pairs_and_uses_one_margin(sandbox):

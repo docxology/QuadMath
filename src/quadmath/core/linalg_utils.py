@@ -23,8 +23,8 @@ def bareiss_determinant_int(matrix: List[List[int]]) -> int:
         if len(row) != n:
             raise ValueError("Matrix must be square")
 
-    # Make a deep copy to avoid mutating caller data
-    a = [row[:] for row in matrix]
+    # Copy into unbounded Python integers before any elimination products.
+    a = [[int(value) for value in row] for row in matrix]
     denom = 1
     sign = 1
 
@@ -72,8 +72,8 @@ def bareiss_rank(matrix: List[List[int]]) -> int:
         return 0
     m = len(matrix)
     n = len(matrix[0])
-    # Work on a copy; pad to rectangular if needed
-    a = [row[:] for row in matrix]
+    # Copy into unbounded Python integers before any elimination products.
+    a = [[int(value) for value in row] for row in matrix]
 
     rank = 0
     denom = 1

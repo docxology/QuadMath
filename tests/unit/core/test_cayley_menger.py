@@ -86,7 +86,7 @@ def test_squared_distances_volume_pipeline():
     p3 = Quadray(0, 0, 1, 0)
     d2 = squared_distances_from_quadrays(p0, p1, p2, p3, DEFAULT_EMBEDDING)
     V = tetra_volume_cayley_menger(d2)
-    assert V > 0.0
+    assert V == pytest.approx(2.0 / 3.0, rel=1e-13, abs=0.0)
 
 
 def test_tetra_circumradius_regular():
@@ -134,34 +134,129 @@ def test_circumradius_greater_than_inradius():
     assert R > r > 0.0
 
 
-def test_tetra_circumradius_negative_r2():
-    """Crafted d2 where the R^2 formula yields a non-positive value."""
-    # Nearly-degenerate tetrahedron: 3 collinear points + 1 slightly off
+@pytest.mark.parametrize("length_scale", [1e-100, 1e-60, 1e-6, 1.0, 1e60, 1e100, 1e103])
+def test_regular_tetrahedron_scale_covariance(length_scale):
+    d2 = (np.ones((4, 4)) - np.eye(4)) * length_scale * length_scale
+    # Multiply in this order: scale**3 itself overflows at 1e103, although
+    # both physical volumes below are finite and representable.
+    expected_volume = (np.sqrt(2.0) / 12.0) * length_scale * length_scale * length_scale
+    expected_ivm = 0.125 * length_scale * length_scale * length_scale
+    assert tetra_volume_cayley_menger(d2) == pytest.approx(
+        expected_volume, rel=2e-13, abs=0.0
+    )
+    assert ivm_tetra_volume_cayley_menger(d2) == pytest.approx(
+        expected_ivm, rel=2e-13, abs=0.0
+    )
+    assert tetra_circumradius(d2) == pytest.approx(
+        np.sqrt(6.0) / 4.0 * length_scale, rel=2e-13, abs=0.0
+    )
+    assert tetra_inradius(d2) == pytest.approx(
+        length_scale / np.sqrt(24.0), rel=2e-13, abs=0.0
+    )
+
+
+@pytest.mark.parametrize("length_scale", [1e-100, 1e-6, 1.0, 1e100])
+def test_irregular_tetrahedron_matches_independent_geometry_at_all_scales(length_scale):
+    # Vertices (0,0,0), (1,0,0), (0,2,0), (0,0,3).
+    # V=1, circumcenter=(1/2,1,3/2), total face area=9, inradius=1/3.
     d2 = np.array([
-        [0.0, 1.0, 4.0, 1.0],
-        [1.0, 0.0, 1.0, 1.0],
-        [4.0, 1.0, 0.0, 4.0],
-        [1.0, 1.0, 4.0, 0.0],
-    ])
-    R = tetra_circumradius(d2)
-    # Guard clamps a non-positive R^2 to exactly zero
-    assert R == 0.0
+        [0.0, 1.0, 4.0, 9.0],
+        [1.0, 0.0, 5.0, 10.0],
+        [4.0, 5.0, 0.0, 13.0],
+        [9.0, 10.0, 13.0, 0.0],
+    ]) * length_scale * length_scale
+    assert tetra_volume_cayley_menger(d2) == pytest.approx(
+        length_scale * length_scale * length_scale, rel=2e-13, abs=0.0
+    )
+    assert tetra_circumradius(d2) == pytest.approx(
+        np.sqrt(14.0) / 2.0 * length_scale, rel=2e-13, abs=0.0
+    )
+    assert tetra_inradius(d2) == pytest.approx(
+        length_scale / 3.0, rel=2e-13, abs=0.0
+    )
 
 
-def test_tetra_inradius_zero_area_face():
-    """Tetrahedron with a degenerate face (zero area) but non-zero volume.
+@pytest.mark.parametrize("length_scale", [1e-150, 1e150])
+def test_radii_do_not_require_representable_dimensional_volume(length_scale):
+    d2 = (np.ones((4, 4)) - np.eye(4)) * length_scale * length_scale
+    # The dimensional volume really is outside float64's range; finite radii
+    # must not depend on successfully representing it.
+    expected_volume = 0.0 if length_scale < 1.0 else float("inf")
+    assert tetra_volume_cayley_menger(d2) == expected_volume
+    assert ivm_tetra_volume_cayley_menger(d2) == expected_volume
+    assert tetra_circumradius(d2) == pytest.approx(
+        np.sqrt(6.0) / 4.0 * length_scale, rel=2e-13, abs=0.0
+    )
+    assert tetra_inradius(d2) == pytest.approx(
+        length_scale / np.sqrt(24.0), rel=2e-13, abs=0.0
+    )
 
-    This is hard to construct naturally, so we exercise the zero-area guard
-    by using distances that produce zero area via Heron's formula.
-    """
-    # Isoceles with co-linear edges on one face: a = 2, b = 1, c = 1
-    # s = 2, area2 = 2*(2-2)*(2-1)*(2-1) = 0 for one face
+
+@pytest.mark.parametrize("length_scale", [1e-100, 1.0, 1e100])
+def test_coplanar_square_remains_degenerate_at_all_scales(length_scale):
+    # A physical, zero-volume tetrahedron with four noncoincident vertices.
     d2 = np.array([
-        [0.0, 4.0, 1.0, 1.0],
-        [4.0, 0.0, 1.0, 1.0],
-        [1.0, 1.0, 0.0, 1.0],
-        [1.0, 1.0, 1.0, 0.0],
+        [0.0, 1.0, 2.0, 1.0],
+        [1.0, 0.0, 1.0, 2.0],
+        [2.0, 1.0, 0.0, 1.0],
+        [1.0, 2.0, 1.0, 0.0],
+    ]) * length_scale * length_scale
+    assert tetra_volume_cayley_menger(d2) == 0.0
+    assert ivm_tetra_volume_cayley_menger(d2) == 0.0
+    assert tetra_circumradius(d2) == 0.0
+    assert tetra_inradius(d2) == 0.0
+
+
+def test_ivm_volume_preserves_sphere_radius_one_convention():
+    vertices = (
+        Quadray(0, 0, 0, 0),
+        Quadray(2, 1, 1, 0),
+        Quadray(1, 2, 1, 0),
+        Quadray(1, 1, 2, 0),
+    )
+    d2 = squared_distances_from_quadrays(
+        *vertices, np.asarray(DEFAULT_EMBEDDING) / np.sqrt(2.0)
+    )
+    np.testing.assert_allclose(d2, 4.0 * (np.ones((4, 4)) - np.eye(4)),
+                               rtol=1e-14, atol=0.0)
+    assert ivm_tetra_volume_cayley_menger(d2) == pytest.approx(1.0, rel=1e-13)
+
+
+@pytest.mark.parametrize("dtype", (int, np.int64))
+@pytest.mark.parametrize("single_use_embedding", (False, True))
+def test_pairwise_geometry_preserves_large_spatial_translations(dtype, single_use_embedding):
+    offset = 2**60
+    points = [
+        Quadray(*(dtype(value) for value in row))
+        for row in (
+            (offset, 0, 0, 0), (offset + 1, 0, 0, 0),
+            (offset, 1, 0, 0), (offset, 0, 1, 0),
+        )
+    ]
+    embedding = (
+        (iter(row) for row in DEFAULT_EMBEDDING)
+        if single_use_embedding else DEFAULT_EMBEDDING
+    )
+    d2 = squared_distances_from_quadrays(*points, embedding)
+    expected = np.array([
+        [0.0, 3.0, 3.0, 3.0],
+        [3.0, 0.0, 8.0, 8.0],
+        [3.0, 8.0, 0.0, 8.0],
+        [3.0, 8.0, 8.0, 0.0],
     ])
-    # Zero-area face guard yields exactly zero inradius
-    r = tetra_inradius(d2)
-    assert r == 0.0
+    np.testing.assert_array_equal(d2, expected)
+    assert tetra_volume_cayley_menger(d2) == pytest.approx(2 / 3, rel=1e-13)
+    assert tetra_circumradius(d2) == pytest.approx(tetra_circumradius(expected))
+    assert tetra_inradius(d2) == pytest.approx(tetra_inradius(expected))
+
+
+def test_pairwise_displacements_preserve_nearby_points_far_from_first_vertex():
+    offset = 2**60
+    d2 = squared_distances_from_quadrays(
+        Quadray(0, 0, 0, 0), Quadray(offset, 0, 0, 0),
+        Quadray(offset + 1, 0, 0, 0), Quadray(offset, 1, 0, 0),
+        DEFAULT_EMBEDDING,
+    )
+    assert d2[1, 2] == 3.0
+    assert d2[1, 3] == 3.0
+    assert d2[2, 3] == 8.0

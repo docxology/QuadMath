@@ -87,9 +87,11 @@ d^{2}(p, q) \;=\; \sum_{i} (M\delta)_i^{2}
 \end{equation}
 
 the same identity documented as Eq. \eqref{eq:lattice-distance-identity} in
-[Lattice Tooling](13_lattice_tooling.md), where it powers ranking and filtering; the test suite
-cross-validates it against float embeddings and `quadray.distance`. Because the identity is exact
-on integers, nearest-site decisions never suffer floating-point boundary errors.
+[Lattice Tooling](13_lattice_tooling.md), where it powers ranking and filtering.
+The implementation removes common gauge offsets before float conversion where
+possible and evaluates nonnegative Cartesian squares, avoiding cancellation
+between large quadratic terms. Exact algebra does not imply arbitrary float64
+queries or large squared distances are represented exactly.
 
 Executable check of the two identities:
 
@@ -141,16 +143,15 @@ shape; any row sum different from zero; $\det = 0$ (rank below 3); a non-integra
 `numpy.float32` is rejected. There is no floating-point fuzz anywhere: an off-lattice point raises
 rather than snapping to a neighbor.
 
-The float-valued inverse `quadray.quadray_from_xyz` is a different, deliberately fuzzier contract:
-it applies the pseudoinverse $M^{+} = M^{\mathsf{T}}(MM^{\mathsf{T}})^{-1}$ and rounds each component
-half-up (`floor(v + 0.5)`, not banker's rounding — its docstring argument shows why half-up provably
-stays in the $\mathbf{1}$-coset of the exact preimage, where per-component round-half-even can leave
-it). For points on
-the lattice it round-trips exactly; for general $\mathbb{R}^3$ points it returns the nearest lattice
-point in quadray coordinates (component-wise — not always nearest in embedded XYZ distance), which
-is a snapping operation, not an inverse. The component-wise rule is the chosen contract; an XYZ-nearest
-variant would be a separate function that searches neighboring classes. `quadray_roundtrip(q,
-M=None)` pins the round-trip contract
+The float-valued inverse `quadray.quadray_from_xyz` is a distinct snapping
+contract: it retains component-wise half-up rounding of the minimum-norm real
+preimage, with coherent recovery of numerically resolvable lattice images.
+Independent rounding of roundoff-perturbed half-integer ties can leave the
+correct common-offset class, even at ordinary scales; the numerical algorithm
+must account for that shared phase. Off-lattice snapping is **not necessarily
+nearest in embedded XYZ distance**. It remains distinct from strict rational
+membership and from a spatial nearest-point search. `quadray_roundtrip(q,
+M=None)` checks
 
 \begin{equation}
 \label{eq:conv-roundtrip}
@@ -159,21 +160,26 @@ M=None)` pins the round-trip contract
 
 and raises `AssertionError` explicitly (not a bare `assert`, so the check survives
 `python -O`) when it fails.
-The contract is exact for normalized integer quadrays and, because
-`quadray_roundtrip` threads the *same* embedding through both legs, it is **scale-robust**: for
-$M = c\,M_0$ with any $c \neq 0$ the pseudoinverse projection is scale-independent,
+In exact arithmetic this is scale-independent for normalized integer quadrays
+when both legs use the same $M=cM_0$, $c\neq0$:
 
 \begin{equation}
 \label{eq:conv-roundtrip-scale}
 \mathrm{pinv}(cM)\,(cM\,q) \;=\; q \;-\; \frac{\sum_i q_i}{4}\,\mathbf{1},
 \end{equation}
 
-since $\mathrm{pinv}(cM) = (1/c)\,\mathrm{pinv}(M)$ and the row space of $cM_0$ is that of $M_0$
-(the $(1/c)\cdot c$ cancels). A shell site embedded at scale $1/2$ — the half-integer FCC picture
-of the same sites — round-trips through the same scaled embedding. The single documented
-`AssertionError` case is an **unnormalized** input: the inverse canonicalizes to the min-0
-representative, e.g. `(2, 2, 2, 1)` comes back as `(1, 1, 1, 0)`. Embeddings whose rows do not sum
-to zero lie outside the Urner family of \eqref{eq:conv-embedding} and outside this guarantee.
+since $\mathrm{pinv}(cM)=(1/c)\,\mathrm{pinv}(M)$. Numerical regression cases
+also cover non-dyadic scales such as $0.1$ and $1/3$, both signs and all
+component-sum residue classes. This does not promise reconstruction after XYZ
+overflow, unresolved ill-conditioning or loss of integer information in a
+float. An unnormalized input intentionally fails the identity because inversion
+canonicalizes it: `(2,2,2,1)` returns `(1,1,1,0)`. Nonzero row sums or deficient
+rank lie outside the quadray gauge contract.
+
+Coherent integer reconstruction is accepted by replaying the actual forward
+floating-point map and matching the supplied XYZ floats, not by granting a
+residual allowance proportional to unrelated large components. Strict rational
+membership remains separate and tolerance-free.
 
 Executable check of exact recovery and round-trips:
 
