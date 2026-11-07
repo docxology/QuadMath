@@ -1,6 +1,6 @@
 [project]
 name = "quadmath-project"
-version = "0.4.0"
+version = "0.5.0"
 description = "QuadMath: Quadray coordinates, optimization on tetrahedral lattices, and information geometry"
 authors = [{ name = "QuadMath Project" }]
 license = "Apache-2.0"

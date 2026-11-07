@@ -59,6 +59,8 @@ def _exact_fraction(value: float) -> Fraction:
         return Fraction(int(value))
     if isinstance(value, Fraction):
         return value
+    if isinstance(value, numbers.Rational):
+        return Fraction(int(value.numerator), int(value.denominator))
     return Fraction(float(value))
 
 
@@ -282,6 +284,38 @@ def centroid(*quads: Quadray) -> Quadray:
         for i, value in enumerate(components):
             totals[i] += value - minimum
     return Quadray(*((2 * total + n) // (2 * n) for total in totals)).normalize()
+
+
+def centroid_exact(points: Iterable[Quadray]) -> tuple[Fraction, Fraction, Fraction, Fraction]:
+    """Return the exact vertex mean in the canonical minimum-zero gauge.
+
+    Parameters
+    ----------
+    points : Iterable[Quadray]
+        One or more points, in arbitrary independent gauges.
+
+    Returns
+    -------
+    tuple[Fraction, Fraction, Fraction, Fraction]
+        Rational components, without lattice snapping or float conversion.
+
+    Raises
+    ------
+    ValueError
+        If the iterable is empty.
+    """
+    totals = [Fraction(0) for _ in range(4)]
+    count = 0
+    for point in points:
+        components = tuple(_exact_fraction(value) for value in point.as_tuple())
+        for i, value in enumerate(components):
+            totals[i] += value
+        count += 1
+    if count == 0:
+        raise ValueError("At least one Quadray is required")
+    minimum = min(totals)
+    a, b, c, d = ((total - minimum) / count for total in totals)
+    return a, b, c, d
 
 
 def quadray_from_xyz(
@@ -535,6 +569,7 @@ __all__ = [
     "distance",
     "angle",
     "centroid",
+    "centroid_exact",
     "quadray_from_xyz",
     "qmul",
     "qconjugate",

@@ -16,6 +16,7 @@ from quadmath.core.quadray import (
     distance,
     angle,
     centroid,
+    centroid_exact,
     quadray_from_xyz,
     qmul,
     qconjugate,
@@ -24,6 +25,44 @@ from quadmath.core.quadray import (
     rotate_about_axis,
 )
 import math
+
+
+def test_exact_centroid_primitive_tetrahedron_preserves_fractional_mean():
+    points = [Quadray(0, 0, 0, 0), Quadray(1, 0, 0, 0),
+              Quadray(0, 1, 0, 0), Quadray(0, 0, 1, 0)]
+    result = centroid_exact(iter(points))
+    assert result == (Fraction(1, 4), Fraction(1, 4), Fraction(1, 4), Fraction(0))
+    assert all(isinstance(value, Fraction) for value in result)
+    assert centroid(*points) == Quadray(0, 0, 0, 0)
+
+
+@pytest.mark.parametrize("scale", (1, 10**400 + 1))
+def test_exact_centroid_canonicalizes_mean_and_independent_gauges(scale):
+    rows = [(scale, 0, 0, 0), (0, scale, scale, scale)]
+    gauges = [-(10**450), 10**500]
+    shifted = [Quadray(*(value + gauge for value in row))
+               for row, gauge in zip(rows, gauges)]
+    assert centroid_exact(shifted) == (Fraction(0),) * 4
+    assert centroid_exact([Quadray(scale, 0, 0, 0), Quadray(0, 0, 0, 0)]) == (
+        Fraction(scale, 2), Fraction(0), Fraction(0), Fraction(0))
+
+
+def test_exact_centroid_accepts_rational_components_without_truncation():
+    points = [Quadray(Fraction(1, 3), 0, 0, 0), Quadray(0, 0, 0, 0)]
+    assert centroid_exact(points) == (Fraction(1, 6), Fraction(0), Fraction(0), Fraction(0))
+
+
+@pytest.mark.parametrize("numerator", [1, 10**400 + 1])
+def test_exact_centroid_preserves_symbolic_rational_components(numerator):
+    from sympy import Rational
+
+    points = [Quadray(Rational(numerator, 3), 0, 0, 0), Quadray(0, 0, 0, 0)]
+    assert centroid_exact(points) == (Fraction(numerator, 6), Fraction(0), Fraction(0), Fraction(0))
+
+
+def test_exact_centroid_rejects_empty_iterable():
+    with pytest.raises(ValueError):
+        centroid_exact(iter(()))
 
 
 def test_normalize():

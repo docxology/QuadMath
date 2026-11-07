@@ -4,18 +4,85 @@ from typing import Tuple, Dict, Any, Sequence
 import numpy as np
 
 
+def _normalized_log_weights(weights: np.ndarray, eps: float = 0.0) -> np.ndarray:
+    """Normalize in log space without inventing zeros from finite positive weights."""
+    if not np.isfinite(eps) or eps < 0.0:
+        raise ValueError("eps must be finite and non-negative")
+    if np.iscomplexobj(weights):
+        raise ValueError("weights must be real")
+    weights = np.asarray(weights, dtype=float)
+    if not np.all(np.isfinite(weights)) or np.any(weights < 0.0):
+        raise ValueError("weights must be finite and non-negative")
+    scale = np.max(weights, initial=0.0)
+    if scale == 0.0:
+        raise ValueError("weights must have positive total mass")
+    scaled = weights / scale
+    logs = np.full_like(scaled, -np.inf)
+    np.log(scaled, out=logs, where=scaled > 0.0)
+    lost = (weights > 0.0) & (scaled == 0.0)
+    logs[lost] = np.log(weights[lost]) - np.log(scale)
+    logs -= np.log(np.sum(scaled))
+    if eps > 0.0:
+        log_eps = np.log(eps)
+        logs = np.logaddexp(logs, log_eps)
+        logs -= np.logaddexp(0.0, log_eps + np.log(weights.size))
+    return logs
+
+
+def _weighted_sum(log_p: np.ndarray, values: np.ndarray) -> float:
+    """Weight real values, retaining support and recoverable underflowed terms."""
+    if np.iscomplexobj(values):
+        raise ValueError("weighted values must be real")
+    support = np.isfinite(log_p)
+    logs = log_p[support]
+    values = np.asarray(values, dtype=float)[support]
+    probabilities = np.exp(logs)
+    finite = np.isfinite(values)
+    terms = np.empty_like(probabilities)
+    terms[~finite] = values[~finite]
+    terms[finite] = probabilities[finite] * values[finite]
+    lost = finite & (probabilities == 0.0) & (values != 0.0)
+    terms[lost] = np.copysign(
+        np.exp(logs[lost] + np.log(np.abs(values[lost]))), values[lost],
+    )
+    return float(np.sum(terms))
+
+
+def _entropy(log_p: np.ndarray) -> float:
+    """Entropy from normalized log probabilities, with zero support omitted."""
+    return -_weighted_sum(log_p, log_p)
+
+
+def _relative_entropy(log_p: np.ndarray, log_q: np.ndarray) -> float:
+    """KL from log probabilities, including genuinely missing reference support."""
+    support = np.isfinite(log_p)
+    if np.any(np.isneginf(log_q[support])):
+        return np.inf
+    return _weighted_sum(log_p[support], log_p[support] - log_q[support])
+
+
+def _symmetric_part(matrix: np.ndarray) -> np.ndarray:
+    """Average transposed entries without overflowing their finite sum."""
+    matrix = np.asarray(matrix, dtype=float)
+    averaged = 0.5 * matrix + 0.5 * matrix.T
+    # Equal entries need no averaging; in particular, retain subnormal values.
+    return np.where(matrix == matrix.T, matrix, averaged)
+
+
 def shannon_entropy(p: np.ndarray, eps: float = 1e-15) -> float:
     """Shannon entropy H(p) for a discrete distribution.
 
     Parameters
-    - p: Nonnegative weights; normalized internally.
-    - eps: Small constant for numerical stability in the log.
+    - p: Finite nonnegative weights of any shape; normalized internally.
+      Empty, zero-mass, negative and nonfinite weights raise ValueError.
+    - eps: Finite nonnegative probability pseudocount added to every normalized
+      entry before renormalization (default: 1e-15). Set to zero for exact
+      support boundaries, using 0 log 0 = 0.
 
     Returns
     - float: Entropy in nats.
     """
-    pn = p / np.sum(p)
-    return float(-np.sum(pn * np.log(pn + eps)))
+    return _entropy(_normalized_log_weights(p, eps))
 
 
 def information_length(path_gradients: np.ndarray) -> float:
@@ -70,11 +137,11 @@ def fim_eigenspectrum(F: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     Returns
     - Tuple[np.ndarray, np.ndarray]: (eigenvalues, eigenvectors)
     """
-    if F.shape[0] != F.shape[1]:
+    F = np.asarray(F, dtype=float)
+    if F.ndim != 2 or F.shape[0] != F.shape[1]:
         raise ValueError("F must be square")
-    
-    # Ensure symmetry for numerical stability
-    F_sym = (F + F.T) / 2.0
+
+    F_sym = _symmetric_part(F)
     
     # Compute eigendecomposition
     w, V = np.linalg.eigh(F_sym)
@@ -101,7 +168,8 @@ def fisher_condition_number(F: np.ndarray) -> float:
     Returns
     - float: Condition number (≥ 1, with 1 indicating perfect conditioning).
     """
-    if F.shape[0] != F.shape[1]:
+    F = np.asarray(F, dtype=float)
+    if F.ndim != 2 or F.shape[0] != F.shape[1] or F.shape[0] == 0:
         raise ValueError("F must be square")
     
     evals, _ = fim_eigenspectrum(F)
@@ -137,7 +205,8 @@ def fisher_curvature_analysis(F: np.ndarray) -> Dict[str, Any]:
         - determinant: Volume element scaling
         - anisotropy_index: Normalized measure of directional variation
     """
-    if F.shape[0] != F.shape[1]:
+    F = np.asarray(F, dtype=float)
+    if F.ndim != 2 or F.shape[0] != F.shape[1]:
         raise ValueError("F must be square")
     
     # Compute eigendecomposition
@@ -148,10 +217,12 @@ def fisher_curvature_analysis(F: np.ndarray) -> Dict[str, Any]:
     determinant = float(np.linalg.det(F))
     condition_number = fisher_condition_number(F)
     
-    # Anisotropy index: normalized variance of eigenvalues
-    mean_eval = np.mean(evals)
+    # Scale before taking moments: std squares and mean sums can overflow.
+    scale = np.max(np.abs(evals), initial=0.0)
+    scaled_evals = evals / scale if scale > 0.0 else evals
+    mean_eval = np.mean(scaled_evals)
     if mean_eval > 0:
-        anisotropy_index = float(np.std(evals) / mean_eval)
+        anisotropy_index = float(np.std(scaled_evals) / mean_eval)
     else:
         anisotropy_index = 0.0
     
@@ -221,21 +292,23 @@ def kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
     non-negative; equals zero iff p == q (up to normalization).
 
     Parameters
-    - p: Non-negative weights for the reference distribution.
-    - q: Non-negative weights for the approximating distribution.
-    - eps: Small constant for numerical stability in the log.
+    - p: Finite nonnegative weights of any shape with positive total mass.
+    - q: Finite nonnegative weights of the same shape and positive total mass.
+    - eps: Finite nonnegative probability pseudocount, added after each input
+      is normalized and followed by renormalization. With eps=0, missing
+      q support where p is positive gives infinity; zero p terms contribute zero.
 
     Returns
     - float: D_KL(p || q) in nats (>= 0).
 
     Raises
-    - ValueError: If p and q have different shapes.
+    - ValueError: If shapes differ or weights/eps are undefined.
     """
+    p = np.asarray(p)
+    q = np.asarray(q)
     if p.shape != q.shape:
         raise ValueError("p and q must have the same shape")
-    pn = p / np.sum(p)
-    qn = q / np.sum(q)
-    return float(np.sum(pn * (np.log(pn + eps) - np.log(qn + eps))))
+    return _relative_entropy(_normalized_log_weights(p, eps), _normalized_log_weights(q, eps))
 
 
 def jensen_shannon_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
@@ -246,24 +319,25 @@ def jensen_shannon_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) 
     where m = 0.5 * (p + q).  The result is in [0, ln(2)] nats.
 
     Parameters
-    - p: Non-negative weights for distribution p.
-    - q: Non-negative weights for distribution q.
-    - eps: Small constant for numerical stability.
+    - p: Finite nonnegative weights of any shape with positive total mass.
+    - q: Finite nonnegative weights of the same shape and positive total mass.
+    - eps: Finite nonnegative probability pseudocount added after normalization
+      to each input, followed by renormalization; zero preserves exact supports.
 
     Returns
     - float: JSD in nats, in [0, ln(2)].
 
     Raises
-    - ValueError: If p and q have different shapes.
+    - ValueError: If shapes differ or weights/eps are undefined.
     """
+    p = np.asarray(p)
+    q = np.asarray(q)
     if p.shape != q.shape:
         raise ValueError("p and q must have the same shape")
-    pn = p / np.sum(p)
-    qn = q / np.sum(q)
-    m = 0.5 * (pn + qn)
-    kl_pm = float(np.sum(pn * (np.log(pn + eps) - np.log(m + eps))))
-    kl_qm = float(np.sum(qn * (np.log(qn + eps) - np.log(m + eps))))
-    return 0.5 * kl_pm + 0.5 * kl_qm
+    log_p = _normalized_log_weights(p, eps)
+    log_q = _normalized_log_weights(q, eps)
+    log_m = np.logaddexp(log_p, log_q) - np.log(2.0)
+    return 0.5 * _relative_entropy(log_p, log_m) + 0.5 * _relative_entropy(log_q, log_m)
 
 
 def fisher_rao_metric(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float:
@@ -277,24 +351,25 @@ def fisher_rao_metric(p: np.ndarray, q: np.ndarray, eps: float = 1e-15) -> float
     to the Fisher information matrix as its infinitesimal form.
 
     Parameters
-    - p: Non-negative weights for distribution p.
-    - q: Non-negative weights for distribution q.
-    - eps: Small constant for numerical stability.
+    - p: Finite nonnegative weights of any shape with positive total mass.
+    - q: Finite nonnegative weights of the same shape and positive total mass.
+    - eps: Finite nonnegative probability pseudocount added after normalization
+      to each input, followed by renormalization; zero preserves exact supports.
 
     Returns
     - float: Geodesic distance in [0, pi].
 
     Raises
-    - ValueError: If p and q have different shapes.
+    - ValueError: If shapes differ or weights/eps are undefined.
     """
+    p = np.asarray(p)
+    q = np.asarray(q)
     if p.shape != q.shape:
         raise ValueError("p and q must have the same shape")
-    pn = p / np.sum(p)
-    qn = q / np.sum(q)
-    # Bhattacharyya coefficient
-    bc = float(np.sum(np.sqrt(pn * qn + eps * eps)))
-    # Clamp for numerical safety
-    bc = max(-1.0, min(1.0, bc))
+    log_p = _normalized_log_weights(p, eps)
+    log_q = _normalized_log_weights(q, eps)
+    bc = float(np.sum(np.exp(0.5 * (log_p + log_q))))
+    bc = min(1.0, bc)
     return float(2.0 * np.arccos(bc))
 
 

@@ -461,3 +461,188 @@ def test_information_gain_rejects_negative_weights():
         information_gain(np.array([0.5, -0.5]), np.array([0.5, 0.5]))
     with pytest.raises(ValueError, match="non-negative"):
         information_gain(np.array([0.5, 0.5]), np.array([1.5, -0.5]))
+
+
+@pytest.mark.parametrize("gradients, expected", [
+    (np.array([[4_000_000_000]], dtype=np.int64), 1.6e19),
+    (np.array([[4_000_000_000]], dtype=np.float32), 1.6e19),
+    (np.array([[1e154]]), 1e308),
+    (np.full((4, 1), 1e154), 1e308),
+])
+def test_fisher_information_preserves_finite_empirical_mean(gradients, expected):
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        fisher = fisher_information_matrix(gradients)
+    assert fisher.shape == (1, 1)
+    assert fisher[0, 0] == pytest.approx(expected)
+    assert np.all(np.isfinite(fisher))
+    assert np.all(np.linalg.eigvalsh(fisher) >= 0)
+
+
+@pytest.mark.parametrize("normalize", [False, True])
+def test_fisher_information_large_rank_deficient_scores_are_psd(normalize):
+    gradients = np.array([[5e153, -5e153], [-5e153, 5e153]])
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        fisher = fisher_information_matrix(gradients, normalize=normalize)
+    expected_scale = 2.5e307 if normalize else 5e307
+    assert np.all(np.isfinite(fisher))
+    assert np.allclose(fisher / expected_scale, [[1, -1], [-1, 1]])
+    assert np.array_equal(fisher, fisher.T)
+    assert np.min(np.linalg.eigvalsh(fisher / expected_scale)) >= -1e-14
+
+
+def test_fisher_information_large_integer_sum():
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        fisher = fisher_information_matrix([[4_000_000_000], [4_000_000_000]], normalize=False)
+    assert fisher[0, 0] == pytest.approx(3.2e19)
+
+
+@pytest.mark.parametrize("gradients", [[[np.nan]], [[np.inf]], [[1j]]])
+def test_fisher_information_rejects_undefined_scores(gradients):
+    with pytest.raises(ValueError):
+        fisher_information_matrix(gradients)
+
+
+def test_fisher_quadray_large_scores_remain_finite_psd():
+    from quadmath.core.quadray import DEFAULT_EMBEDDING
+
+    gradients = np.array([[1e154, 0, 0], [0, 1e154, 0]])
+    embedding = np.asarray(DEFAULT_EMBEDDING, dtype=float)
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        cartesian, quadray = fisher_information_quadray(gradients)
+    assert np.all(np.isfinite(cartesian))
+    assert np.all(np.isfinite(quadray))
+    expected = embedding.T @ np.diag([0.5, 0.5, 0.0]) @ embedding
+    assert np.allclose(quadray / 1e308, expected)
+    assert np.min(np.linalg.eigvalsh(quadray / 1e308)) >= -1e-14
+    assert np.allclose(quadray / 1e308 @ np.ones(4), 0, atol=1e-14)
+
+
+def test_fisher_quadray_rejects_wrong_score_dimension():
+    with pytest.raises(ValueError, match="gradients"):
+        fisher_information_quadray(np.ones((2, 2)))
+
+
+@pytest.mark.parametrize("embedding", [np.full((3, 4), np.nan), np.ones((3, 4)) * 1j])
+def test_fisher_quadray_rejects_undefined_embeddings(embedding):
+    with pytest.raises(ValueError, match="embedding_matrix"):
+        fisher_information_quadray(np.ones((2, 3)), embedding)
+
+
+@pytest.mark.parametrize("scale", [1e-307, 1.0, 1e308])
+def test_free_energies_preserve_joint_weights_at_extreme_scales(scale):
+    q = np.array([[1.0, 0.5], [0.25, 0.0]])
+    p = np.array([[0.5, 1.0], [0.0, 0.25]])
+    logp = np.log(np.array([[0.8, 0.5], [0.1, 0.5]]))
+    expected = free_energy(logp, q, p)
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert free_energy(logp, q * scale, p * scale) == pytest.approx(expected)
+        assert expected_free_energy(logp, q * scale, p * scale, -0.25) == pytest.approx(expected + 0.25)
+        assert information_gain(p * scale, q * scale) == pytest.approx(information_gain(p, q))
+
+
+@pytest.mark.parametrize("energy", [free_energy, expected_free_energy])
+def test_free_energy_zero_posterior_support_ignores_impossible_likelihood(energy):
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert energy([0, -np.inf], [1, 0], [1, 0]) == 0.0
+        assert energy([-np.inf, 0], [1, 0], [1, 0]) == np.inf
+        assert np.isnan(energy([np.nan, 0], [1, 0], [1, 0]))
+
+
+@pytest.mark.parametrize("weights", [
+    np.empty((0, 2)),
+    np.zeros((2, 2)),
+    np.array([[1, -1], [0, 0]]),
+    np.array([[1, np.nan], [0, 0]]),
+    np.array([[1, np.inf], [0, 0]]),
+    np.array([[1, 1j], [0, 0]]),
+])
+def test_information_functions_reject_undefined_joint_weights(weights):
+    valid = np.ones(weights.shape)
+    logp = np.zeros(weights.shape)
+    with pytest.raises(ValueError):
+        mutual_information(weights)
+    for energy in (free_energy, expected_free_energy):
+        with pytest.raises(ValueError):
+            energy(logp, weights, valid)
+        with pytest.raises(ValueError):
+            energy(logp, valid, weights)
+    with pytest.raises(ValueError):
+        information_gain(weights, valid)
+    with pytest.raises(ValueError):
+        information_gain(valid, weights)
+
+
+@pytest.mark.parametrize("scale", [np.nextafter(0.0, 1.0), 1e-308, 1.0, 1e308])
+def test_mutual_information_extreme_scales(scale):
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert mutual_information(np.diag([scale, scale]), eps=0) == pytest.approx(np.log(2))
+        assert mutual_information(np.full((2, 2), scale)) == pytest.approx(0, abs=1e-14)
+
+
+def test_information_smoothing_and_exact_support_boundaries():
+    joint = [[1, 0], [0, 1]]
+    expected = (2 / 3) * np.log(4 / 3) + (1 / 3) * np.log(2 / 3)
+    assert mutual_information(joint, eps=0.5) == pytest.approx(expected)
+    assert mutual_information(joint, eps=1e308) == pytest.approx(0, abs=1e-14)
+    assert information_gain([0, 1], [1, 0], eps=0.5) == pytest.approx(0.5 * np.log(3))
+    assert information_gain([0, 1], [1, 0], eps=0) == np.inf
+    assert information_gain([1, 0], [1, 0], eps=0) == 0.0
+
+
+@pytest.mark.parametrize("eps", [-1, np.nan, np.inf])
+def test_information_functions_reject_invalid_smoothing(eps):
+    with pytest.raises(ValueError):
+        mutual_information([[1, 0], [0, 1]], eps=eps)
+    with pytest.raises(ValueError):
+        information_gain([1, 0], [0, 1], eps=eps)
+
+
+def test_fisher_information_retains_representable_subnormal_means():
+    smallest = np.nextafter(0.0, 1.0)
+    score = np.sqrt(smallest)
+    assert fisher_information_matrix([[score]])[0, 0] == smallest
+    assert fisher_information_matrix(np.full((4, 1), score))[0, 0] == smallest
+
+
+def test_fisher_mixed_scales_preserve_small_parameter_curvature():
+    smallest = np.nextafter(0.0, 1.0)
+    score = np.sqrt(smallest)
+    gradients = np.zeros((4, 2))
+    gradients[0, 0] = 1e154
+    gradients[:, 1] = score
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        fisher = fisher_information_matrix(gradients)
+    assert fisher[1, 1] == smallest
+    assert fisher[0, 1] == pytest.approx(1e154 * score / 4, abs=0)
+    assert fisher[0, 0] == pytest.approx(2.5e307)
+    assert np.array_equal(fisher, fisher.T)
+
+
+def test_fisher_large_columns_retain_small_orthogonal_products():
+    smallest = np.nextafter(0.0, 1.0)
+    gradients = np.zeros((4, 2))
+    gradients[0, 0] = 1e154
+    gradients[1] = [smallest, 1e153]
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        fisher = fisher_information_matrix(gradients)
+    assert fisher[0, 1] == pytest.approx(smallest * 1e153 / 4, abs=0)
+    assert fisher[1, 1] == pytest.approx(2.5e305)
+
+
+def test_free_energy_retains_positive_support_below_probability_float_range():
+    weights = [1e308, 1e-16]
+    assert free_energy([0, -1e308], weights, weights) == pytest.approx(1e-16, rel=1e-12, abs=0)
+    assert free_energy([0, -np.inf], weights, weights) == np.inf
+
+
+def test_free_energy_rejects_complex_likelihoods():
+    with pytest.raises(ValueError):
+        free_energy([1j, 0], [1, 1], [1, 1])
+
+
+def test_mutual_information_preserves_tiny_correlated_mass():
+    from quadmath.core.metrics import shannon_entropy
+
+    weights = [1e308, 1e-16]
+    expected = shannon_entropy(weights, eps=0)
+    assert mutual_information(np.diag(weights), eps=0) == pytest.approx(expected, rel=0.01, abs=0)

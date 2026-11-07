@@ -167,6 +167,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
 | `quadmath.core.quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
 | `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Round the component-wise mean of canonical representatives, exactly. |
+| `quadmath.core.quadray` | `centroid_exact` | function | `(points)` | Return the exact vertex mean in the canonical minimum-zero gauge. |
 | `quadmath.core.quadray` | `distance` | function | `(q1, q2, embedding)` | Euclidean distance between two quadray points under the given embedding. |
 | `quadmath.core.quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
 | `quadmath.core.quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |

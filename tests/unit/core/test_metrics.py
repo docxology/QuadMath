@@ -489,3 +489,133 @@ def test_quat_dispersion_deterministic():
         (math.cos(0.2), 0.0, math.sin(0.2), 0.0),
     ]
     assert quat_log_euclidean_dispersion(qs) == quat_log_euclidean_dispersion(qs)
+
+
+@pytest.mark.parametrize("scale", [np.nextafter(0.0, 1.0), 1e-308, 1.0, 1e308])
+def test_entropy_extreme_weight_scales(scale):
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert shannon_entropy([scale, scale]) == pytest.approx(np.log(2))
+
+
+def test_entropy_integer_totals_and_joint_weights():
+    assert shannon_entropy(np.array([2**62, 2**62], dtype=np.int64)) == pytest.approx(np.log(2))
+    assert shannon_entropy([[1, 0], [0, 1]], eps=0) == pytest.approx(np.log(2))
+    assert shannon_entropy(7, eps=0) == 0.0
+
+
+@pytest.mark.parametrize("metric", [kl_divergence, jensen_shannon_divergence, fisher_rao_metric])
+@pytest.mark.parametrize("scale", [1e-307, 1.0, 1e308])
+def test_probability_metrics_scale_invariance_and_joint_arrays(metric, scale):
+    p = np.array([[1.0, 0.5], [0.25, 0.0]])
+    q = np.array([[0.5, 1.0], [0.0, 0.25]])
+    expected = metric(p.ravel(), q.ravel())
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert metric(p * scale, q * scale) == pytest.approx(expected)
+    assert metric(np.array([2**62, 2**62], dtype=np.int64), [1, 1]) == pytest.approx(0, abs=1e-7)
+
+
+@pytest.mark.parametrize("weights", [
+    [], [0, 0], [-1, 2], [np.nan, 1], [np.inf, 1], [1j, 1],
+])
+def test_probability_metrics_reject_undefined_weights(weights):
+    with pytest.raises(ValueError):
+        shannon_entropy(weights)
+    valid = np.ones(np.asarray(weights).shape)
+    for metric in (kl_divergence, jensen_shannon_divergence, fisher_rao_metric):
+        with pytest.raises(ValueError):
+            metric(weights, valid)
+        with pytest.raises(ValueError):
+            metric(valid, weights)
+
+
+@pytest.mark.parametrize("eps", [-1.0, np.nan, np.inf])
+def test_probability_metrics_reject_invalid_smoothing(eps):
+    with pytest.raises(ValueError):
+        shannon_entropy([1, 0], eps=eps)
+    for metric in (kl_divergence, jensen_shannon_divergence, fisher_rao_metric):
+        with pytest.raises(ValueError):
+            metric([1, 0], [0, 1], eps=eps)
+
+
+def test_probability_pseudocounts_define_real_smoothed_distributions():
+    entropy = -0.75 * np.log(0.75) - 0.25 * np.log(0.25)
+    assert shannon_entropy([1, 0], eps=0.5) == pytest.approx(entropy)
+    assert kl_divergence([1, 0], [0, 1], eps=0.5) == pytest.approx(0.5 * np.log(3))
+    assert jensen_shannon_divergence([1, 0], [0, 1], eps=0.5) == pytest.approx(np.log(2) - entropy)
+    assert fisher_rao_metric([1, 0], [0, 1], eps=0.5) == pytest.approx(np.pi / 3)
+    assert fisher_rao_metric([1, 0], [1, 0], eps=0.5) == pytest.approx(0, abs=1e-7)
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert shannon_entropy([1, 0], eps=1e308) == pytest.approx(np.log(2))
+        assert kl_divergence([1, 0], [0, 1], eps=1e308) == 0.0
+
+
+def test_probability_exact_support_boundaries():
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        assert shannon_entropy([1, 0], eps=0) == 0.0
+        assert kl_divergence([1, 0], [1, 0], eps=0) == 0.0
+        assert kl_divergence([1, 0], [0, 1], eps=0) == np.inf
+        assert jensen_shannon_divergence([1, 0], [0, 1], eps=0) == pytest.approx(np.log(2))
+        assert fisher_rao_metric([1, 0], [0, 1], eps=0) == pytest.approx(np.pi)
+
+
+@pytest.mark.parametrize("matrix", [
+    np.array([[2**62]], dtype=np.int64),
+    np.array([[1e308]]),
+    np.diag([1e308, 5e307]),
+])
+def test_fisher_eigenspectrum_avoids_symmetrization_overflow(matrix):
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        values, vectors = fim_eigenspectrum(matrix)
+        assert np.all(np.isfinite(values))
+        assert np.all(values > 0)
+        assert np.allclose(values, np.diag(matrix))
+        assert np.allclose(vectors.T @ vectors, np.eye(matrix.shape[0]))
+        assert fisher_condition_number(matrix) == pytest.approx(values[0] / values[-1])
+
+
+def test_fisher_curvature_anisotropy_is_scale_invariant():
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        large = fisher_curvature_analysis(np.array([[1e308]]))
+    assert large["anisotropy_index"] == 0.0
+    assert large["trace"] == 1e308
+    assert large["condition_number"] == 1.0
+
+
+@pytest.mark.parametrize("metric", [fim_eigenspectrum, fisher_condition_number, fisher_curvature_analysis])
+def test_fisher_metrics_reject_nonmatrix_inputs(metric):
+    with pytest.raises(ValueError, match="square"):
+        metric(np.array([1.0]))
+
+
+def test_fisher_condition_number_rejects_empty_spectrum():
+    with pytest.raises(ValueError, match="square"):
+        fisher_condition_number(np.empty((0, 0)))
+
+
+def test_fisher_eigenspectrum_retains_subnormal_diagonal():
+    smallest = np.nextafter(0.0, 1.0)
+    values, _ = fim_eigenspectrum(np.array([[smallest]]))
+    assert values[0] == smallest
+
+
+def test_jsd_identical_distributions_preserve_subnormal_support():
+    distribution = [np.nextafter(0.0, 1.0), 1.0]
+    assert jensen_shannon_divergence(distribution, distribution, eps=0) == 0.0
+
+
+def test_kl_retains_positive_reference_support_below_probability_float_range():
+    smallest = np.nextafter(0.0, 1.0)
+    expected = np.log(1e308) - np.log(smallest)
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        actual = kl_divergence([1, 0], [smallest, 1e308], eps=0)
+    assert actual == pytest.approx(expected)
+
+
+def test_entropy_retains_representable_terms_from_underflowed_probabilities():
+    from decimal import Decimal, localcontext
+
+    with localcontext() as context:
+        context.prec = 80
+        probability = Decimal("1e-16") / Decimal("1e308")
+        expected = float(-probability * probability.ln())
+    assert shannon_entropy([1e-16, 1e308], eps=0) == pytest.approx(expected, rel=0.01, abs=0)

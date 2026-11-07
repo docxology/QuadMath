@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.5.0 — 2026-11-07
+
+### Stable information geometry
+
+- Normalize finite nonnegative probability weights without overflowing their sum, including joint arrays, integer totals and subnormal scales.
+- Retain positive support in log space across the full finite-weight range, including finite KL, tiny entropy/mutual information and recoverable rare-state likelihood contributions.
+- Define `eps` consistently as normalized-probability pseudocounts followed by renormalization. `eps=0` preserves exact support boundaries, including infinite KL for missing reference support.
+- Preserve subnormal support in Jensen–Shannon mixtures and smooth joint distributions once before computing mutual information marginals.
+- Widen integral Fisher scores before products. Ordinary batches retain the floating Gram fast path; overflow-risk normalized batches use exact accumulation so unrelated small curvature is not erased.
+- Estimate Quadray Fisher information from transformed scores; safely symmetrize and analyze large/subnormal Fisher spectra and curvature.
+- Keep zero-posterior likelihood terms out of expected surprise while retaining genuine infinite/undefined likelihood contributions on positive support.
+
+### Exact geometry and suite integration
+
+- Add exported `centroid_exact(points)`, returning a canonical four-`Fraction` tuple without lattice snapping, including arbitrary-size and rational inputs.
+- Preserve existing half-up snapped centroid and componentwise inverse contracts.
+- Compare exact continuous centroids with symergetics alongside the five-runtime coordinate, determinant and independently enumerated FCC checks.
+- Update the canonical manuscript, generated API glossary and companion-project contracts for the coordinated symergetics 1.2.0 / QuadCraft v0.4.0 release.
+
+Compatibility: public information-method signatures are unchanged, but explicit
+non-negligible `eps` values now denote real pseudocount smoothing rather than
+logarithm/overlap offsets. Irrational/floating calculations are not exactness
+certificates; exceptional exact Fisher accumulation has a higher runtime cost.
+
 ## 0.4.0 — 2026-11-06
 
 ### Mathematical methods

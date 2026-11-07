@@ -48,7 +48,21 @@ jobs:
         run: |
           uv venv --python '${{ matrix.python }}' /tmp/quadmath-wheel
           uv pip install --python /tmp/quadmath-wheel/bin/python dist/*.whl
-          /tmp/quadmath-wheel/bin/python -I -c "from fractions import Fraction; from quadmath.core.quadray import Quadray, integer_tetra_volume; assert integer_tetra_volume(Quadray(0,0,0,0),Quadray(1,0,0,0),Quadray(0,1,0,0),Quadray(0,0,1,0)) == Fraction(1,4)"
+          /tmp/quadmath-wheel/bin/python -I - <<'PY'
+          from fractions import Fraction
+          import numpy as np
+          from quadmath import Quadray, centroid_exact
+          from quadmath.core.quadray import integer_tetra_volume
+          from quadmath.core.metrics import kl_divergence, shannon_entropy
+          from quadmath.inference.information import fisher_information_matrix
+          points = [Quadray(0,0,0,0), Quadray(1,0,0,0),
+                    Quadray(0,1,0,0), Quadray(0,0,1,0)]
+          assert integer_tetra_volume(*points) == Fraction(1,4)
+          assert centroid_exact(points) == (Fraction(1,4), Fraction(1,4), Fraction(1,4), Fraction(0))
+          assert np.isclose(shannon_entropy([1e308,1e308]), np.log(2))
+          assert fisher_information_matrix([[4_000_000_000]])[0,0] == 1.6e19
+          assert np.isfinite(kl_divergence([1,0], [np.nextafter(0.,1.),1e308], eps=0))
+          PY
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: matrix.python == '3.13'
         with:

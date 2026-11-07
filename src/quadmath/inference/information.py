@@ -1,9 +1,18 @@
 from __future__ import annotations
 
+from fractions import Fraction
+
 import numpy as np
 from typing import Optional, Tuple
 
 from quadmath.core.quadray import DEFAULT_EMBEDDING
+from quadmath.core.metrics import (
+    _normalized_log_weights,
+    _relative_entropy,
+    _symmetric_part,
+    _weighted_sum,
+    kl_divergence,
+)
 
 
 def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> np.ndarray:
@@ -16,10 +25,13 @@ def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> 
     concepts where geodesics follow the Fisher metric rather than Euclidean distance.
 
     Parameters
-    - gradients: Array of shape (num_samples, num_params) containing per-sample
-      gradients with respect to parameters.
+    - gradients: Finite real array of shape (num_samples, num_params)
+      containing per-sample gradients. Integer inputs are converted to floating
+      point before multiplication, avoiding fixed-width integer overflow.
     - normalize: Whether to normalize by sample count (default: True).
-      Set to False if gradients are already normalized.
+      Overflow-risk batches use exact product accumulation before conversion,
+      preserving representable small entries in mixed-scale parameter sets.
+      False returns the unnormalized floating-point sum.
 
     Returns
     - ndarray[num_params, num_params]: Symmetric positive semi-definite matrix.
@@ -30,21 +42,31 @@ def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> 
     - Eigenvalues of F indicate curvature strength along principal directions.
     - Natural gradient descent uses F^(-1) to scale parameter updates optimally.
     """
+    if np.iscomplexobj(gradients):
+        raise ValueError("gradients must be real")
+    gradients = np.asarray(gradients, dtype=float)
     if gradients.ndim != 2:
         raise ValueError("gradients must be 2D (num_samples, num_params)")
-    
     if gradients.shape[0] == 0:
         raise ValueError("gradients must contain at least one sample")
-    
-    if normalize:
-        F = gradients.T @ gradients / float(gradients.shape[0])
+    if not np.all(np.isfinite(gradients)):
+        raise ValueError("gradients must be finite")
+    count = float(gradients.shape[0])
+    if normalize and np.max(np.abs(gradients), initial=0.0) > np.sqrt(np.finfo(float).max / count):
+        # Dividing every score first can erase small, unrelated curvature.
+        # Only the exceptional overflow-risk path pays for exact accumulation.
+        columns = [[Fraction.from_float(float(value)) for value in column]
+                   for column in gradients.T]
+        fisher = np.empty((len(columns), len(columns)), dtype=float)
+        for i, column in enumerate(columns):
+            for j in range(i, len(columns)):
+                total = sum((x * y for x, y in zip(column, columns[j])), Fraction(0))
+                fisher[i, j] = fisher[j, i] = float(total / gradients.shape[0])
     else:
-        F = gradients.T @ gradients
-    
-    # Ensure symmetry (numerical stability)
-    F = (F + F.T) / 2.0
-    
-    return F
+        fisher = gradients.T @ gradients
+        if normalize:
+            fisher /= count
+    return _symmetric_part(fisher)
 
 
 def fisher_information_quadray(
@@ -80,17 +102,24 @@ def fisher_information_quadray(
       explicit in F_quadray.
     """
 
+    gradients = np.asarray(gradients)
     F_cart = fisher_information_matrix(gradients)
+    if gradients.shape[1] != 3:
+        raise ValueError("gradients must have shape (num_samples, 3)")
     
+    if np.iscomplexobj(embedding_matrix):
+        raise ValueError("embedding_matrix must be real")
     E = np.asarray(
         DEFAULT_EMBEDDING if embedding_matrix is None else embedding_matrix,
         dtype=float,
     )
     if E.shape != (3, 4):
         raise ValueError("embedding_matrix must have shape (3, 4)")
-    
-    # Pullback of the Fisher metric under x = E q: F_q = E^T F_cart E
-    F_quadray = E.T @ F_cart @ E
+    if not np.all(np.isfinite(E)):
+        raise ValueError("embedding_matrix must be finite")
+
+    # Equivalent pullback via transformed scores, retaining the stable Gram path.
+    F_quadray = fisher_information_matrix(np.asarray(gradients, dtype=float) @ E)
     
     return F_cart, F_quadray
 
@@ -133,8 +162,9 @@ def natural_gradient_step(
 def free_energy(log_p_o_given_s: np.ndarray, q: np.ndarray, p: np.ndarray) -> float:
     """Variational free energy for discrete latent states.
 
-    Computes F = E_q[-log p(o|s)] + KL(q || p), with simple normalization of
-    q and p to avoid sensitivity to scaling. A small epsilon protects logs.
+    Computes F = E_q[-log p(o|s)] + KL(q || p). Finite nonnegative q and p
+    are normalized without overflowing their total mass. The KL term uses
+    normalized probability pseudocounts of 1e-15, as in kl_divergence.
     
     This function connects to active inference frameworks where minimizing free
     energy drives both perception and action, analogous to how geodesics minimize
@@ -142,27 +172,22 @@ def free_energy(log_p_o_given_s: np.ndarray, q: np.ndarray, p: np.ndarray) -> fl
 
     Parameters
     - log_p_o_given_s: Log-likelihoods for each latent state.
-    - q: Unnormalized variational posterior over states.
-    - p: Unnormalized prior over states.
+    - q: Finite nonnegative posterior weights of any shape, with positive mass.
+    - p: Finite nonnegative prior weights of the same shape, with positive mass.
 
     Returns
-    - float: Non-negative scalar free energy (lower is better).
+    - float: Scalar free energy (lower is better). Zero-posterior states do not
+      contribute to expected surprise, even if their log-likelihood is -inf.
     """
+    log_p_o_given_s = np.asarray(log_p_o_given_s)
+    q = np.asarray(q)
+    p = np.asarray(p)
     if not (log_p_o_given_s.shape == q.shape == p.shape):
         raise ValueError("shapes of inputs must match")
     
-    # Normalize distributions
-    qn = q / np.sum(q)
-    pn = p / np.sum(p)
-    
-    # Expected negative log-likelihood
-    expected_nll = -float(np.sum(qn * log_p_o_given_s))
-    
-    # KL divergence with numerical stability
-    eps = 1e-15
-    kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
-    
-    return expected_nll + kl
+    log_q = _normalized_log_weights(q)
+    expected_nll = -_weighted_sum(log_q, log_p_o_given_s)
+    return expected_nll + kl_divergence(q, p)
 
 
 def finite_difference_gradient(function: callable, x: np.ndarray, epsilon: float = 1e-6) -> np.ndarray:
@@ -269,25 +294,15 @@ def expected_free_energy(
 
     Parameters
     - log_p_o_given_s: Log-likelihoods log p(o|s) for each latent state.
-    - q: Unnormalized variational posterior over states.
-    - p: Unnormalized prior over states (enters via the epistemic KL term).
+    - q: Finite nonnegative posterior weights of any shape, with positive mass.
+    - p: Finite nonnegative prior weights of the same shape, with positive mass;
+      the epistemic KL uses normalized probability pseudocounts of 1e-15.
     - log_p_o: Log of prior preference over outcomes (default: 0.0 for uniform).
 
     Returns
     - float: Expected free energy (lower is better for action selection).
     """
-    if not (log_p_o_given_s.shape == q.shape == p.shape):
-        raise ValueError("shapes of inputs must match")
-    
-    # Normalize distributions
-    qn = q / np.sum(q)
-    pn = p / np.sum(p)
-
-    eps = 1e-15
-    expected_nll = -float(np.sum(qn * log_p_o_given_s))
-    kl = float(np.sum(qn * (np.log(qn + eps) - np.log(pn + eps))))
-
-    return kl + expected_nll - log_p_o
+    return free_energy(log_p_o_given_s, q, p) - log_p_o
 
 
 def active_inference_step(
@@ -385,35 +400,23 @@ def mutual_information(p_joint: np.ndarray, eps: float = 1e-15) -> float:
     entropy.  The joint distribution is normalized internally.
 
     Parameters
-    - p_joint: 2D array of shape (|X|, |Y|) with non-negative entries.
-    - eps: Small constant for numerical stability in the log.
+    - p_joint: Finite nonnegative 2D weights of shape (|X|, |Y|).
+    - eps: Finite nonnegative probability pseudocount added to each normalized
+      joint entry, followed by renormalization. Zero preserves exact support.
 
     Returns
     - float: Mutual information in nats (>= 0).
 
     Raises
-    - ValueError: If p_joint is not 2D or has non-positive total mass.
+    - ValueError: If p_joint is not 2D, weights are undefined, or eps is invalid.
     """
-    p_joint = np.asarray(p_joint, dtype=float)
+    p_joint = np.asarray(p_joint)
     if p_joint.ndim != 2:
         raise ValueError("p_joint must be 2D")
-    if np.any(p_joint < 0):
-        raise ValueError("p_joint must be non-negative")
-    total = np.sum(p_joint)
-    if total <= 0.0:
-        raise ValueError("p_joint must have positive total mass")
-    pn = p_joint / total
-
-    # Marginals
-    p_x = np.sum(pn, axis=1)  # shape (|X|,)
-    p_y = np.sum(pn, axis=0)  # shape (|Y|,)
-
-    # Entropies
-    h_x = float(-np.sum(p_x * np.log(p_x + eps)))
-    h_y = float(-np.sum(p_y * np.log(p_y + eps)))
-    h_xy = float(-np.sum(pn * np.log(pn + eps)))
-
-    return max(0.0, h_x + h_y - h_xy)
+    log_joint = _normalized_log_weights(p_joint, eps)
+    log_x = np.logaddexp.reduce(log_joint, axis=1)
+    log_y = np.logaddexp.reduce(log_joint, axis=0)
+    return max(0.0, _relative_entropy(log_joint, log_x[:, None] + log_y[None, :]))
 
 
 def information_gain(prior: np.ndarray, posterior: np.ndarray, eps: float = 1e-15) -> float:
@@ -423,22 +426,15 @@ def information_gain(prior: np.ndarray, posterior: np.ndarray, eps: float = 1e-1
     after observing data.  In active inference this quantifies epistemic value.
 
     Parameters
-    - prior: Non-negative weights for the prior distribution.
-    - posterior: Non-negative weights for the posterior distribution.
-    - eps: Small constant for numerical stability.
+    - prior: Finite nonnegative weights of any shape with positive mass.
+    - posterior: Finite nonnegative weights of the same shape with positive mass.
+    - eps: Finite nonnegative normalized probability pseudocount; see
+      kl_divergence. Zero preserves exact supports and may return infinity.
 
     Returns
     - float: KL divergence in nats (>= 0).
 
     Raises
-    - ValueError: If shapes do not match.
+    - ValueError: If shapes differ or weights/eps are undefined.
     """
-    prior = np.asarray(prior, dtype=float)
-    posterior = np.asarray(posterior, dtype=float)
-    if prior.shape != posterior.shape:
-        raise ValueError("prior and posterior must have the same shape")
-    if np.any(prior < 0) or np.any(posterior < 0):
-        raise ValueError("prior and posterior must be non-negative")
-    pn = posterior / np.sum(posterior)
-    qn = prior / np.sum(prior)
-    return float(np.sum(pn * (np.log(pn + eps) - np.log(qn + eps))))
+    return kl_divergence(posterior, prior, eps)

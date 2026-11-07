@@ -33,6 +33,12 @@ different inverse contracts. Its
 exercises the real Python, JavaScript and C++ implementations without adding a
 runtime dependency between repositories.
 
+The current minor release adds exact continuous `Fraction` centroids and
+scale-safe probability/Fisher calculations. `eps` now consistently denotes
+normalized-probability pseudocount smoothing; use `eps=0` for exact support
+boundaries. See [methods](quadmath/markdown/03_quadray_methods.md) and
+[release notes](CHANGELOG.md).
+
 ## Quick Start
 
 ```bash
@@ -66,7 +72,8 @@ source-checkout tools retain `quadmath/output/`.
 The coordinated release notes are in [CHANGELOG.md](CHANGELOG.md). The
 [suite verifier](https://github.com/docxology/symergetics/blob/main/verify_suite.py)
 runs frozen environments, coverage gates, games, native tests, interoperability
-and documentation checks across all three projects.
+and documentation checks across all three projects; `--browser` adds all
+30 live Chromium game scenarios and a portable, revision-specific receipt.
 
 
 ## Repository Architecture: The render_pdf.sh Paradigm

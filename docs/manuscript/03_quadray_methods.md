@@ -68,6 +68,21 @@ half-up with integer arithmetic, preserving arbitrary-size integer inputs.
 It is a quantized quadray centroid, not necessarily the XYZ-nearest point to
 the continuous Euclidean centroid.
 
+Use `centroid_exact(points)` for the continuous center: it returns four
+`Fraction` components in minimum-zero gauge, without lattice snapping or
+floating conversion. It accepts a one-pass iterable and rejects empty input.
+The matching symergetics polyhedron method returns the same rational tuple;
+do not reconstruct it through that library's integer coordinate constructor.
+
+```python
+from fractions import Fraction
+from quadmath import Quadray, centroid_exact
+
+points = [Quadray(0, 0, 0, 0), Quadray(1, 0, 0, 0),
+          Quadray(0, 1, 0, 0), Quadray(0, 0, 1, 0)]
+assert centroid_exact(points) == (Fraction(1, 4), Fraction(1, 4), Fraction(1, 4), Fraction(0))
+```
+
 Cross-project orientation, precision boundaries and executable comparisons are
 documented in the [Synergetics suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
 
@@ -234,6 +249,40 @@ Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See 
 
 - Symmetries of quadray lattices often induce near block-diagonal FIM.
 - Determinant and spectrum characterize conditioning and information concentration.
+
+The empirical estimator widens integral scores before products. Ordinary
+batches use the floating Gram fast path; overflow-risk normalized batches use
+exact accumulation before conversion, preserving unrelated small curvature.
+Safe symmetrization retains finite large entries and representable subnormals.
+Quadray Fisher information is estimated from the transformed scores, avoiding
+an unnecessarily overflowing intermediate Cartesian pullback. These remain
+floating outputs, not exact positive-semidefinite certificates; exceptional
+exact accumulation costs more than the ordinary matrix-product path.
+
+### Probability normalization and support
+
+Entropy, divergence and information distances accept finite nonnegative
+weights with positive total mass, including joint arrays. Scaling all weights
+by a common positive factor does not change their normalized distribution.
+Negative, complex, nonfinite, empty and zero-mass inputs are undefined and
+raise `ValueError`.
+
+Normalization retains log probabilities when positive weight ratios fall below
+the floating probability range. KL therefore does not invent missing support,
+and entropy, mutual information and likelihood expectations retain terms whose
+final contribution is still representable. True zero support remains distinct
+from numerical underflow.
+
+`eps` is a finite nonnegative pseudocount added to each **normalized**
+probability, followed by renormalization. This replaces inconsistent
+logarithm/overlap offsets; the default `1e-15` remains negligible for ordinary
+inputs. With `eps=0`, zero-probability entropy terms contribute zero, KL is
+infinite when the reference lacks posterior support, and disjoint distributions
+have Jensen--Shannon divergence `log(2)` and Fisher--Rao distance `pi`.
+Mutual information smooths the joint distribution once before deriving its
+marginals. Free energy ignores zero-posterior likelihood terms, but retains
+infinite or undefined likelihood contributions on positive support; arbitrary
+supplied log likelihoods do not guarantee a nonnegative free energy.
 
 ## Practical Methods
 
@@ -421,6 +470,10 @@ Source: `src/quadmath/core/quadray.py` — return the Euclidean magnitude of `q`
 #### `dot` {#code:dot}
 
 Source: `src/quadmath/core/quadray.py` — return Euclidean dot product <q1,q2> under the given embedding.
+
+#### `centroid_exact` {#code:centroid_exact}
+
+Source: `src/quadmath/core/quadray.py` — exact continuous centroid as a canonical four-`Fraction` tuple; distinct from the half-up snapped `centroid`.
 
 ### Quaternion operations {#code:quaternion_operations}
 
