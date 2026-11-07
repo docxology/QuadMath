@@ -16,7 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8.4.1",
+  "pytest>=9.0.3",
   "coverage>=7.0",
 ]
 
@@ -28,7 +28,7 @@ pythonpath = ["src"]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1",
+    "pytest>=9.0.3",
     "coverage>=7.0",
 ]
 

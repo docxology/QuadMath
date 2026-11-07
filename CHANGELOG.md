@@ -27,6 +27,7 @@
 - Exclude generated output and manuscript figure copies from source distributions.
 - Support explicit `QUADMATH_OUTPUT_DIR` for installed plotting/data consumers without a checkout. Source tools retain `quadmath/output/` by default.
 - Add Python 3.11/3.13 coverage/package gates and a Linux manuscript pipeline with the actual font, TeX, video and Pandoc prerequisites.
+- Require the patched pytest ≥9.0.3 floor consistently in both development dependency declarations ([GHSA-6w46-j5rx-g56g](https://github.com/advisories/GHSA-6w46-j5rx-g56g)); the locked test runner was already exercised at 9.2.0.
 - Cross-reference symergetics and QuadCraft, document the orientation/unit conversion, and check independently enumerated FCC sites as well as actual Python/JavaScript/C++ coordinate APIs.
 
 ### Compatibility and verification
