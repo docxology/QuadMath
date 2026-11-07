@@ -25,11 +25,15 @@ class Quadray:
     d: int
 
     def __post_init__(self) -> None:
-        """Store integral scalar inputs as unbounded Python integers."""
+        """Store integral and rational scalar fields with unbounded Python integers."""
         for name in ("a", "b", "c", "d"):
             value = getattr(self, name)
             if type(value) is not int and isinstance(value, numbers.Integral):
                 object.__setattr__(self, name, int(value))
+            elif isinstance(value, Fraction):
+                normalized = _exact_fraction(value)
+                if normalized is not value:
+                    object.__setattr__(self, name, normalized)
 
     def as_tuple(self) -> Tuple[int, int, int, int]:
         """Return (a,b,c,d)."""
@@ -58,7 +62,9 @@ def _exact_fraction(value: float) -> Fraction:
     if isinstance(value, numbers.Integral):
         return Fraction(int(value))
     if isinstance(value, Fraction):
-        return value
+        if type(value.numerator) is int and type(value.denominator) is int:
+            return value
+        return Fraction(int(value.numerator), int(value.denominator))
     if isinstance(value, numbers.Rational):
         return Fraction(int(value.numerator), int(value.denominator))
     return Fraction(float(value))

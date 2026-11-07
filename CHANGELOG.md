@@ -15,6 +15,7 @@
 ### Exact geometry and suite integration
 
 - Add exported `centroid_exact(points)`, returning a canonical four-`Fraction` tuple without lattice snapping, including arbitrary-size and rational inputs.
+- Promote NumPy-backed `Fraction` fields before coordinate arithmetic, exact centroids and strict inverse elimination; fixed-width numerators/denominators cannot wrap these exact paths.
 - Preserve existing half-up snapped centroid and componentwise inverse contracts.
 - Compare exact continuous centroids with symergetics alongside the five-runtime coordinate, determinant and independently enumerated FCC checks.
 - Update the canonical manuscript, generated API glossary and companion-project contracts for the coordinated symergetics 1.2.0 / QuadCraft v0.4.0 release.

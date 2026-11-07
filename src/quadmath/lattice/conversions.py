@@ -86,8 +86,8 @@ def _exact_fraction(v: object) -> Fraction:
     """Convert one embedding/xyz entry to an exact Fraction.
 
     A Python float (or np.float64, a float subclass) becomes its exact binary
-    rational; numpy integers convert through numbers.Integral; Fraction passes
-    through unchanged.  np.float32 and every other type is rejected.
+    rational; numpy integers convert through numbers.Integral. Fraction fields
+    are promoted to native integers. np.float32 and every other type is rejected.
 
     Parameters
     - v: Entry of type int, float, Fraction, or numbers.Integral.
@@ -101,7 +101,7 @@ def _exact_fraction(v: object) -> Fraction:
     if isinstance(v, numbers.Integral):
         return Fraction(int(v))
     if isinstance(v, Fraction):
-        return v
+        return quadray._exact_fraction(v)
     if isinstance(v, float):
         return Fraction(v)
     raise TypeError(

@@ -74,6 +74,11 @@ floating conversion. It accepts a one-pass iterable and rejects empty input.
 The matching symergetics polyhedron method returns the same rational tuple;
 do not reconstruct it through that library's integer coordinate constructor.
 
+`Fraction` may retain fixed-width NumPy numerator/denominator fields. Quadray
+construction and strict inverse conversion promote these fields to unbounded
+Python integers before arithmetic; wrapping an integer in `Fraction` alone
+is not sufficient protection against fixed-width overflow.
+
 ```python
 from fractions import Fraction
 from quadmath import Quadray, centroid_exact

@@ -205,3 +205,11 @@ def test_lattice_distance_identity_via_conversions():
         d2_closed = 4.0 * np.sum(deltas * deltas, axis=1) - np.sum(deltas, axis=1) ** 2
         assert np.array_equal(d2_lat, d2_closed)
         assert np.allclose(d2_lat, d2_float, rtol=0, atol=1e-12)
+
+
+@pytest.mark.parametrize("value", [np.int64(2**62), np.uint64(2**63)])
+def test_exact_inverse_promotes_numpy_backed_fraction_fields(value):
+    with np.errstate(over="raise", invalid="raise"):
+        point = xyz_to_quadray_canonical([Fraction(value, 1), 0, 0])
+    half = int(value) // 2
+    assert point.as_tuple() == (half, 0, 0, half)

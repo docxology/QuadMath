@@ -734,3 +734,21 @@ def test_scaled_integer_displacements_can_exceed_float_coercion_range():
     assert angle(a, origin, b, embedding) == pytest.approx(math.acos(-1 / 3))
     squared = squared_distances_from_quadrays(origin, a, b, c, embedding)
     assert tetra_volume_cayley_menger(squared) == pytest.approx(4 / 3)
+
+
+@pytest.mark.parametrize("dtype", [np.int64, np.uint64])
+def test_numpy_backed_fraction_components_preserve_addition_and_centroids(dtype):
+    value = dtype(np.iinfo(dtype).max)
+    point = Quadray(Fraction(value, 1), 0, 0, 0)
+    assert point.add(point).a == Fraction(2 * int(value))
+    assert centroid_exact([point, point]) == (Fraction(int(value)), Fraction(0), Fraction(0), Fraction(0))
+
+
+@pytest.mark.parametrize("dtype", [np.int64, np.uint64])
+def test_numpy_backed_fraction_denominators_do_not_wrap_in_centroids(dtype):
+    denominator = dtype(2**62)
+    point = Quadray(Fraction(1, denominator), 0, 0, 0)
+    origin = Quadray(0, 0, 0, 0)
+    assert centroid_exact([point, origin, origin, origin]) == (
+        Fraction(1, 2**64), Fraction(0), Fraction(0), Fraction(0),
+    )
