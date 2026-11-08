@@ -26,10 +26,9 @@ Pieces:
 - :func:`gallery` — composes the three gallery figures deterministically
   (fixed file order :data:`GALLERY_FILES`) and returns their paths.
 
-All randomness used by :func:`gallery` comes from a seeded
-``numpy.random.default_rng(seed)``; the rendered PNGs carry no timestamp
-metadata, so a re-run with the same seed reproduces the figures
-byte-for-byte.
+Seeded boundary observations and initial fields make the numerical examples
+reproducible. Encoded image bytes depend on the rendering toolchain; they
+are not a portable mathematical contract.
 """
 from __future__ import annotations
 
@@ -631,7 +630,7 @@ def gallery(paths_out_dir: str, seed: int = 12) -> List[str]:
        recorded sum-of-squares and stationary-projection diagnostics.
 
     Boundary observations and the shared dynamics initial condition are
-    seeded. PNGs are reproducible byte-for-byte for a fixed ``seed``.
+    seeded. Numerical inputs are reproducible; encoded PNG bytes are not promised.
 
     Parameters
     - paths_out_dir: Directory the three PNGs are written to (created
@@ -644,8 +643,7 @@ def gallery(paths_out_dir: str, seed: int = 12) -> List[str]:
     - List[str]: The three written paths, in :data:`GALLERY_FILES` order.
     """
     paths_out_dir = resolve_output_path(paths_out_dir, get_figure_dir)
-    if not os.path.isdir(paths_out_dir):
-        os.makedirs(paths_out_dir, exist_ok=True)
+    os.makedirs(paths_out_dir, exist_ok=True)
     rng = np.random.default_rng(seed)
 
     # Figure 1: frequency shells 1 and 2 with tetrahedral axis hints.

@@ -1,78 +1,80 @@
-# Statistics and Scaling Gallery
+# Statistical Graphics: Seeded Samples, Inference Bounds, and Scaling Fits
 
-## Synthetic examples of statistical plotting primitives
+## Reusable axes primitives and explicitly synthetic examples
 
-This section is the figure surface of the benchmarks-and-statistics layer:
-every rendering primitive used by section `17_benchmarks_statistics.md`
-lives in `src/quadmath/viz/vis_stats.py` (`plot_latency_hist`, `plot_scaling_loglog`,
-`plot_ci_bars`, `plot_ecdf`).  The primitives are input-agnostic — plain
-numpy arrays in, artists out; they import nothing from the other `src/`
-modules and receive their matplotlib axes explicitly, so panels compose
-inside caller-owned figures and nothing renders at import time.  The
-command-line entry is `quadmath/scripts/stats_gallery.py` — a thin
-orchestrator that sets a headless backend and a fixed seed (`seed=32`),
-delegates to the gallery function in `src/quadmath/viz/vis_stats.py` (thin-orchestrator
-contract of `quadmath/scripts/AGENTS.md`), and prints each written path on
-its own line: those stdout lines are the `make_all_figures` manifest
-contract.  The gallery writes exactly four PNGs —
-`stats_gallery_latency.png`, `stats_gallery_scaling.png`,
-`stats_gallery_ci.png`, `stats_gallery_ecdf.png` — and every random draw
-comes from a fixed seed. These are synthetic plotting examples, not benchmark measurements; byte reproducibility assumes a fixed rendering environment.
+[The statistical graphics module](../../src/quadmath/viz/vis_stats.py) owns
+`plot_latency_hist`, `plot_scaling_loglog`, `plot_ci_bars` and `plot_ecdf`.
+Each accepts nonempty, real, finite one-dimensional data. Caller axes remain
+caller-owned. Without axes, a successful call transfers its new figure to the
+caller; a drawing failure closes only a figure created by that call. Invalid
+data is rejected before allocating a figure.
 
-## Latency histogram
+[The gallery entry point](../../quadmath/scripts/stats_gallery.py) selects seed 32 and prints
+four output paths for the manuscript manifest. Its examples are generated data,
+**not measurements of package routines or evidence of a performance advantage**.
+The composer reuses the shared statistical fit and bootstrap methods rather
+than inventing confidence widths.
 
-`plot_latency_hist(times, ax=None, *, bins=20, title=...)` renders the
-distribution of per-call wall-clock durations measured by
-`src/quadmath/stats/benchmarks.py::time_callable` (trials summary in
-`17_benchmarks_statistics.md`) as a histogram with `bins` bins on the given
-axes.  The shape of the distribution carries what the mean alone hides: a
-tight spike means the harness saw a stable workload, while a heavy right
-tail is exactly what the `median_s` / `p95_s` fields of `BenchRow` are
-there to expose.  The gallery panel histograms a deterministic synthetic
-stand-in for such a sample: 256 draws of a lognormal distribution (mean 0,
-$\sigma = 0.6$, clipped to $[0.05, 5.0]$ in seconds-scale units) taken from the
-single fixed-seed `numpy.random.default_rng(32)` generator, so re-renders are
-byte-identical.
+## Histogram counts and a representable sample mean
 
-![**Latency distribution.** Histogram (20 bins) of a synthetic 256-draw lognormal latency sample (mean 0, $\sigma = 0.6$) clipped to [0.05, 5.0] in seconds-scale units, drawn from the fixed-seed `numpy.random.default_rng(32)` generator of `stats_gallery.py`; the dashed line marks the sample mean. Rendered by `plot_latency_hist`; reproduced by `uv run python quadmath/scripts/stats_gallery.py`. The spread and right tail complement the `mean_s`, `median_s`, and `p95_s` fields of `BenchRow`, whose per-call times `time_callable` measures with `time.perf_counter` after one discarded warmup call.](figures/stats_gallery_latency.png)
+`plot_latency_hist(times, ax=None, *, bins=20, title=...)` displays sample counts
+and their mean. Units belong to the caller: a measured sample from
+[`time_callable`](17_benchmarks_statistics.md) is in seconds, but arbitrary
+numbers do not become timings merely by being plotted.
 
-## Scaling fit
+The gallery uses 256 seeded lognormal draws with log mean 0 and log standard
+deviation 0.6, clipped to `[0.05, 5.0]`. Its axis explicitly calls these
+**synthetic latency seconds**. The mean calculation scales finite observations
+before reduction so a representable mean need not overflow with their sum.
 
-`plot_scaling_loglog(sizes, times, ax=None, *, title=...)` plots measured
-workload sizes against durations on log-log axes and overlays the
-least-squares power law of `src/quadmath/stats/statistics.py::scaling_fit` — the slope is
-the empirical complexity exponent $\beta_1$ of \eqref{eq:stat-scaling}.
-On log-log axes a power law is a straight line, so the panel shows at a
-glance whether a lattice routine scales linearly, quadratically, or worse,
-and how tightly the data follow the law ($r^2$).  The gallery panel fits a
-synthetic sweep with known ground truth: durations $t \approx 3\,n^{1.35}\,(1 + \varepsilon)$
-with $\varepsilon \sim \mathcal{N}(0, 0.02^{2})$ relative noise over sizes
-$n \in \{8, 16, 32, 64, 128, 256\}$, drawn from the same fixed-seed generator
-(times rounded to four decimals for byte stability), so the fit should
-recover the planted exponent 1.35.
+![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](figures/stats_gallery_latency.png)
 
-![**Log-log scaling fit.** Workload sizes $n \in \{8, 16, 32, 64, 128, 256\}$ (dimensionless units) against synthetic durations $t \approx 3\,n^{1.35}\,(1 + \varepsilon)$ with $\varepsilon \sim \mathcal{N}(0, 0.02^{2})$ relative noise, times rounded to four decimals, all drawn from the fixed-seed `numpy.random.default_rng(32)` generator; the least-squares power law from `scaling_fit` is overlaid by `plot_scaling_loglog`, and its fitted slope — annotated in the legend — should recover the planted exponent 1.35, the empirical complexity exponent $\beta_1$ of \eqref{eq:stat-scaling}.](figures/stats_gallery_scaling.png)
+## Shared log-space regression without overflowing intermediate powers
 
-## Confidence intervals
+`plot_scaling_loglog(sizes, times, ax=None, *, title=...)` delegates to
+[`scaling_fit`](17_benchmarks_statistics.md) for ordinary least squares in log
+space. Sizes and times must align and be positive, with at least two distinct
+log sizes. The statistical method centers log sizes for conditioning, returns
+the original-model intercept, and computes its residual diagnostic in log space.
 
-`plot_ci_bars(labels, means, lows, highs, ax=None, *, title=...)` renders
-the supplied estimates and interval endpoints. It does not calculate
-confidence levels or hypothesis tests. The gallery uses three API-name
-labels with synthetic estimates and seeded arbitrary half-widths on
-$[0.05,0.25]$, not measured timings or bootstrap intervals.
+The plotted prediction is `exp(intercept + slope * log(size))`. Computing
+`exp(intercept) * size**slope` can instead produce `0 * inf` even when every
+input and predicted time is representable. The fitted curve is ordered by size;
+unrepresentable positive predictions raise rather than silently disappearing.
+The legend reports the fitted exponent and log-space $R^2$, which is undefined
+when all observed times are equal.
 
-In a real analysis, callers may supply bootstrap bounds from
-[the statistical module](17_benchmarks_statistics.md). Overlap of two
-individual confidence intervals is not equivalent to a test of their
-difference; the relevant comparison depends on sampling design, dependence,
-and confidence level.
+The example uses sizes `{8,16,32,64,128,256}` and a planted power law
+$t = 3 n^{1.35}(1+\varepsilon)$ with seeded 2% normal relative noise. It is an
+illustration, not a measurement or proof of an algorithm's asymptotic complexity.
 
-![**Synthetic interval-rendering example.** API-name labels carry illustrative estimates and seeded symmetric half-widths, not measured latency or calculated 95% coverage. `plot_ci_bars` displays the supplied endpoints; neither overlap nor non-overlap substitutes for a specified test of differences.](figures/stats_gallery_ci.png)
+![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared numerical fit is evaluated in log space, avoiding an underflowed coefficient multiplied by an overflowing power.](figures/stats_gallery_scaling.png)
 
-## Empirical CDF
+## Computed bootstrap intervals and independent point estimates
 
-`plot_ecdf(values, ax=None, *, title=...)` renders the empirical
-distribution function
+`plot_ci_bars(labels, means, lows, highs, ax=None, *, title=...)` displays the
+supplied estimates and finite interval endpoints. It does not infer confidence
+levels. A point estimate need not lie inside its interval: bounds are drawn
+independently rather than being forced into nonnegative error lengths around
+that estimate. Reversed bounds and misaligned inputs are rejected before drawing.
+
+The gallery draws independent normal samples of sizes **16, 64 and 256**, with
+generating mean 1.5 and standard deviation 0.4. For each sample it computes a
+mean and a **nominal 95% percentile-bootstrap interval** using 2,000 seeded
+resamples through the shared `bootstrap_ci`. The generating population mean is
+shown as a separate reference, not substituted for the observed estimate.
+A particular interval can miss the generating value; its confidence level is
+not a guarantee about one realization. These are not timings for API-name labels.
+
+Overlap of two individual intervals is not equivalent to a specified test of
+their difference. Sampling design, dependence and the comparison target matter;
+see [statistical methods and assumptions](17_benchmarks_statistics.md).
+
+![**Calculated intervals for three synthetic sample means.** The labels report sample sizes, bounds come from percentile-bootstrap inference, and the dotted reference marks the known generating mean. Neither interval width nor overlap establishes performance or a hypothesis-test result.](figures/stats_gallery_ci.png)
+
+## Right-continuous ECDF jumps, ties, and singleton observations
+
+`plot_ecdf(values, ax=None, *, title=...)` renders the empirical distribution
 
 \begin{equation}
 \label{eq:vis-ecdf}
@@ -80,40 +82,38 @@ distribution function
 \mathbf{1}\{t_i \le t\},
 \end{equation}
 
-a monotone step function that jumps by $1/n$ at every observed value —
-the exact distribution of the sample, with no binning choices at all.  For
-timing data the ECDF displays the empirical fraction at or below a duration.
-Quantiles can be read through a chosen inverse-ECDF convention; NumPy's
-interpolated percentile summaries need not sit exactly on its step heights.
-The gallery panel draws the ECDF of the same
-256-draw clipped lognormal latency sample as the histogram panel above, so
-the two panels read as one distribution in two renderings.
+on the observed sample range. Equal observations contribute one combined jump.
+The path includes zero at the smallest observation, so a one-sample ECDF still
+shows its full zero-to-one jump rather than an invisible lone point. No density,
+interpolation between probability jumps, or future-latency guarantee is inferred.
+NumPy's interpolated percentile summaries need not coincide with inverse-step
+quantiles.
 
-![**Empirical cumulative distribution of the synthetic latency sample.** Step-function ECDF of the same 256-draw clipped lognormal sample as the histogram, seed 32. It displays sample fractions, not a future-latency guarantee; interpolated percentile conventions may differ from inverse-step quantiles.](figures/stats_gallery_ecdf.png)
+![**Empirical distribution of the same synthetic latency sample.** Combined tied observations retain their empirical mass, and the first jump begins at zero. The plotted sample fractions are not a guarantee for later observations.](figures/stats_gallery_ecdf.png)
 
-## Reproducibility and test contract
+## Reproducing numerical inputs and checking observable behavior
 
-- The gallery function in `src/quadmath/viz/vis_stats.py` writes exactly the four files
-  listed above, in that order, into the output directory (creating it when
-  missing) and returns their paths.  Every panel is fully seeded — the
-  script fixes `seed=32` — and the PNGs carry no timestamp metadata, so
-  re-renders are byte-identical.
-- Tests: `tests/unit/viz/test_vis_stats.py` pins the contract with deterministic
-  assertions, no mocks, and no pixel diffs — artist placement on
-  caller-provided axes, input-agnostic behavior over plain arrays, and the
-  invariants of each primitive (monotone non-decreasing ECDF steps, CI
-  whisker endpoints matching the lows/highs inputs).  Consistent with
-  `17_benchmarks_statistics.md`, no test asserts wall-clock timing
-  values.
-- Figure regeneration:
-  `uv run --python 3.13 python quadmath/scripts/stats_gallery.py` (the script sets
-  `MPLBACKEND=Agg` itself); stdout is exactly the four written paths, the
-  same manifest contract as `quadmath/scripts/lattice_gallery.py`.
-- Markdown: `uv run --python 3.13 python quadmath/scripts/validate_markdown.py`.
+Run from repository root with an isolated output directory:
 
-## Cross-references
+```bash
+export QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results"
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py
+```
 
-- The measured quantities behind every panel: `17_benchmarks_statistics.md`
-  (`src/quadmath/stats/benchmarks.py`, `src/quadmath/stats/statistics.py`).
-- The sibling gallery of the lattice layer, same thin-orchestrator and
-  determinism contract: `16_lattice_gallery.md` (`src/quadmath/viz/vis_lattice.py`).
+The first command emits `stats_gallery_latency.png`, `stats_gallery_scaling.png`,
+`stats_gallery_ci.png` and `stats_gallery_ecdf.png`. The second compares bootstrap
+and normal-approximation jackknife intervals on two explicitly synthetic groups,
+with their generating means identified separately.
+
+A fixed seed reproduces numerical inputs within the declared numerical
+implementation. Fonts, plotting/encoding versions and backend settings can
+change media bytes; encoded equality is not a portable mathematical guarantee.
+Regression coverage targets actual histogram counts, interval geometry,
+extreme-size fitted predictions, tied/singleton ECDFs, input boundaries and
+figure ownership, not incidental wording or copied filename inventories.
+
+[Benchmark and inference methods](17_benchmarks_statistics.md) own numerical
+assumptions. [The lattice gallery](16_lattice_gallery.md) owns coordinate/field
+visualizations. [Figure orchestration](../../quadmath/scripts/README.md) owns output and
+manifest conventions; Python output redirection is not a shell-PDF build sandbox.

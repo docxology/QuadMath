@@ -1,26 +1,16 @@
-"""Tests for the lattice visualization gallery (quadmath/viz/vis_lattice.py).
-
-All assertions are deterministic and pixel-free: artist placement on
-caller-provided axes, exact field values at known lattice cells (shell
-norms are integers), and byte-identical PNG re-renders for a fixed seed.
-"""
+"""Lattice geometry, field semantics and caller-resource regressions."""
 from __future__ import annotations
-
-import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-import lattice_gallery
-import quadmath.paths as paths_module
 from quadmath.lattice.ivm_dynamics import DynamicsParams, simulate
 from quadmath.lattice.ivm_field import IVMField, quadray_shell_norm
 from quadmath.lattice.omni_numbering import generate_shell
 from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
 from quadmath.viz.vis_lattice import (
     DEFAULT_PLANE,
-    GALLERY_FILES,
     boundary_comparison,
     dynamics_comparison,
     dynamics_strip,
@@ -32,9 +22,11 @@ from quadmath.viz.vis_lattice import (
 
 @pytest.fixture(autouse=True)
 def _close_figures():
-    """Close every matplotlib figure a test created (headless Agg via conftest)."""
+    """Close only figures owned by this test, not ambient caller figures."""
+    before = set(plt.get_fignums())
     yield
-    plt.close("all")
+    for number in set(plt.get_fignums()) - before:
+        plt.close(number)
 
 
 # ---------------------------------------------------------------------------
@@ -570,52 +562,10 @@ def test_dynamics_comparison_componentwise_equilibrium_including_isolated_sites(
 
 
 
-# ---------------------------------------------------------------------------
-# gallery: composition, determinism, reproducibility
-# ---------------------------------------------------------------------------
-
-
-def test_gallery_writes_reproducible_figures(tmp_path):
-    run1 = tmp_path / "run1"
-    run2 = tmp_path / "run2"
-    paths1 = gallery(str(run1), seed=12)
-    paths2 = gallery(str(run2), seed=12)
-    assert [os.path.basename(p) for p in paths1] == list(GALLERY_FILES)
-    for path in paths1:
-        assert os.path.isfile(path)
-        assert os.path.getsize(path) > 0
-    for first, second in zip(paths1, paths2):
-        with open(first, "rb") as fh_a, open(second, "rb") as fh_b:
-            assert fh_a.read() == fh_b.read()
-
-
-def test_gallery_existing_dir_and_seed_sensitivity(tmp_path):
-    run_dir = tmp_path / "shared"
-    paths_a = gallery(str(run_dir), seed=12)  # creates the directory
-    paths_b = gallery(str(run_dir), seed=12)  # reuses the existing directory
-    paths_c = gallery(str(tmp_path / "seed13"), seed=13)
-    assert [os.path.basename(p) for p in paths_b] == list(GALLERY_FILES)
-    # The shell figure uses no randomness: identical across seeds. The field
-    # and dynamics figures depend on the seed: different PNG bytes.
-    with open(paths_a[0], "rb") as fh_a, open(paths_c[0], "rb") as fh_c:
-        assert fh_a.read() == fh_c.read()
-    for index in (1, 2):
-        with open(paths_a[index], "rb") as fh_a, open(paths_c[index], "rb") as fh_c:
-            assert fh_a.read() != fh_c.read()
-
-
-# ---------------------------------------------------------------------------
-# thin script contract (quadmath/scripts/lattice_gallery.py)
-# ---------------------------------------------------------------------------
-
-
-def test_lattice_gallery_script_prints_paths(tmp_path, monkeypatch, capsys):
-    figures_dir = tmp_path / "figures"
-    monkeypatch.setattr(paths_module, "get_figure_dir", lambda: str(figures_dir))
-    lattice_gallery.main()
-    lines = capsys.readouterr().out.splitlines()
-    assert len(lines) == 3
-    assert [os.path.basename(line) for line in lines] == list(GALLERY_FILES)
-    for line in lines:
-        assert os.path.isfile(line)
-        assert os.path.getsize(line) > 0
+def test_gallery_preserves_caller_figure_and_closes_its_own(tmp_path):
+    fig, ax = plt.subplots()
+    original, = ax.plot([0., 1.], [3., 4.])
+    before = plt.get_fignums()
+    gallery(str(tmp_path / "gallery"), seed=137)
+    assert plt.get_fignums() == before and plt.figure(fig.number) is fig
+    np.testing.assert_array_equal(original.get_ydata(), [3., 4.])

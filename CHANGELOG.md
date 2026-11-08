@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Statistical geometry, stable fitting and honest examples
+
+- Draw confidence-interval endpoints independently of point estimates, including intervals that exclude an estimate and zero-width intervals; validate before allocating figures and close only owned figures after real drawing failures.
+- Evaluate fitted scaling curves in log space through the shared centered fit rather than overflowing `exp(intercept) * size**slope`. Preserve sorted fit geometry, constant timings and explicit failure for unrepresentable curves.
+- Preserve tied empirical mass and a visible zero-to-one jump for singleton ECDFs. Compute representable histogram means without overflowing an intermediate sum.
+- Replace arbitrary interval widths and misleading benchmark labels with computed seeded percentile-bootstrap intervals and explicitly synthetic inputs. Show known population means in the bootstrap/jackknife comparison.
+- Modularize method sections and clarify nominal coverage, individual zero exclusion versus between-group tests, figure ownership and numerical versus encoded-file reproducibility. Replace copied inventories/byte assertions with consumer-visible geometry and resource regressions.
+
 ### Graphical evidence and numerical diagnostics
 
 - Add importable `quadmath.viz.abstracts.render_quadray_abstract`, producing PNG/SVG with actual native basis endpoints, the rank-three gauge quotient and all twelve FCC neighbors in contact with a central sphere. Preserve caller figures and atomic per-format saves.

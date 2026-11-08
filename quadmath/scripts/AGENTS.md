@@ -47,7 +47,7 @@ they are not all single-call wrappers. Do not duplicate package algorithms.
 | `learning_gallery.py` | `quadmath.learn.learning_eval` (`GradientDescentTrainer`), `quadmath.viz.plots` (`plot_loss_history`), `quadmath.paths` |
 | `quaternion_gallery.py` | `quadmath.viz.plots` (`plot_slerp_path`), `quadmath.core.quadray`, `quadmath.paths` |
 | `animation_stills.py` | `quadmath.viz.animations` (`frames_strip` + frame builders), `quadmath.paths` |
-| `stats_diagnostics_gallery.py` | `quadmath.viz.vis_stats` (`plot_ci_bars`), `quadmath.stats.statistics` (CI families), `quadmath.paths` |
+| `stats_diagnostics_gallery.py` | `quadmath.viz.vis_stats` (`plot_ci_bars`), `quadmath.stats.statistics` (CI families), `quadmath.viz._common`, `quadmath.paths` |
 
 ## Gotchas
 

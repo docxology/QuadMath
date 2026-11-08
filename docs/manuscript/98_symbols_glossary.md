@@ -349,8 +349,8 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.viz.vis_polyhedra` | `render_polyhedra_constructions` | function | `(out_path)` | Save measured, equal-scale solid panels and their high-resolution copy. |
 | `quadmath.viz.vis_stats` | `GALLERY_FILES` | constant |  |  |
 | `quadmath.viz.vis_stats` | `gallery` | function | `(paths_out_dir, seed)` | Compose the four statistics-gallery figures deterministically. |
-| `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with confidence intervals ``[lows, highs]`` as error bars. |
-| `quadmath.viz.vis_stats` | `plot_ecdf` | function | `(values, ax, title=)` | Empirical cumulative distribution function as a sorted step plot. |
+| `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Render finite interval endpoints independently of their point estimates. |
+| `quadmath.viz.vis_stats` | `plot_ecdf` | function | `(values, ax, title=)` | Render a right-continuous ECDF over the observed sample range. |
 | `quadmath.viz.vis_stats` | `plot_latency_hist` | function | `(times, ax, bins=, title=)` | Histogram of a latency sample with a dashed vertical mean line. |
 | `quadmath.viz.vis_stats` | `plot_scaling_loglog` | function | `(sizes, times, ax, title=)` | Log-log scatter of times versus sizes with the fitted power law. |
 | `quadmath.viz.visualize` | `animate_discrete_path` | function | `(path, embedding, save, out_path)` | Animate a point moving along a discrete quadray path. |

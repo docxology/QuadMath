@@ -74,8 +74,8 @@ MODULES=(
   "14_conversions_spec.md|Conversions and Specification"
   "15_learning_evaluation.md|Learning and Evaluation on the IVM Lattice"
   "16_lattice_gallery.md|Lattice Visualization Gallery"
-  "17_benchmarks_statistics.md|Benchmarks and Statistics"
-  "18_stats_gallery.md|Statistics and Scaling Gallery"
+  "17_benchmarks_statistics.md|Benchmark Measurement and Statistical Inference"
+  "18_stats_gallery.md|Statistical Graphics: Samples, Inference Bounds, and Scaling Fits"
 )
 
 # Markdown files in MARKDOWN_DIR that are deliberately not built as sections.

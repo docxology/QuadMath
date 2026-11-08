@@ -23,7 +23,7 @@ Edit these Markdown sources, not generated copies under `docs/manuscript/` or `q
 | [15_learning_evaluation.md](15_learning_evaluation.md) | Random-site interpolation holdouts, temporal forecasting, and tabular fits |
 | [16_lattice_gallery.md](16_lattice_gallery.md) | Composable lattice panels, owned figures, and distinct animation diffusion |
 | [17_benchmarks_statistics.md](17_benchmarks_statistics.md) | Variable wall-clock timing and assumption-bound statistical inference |
-| [18_stats_gallery.md](18_stats_gallery.md) | Synthetic plotting examples, not measured benchmark evidence |
+| [18_stats_gallery.md](18_stats_gallery.md) | Computed intervals, stable log fits and empirical mass; labelled synthetic data, not measured benchmarks |
 
 For coordinate geometry, read 02 → 03 → 14 and consult SPEC. For lattice models, read 11 → 12 → 13 → 15, then the gallery in 16. For measurement, read 17 before interpreting 18.
 
