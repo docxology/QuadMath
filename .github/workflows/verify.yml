@@ -51,7 +51,11 @@ jobs:
           /tmp/quadmath-wheel/bin/python -I - <<'PY'
           from fractions import Fraction
           import numpy as np
-          from quadmath import Quadray, centroid_exact
+          from quadmath import (
+              Quadray, centroid_exact, dot_exact, squared_distance_exact,
+              affine_combination_exact, signed_tetra_volume_exact,
+              triangle_area_squared_exact,
+          )
           from quadmath.core.quadray import integer_tetra_volume
           from quadmath.core.metrics import kl_divergence, shannon_entropy
           from quadmath.inference.information import fisher_information_matrix
@@ -65,6 +69,13 @@ jobs:
           raw = Fraction(np.uint64(2**63), 1)
           point = Quadray(raw,0,0,0)
           assert centroid_exact([point,point]) == (Fraction(2**63), Fraction(0), Fraction(0), Fraction(0))
+          assert dot_exact(Quadray(1,1,0,0), Quadray(2**60+1,0,2**60,0)) == 2
+          gauge = 2**2000
+          assert squared_distance_exact(points[1], (gauge+1,gauge,gauge,gauge)) == 0
+          midpoint = affine_combination_exact(points[:2], [Fraction(1,2)]*2)
+          assert midpoint == (Fraction(1,2), Fraction(0), Fraction(0), Fraction(0))
+          assert signed_tetra_volume_exact(points[0], midpoint, *points[2:]) == Fraction(1,8)
+          assert triangle_area_squared_exact(*points[:3]) == 2
           PY
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: matrix.python == '3.13'
