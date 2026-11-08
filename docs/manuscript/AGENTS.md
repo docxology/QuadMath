@@ -10,10 +10,9 @@ docxology/template render pipeline.
   hand-edit ported section content here — change the source, then re-port.
 - Re-port source edits with `uv run python docs/manuscript/port_from_source.py`
   (copies sections/figures, applies the rewrites, verifies links).
-- `preamble.md` must keep its fenced `latex` block **closed** — upstream
-  `00_preamble.md` is missing the closing fence; `extract_preamble` needs a
-  complete block and silently drops an unclosed one. `port_from_source.py`
-  appends the fence on every re-port; do not remove it.
+- `preamble.md` must keep its fenced `latex` block **closed**; extraction drops
+  unclosed blocks. The canonical source is closed; the port also repairs a
+  missing closing fence. Never remove it.
 - The three code-anchor links in `09_free_energy_active_inference.md` are
   deliberately repointed to `03_quadray_methods.md#code:*` (upstream points
   them at `08_equations_appendix.md`, which has no `{#code:*}` anchors).
@@ -22,9 +21,9 @@ docxology/template render pipeline.
   `_validate_unique_citation_keys` fails closed on duplicates).
 - Every image/link (including `{#id}` fragments) must resolve on disk: run
   `uv run python docs/development/check_links.py` after edits here.
-- Do not regenerate figures into this tree by hand; figures are copies of
-  `quadmath/output/figures/` (which `clean_output.sh` wipes). Regenerate via
-  the quadmath scripts, re-port.
+- Do not regenerate figures into this tree by hand. Regenerate via the
+  quadmath scripts, then re-port. An isolated output root is supported with
+  `port_from_source.py --figures-dir /path/to/run/figures`.
 
 ## Render parity
 

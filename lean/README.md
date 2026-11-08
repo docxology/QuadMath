@@ -1,119 +1,114 @@
-# lean/ — Lean 4 formalization of the QuadMath core
+# lean/ — exact integer quadray foundations
 
-A Lean 4 (core only, **no Mathlib** dependency) formalization of the
-quadray-coordinate foundations used by QuadMath. Package name: `Quadlean`.
+Core-only Lean 4 sources, with no Mathlib or external package dependency.
+Package: `Quadlean`; toolchain: `leanprover/lean4:v4.35.0`.
+These are handwritten mathematical models, not extraction from, or verification
+of, the Python, JavaScript or C++ implementations or floating simulations.
 
-## Build and run
+## Build
 
-Requires [elan](https://elan.lean-lang.org) (the toolchain is pinned in
-`lean-toolchain`, currently `leanprover/lean4:v4.35.0`; `elan show` resolves
-the same default). No other dependencies:
+From this directory:
 
 ```bash
-cd lean
-lake build        # builds QuadMath.Quadray, QuadMath.IVM, QuadMath.Distance, QuadMath.Lattice
+lake build
 ```
 
-`lake build` exits 0 on success. The `#eval` smoke checks print their
-results during the build (shell cardinalities, the `10k^2 + 2` sequence,
-membership examples). To interact with the code, use `lake env lean` with a
-scratch file that imports `QuadMath.IVM`, or open `lean/` in an LSP-enabled
-editor.
+This elaborates the four modules imported by `Quadlean.lean`. Existing `#eval`
+commands print examples during compilation; printed output is not a theorem.
+The foundation additions were written without a worker-side build; integration
+must elaborate them before describing the revised sources as machine-verified.
 
-## Modules
+## Universal theorem source
 
-| Module | Formalizes | Python correspondence |
-|---|---|---|
-| `QuadMath.Quadray` | Quadray coordinates as integer 4-tuples: projective normalization by subtracting the minimum component, and the exact integer tetra-volume via the `(a-d, b-d, c-d)` projected 3x3 determinant identity (`|det| / 4`; unit IVM tetra `det = 4`, volume `1`; primitive tetra `det = 1`, volume `1/4`). Proves normalization is idempotent, lands in the class (`q ~ q + t(1,1,1,1)`), and that the determinant is class-invariant. | `src/quadmath/core/quadray.py` — `Quadray` dataclass, `normalize` (`src/quadmath/core/quadray.py:30-37`), `integer_tetra_volume` (`src/quadmath/core/quadray.py:61-83`); determinant arithmetic mirrors `bareiss_determinant_int` in `src/quadmath/core/linalg_utils.py:6-56`. |
-| `QuadMath.IVM` | The IVM (FCC/CCP) lattice in quadray coordinates: the 12 canonical neighbor moves (permutations of `(2,1,1,0)`), a computable membership predicate `IsIVMSite` (normalized ∧ component sum divisible by 4 — the `(1,0,0,0)`-type tetrahedral-void directions are excluded), the L1-centered shell norm `shellNorm4` (4x-scaled `quadray_shell_norm`; shell `k` ⟺ `shellNorm4 = 8k`), and a computable shell enumeration `shellSites` over the `[0, 2k]^4` scan box. Proves the scan-box completeness bound (`shellNorm4_component_bound`), the exact enumeration characterization (`mem_shellSites_iff`), that membership and shell norm are projective-class properties (`isIVMSite_normalize`, `shellNorm4_sameClass`), that shell membership determines the shell index (`shellSites_unique`), and machine-checks the shell cardinalities `10k² + 2` through frequency 8 (`shellSites_card_target_*`). | `src/quadmath/lattice/ivm_field.py` — `IVM_NEIGHBOR_STEPS` (`:61-74`), `is_ivm_site` (`:69-77`), `quadray_shell_norm` (`:80-106`), `shell_sites` (`:121-157`); `neighbor_moves_ivm` in `src/quadmath/optimize/discrete_variational.py:10-14`. |
-| `QuadMath.Distance` | The exact squared Euclidean distance under `DEFAULT_EMBEDDING`: proves, universally over integer deltas, `d² = 4·(δa² + δb² + δc² + δd²) − (δa + δb + δc + δd)²` (`deltaDist2_eq`), plus symmetry, zero self-distance, and the twelve-around-one instance (every neighbor move at squared distance `8` from the origin). | `src/quadmath/core/quadray.py` — `DEFAULT_EMBEDDING` (`:116-121`), `distance` (`:165-179`); the exact `d² = 4Σδ² − (Σδ)²` identity used by `src/quadmath/lattice/lattice_search.py:109-125`. |
-| `QuadMath.Lattice` | The omnidirectional close-packing numbering: `omniNumber k = 10k^2 + 2` (shell `k ≥ 1`) and cumulative counts, cross-checked against the concrete `shellSites` enumeration — kernel-checked realization on shells 1-3 (`shellSites_omni_*`; shell 3 rides on the kernel-decided `shellSites_card_target_3`), `#eval` agreement through shell 8. | `src/quadmath/lattice/omni_numbering.py` (frequency shells, `10k^2 + 2`). |
+### `QuadMath/Quadray.lean`
 
-`src/quadmath/core/geometry.py` (Minkowski interval, Lorentz factor, proper time — the
-Einstein.4D namespace) has **no counterpart in this formalization**: it is
-relativistic geometry, not quadray/lattice math, and is cited here only to
-state that absence.
+* `SameClass` is common-offset equivalence on integer four-tuples. Its
+  reflexivity, symmetry and transitivity supply `quadraySetoid` and the actual
+  quotient `PhysicalQuadray`; `physicalClass_eq_iff` characterizes equality there.
+* `normalize_spec`, `quadMin_normalize` and `normalize_idem` establish the
+  nonnegative, minimum-zero canonical representative.
+  `normalize_eq_iff_sameClass` and `canonical_unique` establish uniqueness,
+  not just existence/idempotence.
+* `sameClass_iff_proj_eq` identifies classes exactly by the three integer
+  coordinates `(a-d,b-d,c-d)`. `proj_surjective` supplies every integer triple.
+* `tetraDet_sameClass` and `tetraVolume_sameClass` allow **four independent
+  vertex gauges**, including the base vertex. The older `tetraDet_congr`
+  is the narrower simultaneous common-shift result.
+* Exact native volume is `mkRat |tetraDet| 4`, not universally an integer.
+  Closed kernel-decided examples establish the unit volume 1 and primitive
+  volume 1/4. No general Bareiss implementation-correctness theorem is claimed.
 
-## Conventions
+### `QuadMath/Distance.lean`
 
-* A quadray is an integer 4-tuple `(a, b, c, d)`; `Quadray.normalize`
-  subtracts `k = min(a, b, c, d)`, selecting the canonical representative of
-  the projective class `q ~ q + t(1,1,1,1)`.
-* An IVM lattice site is a normalized quadray whose component sum is
-  divisible by 4 (`src/quadmath/lattice/ivm_field.py:69-77`). Membership is decidable;
-  normalization shifts the sum by a multiple of 4, so it is a class property.
-* Shell `k` collects sites with L1-centered shell norm `N(q) = 2k`
-  (`src/quadmath/lattice/ivm_field.py:80-106`), encoded here integrally as
-  `shellNorm4 q = 8k`, enumerated over the box `[0, 2k]^4` exactly as
-  `shell_sites` does.
+* `deltaDist2_eq`: for every integer delta, the scale-one embedding has
+  `d² = 4 Σδᵢ² − (Σδᵢ)²`. The correction vanishes for equal-sum endpoints,
+  not merely because two labels are in the same physical class.
+* `dist2_nonneg`, `dist2_comm`, `dist2_congr` and `dist2_eq_zero_iff` give a
+  nonnegative, symmetric squared distance on physical classes. Zero distance
+  means `SameClass`, equivalently equal canonical representatives
+  (`dist2_eq_zero_iff_normalize_eq`), not equal raw game-cell labels.
+  `xyzInt_eq_iff_sameClass` also characterizes equality of physical images.
+  This is **not** a Lean `MetricSpace`, nor an ordinary triangle inequality
+  for squared distance, nor a square-root metric formalization.
+* `xyzTetraDet_eq` proves the signed scale-one XYZ determinant is
+  `4 * tetraDet`. `tetraVolume_xyz_bridge` proves native volume equals
+  `(3/8) * xyzTetraVolume`; the unit tetrahedron has XYZ volume `8/3`.
+  The row order is exactly `DEFAULT_EMBEDDING`. QuadCraft's separate
+  `(X,Z,Y)/sqrt(2)` convention reverses orientation and rescales volume;
+  that irrational rescaling is **not** formalized here. Do not apply its S3
+  conversion factor to the scale-one XYZ volumes in this module.
+* `shellNorm4_le_dist2` proves the universal radial lower bound for every
+  integer class with component sum divisible by four.
+  `shellSites_dist2_lower` gives `8*k ≤ d²(0,q)` for `q ∈ shellSites k`;
+  `shellSites_outside_cutoff` gives strict exclusion beyond a squared-radius
+  cutoff. The proof uses integer `|z| ≤ z²` in the sum-zero gauge, not
+  finite checking. It applies to the centered-norm enumeration. No theorem
+  here identifies that enumeration with a BFS implementation.
+* `dist2_neighborMove` establishes squared radius 8 for each of the twelve
+  declared moves. Other shells need not have constant Euclidean radius.
 
-## What is proved vs. machine-checked
+### `QuadMath/IVM.lean`
 
-Proved in Lean (kernel-checked, core only — no Mathlib):
+* `IsIVMSite q` requires **canonical** coordinates. The class-level predicate
+  is `IsIVMSite q.normalize`, characterized by `isIVMSite_normalize` and
+  invariant under `SameClass` by `isIVMSite_normalize_congr`.
+* `ivmCentered` is a different gauge: it has sum zero when the component sum
+  is divisible by four (`ivmCentered_sum_zero`), preserves physical class
+  and shell norm, and need not have nonnegative components.
+* `shellNorm4_component_bound` proves the scan box `[0,2k]^4` is complete;
+  `mem_shellSites_iff` characterizes membership exactly by canonical site
+  status and `shellNorm4 q = 8*k`. `shellSites_unique` gives a unique index.
+* Neighbor distinctness/site membership and the explicitly indexed finite
+  cardinality proofs have their stated finite scope.
 
-* Normalization: non-negative components, minimum zero, idempotence, and
-  class preservation (`normalize_spec`, `normalize_idem`, `normalize_sameClass`).
-* The determinant identity: unit IVM tetrahedron `det = 4`, volume `= 1`;
-  primitive tetrahedron `det = 1`, volume `= 1/4` (`tetraDet_unit`,
-  `tetraVolume_unit`, `tetraDet_primitive`, `tetraVolume_primitive`); the
-  determinant is invariant under shifting all four vertices by the same
-  `t(1,1,1,1)` (`tetraDet_congr`).
-* The 12 neighbor moves are pairwise distinct and are all IVM sites.
-* **Scan-box completeness** (`shellNorm4_component_bound`): every IVM site
-  with shell norm `8k` has all four components in `[0, 2k]`, so the
-  `[0, 2k]^4` scan box of `shell_sites` loses no shell sites — the
-  bounding-box claim of `src/quadmath/lattice/ivm_field.py:112-113`, proved here rather than
-  taken from the Python reference.
-* **Enumeration characterization** (`mem_shellSites_iff`): `shellSites k`
-  contains exactly the IVM sites whose shell norm is `8k` — the
-  frequency-`k` shell and nothing else.
-* Membership and shell norm are projective-class properties
-  (`isIVMSite_normalize`, `shellNorm4_sameClass`), and shell membership
-  determines the shell index (`shellSites_unique`).
-* **Exact squared-distance identity** (`deltaDist2_eq`, universal over
-  integer deltas): under `DEFAULT_EMBEDDING`,
-  `d² = 4·(δa² + δb² + δc² + δd²) − (δa + δb + δc + δd)²`; symmetry
-  (`dist2_comm`), zero self-distance (`dist2_self`), and the
-  twelve-around-one instance — every neighbor move at squared distance `8`
-  from the origin (`neighborMoves_dist2`, `dist2_neighborMove`).
-* Shell cardinalities for `k = 0, 1, 2`: `1`, `12`, `42`
-  (`shellSites_*_length`), and `shellSites k` realizes `omniNumber k` on
-  shells 1, 2, 3 (`shellSites_omni_*`; shell 3 via the machine-checked
-  instance).
+### `QuadMath/Lattice.lean`
 
-Machine-checked (computed, no proof term):
+`omniNumber k = 10*k*k+2` and `cumulativeCount` are formula definitions.
+Theorems connect enumeration to that formula on shells 1–3 only. Defining
+a formula is not a universal proof that it counts sites.
 
-* `shellSites_card_target k` — `(shellSites k).length = 10k² + 2` — for
-  `k = 1..4` by kernel-evaluated `decide` (an axiom audit with
-  `#print axioms` shows these instances depend on **no** axioms) and for
-  `k = 5..8` by `native_decide`: the virtual machine evaluates the same
-  closed enumeration and the kernel trusts the result through one
-  per-instance `native_decide` axiom (kernel evaluation of the `[0, 2k]^4`
-  filter is the build-time bottleneck, so larger shells use VM evaluation).
+## Finite computation and trust
 
-`#eval` smoke checks (printed at build time): membership examples (neighbor
-class true, void direction false), the shell lengths
-`[12, 42, 92, 162, 252, 362, 492, 642]` agreeing with `10k² + 2` through
-shell 8, the `omniNumber` sequence, cumulative counts `[1, 13, 55, 147, 309,
-561]`, and `shellSites (k+1)` agreeing with `omniNumber (k+1)` for `k ≤ 8`.
+* `decide` proofs, including `shellSites_card_target_1` through `_4`, produce
+  proof terms checked by kernel reduction. They are computational proofs,
+  not computations with “no proof term”.
+* The existing `_5` through `_8` declarations use `native_decide`. They also
+  have theorem terms, but the pinned Lean 4.35 implementation trusts compiled
+  evaluation through per-instance axioms. The mechanism is not
+  `Lean.ofReduceBool`. Those dependencies propagate to theorem users of these
+  declarations, not to every unrelated theorem importing `IVM`.
+* No new axioms, `sorry`, or native-decision foundation proofs are introduced.
+  Zero `sorry` alone is not an axiom audit. Use `#print axioms theoremName`
+  when auditing a particular declaration; no fresh axiom audit was performed
+  during this source-only implementation.
+* `#eval` shell counts and membership examples are output-producing commands,
+  not asserted proofs. Neither the finite instances nor printed agreement
+  establish the universal positive-shell count.
 
-Stated but **not** proved: the universal shell-count theorem itself —
-`shellSites_card_target k` for arbitrary `k ≥ 1`. It is kept as a
-proposition-valued definition (`def shellSites_card_target`), so the tree
-ends with zero unproved declarations while the general claim remains open in
-this formalization. The Python reference machine-checks the corresponding claim
-through frequency 6 (`src/quadmath/lattice/omni_numbering.py:24-26`).
-Proof sketch for the general case, for future work: via the sum-zero
-representative `w = q − (s/4)·(1,1,1,1)` of each site, shell `k` is in
-bijection with the integer 4-vectors `w` satisfying `Σw = 0` and
-`Σ|w| = 2k`; counting those by sign pattern (positive positions `p` and
-negative positions `n` with `p, n ≤ 3`, compositions of `k` into `p`
-positive and `n` negative parts) gives
-`12 + 24(k−1) + 8·(k−1)(k−2)/2 + 6(k−1)² = 10k² + 2`; formalizing the
-stars-and-bars composition count in core Lean is the missing step.
-
-## Constraints honored
-
-* No Mathlib (or any other) dependency — `Int`, `Nat`, `List`, decidable
-  propositions, `mkRat`, `#eval`.
-* Nothing outside `lean/` was created or modified.
+`shellSites_card_target k` is only a proposition-valued definition of one
+indexed equality. There is no theorem proving it for arbitrary `k ≥ 1`, and
+no universal cumulative ball-cardinality theorem. There is also no Lean walk,
+reachability, shortest-path/BFS-shell equivalence, graph-field dynamics,
+harmonic learning, relativistic geometry or floating-arithmetic theorem.
+The constructive reachability explanation in the manuscript remains outside
+this formalization.

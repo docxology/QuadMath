@@ -2,7 +2,7 @@
 """Regenerate all manuscript figures deterministically.
 
 Runs the individual figure scripts in sequence, ensuring headless plotting and
-collecting the emitted output paths into a manifest file under quadmath/output/.
+collecting emitted paths into an output-root-relative manifest under output/data/.
 """
 from __future__ import annotations
 
@@ -39,9 +39,9 @@ FIGURE_SCRIPTS = (
 _PATH_TOKEN = re.compile(r"(?:^|\s)(/.*?)\s*$")
 
 
-def extract_output_paths(stdout: str, repo_root: str) -> List[str]:
-    """Return unique output paths named in stdout, relative to repo_root."""
-    root = os.path.normpath(repo_root)
+def extract_output_paths(stdout: str, output_root: str) -> List[str]:
+    """Return unique emitted paths relative to the configured output root."""
+    root = os.path.normpath(output_root)
     found: Dict[str, None] = {}
     for line in stdout.splitlines():
         match = _PATH_TOKEN.search(line)
@@ -49,14 +49,14 @@ def extract_output_paths(stdout: str, repo_root: str) -> List[str]:
             continue
         token = os.path.normpath(match.group(1))
         if not token.startswith(root + os.sep):
-            raise ValueError(f"Output path outside repo root: {token}")
+            raise ValueError(f"Output path outside configured output root: {token}")
         found[os.path.relpath(token, root)] = None
     return list(found)
 
 
-def require_existing_output(script: str, rel_paths: List[str], repo_root: str) -> None:
-    """Raise unless at least one emitted path exists on disk."""
-    if not any(os.path.exists(os.path.join(repo_root, p)) for p in rel_paths):
+def require_existing_output(script: str, rel_paths: List[str], output_root: str) -> None:
+    """Raise unless at least one emitted path exists under the output root."""
+    if not any(os.path.exists(os.path.join(output_root, p)) for p in rel_paths):
         raise RuntimeError(f"{script} emitted no existing output path")
 
 
@@ -96,7 +96,7 @@ def _run_script(path: str) -> List[str]:
     stderr = proc.stderr.strip()
     if proc.returncode != 0:
         raise RuntimeError(f"Script failed: {path}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}")
-    root = _repo_root()
+    root = _get_output_dir()
     paths = extract_output_paths(stdout, root)
     require_existing_output(os.path.basename(path), paths, root)
     return paths
@@ -107,7 +107,7 @@ def write_manifest(rel_paths: List[str], manifest_path: str) -> None:
     _ensure_src_on_path()
     from quadmath.tools.atomic_write import atomic_write_text  # noqa: WPS433
 
-    body = "# Generated figure/data paths (relative to repo root)\n"
+    body = "# Generated figure/data paths (relative to configured output root)\n"
     body += "".join(p + "\n" for p in rel_paths)
     atomic_write_text(manifest_path, body)
 

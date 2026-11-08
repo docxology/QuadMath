@@ -26,7 +26,7 @@ This section provides the definitive reference for the three 4D frameworks used 
 
 ## Fuller.4D (Synergetics / Quadrays)
 
-**Definition**: The synergetic account of space built on Quadray coordinates — four non-negative components (A, B, C, D) giving directions from the center of a reference regular tetrahedron to its vertices — together with the IVM = CCP = FCC lattice correspondence, the regular tetrahedron as the unit of volume, and exact integer tetravolumes for lattice tetrahedra; it tracks shape and angle relations among containers, independent of time and energy.
+**Definition**: The synergetic account of space built on Quadray coordinates — four non-negative components (A, B, C, D) giving directions from the center of a reference regular tetrahedron to its vertices — together with the IVM = CCP = FCC lattice correspondence and the regular tetrahedron as the unit of volume. Exact tetravolumes are rational: integer quadray vertices give multiples of one quarter, not necessarily integers. It tracks shape and angle relations among containers, independent of time and energy.
 
 **Basis**: Four non-negative components A,B,C,D with at least one zero post-normalization, treated as a vector (direction and magnitude), not merely a point. Overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
 
@@ -60,6 +60,6 @@ In the previous figure, we show the twelve nearest IVM neighbors with coordinati
 
 ## Practical usage guide
 
-- Use **Fuller.4D** when working with Quadrays, integer tetravolumes, and IVM neighbors (native lattice calculations).
+- Use **Fuller.4D** when working with Quadrays, exact rational tetravolumes, and IVM neighbors (native lattice calculations).
 - Use **Coxeter.4D** for Euclidean length-based formulas, higher-dimensional polytopes, or comparisons in E⁴ (including Cayley–Menger).
 - Use **Einstein.4D** as a metric analogy when discussing geodesics or time-evolution; do not mix with synergetic unit conventions.

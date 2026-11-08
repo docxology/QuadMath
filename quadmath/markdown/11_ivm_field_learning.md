@@ -5,12 +5,12 @@
 This section develops machine learning on a static synergetic geometry: scalar
 fields defined over the Isotropic Vector Matrix (IVM) lattice, learned from
 sparse noisy observations by Laplacian-regularized kernel-weighted least
-squares on the lattice graph. All methods live in the `ivm_field.py` module
-(`quadray.IVMField`, `quadray_shell_norm`, `shell_sites`, `fit_geometry`) and
-reuse the quadray machinery of `quadray.py` described in
-[Quadray Methods](03_quadray_methods.md). The learner uses `numpy` only — no
-machine-learning frameworks — and is fully deterministic for a fixed
-observation set.
+squares, or extended harmonically from hard boundary values on the lattice
+graph. All methods live in `quadmath.lattice.ivm_field`
+(`IVMField`, `quadray_shell_norm`, `shell_sites`, `fit_geometry`) and reuse
+the quadray machinery described in [Quadray Methods](03_quadray_methods.md).
+Both methods use `numpy` only — no machine-learning frameworks — and are
+fully deterministic for a fixed observation or boundary set.
 
 ## The IVM Lattice in Quadray Coordinates
 
@@ -95,9 +95,9 @@ K(d) \;=\; \exp\!\bigl( -(d/\tau)^2 \bigr), \qquad d(i,j) = \text{hop distance}.
 \;+\; \lambda \sum_{i \sim j} \bigl( f_i - f_j \bigr)^2 ,
 \end{equation}
 
-with three data-fidelity terms: observed sites are pinned to their data with
-unit weight (no self-smoothing of real observations); unobserved sites carry
-a kernel confidence weight and a Nadaraya–Watson kernel target,
+with two data-fidelity regimes: observed sites have their data as targets
+with unit weight (no kernel self-smoothing of real observations); unobserved
+sites carry a kernel confidence weight and a Nadaraya–Watson kernel target,
 
 \begin{equation}
 \label{eq:ivm-confidence}
@@ -116,20 +116,22 @@ The normal equations of \eqref{eq:ivm-objective} are
 
 with $C = \mathrm{diag}(c_i)$ and $t$ the target vector; `IVMField.learn()`
 solves them with a dense `numpy.linalg.solve`. The Laplacian term propagates
-field structure from observed sites across the lattice graph, and the
-confidence weighting degrades gracefully to pure Laplacian propagation as
-observation density falls. Because observed rows carry unit weight, the
-estimator interpolates exact data as $\lambda \to 0$ and denoises noisy data
-for moderate $\lambda$ — both behaviors are verified numerically in
-`tests/unit/lattice/test_ivm_field.py` with fixed seeds.
+field structure from observed sites across the lattice graph. These are
+**soft** observations: unit confidence does not pin the fitted value.
+At positive $\lambda$, regularization can move observed values as well as
+unobserved ones. As $\lambda \to 0$, observed fits approach their targets;
+moderate $\lambda$ can denoise noisy data. The positive unobserved
+confidence and kernel targets remain part of this estimator.
 
-Two structural facts justify the estimator. A linear field in the embedded
-XYZ coordinates (the `to_xyz()` image of `quadray.py`) is harmonic on the
-IVM graph — the twelve neighbor moves sum to zero — so the harmonic
-extension implied by \eqref{eq:ivm-normal-equations} reproduces it exactly
-from boundary data (asserted to $10^{-5}$ in the test suite). And for noisy
-smooth fields, the learned field tracks the kernel-weighted local mean,
-which averages observation noise across graph neighborhoods:
+For example, on `IVMField.lattice_ball(1)`, observing all twelve outer sites
+with their embedded $X$ values and choosing $\lambda=1$ fits each boundary
+value to $X/4$: an observation of 2 becomes approximately 0.5. This is not
+exact boundary reconstruction. The weak-regularization linear-field test
+uses the entire boundary **plus interior observations** and checks a small
+approximation error, not a hard-boundary theorem.
+
+For noisy smooth fields, kernel targets average observations across graph
+neighborhoods. Reconstruction quality can be measured by:
 
 \begin{equation}
 \label{eq:ivm-mse}
@@ -137,6 +139,63 @@ which averages observation noise across graph neighborhoods:
 \end{equation}
 
 the quantity returned by `IVMField.score()`.
+
+## Hard-Boundary Harmonic Extension
+
+`IVMField.harmonic_extension(boundary_sites, boundary_values)` is a separate
+method, leaving `learn()` unchanged. Let $B$ be the prescribed sites and
+$U$ all remaining sites. It assigns $f_B=y_B$ directly and solves:
+
+\begin{equation}
+\label{eq:ivm-hard-harmonic}
+L_{UU} f_U \;=\; -L_{UB} y_B .
+\end{equation}
+
+Every connected component must have a boundary anchor for uniqueness;
+otherwise its additive constant is undetermined and the method raises
+`ValueError` without changing the field. An isolated site must itself be
+boundary. An all-boundary input simply assigns the supplied values.
+Boundary sites may be any anchored subset, not only the outer shell.
+Gauge-equivalent representatives are accepted, but duplicate physical
+sites, nonfinite or nonscalar values, and sites outside the graph are
+rejected.
+
+At each unprescribed site, the solution equals the mean of its graph
+neighbors. Thus its values lie between that component's minimum and
+maximum boundary values (the discrete maximum principle). Boundary values
+are preserved directly; harmonic residuals and the maximum principle in
+the dense floating solve hold up to roundoff, not symbolic exactness.
+
+An affine field in embedded XYZ is harmonic wherever the full twelve
+neighbors are present, because those neighbor displacements sum to zero.
+It need not be harmonic on the truncated graph's outer shell. Prescribing
+the whole outer shell therefore recovers such a field throughout the
+ball to floating precision, without any interior observations:
+
+```python
+import numpy as np
+from quadmath.core.quadray import DEFAULT_EMBEDDING, to_xyz
+from quadmath.lattice.ivm_field import IVMField, quadray_shell_norm
+
+field = IVMField.lattice_ball(3)
+truth = np.array([
+    2.0 + np.dot(to_xyz(q, DEFAULT_EMBEDDING), [0.75, -0.5, 0.25])
+    for q in field.sites
+])
+boundary_indices = [
+    i for i, q in enumerate(field.sites) if quadray_shell_norm(q) == 6
+]
+field.harmonic_extension(
+    [field.sites[i] for i in boundary_indices], truth[boundary_indices]
+)
+max_error = np.max(np.abs(field.values - truth))
+```
+
+The regressions in `tests/unit/lattice/test_ivm_field.py` check this actual
+boundary-only example, interior harmonic residuals, boundary preservation,
+the maximum principle, gauge representatives, all-boundary and isolated
+graphs, and anchored versus unanchored disconnected components.
+
 
 ## Recovering Tetrahedral Geometry from Noisy Points
 

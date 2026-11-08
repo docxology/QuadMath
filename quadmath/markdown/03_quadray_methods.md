@@ -24,7 +24,7 @@ All mathematical concepts are implemented with:
 - **Exact arithmetic** where possible (integer determinants, symbolic computation)
 - **Numerical stability** for floating-point operations (ridge regularization, condition number monitoring)
 - **Cross-validation** between different formulations (Ace 5×5 vs Cayley–Menger, native vs bridging approaches)
-- **Comprehensive testing** ensuring mathematical correctness across edge cases
+- **Regression checks** for documented identities, numerical ranges and boundary cases
 
 ## Framework Integration
 
@@ -32,7 +32,7 @@ The three 4D frameworks serve distinct but complementary roles in our implementa
 
 - **Coxeter.4D provides the container**: Euclidean 4D space serves as the mathematical foundation for volume calculations, distance metrics, and geometric transformations. When we compute volumes via Cayley–Menger determinants or XYZ coordinate determinants, we operate in this framework.
 
-- **Einstein.4D provides the analogy**: The Minkowski metric structure inspires our information geometry approach, where the Fisher information matrix acts as a Riemannian metric on parameter space. Natural gradient descent follows geodesics on this information manifold, analogous to how particles follow geodesics in spacetime.
+- **Einstein.4D provides the analogy**: Information geometry uses the positive-semidefinite Fisher metric on parameter space, not the indefinite Minkowski metric. Natural-gradient descent is metric-aware; its trajectories are not generally geodesics.
 
 - **Fuller.4D provides the constraints**: The Quadray coordinate system and IVM lattice impose integer constraints that enable exact arithmetic and discrete optimization. The synergetics unit conventions (regular tetrahedron volume = 1) create a quantized geometry where volumes are exact rationals on the 1/4 grid — integral for tetrahedra tiling unit IVM tetras, $\tfrac14$-grain otherwise.
 
@@ -45,8 +45,8 @@ This multi-framework approach allows us to:
 ## Fuller.4D Coordinates and Normalization
 
 - Quadray vector q = (a,b,c,d), a,b,c,d ≥ 0, with at least one coordinate zero under normalization.
-- Projective normalization can add/subtract (k,k,k,k) without changing direction; choose k to enforce non-negativity and one zero minimum.
-- Isotropic Vector Matrix (IVM): integer quadrays describe CCP sphere centers; the 12 permutations of {2,1,1,0} form the cuboctahedron (vector equilibrium).
+- Projective normalization adds/subtracts `(k,k,k,k)` without changing the spatial vector; choose the minimum-zero representative. The quotient has three independent spatial coordinates, not four orthogonal dimensions.
+- IVM/CCP sphere centers are the integer classes whose component sum is divisible by four; other residue classes are voids. The 12 permutations of `{2,1,1,0}` form the first cuboctahedral shell.
   - Integer-coordinate models: assigning unit IVM tetravolume to the regular tetrahedron yields integer coordinates for several familiar polyhedra (inverse tetrahedron, cube, octahedron, rhombic dodecahedron, cuboctahedron) when expressed as linear combinations of the four quadray basis vectors. See overview: [Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates).
 
 ## Conversions and Vector Operations: Quadray ↔ Cartesian (Fuller.4D ↔ Coxeter.4D/XYZ)
@@ -68,11 +68,12 @@ half-up with integer arithmetic, preserving arbitrary-size integer inputs.
 It is a quantized quadray centroid, not necessarily the XYZ-nearest point to
 the continuous Euclidean centroid.
 
-Use `centroid_exact(points)` for the continuous center: it returns four
+Use `centroid_exact(points)` for the continuous **vertex mean**: it returns four
 `Fraction` components in minimum-zero gauge, without lattice snapping or
-floating conversion. It accepts a one-pass iterable and rejects empty input.
-The matching symergetics polyhedron method returns the same rational tuple;
-do not reconstruct it through that library's integer coordinate constructor.
+floating conversion. This is not generally the centroid of a solid's mass.
+The matching symergetics method `centroid_exact()` returns the same vertex
+mean; use its `volume_centroid_exact()` for a uniform closed solid. Do not
+reconstruct either rational tuple through an integer coordinate constructor.
 
 `Fraction` may retain fixed-width NumPy numerator/denominator fields. Quadray
 construction and strict inverse conversion promote these fields to unbounded
@@ -88,6 +89,38 @@ points = [Quadray(0, 0, 0, 0), Quadray(1, 0, 0, 0),
 assert centroid_exact(points) == (Fraction(1, 4), Fraction(1, 4), Fraction(1, 4), Fraction(0))
 ```
 
+### Exact metric, affine and oriented primitives
+
+`dot_exact`, `squared_norm_exact` and `squared_distance_exact` retain rational
+coefficients and unbounded integer labels before any floating conversion.
+`affine_combination_exact(points, weights)` returns a canonical rational tuple;
+weights must sum to exactly one and may be negative. `signed_tetra_volume_exact`
+retains orientation, and `triangle_area_squared_exact` avoids a premature
+square root. These accept quadrays or four-component rational iterables.
+Finite floating coefficients mean their exact stored binary rationals, not
+guessed decimal fractions. Gauge invariance requires an embedding whose rows
+annihilate the common-offset direction; arbitrary custom maps need not do so.
+
+```python
+from fractions import Fraction
+from quadmath import (
+    Quadray, affine_combination_exact, signed_tetra_volume_exact,
+    squared_distance_exact, triangle_area_squared_exact,
+)
+
+o = Quadray(0, 0, 0, 0)
+a, b, c = Quadray(1, 0, 0, 0), Quadray(0, 1, 0, 0), Quadray(0, 0, 1, 0)
+midpoint = affine_combination_exact([o, a], [Fraction(1, 2)] * 2)
+assert midpoint == (Fraction(1, 2), Fraction(0), Fraction(0), Fraction(0))
+assert squared_distance_exact(a, b) == 8
+assert triangle_area_squared_exact(o, a, b) == 2
+assert signed_tetra_volume_exact(o, midpoint, b, c) == Fraction(1, 8)
+```
+
+Floating dot products round completed native expressions once; norms use
+scale-safe evaluation and angles use a scaled `atan2` construction. Thus large
+common offsets and resolved cancellation are not discarded before geometry.
+
 Cross-project orientation, precision boundaries and executable comparisons are
 documented in the [Synergetics suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
 
@@ -100,11 +133,11 @@ documented in the [Synergetics suite guide](https://github.com/docxology/symerge
 | Object | Quadray construction (sketch) | IVM volume |
 | --- | --- | --- |
 | Regular tetrahedron | Vertices `o=(0,0,0,0)`, `p=(2,1,0,1)`, `q=(2,1,1,0)`, `r=(2,0,1,1)` | 1 |
-| Cube (same edge) | Union of 3 mutually orthogonal rhombic belts wrapped on the tetra frame; edges tracked by XYZ embedding; compare the following figure | 3 |
-| Octahedron (same edge) | Convex hull of mid-edges of the tetra frame (pairwise axis sums normalized) | 4 |
+| Cube (tetrahedron inscribed) | XYZ vertices `(±1,±1,±1)`; edge 2, shorter than the unit tetra edge `2√2` | 3 |
+| Octahedron (tetra edge) | XYZ vertices `±2 e_i`; twice the tetrahedron edge midpoints | 4 |
 | Rhombic dodecahedron | Voronoi cell of FCC/CCP packing at origin (dual to cuboctahedron) | 6 |
 | Cuboctahedron (vector equilibrium) | Shell of the 12 nearest IVM neighbors: permutations of `(2,1,1,0)` | 20 |
-| Truncated octahedron | Archimedean solid with 6 square and 8 hexagonal faces; space-filling tiling | 20 |
+| Truncated octahedron (tetra edge) | All XYZ permutations of `(0, ±2, ±4)`; 24 vertices, 6 square and 8 hexagonal faces | 96 |
 
 Small coordinate examples (subset):
 
@@ -127,14 +160,13 @@ xyz = np.array(example_cuboctahedron_vertices_xyz())
 r = np.linalg.norm(xyz[0])
 assert np.allclose(np.linalg.norm(xyz, axis=1), r)
 
-# Touching neighbors have separation 2r
+# A cuboctahedron's nearest-neighbor edge equals its circumradius.
 touch = []
 for i in range(len(xyz)):
-    for j in range(i+1, len(xyz)):
-        d = np.linalg.norm(xyz[i] - xyz[j])
-        if abs(d - 2*r) / (2*r) < 0.05:
+    for j in range(i + 1, len(xyz)):
+        if np.isclose(np.linalg.norm(xyz[i] - xyz[j]), r):
             touch.append((i, j))
-assert len(touch) > 0
+assert len(touch) == 24
 ```
 
 ### Example vertex lists and volume checks (illustrative)
@@ -212,16 +244,16 @@ Notes.
 - **Pairwise distances**: $d_{ij}$ are Euclidean distances between vertices $P_i$ and $P_j$.
 - **Length-only formulation**: Cayley–Menger provides a length-only formula for simplex volumes, here specialized to tetrahedra; see the canonical reference above.
 
-Table: Polyhedra tetravolumes in IVM units (edge length equal to the unit tetra edge). {#tbl:polyhedra_volumes}
+Table: Native placements in the closed-mesh figure; edge lengths are not all equal. {#tbl:polyhedra_volumes}
 
-| Polyhedron (edge = tetra edge) | Volume (tetra-units) |
-| --- | --- |
-| Regular Tetrahedron | 1 |
-| Cube | 3 |
-| Octahedron | 4 |
-| Rhombic Dodecahedron | 6 |
-| Cuboctahedron (Vector Equilibrium) | 20 |
-| Truncated Octahedron | 20 |
+| Polyhedron | Scale-one XYZ edge squared | Volume (IVM tetra-units) |
+| --- | --- | --- |
+| Regular tetrahedron | 8 | 1 |
+| Cube with tetrahedron inscribed | 4 | 3 |
+| Octahedron | 8 | 4 |
+| Rhombic dodecahedron (FCC Voronoi cell) | 3 | 6 |
+| Cuboctahedron (vector equilibrium) | 8 | 20 |
+| Truncated octahedron | 8 | 96 |
 
 ## Distances and Metrics
 
@@ -231,13 +263,13 @@ Distance definitions depend on the chosen embedding and normalization. For cross
 
 Given XYZ coordinates of tetrahedron vertices (x_i, y_i, z_i), the Euclidean volume is computed as shown in Eq. \eqref{eq:xyz_det} in the equations appendix.
 
-Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
+The conversion depends on the coordinate scale: `DEFAULT_EMBEDDING` has unit tetrahedron XYZ volume \(8/3\), so \(V_{\rm ivm}=(3/8)V_{\rm xyz}\). For a uniformly scaled Urner matrix \(M(c)\), the factor is \(3/(8|c|^3)\), \(c\ne0\). Only at \(c=1/\sqrt2\), with tetrahedron edge 2, does this become \(S3=\sqrt{9/8}\). Length-based formulas must use the same declared units.
 
 ### Alternative Volume Formulas
 
 - **Piero della Francesca (PdF) formula**, which consumes edge lengths and returns Euclidean volumes. See Eq. \eqref{eq:pdf} in the equations appendix.
 
-  Convert to IVM units via $V_{ivm} = S3 \cdot V_{xyz}$ with $S3=\sqrt{9/8}$. See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
+  Convert using \(3/8\) for default scale-one XYZ, or \(S3=\sqrt{9/8}\) for sphere-radius-one XYZ. Do not apply the latter to unrescaled default coordinates.
 
 - **Gerald de Jong (GdJ) formula**, which natively returns tetravolumes. See Eq. \eqref{eq:gdj} in the equations appendix.
 
@@ -291,44 +323,23 @@ supplied log likelihoods do not guarantee a nonnegative free energy.
 
 ## Practical Methods
 
-## Tetravolumes with Quadrays {#sec:tetravolumes_quadrays}
+### Tetravolumes with Quadrays {#sec:tetravolumes_quadrays}
 
-- The tetravolume of a tetrahedron with vertices given as Quadrays `a,b,c,d` can be computed directly from their 4-tuples via the Tom Ace 5×5 determinant; see Eq. \eqref{eq:ace5x5} for the canonical form.
+Native `integer_tetra_volume` and `ace_tetravolume_5x5` return exact rational
+IVM volumes. The signed and rational-affine primitives above preserve
+orientation and fractional locations. PdF and Cayley–Menger instead consume
+Euclidean lengths; their output must use the scale-specific bridge in
+[XYZ conversion](#sec:xyz_conversion).
 
-- Unit regular tetrahedron from origin: with `o=(0,0,0,0)`, `p=(2,1,0,1)`, `q=(2,1,1,0)`, `r=(2,0,1,1)`, we have `V_ivm(o,p,q,r)=1`. Doubling each vector scales volume by 8, as expected.
+The following native-versus-length comparison uses sphere-radius-one lengths
+before multiplying by \(S3\). Default scale-one lengths require the \(3/8\)
+factor instead.
 
-- Equivalent length-based formulas agree with the 5×5 determinant:
-  - Cayley–Menger: \(288\,V^2 = \det\begin{pmatrix}0&1&1&1&1\\1&0&d_{01}^2&d_{02}^2&d_{03}^2\\1&d_{10}^2&0&d_{12}^2&d_{13}^2\\1&d_{20}^2&d_{21}^2&0&d_{23}^2\\1&d_{30}^2&d_{31}^2&d_{32}^2&0\end{pmatrix}\).
-  - Piero della Francesca (PdF) Heron-like formula (converted to IVM via \(S3 = \sqrt{9/8}\)).
+![**Native versus length-based tetrahedral volumes.** Exact Ace determinants agree with symbolic Cayley–Menger calculations after converting default squared distances to sphere-radius-one units before applying S3. Cases include the unit tetrahedron (1), doubled edges (8), mixed coordinates, the centered example (2) and a larger mixed tetrahedron. Values are native IVM rationals, not necessarily integers; the numerical data are exported alongside the figure.](../output/figures/bridging_vs_native.png)
 
-  Let edge lengths meeting at a vertex be \(a,b,c\), and the opposite edges be \(d,e,f\). The Euclidean volume satisfies
+![**Volume scaling in sphere-radius-one XYZ units.** Euclidean regular-tetrahedron volume is \(\sqrt2 L^3/12\); native IVM volume in this convention is \(L^3/8\). Their ratio is \(S3=\sqrt{9/8}\). Both describe the same Euclidean geometry with different volume units; default scale-one Urner coordinates instead use the \(3/8\) bridge.](../output/figures/volumes_scale_plot.png)
 
-
-
-  Convert to IVM units via \(V_{ivm} = S3 \cdot V_{xyz}\) with \(S3=\sqrt{9/8}\). See background discussion under [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume).
-
-- Gerald de Jong (GdJ) formula, which natively returns tetravolumes.
-
-  In Quadray coordinates, one convenient native form uses edge-vector differences and an integer-preserving determinant (agreeing with Ace 5×5):
-
-
-
-  where each column is formed from Quadray component differences of $P_1-P_0$, $P_2-P_0$, $P_3-P_0$ projected via $\pi(P) = (a - d,\, b - d,\, c - d)$ to the synergetics 3D slice (matching `integer_tetra_volume`); integer arithmetic is exact and the factor $\tfrac{1}{4}$ produces IVM tetravolumes. See de Jong’s Quadray notes and Urner’s implementations for derivations ([Quadray coordinates](https://en.wikipedia.org/wiki/Quadray_coordinates)).
-
-### Bridging and native tetravolume formulas 
-
-- **Lengths (bridging)**: PdF and Cayley–Menger (CM) consume Cartesian lengths (XYZ) and produce Euclidean volumes; convert to IVM units via $S3 = \sqrt{9/8}$.
-- **Quadray-native**: Gerald de Jong (GdJ) returns IVM tetravolumes directly (no XYZ bridge). Tom Ace’s 5×5 coordinate formula is likewise native IVM. All agree numerically with CM+S3 on shared cases.
-
-References and discussion: [Urner – Flickr diagram](https://flic.kr/p/2rn22en). For computational implementations and educational materials, see the [Resources](07_resources.md) section.
-
-Figure: automated comparison (native Ace 5×5 vs CM+S3) across small examples (see script `sympy_formalisms.py`). The figure and source CSV/NPZ are in `quadmath/output/`.
-
-![**Validation of bridging vs native tetravolume formulations across canonical examples**. This bar chart compares IVM tetravolumes computed via two independent methods: the "bridging" approach using Cayley–Menger determinants on Euclidean edge lengths converted to IVM units via the synergetics factor $S3=\sqrt{9/8}$, versus the "native" approach using Tom Ace's 5×5 determinant formula that operates directly on Quadray coordinates without XYZ intermediates. **Test cases**: Unit tetrahedron (V=1), 2× edge scaling (V=8), mixed coordinate tetrahedron, centered tetrahedron (V=3), and large mixed tetrahedron, all using integer Quadray coordinates. **Results**: The overlapping bars demonstrate numerical agreement at machine precision between the length-based Coxeter.4D approach (Cayley–Menger + S3 conversion) and the coordinate-based Fuller.4D approach (Ace 5×5), confirming the mathematical equivalence of these formulations under synergetics unit conventions. Raw numerical data saved as `bridging_vs_native.csv` for reproducibility and further analysis.](../output/figures/bridging_vs_native.png)
-
-![**Tetrahedron volume scaling relationships: Euclidean vs IVM unit conventions**. This plot demonstrates the mathematical relationship between edge length scaling and tetravolume under both Euclidean (XYZ) and IVM (synergetics) unit conventions. **X-axis**: Edge length scaling factor (0 to 5.0). **Y-axis**: Tetrahedron volume in respective units. **Blue line (Euclidean)**: Volume scales as the cube of edge length, following the standard $V = \frac{\sqrt{2}}{12} \cdot L^3$ relationship for regular tetrahedra. **Orange line (IVM)**: Volume scales as the cube of edge length but in IVM tetra-units, following $V_{ivm} = \frac{1}{8} \cdot L^3$ where the regular tetrahedron with unit edge has volume 1/8. **Key insight**: The ratio between these two scaling laws is the synergetics factor $S3 = \sqrt{9/8} \approx 1.06066$, which converts between Euclidean and IVM volume conventions. **Mathematical foundation**: This scaling relationship demonstrates how both conventions preserve the cubic scaling relationship, but with different fundamental units reflecting the different geometric assumptions of Coxeter.4D (Euclidean) versus Fuller.4D (synergetics) frameworks. The plot provides the theoretical foundation for understanding volume conversions and scaling behavior in the IVM system.](../output/figures/volumes_scale_plot.png)
-
-![**Synergetic polyhedra volume relationships in the Quadray/IVM framework (comprehensive visualization)**. This figure combines 3D polyhedra visualizations with an extended network diagram showing integer volume relationships among key synergetic polyhedra. **Left panel (3D visualizations)**: Color-coded polyhedra including regular tetrahedron (V=1, fundamental unit), cube (V=3), octahedron (V=4), rhombic dodecahedron (V=6), cuboctahedron (V=20), and truncated octahedron (V=20), all constructed with consistent edge lengths and proper geometric faces. **Right panel (network diagram)**: Extended volume relationships showing fundamental shapes (V=1,3,4,6), complex constructions (V=20), and scaling relationships (2× edge length → 8× volume). **Additional polyhedra**: Includes truncated octahedron (V=20) and scaled variants demonstrating the "third power" volume scaling law V ∝ L³ in IVM units. **Geometric constructions**: Edge-union relationships, truncation operations, dual polyhedra, and Voronoi cell constructions. **Fuller.4D significance**: These integer volume ratios reflect the quantized nature of space-filling in synergetics, where the regular tetrahedron provides a natural unit container and other polyhedra emerge as integer multiples, supporting discrete geometric computation and exact lattice-based optimization methods. All constructions respect the IVM unit convention where the regular tetrahedron has tetravolume 1.](../output/figures/polyhedra_quadray_constructions.png)
+![**Closed polyhedra in shared scale-one XYZ units.** Six panels use identical axes, camera and unit aspect. Face cycles come from supporting planes; native tetrahedral decompositions measure the displayed volumes: 1, 3, 4, 6, 20 and 96. Edge-squared labels distinguish the cube and FCC Voronoi cell from the four solids with tetrahedron-length edges. The truncated octahedron has all 24 vertices and 14 faces; no independent display rescaling or guessed volume network is used.](../output/figures/polyhedra_quadray_constructions.png)
 
 ### Short Python snippets
 
@@ -346,7 +357,7 @@ assert ace_tetravolume_5x5(o,p,q,r) == 1  # unit IVM tetra
 import numpy as np
 from quadmath.core.cayley_menger import ivm_tetra_volume_cayley_menger
 
-# Example: regular tetrahedron with edge length 1 (XYZ units)
+# Edge length 1 in sphere-radius-one XYZ units, not default Urner units.
 d2 = np.ones((4,4)) - np.eye(4)  # squared distances
 V_ivm = ivm_tetra_volume_cayley_menger(d2)   # = 1/8 in IVM tetra-units
 ```
@@ -381,16 +392,16 @@ V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz_sym))  # 1/8
 - The 12 CCP directions are the permutations of \((2,1,1,0)\). Random walks on this move set generate integer-coordinate Quadrays; resulting tetrahedra have integer tetravolumes.
 
 ```python
-from itertools import permutations
-from random import choice
-from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
+from random import Random
+from quadmath.core.quadray import IVM_NEIGHBOR_MOVES, Quadray, ace_tetravolume_5x5
 
-moves = [Quadray(*p) for p in set(permutations((2,1,1,0)))]
+rng = Random(7)
+moves = [Quadray(*move) for move in IVM_NEIGHBOR_MOVES]
 
 def random_walk(start: Quadray, steps: int) -> Quadray:
     cur = start
     for _ in range(steps):
-        m = choice(moves)
+        m = rng.choice(moves)
         cur = Quadray(cur.a+m.a, cur.b+m.b, cur.c+m.c, cur.d+m.d)
     return cur
 
@@ -403,7 +414,7 @@ V = ace_tetravolume_5x5(A,B,C,D)            # exact IVM volume as a Fraction
 
 ### Algebraic precision
 
-- Determinants via floating-point introduce rounding noise. For exact arithmetic, use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm) (already used by `ace_tetravolume_5x5`) or symbolic engines (e.g., `sympy`). For random-walk examples with integer quadray inputs, volumes are exact rationals (`fractions.Fraction`): integral when the tetrahedron decomposes into unit IVM tetras, fractional (in quarters) otherwise.
+- Determinants via floating-point introduce rounding noise. Bareiss and symbolic arithmetic preserve exact values. Random walks on FCC moves stay in one FCC coset, so their tetrahedral volumes are integral `Fraction` values. Arbitrary integer quadray vertices can include other cosets and need only have quarter-unit volumes.
 - When computing via XYZ determinants, high-precision floats (e.g., `gmpy2.mpfr`) or symbolic matrices avoid vestigial errors; round at the end if the underlying result is known to be integral.
 
 ### XYZ determinant and the S3 conversion
@@ -458,7 +469,7 @@ This workflow ensures that mathematical theory, computational implementation, an
 
 #### `Quadray` {#code:Quadray}
 
-Source: `src/quadmath/core/quadray.py` — Quadray vector class with non-negative components and at least one zero (Fuller.4D).
+Source: `src/quadmath/core/quadray.py` — raw integer four-component vector class; `normalize()` selects its minimum-zero physical representative.
 
 #### `DEFAULT_EMBEDDING` {#code:DEFAULT_EMBEDDING}
 
@@ -479,6 +490,14 @@ Source: `src/quadmath/core/quadray.py` — return Euclidean dot product <q1,q2> 
 #### `centroid_exact` {#code:centroid_exact}
 
 Source: `src/quadmath/core/quadray.py` — exact continuous centroid as a canonical four-`Fraction` tuple; distinct from the half-up snapped `centroid`.
+
+#### Exact metric and affine primitives
+
+Source: `src/quadmath/core/quadray.py` — `dot_exact`, `squared_norm_exact`,
+`squared_distance_exact`, `affine_combination_exact`,
+`signed_tetra_volume_exact` and `triangle_area_squared_exact` retain native
+rational arithmetic. See the executable examples above and the generated API
+[glossary](10_symbols_glossary.md).
 
 ### Quaternion operations {#code:quaternion_operations}
 

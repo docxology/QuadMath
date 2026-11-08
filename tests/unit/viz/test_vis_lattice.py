@@ -21,6 +21,8 @@ from quadmath.core.quadray import DEFAULT_EMBEDDING, Quadray, to_xyz
 from quadmath.viz.vis_lattice import (
     DEFAULT_PLANE,
     GALLERY_FILES,
+    boundary_comparison,
+    dynamics_comparison,
     dynamics_strip,
     field_slice,
     gallery,
@@ -48,7 +50,7 @@ def test_shell_scatter_places_artists_and_axis_hints():
     assert len(ax.collections) == 1
     assert len(ax.get_lines()) == 4  # one dashed ray per tetrahedral direction
     assert len(ax.texts) == 4  # labels A, B, C, D
-    assert ax.get_title() == "IVM shell 2 (42 sites)"
+    assert ax.get_title() == "IVM graph shell 2 (42 sites)"
     assert ax.get_xlabel() == "x" and ax.get_ylabel() == "y" and ax.get_zlabel() == "z"
 
 
@@ -240,6 +242,195 @@ def test_field_slice_rejects_empty_candidates():
         field_slice(ax, field, [], DEFAULT_PLANE)
 
 
+def test_field_slice_sparse_indices_preserve_samples_and_mask_gaps():
+    field = _shell_norm_field(3)
+    fig, ax = plt.subplots()
+    mesh = field_slice(
+        ax, field, [Quadray(0, 0, 0, 0), Quadray(6, 3, 3, 0)],
+        DEFAULT_PLANE, colorbar=False,
+    )
+    centers, values = _cell_centers_and_values(mesh)
+    np.testing.assert_array_equal(mesh.get_coordinates()[0, :, 0], [-0.5, 0.5, 2.5, 3.5])
+    np.testing.assert_array_equal(centers[0, [0, 2], 0], [0, 3])
+    np.testing.assert_array_equal(values[0, [0, 2]], [0, 3])
+    assert np.isnan(values[0, 1])
+
+
+def test_field_slice_gauge_and_large_in_plane_origins_keep_unit_cells():
+    field = _shell_norm_field(2)
+    n = 2**80 + 1
+    gauge = (n,) * 4
+    u, v = DEFAULT_PLANE
+    gauged_plane = tuple(tuple(c + n for c in vec) for vec in (u, v))
+    fig, ax = plt.subplots()
+    gauged = field_slice(ax, field, field.sites, gauged_plane, q0=gauge, colorbar=False)
+    assert np.ma.count(gauged.get_array()) == 19
+    assert gauged.plane_index_origin == (0, 0)
+    fig, ax = plt.subplots()
+    shifted = field_slice(
+        ax, field, field.sites, DEFAULT_PLANE,
+        q0=tuple(n * c for c in u), colorbar=False,
+    )
+    centers, values = _cell_centers_and_values(shifted)
+    assert shifted.plane_index_origin == (-n - 2, 0)
+    assert values[2, 2] == 0
+    assert centers[2, 2, 0] == 2
+    assert str(-n - 2) in ax.get_xlabel()
+    assert np.all(np.diff(shifted.get_coordinates()[0, :, 0]) == 1)
+
+
+@pytest.mark.parametrize("v", [(3, 2, 2, 1), (1, 1, 1, 1)])
+def test_field_slice_rejects_quotient_degenerate_vectors(v):
+    field = _shell_norm_field(1)
+    fig, ax = plt.subplots()
+    with pytest.raises(ValueError, match="independent modulo"):
+        field_slice(ax, field, field.sites, (DEFAULT_PLANE[0], v))
+
+
+def test_field_slice_two_samples_survive_ill_conditioned_basis():
+    from matplotlib.collections import PolyCollection
+    from matplotlib.colors import Normalize
+
+    field = _shell_norm_field(1)
+    u, v = DEFAULT_PLANE
+    n = 2**60 + 1
+    skew = tuple(n * a + b for a, b in zip(u, v))
+    fig, ax = plt.subplots()
+    # v has indices (-n, 1), while origin has (0, 0). Recentring a
+    # single sample would hide the unresolvable half-integer edge at n.
+    shared_norm = Normalize(-1, 2)
+    mesh = field_slice(
+        ax, field, [Quadray(0, 0, 0, 0), Quadray(*v)], (u, skew),
+        colorbar=False, norm=shared_norm,
+    )
+    assert isinstance(mesh, PolyCollection)
+    assert mesh.plane_index_origin == (-n, 0)
+    assert mesh.plane_indices == ((0, 0), (-n, 1))
+    assert mesh.plane_indices[0][0] - mesh.plane_indices[1][0] == n
+    np.testing.assert_array_equal(mesh.get_offsets(), [[float(n), 0], [0, 1]])
+    np.testing.assert_array_equal(mesh.get_array(), [0, 1])
+    assert mesh.norm is shared_norm
+    # One unit-square path is reused only at the two observed cells; there
+    # is no filled Cartesian product or interpolated band between them.
+    assert len(mesh.get_paths()) == 1
+    np.testing.assert_array_equal(
+        mesh.get_paths()[0].vertices[:4],
+        [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]],
+    )
+    fig.canvas.draw()
+    np.testing.assert_allclose(
+        mesh.get_facecolors(), mesh.cmap(shared_norm([0, 1])),
+    )
+
+
+def test_field_slice_requires_integer_membership_and_four_component_origin():
+    field = _shell_norm_field(1)
+    u, v = DEFAULT_PLANE
+    fig, ax = plt.subplots()
+    doubled = (tuple(2 * c for c in u), v)
+    mesh = field_slice(
+        ax, field, [Quadray(0, 0, 0, 0), Quadray(*u)], doubled, colorbar=False,
+    )
+    # Geometrically coplanar is insufficient: integer-index divisibility matters.
+    np.testing.assert_array_equal(mesh.get_array().compressed(), [0])
+    assert mesh.plane_indices == ((0, 0),)
+    fig, ax = plt.subplots()
+    with pytest.raises(ValueError, match="q0 must have 4 components"):
+        field_slice(ax, field, field.sites, DEFAULT_PLANE, q0=(0, 0, 0))
+
+
+def _sparse_field(indices):
+    u, v = DEFAULT_PLANE
+    sites = tuple(
+        Quadray(*(i * a + j * b for a, b in zip(u, v))).normalize()
+        for i, j in indices
+    )
+    return IVMField(
+        radius=0, sites=sites, site_index={q: n for n, q in enumerate(sites)},
+        values=np.arange(len(sites), dtype=float),
+    )
+
+
+@pytest.mark.parametrize("separation", [10**9, 2**60 + 1])
+def test_field_slice_huge_empty_band_uses_only_observed_unit_cells(separation):
+    from matplotlib.collections import PolyCollection
+
+    indices = [(0, 0), (separation, 0)]
+    field = _sparse_field(indices)
+    fig, ax = plt.subplots()
+    mesh = field_slice(ax, field, field.sites, DEFAULT_PLANE, colorbar=False)
+    assert isinstance(mesh, PolyCollection)
+    assert mesh.plane_indices == tuple(indices)
+    assert mesh.plane_index_origin == (0, 0)
+    np.testing.assert_array_equal(mesh.get_array(), [0, 1])
+    np.testing.assert_array_equal(mesh.get_offsets(), [[0, 0], [float(separation), 0]])
+    assert len(mesh.get_paths()) == 1
+    np.testing.assert_array_equal(np.ptp(mesh.get_paths()[0].vertices, axis=0), [1, 1])
+    assert ax.get_xlim()[0] <= -0.5
+    assert ax.get_xlim()[1] >= float(separation)
+    assert ax.get_ylim()[0] <= -0.5 and ax.get_ylim()[1] >= 0.5
+    fig.canvas.draw()
+    np.testing.assert_allclose(mesh.get_facecolors(), mesh.cmap(mesh.norm([0, 1])))
+
+
+def test_field_slice_sparse_product_uses_only_occupied_polygons():
+    from matplotlib.collections import PolyCollection
+
+    indices = [(3 * i, 3 * i) for i in range(100)]
+    field = _sparse_field(indices)
+    fig, ax = plt.subplots()
+    artist = field_slice(ax, field, field.sites, DEFAULT_PLANE, colorbar=False)
+    assert isinstance(artist, PolyCollection)
+    assert len(artist.get_paths()) == 1
+    np.testing.assert_array_equal(artist.get_offsets(), indices)
+    assert artist.plane_indices == tuple(indices)
+    path = artist.get_paths()[0]
+    np.testing.assert_array_equal(path.vertices[:4].mean(axis=0), [0, 0])
+    np.testing.assert_array_equal(np.ptp(path.vertices, axis=0), [1, 1])
+    # The unit path transforms as a displacement, not another translated
+    # point: zooming/panning must not add the axes origin twice.
+    ax.set_xlim(100, 110)
+    ax.set_ylim(100, 110)
+    fig.canvas.draw()
+    expected_delta = (
+        ax.transData.transform(path.vertices) - ax.transData.transform((0, 0))
+    )
+    np.testing.assert_allclose(artist.get_transform().transform(path.vertices), expected_delta)
+    np.testing.assert_allclose(
+        artist.get_offset_transform().transform(artist.get_offsets()),
+        ax.transData.transform(indices),
+    )
+    np.testing.assert_array_equal(artist.get_array(), np.arange(100))
+
+
+def test_zero_field_slice_and_dynamics_use_colormap_midpoint_and_metric_aspect():
+    field = IVMField.lattice_ball(1)
+    fig, ax = plt.subplots()
+    mesh = field_slice(ax, field, field.sites, DEFAULT_PLANE, colorbar=False)
+    assert mesh.norm(0) == 0.5
+    trajectory = simulate(2, DynamicsParams(), u0=np.zeros(13))
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+    artist = dynamics_strip([ax], trajectory, [2])[0]
+    assert artist.norm(0) == 0.5
+    spans = np.array([hi - lo for lo, hi in [ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d()]])
+    aspect = ax.get_box_aspect()
+    np.testing.assert_allclose(aspect / spans, np.repeat(aspect[0] / spans[0], 3))
+
+
+def test_shell_scatter_equal_metric_aspect_fits_axis_hints():
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+    shell_scatter(ax, generate_shell(1), 1)
+    limits = [ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d()]
+    spans = np.array([hi - lo for lo, hi in limits])
+    aspect = ax.get_box_aspect()
+    np.testing.assert_allclose(aspect / spans, np.repeat(aspect[0] / spans[0], 3))
+    for line in ax.lines:
+        for values, (lo, hi) in zip(line.get_data_3d(), limits):
+            assert lo <= min(values) <= max(values) <= hi
+
+
 # ---------------------------------------------------------------------------
 # dynamics_strip
 # ---------------------------------------------------------------------------
@@ -304,8 +495,79 @@ def test_shell_scatter_accepts_generator_of_sites():
     fig = plt.figure(figsize=(6.0, 4.8))
     ax = fig.add_subplot(111, projection="3d")
     shell_scatter(ax, (site for site in generate_shell(2)), 2)
-    assert ax.get_title() == "IVM shell 2 (42 sites)"
+    assert ax.get_title() == "IVM graph shell 2 (42 sites)"
     assert len(ax.get_lines()) == 4
+
+def test_boundary_comparison_plots_actual_boundary_errors_and_harmonic_residuals():
+    hard = IVMField.lattice_ball(2)
+    soft = IVMField.lattice_ball(2)
+    boundary = [q for q, neighbors in zip(hard.sites, hard.adjacency) if len(neighbors) < 12]
+    coords = np.array([to_xyz(q, DEFAULT_EMBEDDING) for q in boundary])
+    targets = coords[:, 0] + 0.2 * coords[:, 1] ** 2
+    hard.harmonic_extension(boundary, targets)
+    soft.learn(boundary, targets, lam=0.4, kernel_width=1.5)
+    fig, axs = plt.subplots(2, 2)
+    result = boundary_comparison(list(axs.flat), hard, soft, boundary, targets)
+    np.testing.assert_allclose(result["boundary_errors"]["hard"], 0, atol=1e-12)
+    np.testing.assert_allclose(result["interior_residuals"]["hard"], 0, atol=1e-12)
+    assert np.max(np.abs(result["boundary_errors"]["soft"])) > 0.01
+    assert np.max(np.abs(result["interior_residuals"]["soft"])) > 0.01
+    assert result["artists"][0].norm is result["artists"][1].norm
+    np.testing.assert_allclose(axs[1, 1].lines[0].get_ydata(), np.abs(result["interior_residuals"]["hard"]))
+    np.testing.assert_allclose(axs[1, 0].collections[0].get_offsets()[:, 0], targets)
+    assert targets.min() <= hard.values.min() <= hard.values.max() <= targets.max()
+    with pytest.raises(ValueError, match="four axes"):
+        boundary_comparison([], hard, soft, boundary, targets)
+    with pytest.raises(ValueError, match="identical sites"):
+        boundary_comparison(list(axs.flat), hard, IVMField.lattice_ball(1), boundary, targets)
+    with pytest.raises(ValueError, match="same nonzero length"):
+        boundary_comparison(list(axs.flat), hard, soft, [], [])
+
+
+def test_dynamics_comparison_reveals_boundary_stationary_mode_and_invariants():
+    conservative = simulate(120, DynamicsParams(kind="conservative", alpha=0.45), u0=np.ones(13))
+    normalized = simulate(
+        120, DynamicsParams(kind="heat", alpha=0.45),
+        lattice=conservative.lattice, u0=conservative.fields[0],
+    )
+    fig = plt.figure()
+    axs = [fig.add_subplot(2, 3, n, projection="3d" if n < 4 else None) for n in range(1, 7)]
+    result = dynamics_comparison(axs, conservative, normalized)
+    np.testing.assert_allclose(conservative.fields[-1], 1, atol=1e-13)
+    stationary = result["stationary_fields"]["symmetric normalized"]
+    mode = np.sqrt(conservative.lattice.degrees)
+    np.testing.assert_allclose(stationary, mode * (mode @ np.ones(13)) / (mode @ mode))
+    assert stationary.max() - stationary.min() > 0.1
+    np.testing.assert_allclose(normalized.fields[-1], stationary, atol=1e-12)
+    np.testing.assert_allclose(axs[3].lines[0].get_ydata(), 0, atol=1e-12)
+    assert abs(axs[3].lines[1].get_ydata()[-1]) > 0.1
+    np.testing.assert_allclose(axs[3].lines[2].get_ydata(), 0, atol=1e-12)
+    np.testing.assert_array_equal(axs[4].lines[0].get_ydata(), conservative.sos)
+    np.testing.assert_array_equal(result["artists"][0].get_array(), conservative.lattice.degrees)
+    assert result["artists"][1].norm is result["artists"][2].norm
+    with pytest.raises(ValueError, match="six axes"):
+        dynamics_comparison([], conservative, normalized)
+    with pytest.raises(ValueError, match="expected conservative and heat"):
+        dynamics_comparison(axs, normalized, conservative)
+    with pytest.raises(ValueError, match="share graph"):
+        dynamics_comparison(axs, conservative, simulate(1, DynamicsParams()))
+
+
+@pytest.mark.parametrize("alpha", [0.0, 0.35])
+def test_dynamics_comparison_componentwise_equilibrium_including_isolated_sites(alpha):
+    from quadmath.lattice.ivm_dynamics import make_lattice
+
+    lattice = make_lattice(1)
+    initial = np.arange(lattice.size, dtype=float) + 1
+    conservative = simulate(3, DynamicsParams(kind="conservative", alpha=alpha), lattice=lattice, u0=initial)
+    normalized = simulate(3, DynamicsParams(kind="heat", alpha=alpha), lattice=lattice, u0=initial)
+    fig = plt.figure()
+    axs = [fig.add_subplot(2, 3, n, projection="3d" if n < 4 else None) for n in range(1, 7)]
+    result = dynamics_comparison(axs, conservative, normalized)
+    np.testing.assert_array_equal(result["stationary_fields"]["conservative"], initial)
+    expected = initial if alpha == 0 else np.zeros(lattice.size)
+    np.testing.assert_array_equal(result["stationary_fields"]["symmetric normalized"], expected)
+
 
 
 # ---------------------------------------------------------------------------

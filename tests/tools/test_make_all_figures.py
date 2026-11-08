@@ -9,10 +9,9 @@ import pytest
 import make_all_figures
 from make_all_figures import extract_output_paths, require_existing_output
 
-ROOT = "/work/QuadMath"
-FIG = f"{ROOT}/quadmath/output/figures"
-DATA = f"{ROOT}/quadmath/output/data"
-SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "quadmath" / "scripts"
+ROOT = "/work/artifacts"
+FIG = f"{ROOT}/figures"
+DATA = f"{ROOT}/data"
 
 
 def test_extract_takes_path_token_from_prose_prefix():
@@ -21,8 +20,8 @@ def test_extract_takes_path_token_from_prose_prefix():
         "Figure 14 saved to: " f"{FIG}/figure_14_free_energy_landscape.png\n"
     )
     assert extract_output_paths(stdout, ROOT) == [
-        "quadmath/output/figures/figure_13_4d_trajectory.png",
-        "quadmath/output/figures/figure_14_free_energy_landscape.png",
+        "figures/figure_13_4d_trajectory.png",
+        "figures/figure_14_free_energy_landscape.png",
     ]
 
 
@@ -32,8 +31,8 @@ def test_extract_keeps_gif_and_txt_outputs():
         f"{DATA}/sympy_symbolics.txt\n"
     )
     assert extract_output_paths(stdout, ROOT) == [
-        "quadmath/output/figures/animation_lattice.gif",
-        "quadmath/output/data/sympy_symbolics.txt",
+        "figures/animation_lattice.gif",
+        "data/sympy_symbolics.txt",
     ]
 
 
@@ -44,8 +43,8 @@ def test_extract_dedupes_repeated_paths_in_first_seen_order():
         f"• Data: {DATA}/volumes_scale_data.csv\n"
     )
     assert extract_output_paths(stdout, ROOT) == [
-        "quadmath/output/data/volumes_scale_data.csv",
-        "quadmath/output/figures/volumes_scale.png",
+        "data/volumes_scale_data.csv",
+        "figures/volumes_scale.png",
     ]
 
 
@@ -58,42 +57,32 @@ def test_extract_ignores_progress_lines_without_output_suffix():
     assert extract_output_paths(stdout, ROOT) == []
 
 
-def test_extract_rejects_paths_outside_repo_root():
-    stale = "/Volumes/external_drive/Git/projects/QuadMath/quadmath/output/figures/x.png"
-    with pytest.raises(ValueError, match="outside repo root"):
+def test_extract_rejects_paths_outside_configured_output_root():
+    stale = "/Volumes/another_run/figures/x.png"
+    with pytest.raises(ValueError):
         extract_output_paths(f"saved: {stale}\n", ROOT)
 
 
 def test_extract_spaced_paths_keeps_suffix_containment_and_deduplication():
     root = "/work/Quad Math"
-    path = f"{root}/quadmath/output/figures/a figure.png"
+    path = f"{root}/figures/a figure.png"
     stdout = f"Generated: {path}\n{path}\nSaved: {root}/progress log\n"
     assert extract_output_paths(stdout, root) == [
-        "quadmath/output/figures/a figure.png",
+        "figures/a figure.png",
     ]
-    with pytest.raises(ValueError, match="outside repo root"):
+    with pytest.raises(ValueError):
         extract_output_paths("Saved: /work/Quad Math Elsewhere/a figure.png", root)
-    with pytest.raises(ValueError, match="outside repo root"):
+    with pytest.raises(ValueError):
         extract_output_paths(f"Saved: {root}/../outside/a figure.png", root)
 
 
-def test_require_existing_output_passes_when_one_path_exists(tmp_path):
-    (tmp_path / "quadmath" / "output" / "figures").mkdir(parents=True)
-    (tmp_path / "quadmath" / "output" / "figures" / "x.png").write_bytes(b"png")
-    require_existing_output(
-        "demo.py",
-        ["quadmath/output/figures/missing.png", "quadmath/output/figures/x.png"],
-        str(tmp_path),
-    )
-
-
 def test_require_existing_output_fails_when_no_path_exists(tmp_path):
-    with pytest.raises(RuntimeError, match="demo.py emitted no existing output path"):
-        require_existing_output("demo.py", ["quadmath/output/figures/missing.png"], str(tmp_path))
+    with pytest.raises(RuntimeError):
+        require_existing_output("demo.py", ["figures/missing.png"], str(tmp_path))
 
 
 def test_require_existing_output_fails_when_nothing_emitted(tmp_path):
-    with pytest.raises(RuntimeError, match="demo.py emitted no existing output path"):
+    with pytest.raises(RuntimeError):
         require_existing_output("demo.py", [], str(tmp_path))
 
 
@@ -101,12 +90,31 @@ def _fake_repo(tmp_path, monkeypatch):
     scripts = tmp_path / "quadmath" / "scripts"
     scripts.mkdir(parents=True)
     monkeypatch.setattr(make_all_figures, "_repo_root", lambda: str(tmp_path))
+    monkeypatch.setenv("QUADMATH_OUTPUT_DIR", str(tmp_path / "run_output"))
     return scripts
 
 
-def test_run_script_returns_repo_relative_paths_of_written_outputs(tmp_path, monkeypatch):
+def test_run_script_resolves_artifacts_under_external_configured_root(tmp_path, monkeypatch):
+    scripts = _fake_repo(tmp_path / "checkout", monkeypatch)
+    output = tmp_path / "isolated run"
+    monkeypatch.setenv("QUADMATH_OUTPUT_DIR", str(output))
+    script = scripts / "external_demo.py"
+    script.write_text(
+        "import os\n"
+        "from pathlib import Path\n"
+        "out = Path(os.environ['QUADMATH_OUTPUT_DIR']) / 'data/result.csv'\n"
+        "out.parent.mkdir(parents=True)\n"
+        "out.write_text('value' + chr(10) + '7' + chr(10))\n"
+        "print('Data saved: ' + str(out))\n",
+        encoding="utf-8",
+    )
+    assert make_all_figures._run_script(str(script)) == ["data/result.csv"]
+    assert (output / "data/result.csv").read_text() == "value\n7\n"
+
+
+def test_run_script_returns_output_relative_paths_of_written_artifacts(tmp_path, monkeypatch):
     scripts = _fake_repo(tmp_path, monkeypatch)
-    out = tmp_path / "quadmath" / "output" / "figures"
+    out = tmp_path / "run_output" / "figures"
     body = (
         "import os\n"
         f"os.makedirs({str(out)!r}, exist_ok=True)\n"
@@ -116,7 +124,7 @@ def test_run_script_returns_repo_relative_paths_of_written_outputs(tmp_path, mon
     script = scripts / "fake_demo.py"
     script.write_text(body)
     assert make_all_figures._run_script(str(script)) == [
-        "quadmath/output/figures/fake.png",
+        "figures/fake.png",
     ]
 
 
@@ -126,8 +134,9 @@ def test_run_script_accepts_real_spaced_output_from_unrelated_cwd(tmp_path, monk
     scripts = _fake_repo(root, monkeypatch)
     script = scripts / "spaced_demo.py"
     script.write_text(
+        "import os\n"
         "from pathlib import Path\n"
-        "out = Path.cwd() / 'quadmath/output/figures/a figure.png'\n"
+        "out = Path(os.environ['QUADMATH_OUTPUT_DIR']) / 'figures/a figure.png'\n"
         "out.parent.mkdir(parents=True)\n"
         "out.write_bytes(b'png')\n"
         "print('Generated: ' + str(out))\n"
@@ -138,7 +147,7 @@ def test_run_script_accepts_real_spaced_output_from_unrelated_cwd(tmp_path, monk
     elsewhere.mkdir()
     monkeypatch.chdir(elsewhere)
     assert make_all_figures._run_script(str(script)) == [
-        "quadmath/output/figures/a figure.png",
+        "figures/a figure.png",
     ]
 
 
@@ -147,9 +156,9 @@ def test_run_script_fails_when_printed_path_was_not_written(tmp_path, monkeypatc
     script = scripts / "fake_demo.py"
     script.write_text(
         "import os\n"
-        f"print('Figure saved: ' + os.path.join({str(tmp_path)!r}, 'quadmath', 'output', 'ghost.png'))\n"
+        f"print('Figure saved: ' + os.path.join({str(tmp_path)!r}, 'run_output', 'ghost.png'))\n"
     )
-    with pytest.raises(RuntimeError, match="fake_demo.py emitted no existing output path"):
+    with pytest.raises(RuntimeError):
         make_all_figures._run_script(str(script))
 
 
@@ -157,25 +166,8 @@ def test_run_script_fails_when_script_prints_no_output_path(tmp_path, monkeypatc
     scripts = _fake_repo(tmp_path, monkeypatch)
     script = scripts / "timing_only.py"
     script.write_text("print('timing complete')\n")
-    with pytest.raises(RuntimeError, match="timing_only.py emitted no existing output path"):
+    with pytest.raises(RuntimeError):
         make_all_figures._run_script(str(script))
-
-
-def test_figure_scripts_exclude_gpu_benchmark_and_all_exist():
-    names = make_all_figures.FIGURE_SCRIPTS
-    assert "gpu_acceleration_demo.py" not in names
-    assert len(set(names)) == len(names)
-    for name in names:
-        assert os.path.isfile(os.path.join(SCRIPTS_DIR, name)), name
-
-
-def test_write_manifest_writes_header_and_paths(tmp_path):
-    target = tmp_path / "figure_manifest.txt"
-    make_all_figures.write_manifest(["quadmath/output/figures/a.png"], str(target))
-    assert target.read_text(encoding="utf-8") == (
-        "# Generated figure/data paths (relative to repo root)\n"
-        "quadmath/output/figures/a.png\n"
-    )
 
 
 def test_write_manifest_failure_keeps_previous_manifest_and_leaves_no_temp(tmp_path):

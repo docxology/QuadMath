@@ -33,11 +33,13 @@ different inverse contracts. Its
 exercises the real Python, JavaScript and C++ implementations without adding a
 runtime dependency between repositories.
 
-The current minor release adds exact continuous `Fraction` centroids and
-scale-safe probability/Fisher calculations. `eps` now consistently denotes
-normalized-probability pseudocount smoothing; use `eps=0` for exact support
-boundaries. See [methods](quadmath/markdown/03_quadray_methods.md) and
-[release notes](CHANGELOG.md).
+The methods suite adds exact rational metric, affine and oriented primitives;
+hard-boundary harmonic extension; conservative graph transport distinct from
+symmetric-normalized heat; and count-preserving trajectory identification.
+Closed-mesh figures measure their labels in explicit units. Lean proves the
+physical quotient, distance/volume bridges and shell bounds, not the floating
+simulation implementation. See [methods](quadmath/markdown/03_quadray_methods.md),
+[dynamics](quadmath/markdown/12_ivm_dynamics.md) and [release notes](CHANGELOG.md).
 
 ## Quick Start
 

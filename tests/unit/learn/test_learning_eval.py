@@ -315,6 +315,36 @@ def test_trajectory_split_rejects_invalid_inputs():
         trajectory_train_test(good, -0.5, lat, grid=GRID8)
 
 
+def test_temporal_majority_scoring_retains_single_count_at_huge_offset():
+    lattice = make_lattice(3)
+    initial = np.arange(lattice.size, dtype=np.int64)
+    observed = np.stack(
+        simulate(8, DynamicsParams(kind="majority", alpha=0.5), lattice, initial).fields
+    ).astype(object) + 2**2000
+    observed[-1, 0] += 1
+    result = trajectory_train_test(
+        observed, 0.55, lattice, kind="majority", grid=[0.0, 0.5, 1.0], refine_rounds=0
+    )
+    assert result.best_alpha == 0.5
+    assert result.train_mse == 0.0
+    expected = 1 / (result.n_test_rows * lattice.size)
+    assert result.test_mse == pytest.approx(expected)
+    assert result.one_step_mse == pytest.approx(expected)
+
+
+def test_temporal_scoring_keeps_count_residuals_in_integral_float_observations():
+    lattice = make_lattice(3)
+    initial = np.full(lattice.size, float(2**60 + 256))
+    initial[0] = float(2**60)
+    result = trajectory_train_test(
+        np.stack([initial] * 4), 0.5, lattice,
+        kind="majority", grid=[1 / 256], refine_rounds=0,
+    )
+    assert result.train_mse == 1 / lattice.size
+    assert result.test_mse == 0.5
+    assert result.one_step_mse == 1 / lattice.size
+
+
 # --------------- learning curve ---------------
 
 

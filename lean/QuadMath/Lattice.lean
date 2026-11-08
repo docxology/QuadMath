@@ -7,20 +7,19 @@ Lean 4 formalization of the close-packing numbering sequence.  Mirrors
 abstract numbering function against the concrete lattice enumeration of
 `QuadMath.IVM.shellSites`.
 
-Starting from a central sphere, the omnidirectional close packing builds up
-in consecutive frequency shells: shell `k ≥ 1` carries exactly `10k² + 2`
-sphere centers, and the center is the lone site of shell 0.  The first shell
-is the 12 neighbors — the permutations of `(2, 1, 1, 0)` in quadray
-coordinates — forming the cuboctahedron (vector equilibrium).
+The cuboctahedral numbering formula for positive shells is defined below.
+Its equality to the concrete `shellSites` enumeration is proved here only
+for shells 1–3; `IVM.lean` supplies further finite instances through shell 8
+with distinct kernel/native trust boundaries. Neither this formula definition
+nor the printed computations establish a universal enumeration theorem.
 -/
 
-/-- Number of lattice sites on frequency shell `k ≥ 1` of the omnidirectional
-close packing (`src/quadmath/lattice/omni_numbering.py:4-9`); shell 0 is the lone central
-site and is not described by this function. -/
+/-- Cuboctahedral numbering formula, intended for positive shell indices.
+Equality to enumerated site counts requires a separate theorem. -/
 def omniNumber (k : Nat) : Nat := 10 * k * k + 2
 
-/-- Cumulative site count through shell `k`: shell 0 contributes 1, each
-shell `j ≥ 1` contributes `10j² + 2`. -/
+/-- Cumulative sum of the numbering formula plus the central site.
+This definition alone does not prove a cardinality of an enumerated ball. -/
 def cumulativeCount (k : Nat) : Nat :=
   1 + ((List.range k).map (fun j => omniNumber (j + 1))).sum
 
@@ -39,8 +38,8 @@ theorem shellSites_omni_1 : (shellSites 1).length = omniNumber 1 := by decide
 shell 2. -/
 theorem shellSites_omni_2 : (shellSites 2).length = omniNumber 2 := by decide
 
-/-- The computable shell enumeration realizes the numbering function on
-shell 3, via the machine-checked `shellSites_card_target_3` instance. -/
+/-- The computable enumeration realizes the numbering function on shell 3,
+via the kernel-decided `shellSites_card_target_3` proof. -/
 theorem shellSites_omni_3 : (shellSites 3).length = omniNumber 3 :=
   shellSites_card_target_3
 

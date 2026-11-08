@@ -101,6 +101,57 @@ def Quadray.normalize (q : Quadray) : Quadray :=
 def SameClass (q r : Quadray) : Prop :=
   ∃ t : Int, r.a = q.a + t ∧ r.b = q.b + t ∧ r.c = q.c + t ∧ r.d = q.d + t
 
+/-- Common-offset equivalence is reflexive. -/
+theorem sameClass_refl (q : Quadray) : SameClass q q := by
+  exact ⟨0, by omega, by omega, by omega, by omega⟩
+
+/-- Common-offset equivalence is symmetric. -/
+theorem sameClass_symm {q r : Quadray} (h : SameClass q r) : SameClass r q := by
+  obtain ⟨t, ha, hb, hc, hd⟩ := h
+  exact ⟨-t, by omega, by omega, by omega, by omega⟩
+
+/-- Common-offset equivalence is transitive. -/
+theorem sameClass_trans {q r s : Quadray}
+    (hqr : SameClass q r) (hrs : SameClass r s) : SameClass q s := by
+  obtain ⟨t, ha, hb, hc, hd⟩ := hqr
+  obtain ⟨u, ha', hb', hc', hd'⟩ := hrs
+  exact ⟨t + u, by omega, by omega, by omega, by omega⟩
+
+/-- The additive common-offset quotient, not an identification of raw game cells. -/
+def quadraySetoid : Setoid Quadray where
+  r := SameClass
+  iseqv := ⟨sameClass_refl, sameClass_symm, sameClass_trans⟩
+
+/-- Integer physical points modulo independent common offsets. -/
+def PhysicalQuadray := Quotient quadraySetoid
+
+/-- Place a raw integer label in its physical equivalence class. -/
+def physicalClass (q : Quadray) : PhysicalQuadray := Quotient.mk quadraySetoid q
+
+theorem physicalClass_eq_iff (q r : Quadray) :
+    physicalClass q = physicalClass r ↔ SameClass q r := by
+  constructor
+  · exact Quotient.exact
+  · intro h
+    change Quotient.mk quadraySetoid q = Quotient.mk quadraySetoid r
+    exact Quotient.sound h
+
+private theorem quadray_ext {q r : Quadray}
+    (ha : q.a = r.a) (hb : q.b = r.b) (hc : q.c = r.c) (hd : q.d = r.d) :
+    q = r := by
+  cases q
+  cases r
+  simp_all
+
+/-- Independently changing representatives also preserves displacement classes. -/
+theorem sameClass_sub {p p' q q' : Quadray}
+    (hp : SameClass p p') (hq : SameClass q q') :
+    SameClass (p.sub q) (p'.sub q') := by
+  obtain ⟨t, ha, hb, hc, hd⟩ := hp
+  obtain ⟨u, ha', hb', hc', hd'⟩ := hq
+  refine ⟨t - u, ?_, ?_, ?_, ?_⟩
+  all_goals simp only [Quadray.sub] <;> omega
+
 /-- Normalization stays inside the projective class: `normalize q ~ q`. -/
 theorem normalize_sameClass (q : Quadray) : SameClass q q.normalize := by
   refine ⟨-(quadMin q), ?_, ?_, ?_, ?_⟩
@@ -160,9 +211,63 @@ theorem normalize_idem (q : Quadray) : q.normalize.normalize = q.normalize := by
   have e4 : q.normalize.d - 0 = q.normalize.d := by omega
   rw [e1, e2, e3, e4]
 
+/-- A representative shift translates the minimum by exactly that shift. -/
+theorem quadMin_shift {q r : Quadray} (t : Int)
+    (ha : r.a = q.a + t) (hb : r.b = q.b + t)
+    (hc : r.c = q.c + t) (hd : r.d = q.d + t) :
+    quadMin r = quadMin q + t := by
+  have hq := quadMin_le q
+  have hr := quadMin_le r
+  rcases quadMin_eq q with h | h | h | h <;>
+    rcases quadMin_eq r with h' | h' | h' | h' <;> omega
+
+/-- Every physical class has exactly one minimum-zero canonical representative. -/
+theorem normalize_eq_iff_sameClass (q r : Quadray) :
+    q.normalize = r.normalize ↔ SameClass q r := by
+  constructor
+  · intro h
+    apply sameClass_trans (normalize_sameClass q)
+    rw [h]
+    exact sameClass_symm (normalize_sameClass r)
+  · rintro ⟨t, ha, hb, hc, hd⟩
+    have hm := quadMin_shift t ha hb hc hd
+    apply quadray_ext
+    all_goals simp only [Quadray.normalize] <;> omega
+
+/-- A minimum-zero representative is unique even before normalization is applied. -/
+theorem canonical_unique {q r : Quadray} (hq : quadMin q = 0)
+    (hr : quadMin r = 0) (h : SameClass q r) : q = r := by
+  have hn := (normalize_eq_iff_sameClass q r).mpr h
+  simpa only [Quadray.normalize, hq, hr, Int.sub_zero] using hn
+
 /-- Row of the projected 3x3 volume matrix: the `(a - d, b - d, c - d)`
 projection (`src/quadmath/core/quadray.py:77-78`). -/
 def proj (q : Quadray) : Int × Int × Int := (q.a - q.d, q.b - q.d, q.c - q.d)
+
+/-- Projection identifies precisely the common-offset classes, universally. -/
+theorem sameClass_iff_proj_eq (q r : Quadray) : SameClass q r ↔ proj q = proj r := by
+  constructor
+  · rintro ⟨t, ha, hb, hc, hd⟩
+    apply Prod.ext
+    · simp only [proj]
+      omega
+    · apply Prod.ext <;> simp only [proj] <;> omega
+  · intro h
+    have ha := congrArg (fun v : Int × Int × Int => v.1) h
+    have hb := congrArg (fun v : Int × Int × Int => v.2.1) h
+    have hc := congrArg (fun v : Int × Int × Int => v.2.2) h
+    simp only [proj] at ha hb hc
+    exact ⟨r.d - q.d, by omega, by omega, by omega, by omega⟩
+
+/-- Every integer triple occurs: the quotient has exactly three integer coordinates. -/
+theorem proj_surjective (v : Int × Int × Int) : ∃ q : Quadray, proj q = v := by
+  refine ⟨⟨v.1, v.2.1, v.2.2, 0⟩, ?_⟩
+  simp only [proj, Int.sub_zero]
+
+/-- Canonical equality and projection equality are the same physical identity test. -/
+theorem normalize_eq_iff_proj_eq (q r : Quadray) :
+    q.normalize = r.normalize ↔ proj q = proj r :=
+  (normalize_eq_iff_sameClass q r).trans (sameClass_iff_proj_eq q r)
 
 /-- Exact 3x3 integer determinant (cofactor expansion along the first row),
 the arithmetic core of `bareiss_determinant_int` for 3x3 inputs
@@ -187,8 +292,8 @@ def tetraVolume (p0 p1 p2 p3 : Quadray) : Rat :=
 
 private theorem sub_shift (x y t : Int) : x + t - (y + t) = x - y := by omega
 
-/-- The tetra-determinant is a property of the projective classes: shifting
-all four vertices by the same `t * (1, 1, 1, 1)` leaves it unchanged. -/
+/-- Simultaneously shifting all four vertices by one common gauge leaves the
+tetra-determinant unchanged; `tetraDet_sameClass` below allows independent gauges. -/
 theorem tetraDet_congr (t : Int) (p0 p1 p2 p3 : Quadray) :
     tetraDet ⟨p0.a + t, p0.b + t, p0.c + t, p0.d + t⟩
         ⟨p1.a + t, p1.b + t, p1.c + t, p1.d + t⟩
@@ -196,6 +301,24 @@ theorem tetraDet_congr (t : Int) (p0 p1 p2 p3 : Quadray) :
         ⟨p3.a + t, p3.b + t, p3.c + t, p3.d + t⟩
       = tetraDet p0 p1 p2 p3 := by
   simp only [tetraDet, Quadray.sub, proj, sub_shift]
+
+/-- Each vertex may change its gauge independently, including the base vertex. -/
+theorem tetraDet_sameClass {p0 p1 p2 p3 r0 r1 r2 r3 : Quadray}
+    (h0 : SameClass p0 r0) (h1 : SameClass p1 r1)
+    (h2 : SameClass p2 r2) (h3 : SameClass p3 r3) :
+    tetraDet p0 p1 p2 p3 = tetraDet r0 r1 r2 r3 := by
+  unfold tetraDet
+  rw [(sameClass_iff_proj_eq _ _).mp (sameClass_sub h1 h0),
+    (sameClass_iff_proj_eq _ _).mp (sameClass_sub h2 h0),
+    (sameClass_iff_proj_eq _ _).mp (sameClass_sub h3 h0)]
+
+/-- Exact quarter-unit volume descends to four independently chosen physical classes. -/
+theorem tetraVolume_sameClass {p0 p1 p2 p3 r0 r1 r2 r3 : Quadray}
+    (h0 : SameClass p0 r0) (h1 : SameClass p1 r1)
+    (h2 : SameClass p2 r2) (h3 : SameClass p3 r3) :
+    tetraVolume p0 p1 p2 p3 = tetraVolume r0 r1 r2 r3 := by
+  unfold tetraVolume
+  rw [tetraDet_sameClass h0 h1 h2 h3]
 
 /-- The unit IVM tetrahedron (origin plus three `(2,1,1,0)`-type neighbor
 moves) has determinant `4` and IVM volume exactly `1`

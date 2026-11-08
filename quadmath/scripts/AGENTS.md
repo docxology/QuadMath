@@ -8,18 +8,15 @@ importable entrypoints under `src/`.
 
 - Business/data/plot/analysis logic lives in `src/` (importable, tested under
   `tests/`, 100% coverage gate). New behavior goes in `src/`, never in scripts.
-- There is NO installed package: every script bootstraps `<repo>/src` onto
-  `sys.path` (`_repo_root()` / `_ensure_src_on_path()`) and imports the
-  factored package — `from quadmath.core.quadray import ...`,
-  `from quadmath.paths import ...`.
+- Checkout scripts bootstrap `<repo>/src` onto `sys.path`
+  (`_repo_root()` / `_ensure_src_on_path()`) and import the package. Installed
+  wheels are supported separately; scripts do not require an editable install.
 - All entry logic sits behind `if __name__ == "__main__":` — keep scripts
   import-safe (`tests/tools/test_sympy_formalisms.py` imports
   `quadmath/scripts/sympy_formalisms.py` directly).
 - Known inline-logic exceptions (documented, do not grow):
   `validate_markdown.py` (stdlib-only checks, no src delegation),
-  `polyhedra_quadray_constructions.py` (figure construction inline; src
-  delegation = `paths.py` only), `render_pdf.sh` / `clean_output.sh`
-  (bash orchestration).
+  `render_pdf.sh` / `clean_output.sh` (bash orchestration).
 
 ## Inventory
 
@@ -37,7 +34,7 @@ importable entrypoints under `src/`.
 | `volumes_demo.py` | `quadmath.core.cayley_menger`, `quadmath.core.quadray`, `quadmath.paths` |
 | `ivm_neighbors.py` | `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
 | `quadray_clouds.py` | `quadmath.lattice.conversions`, `quadmath.core.quadray`, `quadmath.paths` |
-| `polyhedra_quadray_constructions.py` | `quadmath.paths` (figure construction inline) |
+| `polyhedra_quadray_constructions.py` | `quadmath.viz.vis_polyhedra` (closed supporting meshes, measured volumes, shared-scale rendering) |
 | `graphical_abstract_quadray.py` | `quadmath.core.quadray`, `quadmath.paths` |
 | `sympy_formalisms.py` | `quadmath.core.symbolic`, `quadmath.core.quadray` |
 | `gpu_acceleration_demo.py` | `quadmath.core.quadray`; manual benchmark, not in `FIGURE_SCRIPTS` |
@@ -62,9 +59,10 @@ importable entrypoints under `src/`.
   most scripts import inside `main()`.
 - `make_all_figures.py` writes `figure_manifest.txt` from stdout lines ending
   in `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` — generators MUST print absolute output
-  paths under the repo root. The path is the last token of the line; paths are
-  stored repo-relative and deduplicated. Each `FIGURE_SCRIPTS` entry must emit
-  at least one existing path; there are no exemptions. The manifest is written
+  paths under the configured output root (`QUADMATH_OUTPUT_DIR`, or the default).
+  The path ends the line, may contain spaces, and is stored output-root-relative
+  and deduplicated. Each `FIGURE_SCRIPTS` entry must emit at least one existing
+  path; there are no exemptions. The manifest is written
   with `atomic_write_text`.
 - Atomic data writes: use `quadmath.tools.atomic_write.atomic_open(path,
   newline=...)` or `atomic_write_text` for CSV/TXT outputs. Pass

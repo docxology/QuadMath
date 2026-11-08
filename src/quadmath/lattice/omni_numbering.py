@@ -17,13 +17,12 @@ Conventions
 -----------
 - Sites are canonical quadray integer 4-tuples: non-negative components with
   at least one zero (projective normalization, cf. ``quadmath.core.quadray.Quadray.normalize``).
-- The IVM site set reachable from the origin by the 12 neighbor moves
-  (all distinct permutations of ``(2, 1, 1, 0)``, each move followed by
-  projective normalization) is a strict subset of all normalized integer
-  quadrays; membership is therefore determined by enumeration, not by a
-  closed-form congruence.  The layer-by-layer expansion below reproduces the
-  shell counts ``10k^2 + 2`` exactly (verified through frequency 6 in the
-  test suite against an independent breadth-first reference).
+- The reachable IVM classes are exactly the canonical integer quadrays with
+  component sum divisible by four. Their centered representatives are integer
+  sum-zero vectors; each neighbor is one ordered unit transfer e_i - e_j.
+  Balancing positive and negative components constructs a path to every site.
+  Layer expansion supplies deterministic numbering, not an extra membership
+  restriction. Frequency shells are graph-distance shells, not fixed XYZ radii.
 """
 from __future__ import annotations
 
@@ -47,7 +46,7 @@ _KEY_BITS: int = 16
 _CACHE: Dict[int, Tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
 
 #: Deepest frequency shell the enumeration supports.  The cumulative site
-#: count through shell 32 is about 146k rows -- small, cache-friendly, and
+#: count through shell 32 is 114465 rows -- small, cache-friendly, and
 #: deep enough for every query radius ``lattice_search`` accepts.
 MAX_SHELL: int = 32
 

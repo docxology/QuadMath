@@ -14,6 +14,12 @@ from quadmath.core.quadray import (
     magnitude,
     dot,
     distance,
+    dot_exact,
+    squared_norm_exact,
+    squared_distance_exact,
+    affine_combination_exact,
+    signed_tetra_volume_exact,
+    triangle_area_squared_exact,
     angle,
     centroid,
     centroid_exact,
@@ -163,6 +169,13 @@ def test_forward_gauge_removal_preserves_exact_fraction_embeddings():
     gauge = 10**1100
     alias = Quadray(gauge + 1, gauge, gauge, gauge)
     assert to_xyz(alias, embedding) == (Fraction(1, 10), Fraction(1, 3), Fraction(0))
+
+
+def test_forward_integer_embedding_rounds_floating_coordinate_combinations():
+    embedding = ((1, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))
+    point = Quadray(0.1, 0.2, 0.0, 0.0)
+    expected = float(Fraction(0.1) + Fraction(0.2))
+    assert to_xyz(point, embedding) == (expected, 0.0, 0.0)
 
 
 def test_forward_embedding_preserves_genuinely_gauge_dependent_maps():
@@ -752,3 +765,121 @@ def test_numpy_backed_fraction_denominators_do_not_wrap_in_centroids(dtype):
     assert centroid_exact([point, origin, origin, origin]) == (
         Fraction(1, 2**64), Fraction(0), Fraction(0), Fraction(0),
     )
+
+
+def test_native_combinations_retain_resolved_cancellation_before_float_conversion():
+    n = 2**60
+    q, r = Quadray(n + 1, n, 0, 0), Quadray(1, 0, 1, 0)
+    assert to_xyz(q, DEFAULT_EMBEDDING) == (1.0, float(2 * n + 1), 1.0)
+    assert dot(q, r, DEFAULT_EMBEDDING) == 2.0
+    assert dot_exact(q, r) == 2
+
+
+def test_dot_cancels_unrepresentable_products_before_rounding():
+    length = 2**600
+    q = Quadray(length, 0, 0, 0)
+    r = Quadray(length + 1, length, 0, 2 * length)
+    assert dot_exact(q, r) == 3 * length
+    assert dot(q, r, DEFAULT_EMBEDDING) == float(3 * length)
+    assert dot(q, Quadray(length, length, 0, 2 * length), DEFAULT_EMBEDDING) == 0.0
+
+
+def test_forward_combinations_rescale_before_native_float_coercion():
+    q = Quadray(2**1100, 0, 0, 0)
+    embedding = np.asarray(DEFAULT_EMBEDDING) * 2.0**-500
+    assert to_xyz(q, embedding) == (2.0**600,) * 3
+    assert magnitude(q, embedding) == pytest.approx(math.sqrt(3) * 2.0**600)
+    # Each product overflows in ordinary float arithmetic, but the sum is 1.
+    embedding = ((1e308, -1e308, 1, 0), (0, 0, 1, 0), (0, 0, 0, 1))
+    assert to_xyz(Quadray(2, 2, 1, 0), embedding) == (1.0, 1.0, 0.0)
+
+
+@pytest.mark.parametrize("sign", (1, -1))
+def test_angle_retains_resolved_near_parallel_and_antiparallel_rays(sign):
+    n = 2**40
+    origin = Quadray(0, 0, 0, 0)
+    u, v = Quadray(n, 0, 0, n), Quadray(sign * n + 1, 1, 0, sign * n)
+    expected = math.atan2(1, sign * n)
+    assert angle(u, origin, v, DEFAULT_EMBEDDING) == pytest.approx(
+        expected, rel=1e-15, abs=0)
+    assert angle(u, origin, v, DEFAULT_EMBEDDING) > 0
+    assert angle(u, origin, v, DEFAULT_EMBEDDING) < math.pi
+
+
+def test_exact_metric_is_a_rational_quotient_metric_not_raw_tuple_equality():
+    q = Quadray(Fraction(1, 3), Fraction(2, 5), 0, 0)
+    gauge = 10**450
+    alias = Quadray(*(value + gauge for value in q.as_tuple()))
+    assert q != alias
+    assert squared_distance_exact(q, alias) == 0
+    assert dot_exact(q, alias) == squared_norm_exact(q) == Fraction(41, 75)
+    assert squared_distance_exact(q, Quadray(0, 0, 0, 0)) == squared_norm_exact(q)
+    assert squared_norm_exact((gauge,) * 4) == 0
+
+
+def test_exact_custom_metric_uses_stored_binary_coefficients_and_nongauge_maps():
+    embedding = ((0.1, 0, 0, 0), (0, 2, 0, 0), (0, 0, 0, 0))
+    q, r = Quadray(3, 1, 0, 0), Quadray(1, 2, 0, 0)
+    assert dot_exact(q, r, (iter(row) for row in embedding)) == 3 * Fraction(0.1) ** 2 + 8
+    assert squared_norm_exact(Quadray(1, 1, 1, 1), embedding) == Fraction(0.1) ** 2 + 4
+    assert squared_distance_exact(q, r, embedding) == 4 * Fraction(0.1) ** 2 + 4
+
+
+@pytest.mark.parametrize("components", [(1, 2, 3), (1, 2, 3, 4, 5)])
+def test_exact_metric_rejects_missing_and_extra_native_dimensions(components):
+    with pytest.raises(ValueError):
+        dot_exact(iter(components), Quadray(1, 0, 0, 0))
+
+
+def test_affine_combination_supports_signed_rational_weights_without_snapping():
+    points = [Quadray(0, 0, 0, 0), Quadray(1, 0, 0, 0), Quadray(0, 1, 0, 0)]
+    weights = [Fraction(-1, 2), Fraction(1, 3), Fraction(7, 6)]
+    expected = (Fraction(1, 3), Fraction(7, 6), Fraction(0), Fraction(0))
+    assert affine_combination_exact(iter(points), iter(weights)) == expected
+    shifted = [tuple(value + 10**400 * (i + 1) for value in point.as_tuple())
+               for i, point in enumerate(points)]
+    assert affine_combination_exact(shifted, weights) == expected
+    midpoint = affine_combination_exact(points[:2], [Fraction(1, 2)] * 2)
+    assert midpoint == (Fraction(1, 2), Fraction(0), Fraction(0), Fraction(0))
+    assert all(isinstance(value, Fraction) for value in midpoint)
+
+
+@pytest.mark.parametrize("points,weights", [
+    ([], []), ([Quadray(0, 0, 0, 0)], []),
+    ([], [1]), ([Quadray(0, 0, 0, 0)], [Fraction(1, 2)]),
+])
+def test_affine_combination_rejects_missing_or_nonaffine_weights(points, weights):
+    with pytest.raises(ValueError):
+        affine_combination_exact(points, weights)
+
+
+def test_rational_signed_simplex_orientation_translation_and_independent_gauges():
+    points = [(0, 0, 0, 0), (Fraction(1, 2), 0, 0, 0),
+              (0, 1, 0, 0), (0, 0, 1, 0)]
+    assert signed_tetra_volume_exact(*points) == Fraction(1, 8)
+    assert signed_tetra_volume_exact(points[1], points[0], *points[2:]) == Fraction(-1, 8)
+    translation = (10**400, -10**401, 7, 11)
+    shifted = [tuple(value + offset + i * 10**450
+                     for value, offset in zip(point, translation))
+               for i, point in enumerate(points)]
+    assert signed_tetra_volume_exact(*shifted) == Fraction(1, 8)
+    assert signed_tetra_volume_exact(points[0], points[1], points[1], points[3]) == 0
+
+
+def test_exact_native_simplex_keeps_sliver_height_lost_by_float_squared_edges():
+    n = 2**30
+    points = [Quadray(0, 0, 0, 0), Quadray(n, 0, 0, n),
+              Quadray(2 * n + 1, n, 1, n), Quadray(n, n, 0, 0)]
+    assert abs(signed_tetra_volume_exact(*points)) == Fraction(n * n, 2)
+    assert abs(signed_tetra_volume_exact(*points)) == integer_tetra_volume(*points)
+    assert squared_distance_exact(points[1], points[2]) == 4 * n * n + 4
+
+
+def test_triangle_squared_area_is_exact_gram_measure_with_custom_units():
+    origin, a, b = (0, 0, 0, 0), (1, 0, 0, 0), (0, 1, 0, 0)
+    assert triangle_area_squared_exact(origin, a, b) == 2
+    assert triangle_area_squared_exact(origin, a, (2, 0, 0, 0)) == 0
+    embedding = tuple(tuple(Fraction(float(v)) / 2 for v in row) for row in DEFAULT_EMBEDDING)
+    assert triangle_area_squared_exact(origin, a, b, embedding) == Fraction(1, 8)
+    # A nongauge projection can collapse a nondegenerate native triangle.
+    assert triangle_area_squared_exact(origin, a, b, ((1, 1, 0, 0), (0,) * 4, (0,) * 4)) == 0

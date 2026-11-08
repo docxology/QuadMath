@@ -22,12 +22,14 @@ into ``docs/manuscript/``, applying the layout rewrites this tree requires:
 Usage (from the repository root)::
 
     uv run python docs/manuscript/port_from_source.py
+    uv run python docs/manuscript/port_from_source.py --figures-dir /tmp/run/figures
 
 Exits 0 when the tree is in sync, 1 when a figure or link is missing.
 """
 
 from __future__ import annotations
 
+import argparse
 import re
 import shutil
 import sys
@@ -127,8 +129,8 @@ def rewrite(text: str) -> str:
     return text
 
 
-def port() -> None:
-    """Copy preamble, figures, and sections with rewrites applied."""
+def port(figures_dir: Path = FIGS) -> None:
+    """Copy canonical content and selected generated figures with rewrites."""
     DST.mkdir(parents=True, exist_ok=True)
     DST_FIGS.mkdir(parents=True, exist_ok=True)
 
@@ -138,7 +140,7 @@ def port() -> None:
     (DST / "preamble.md").write_text(preamble, encoding="utf-8")
 
     for name in FIGURE_NAMES:
-        src, dst = FIGS / name, DST_FIGS / name
+        src, dst = figures_dir / name, DST_FIGS / name
         if not src.is_file():
             raise FileNotFoundError(f"missing figure in source tree: {src}")
         shutil.copyfile(src, dst)
@@ -181,7 +183,13 @@ def main() -> int:
     int
         0 when the tree ports and verifies clean, 1 otherwise.
     """
-    port()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--figures-dir", type=Path, default=FIGS,
+        help="Generated figure directory, including a QUADMATH_OUTPUT_DIR run's figures/.",
+    )
+    args = parser.parse_args()
+    port(args.figures_dir)
     problems = verify()
     if problems:
         print("\n".join(problems), file=sys.stderr)

@@ -194,11 +194,10 @@ def test_score_empty_raises():
 # --------------- learn ---------------
 
 
-def test_learn_recovers_harmonic_linear_field():
-    # A linear field in the embedded XYZ coordinates is harmonic on the IVM
-    # graph (the mean of the 12 neighbor steps is the zero vector), so with
-    # the boundary fully observed and a narrow kernel the Laplacian-
-    # regularized fit reproduces it essentially exactly.
+def test_learn_approximates_linear_field_with_weak_regularization():
+    # Soft fitting can approximate this field with tiny lambda, a narrow
+    # kernel, the full boundary AND additional interior observations.
+    # This is not boundary-only hard harmonic extension.
     radius = 3
     truth = {
         q: 2.0 + 0.75 * _xyz(q)[0] - 0.5 * _xyz(q)[1] + 0.25 * _xyz(q)[2]
@@ -283,6 +282,153 @@ def test_learn_laplacian_is_symmetric():
     lap = field._laplacian()
     assert np.allclose(lap, lap.T)
     assert np.allclose(lap.sum(axis=1), 0.0, atol=1e-12)
+
+
+def test_learn_soft_boundary_values_shrink_under_regularization():
+    field = IVMField.lattice_ball(1)
+    boundary = shell_sites(1)
+    values = np.array([_xyz(q)[0] for q in boundary])
+    field.learn(boundary, values, lam=1.0)
+    fitted = np.array([field.predict(q) for q in boundary])
+    np.testing.assert_allclose(fitted, values / 4.0, atol=1e-14)
+    assert np.max(np.abs(fitted - values)) == pytest.approx(1.5)
+
+
+# --------------- hard-boundary harmonic extension ---------------
+
+
+def test_harmonic_extension_recovers_linear_field_from_boundary_only():
+    field = IVMField.lattice_ball(3)
+    truth = np.array([2.0 + _xyz(q) @ [0.75, -0.5, 0.25] for q in field.sites])
+    boundary_idx = [i for i, q in enumerate(field.sites) if quadray_shell_norm(q) == 6]
+    boundary = [field.sites[i] for i in boundary_idx]
+    field.harmonic_extension(boundary, truth[boundary_idx])
+    np.testing.assert_array_equal(field.values[boundary_idx], truth[boundary_idx])
+    np.testing.assert_allclose(field.values, truth, rtol=0.0, atol=2e-14)
+    interior_idx = sorted(set(range(len(field.sites))) - set(boundary_idx))
+    residual = [
+        len(field.adjacency[i]) * field.values[i] - sum(field.values[j] for j in field.adjacency[i])
+        for i in interior_idx
+    ]
+    np.testing.assert_allclose(residual, 0.0, rtol=0.0, atol=5e-14)
+
+
+def test_harmonic_extension_preserves_boundary_and_maximum_principle():
+    field = IVMField.lattice_ball(2)
+    boundary = [field.sites[0], field.sites[-1], field.sites[-2]]
+    boundary_values = [-3.0, 7.0, 2.0]
+    field.harmonic_extension(boundary, boundary_values)
+    assert [field.predict(q) for q in boundary] == boundary_values
+    assert np.min(field.values) >= -3.0 - 1e-13
+    assert np.max(field.values) <= 7.0 + 1e-13
+    boundary_set = set(boundary)
+    for i, q in enumerate(field.sites):
+        if q not in boundary_set:
+            assert field.values[i] == pytest.approx(
+                np.mean(field.values[list(field.adjacency[i])]), abs=1e-13
+            )
+
+
+def test_harmonic_extension_all_boundary_uses_site_order_not_input_order():
+    field = IVMField.lattice_ball(1)
+    boundary = list(reversed(field.sites))
+    values = np.linspace(-2.0, 4.0, len(boundary))
+    field.harmonic_extension(boundary, values)
+    np.testing.assert_array_equal(field.values, values[::-1])
+
+
+def test_harmonic_extension_isolated_site_and_gauge_representatives():
+    field = IVMField.lattice_ball(0)
+    field.harmonic_extension([Quadray(19, 19, 19, 19)], [3.25])
+    assert field.predict(Quadray(0, 0, 0, 0)) == 3.25
+    field = IVMField.lattice_ball(2)
+    anchor = field.sites[-1]
+    gauged = Quadray(*(c + 19 for c in anchor.as_tuple()))
+    field.harmonic_extension([gauged], [-1.25])
+    assert field.predict(anchor) == -1.25
+    np.testing.assert_allclose(field.values, -1.25, rtol=0.0, atol=2e-14)
+
+
+def _disconnected_ivm_field() -> IVMField:
+    # Actual induced IVM graph: a three-site chain, an edge, and an isolated
+    # site on one neighbor direction, separated by missing lattice sites.
+    step = IVM_NEIGHBOR_STEPS[0].as_tuple()
+    sites = tuple(Quadray(*(k * c for c in step)) for k in (0, 1, 2, 4, 5, 7))
+    return IVMField(
+        radius=7,
+        sites=sites,
+        site_index={q: i for i, q in enumerate(sites)},
+        adjacency=((1,), (0, 2), (1,), (4,), (3,), ()),
+        values=np.full(len(sites), 99.0),
+    )
+
+
+def test_harmonic_extension_anchors_every_disconnected_component():
+    field = _disconnected_ivm_field()
+    field.harmonic_extension([field.sites[i] for i in (0, 2, 3, 5)], [2.0, 6.0, -4.0, 8.0])
+    np.testing.assert_array_equal(field.values, [2.0, 4.0, 6.0, -4.0, -4.0, 8.0])
+
+
+@pytest.mark.parametrize(
+    "value", [np.nextafter(0.0, 1.0), 1e308, -np.finfo(float).max]
+)
+def test_harmonic_extension_preserves_constant_boundary_at_float_extremes(value):
+    field = IVMField.lattice_ball(1)
+    boundary = shell_sites(1)
+    field.harmonic_extension(boundary, [value] * len(boundary))
+    np.testing.assert_array_equal(field.values, np.full(len(field.sites), value))
+
+
+def test_harmonic_extension_scales_disconnected_components_independently():
+    field = _disconnected_ivm_field()
+    tiny = np.nextafter(0.0, 1.0)
+    field.harmonic_extension(
+        [field.sites[i] for i in (0, 3, 5)], [1e308, tiny, -7.0]
+    )
+    np.testing.assert_array_equal(
+        field.values, [1e308, 1e308, 1e308, tiny, tiny, -7.0]
+    )
+
+
+@pytest.mark.parametrize("anchors", [(0, 2), (0, 2, 5)])
+def test_harmonic_extension_rejects_unanchored_components_without_mutation(anchors):
+    field = _disconnected_ivm_field()
+    before = field.values.copy()
+    with pytest.raises(ValueError, match="each connected component.*boundary anchor"):
+        field.harmonic_extension([field.sites[i] for i in anchors], [1.0] * len(anchors))
+    np.testing.assert_array_equal(field.values, before)
+
+
+def test_harmonic_extension_requires_boundary_for_isolated_site():
+    field = IVMField.lattice_ball(0)
+    with pytest.raises(ValueError, match="at least one boundary"):
+        field.harmonic_extension([], [])
+
+
+@pytest.mark.parametrize("values", [[], [1.0, 2.0], [[1.0]]])
+def test_harmonic_extension_rejects_mismatched_or_nonscalar_values(values):
+    field = IVMField.lattice_ball(1)
+    with pytest.raises(ValueError, match="same length"):
+        field.harmonic_extension([field.sites[0]], values)
+
+
+@pytest.mark.parametrize("value", [np.nan, np.inf, -np.inf])
+def test_harmonic_extension_rejects_nonfinite_values(value):
+    field = IVMField.lattice_ball(1)
+    with pytest.raises(ValueError, match="finite"):
+        field.harmonic_extension([field.sites[0]], [value])
+
+
+def test_harmonic_extension_rejects_sites_outside_field():
+    field = IVMField.lattice_ball(1)
+    with pytest.raises(ValueError, match="outside the lattice ball"):
+        field.harmonic_extension([Quadray(4, 2, 2, 0)], [1.0])
+
+
+def test_harmonic_extension_rejects_gauge_duplicate_boundary_sites():
+    field = IVMField.lattice_ball(1)
+    with pytest.raises(ValueError, match="distinct"):
+        field.harmonic_extension([Quadray(0, 0, 0, 0), Quadray(4, 4, 4, 4)], [1.0, 1.0])
 
 
 def test_multi_source_distances_bfs_and_unreachable():

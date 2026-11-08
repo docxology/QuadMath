@@ -478,36 +478,40 @@ mathematical claims and their worked examples.
 The Lean 4 formalization in `lean/` (core Lean only, no Mathlib) mirrors this
 specification. **The tree carries no `sorry`.** Its honest status:
 
-- **Proved (kernel-checked).** In `QuadMath.Quadray`: normalization lands in the class,
-  is idempotent, and yields non-negative components with a zero component
-  (`normalize_sameClass`, `normalize_spec`, `quadMin_normalize`, `normalize_idem`); the
-  tetra-determinant is class-invariant (`tetraDet_congr`); the unit tetrahedron has
-  determinant 4 / volume 1 and the primitive tetrahedron determinant 1 / volume 1/4
-  (`tetraDet_unit`, `tetraVolume_unit`, `tetraDet_primitive`, `tetraVolume_primitive`).
-  In `QuadMath.IVM`: the 12 neighbor moves are pairwise distinct and are all IVM sites
-  (`neighborMoves_nodup`, `neighborMoves_all_sites`); normalization shifts the component
-  sum by a multiple of 4 (`ivmSum_normalize`); membership and shell norm are class
-  properties (`isIVMSite_normalize`, `shellNorm4_sameClass`); **scan-box completeness** —
-  every shell-`k` site has all components in $[0, 2k]$, so the enumeration of §4.7 loses
-  no sites (`shellNorm4_component_bound`); the **enumeration characterization**
-  (`mem_shellSites_iff`); shell membership determines the shell index
-  (`shellSites_unique`). In `QuadMath.Distance`: the exact distance identity (S10)
-  **proved universally over all integer deltas** (`deltaDist2_eq`), with symmetry
-  (`dist2_comm`), zero self-distance (`dist2_self`), and the twelve-around-one instance
-  $d^2 = 8$ (`dist2_neighborMove`). In `QuadMath.Lattice`: `omniNumber k = 10k² + 2`
-  with the enumeration realizing it on shells 1–3 (`shellSites_omni_1/2/3`).
-- **Machine-checked, not proved.** The *universal* shell-count theorem
-  `shellSites_card_target k : (shellSites k).length = 10k² + 2` is stated as a
-  proposition-valued definition and verified **by computation** for shells 1–4 with
-  kernel-evaluated `decide` (axiom audit: depending on no axioms) and shells 5–8 with
-  `native_decide` (the kernel trusts the VM result through one per-instance
-  `native_decide` axiom). The general case for arbitrary $k$ remains an **open proof
-  obligation**; keeping it as a proposition definition (rather than a `sorry`) leaves
-  the tree with zero unproved declarations. The proof sketch recorded in
-  `lean/README.md` (counting sum-zero representatives by sign pattern via
-  stars-and-bars) is future work.
-- See `lean/README.md`, section "What is proved vs. machine-checked", for the
-  authoritative per-theorem list and the build commands.
+- **Universal kernel-checked theorems.** `QuadMath.Quadray` defines the actual
+  `PhysicalQuadray` quotient, proves common-offset equivalence and canonical
+  uniqueness (`physicalClass_eq_iff`, `normalize_eq_iff_sameClass`,
+  `canonical_unique`), and characterizes its rank-three integer projection
+  (`sameClass_iff_proj_eq`, `proj_surjective`). The projection is onto integer
+  triples; this does not claim every integer XYZ triple lies in the Urner image.
+  Tetrahedral determinants and exact volumes are invariant under independently
+  changing all four vertex gauges (`tetraDet_sameClass`).
+- `QuadMath.IVM` proves class-invariant membership and centered shell norms,
+  scan-box completeness and shell-enumeration characterization
+  (`isIVMSite_normalize`, `shellNorm4_component_bound`, `mem_shellSites_iff`).
+  `QuadMath.Distance` proves the integer distance identity, nonnegativity,
+  independently gauged endpoint congruence and zero distance iff physical
+  equivalence (`deltaDist2_eq`, `dist2_nonneg`, `dist2_congr`,
+  `dist2_eq_zero_iff`). The orientation-sensitive XYZ determinant has factor
+  **+4** in the default row order; native volume is **3/8** of scale-one XYZ
+  volume (`xyzTetraDet_eq`, `tetraVolume_xyz_bridge`). The universal radial
+  bound excludes shells beyond a strict squared-radius cutoff
+  (`shellSites_dist2_lower`, `shellSites_outside_cutoff`).
+- **Finite-instance proofs, not a universal shell-count proof.**
+  `shellSites_card_target k` names the count proposition. Instances 1–4 use
+  kernel-evaluated `decide` and have no axioms; instances 5–8 use existing
+  `native_decide`, introducing per-instance native-evaluation trust. A finite
+  instance is still a proof of that instance, not of arbitrary `k`.
+  The general count theorem and BFS/centered-norm equivalence are not proved
+  in Lean. `#eval` output is computation, not a theorem.
+- The new universal theorems use standard Lean axioms where required
+  (`propext`, `Quot.sound`, and for the rational bridge `Classical.choice`),
+  not new native-evaluation axioms. Integer formalization does not verify
+  floating implementations, rational-coordinate extensions, collision engines
+  or QuadCraft's irrational unit rescaling.
+- `lake build` and `lake env leanchecker` check the formal tree. The dedicated
+  CI job pins the Lean action and uses the checked-in toolchain without
+  Mathlib. See `lean/README.md` for theorem names, trust boundaries and commands.
 
 ### 7.4 Manuscript projection
 

@@ -8,6 +8,8 @@ identification via fit_trajectory, and the demo figure renderer.
 """
 from __future__ import annotations
 
+from fractions import Fraction
+
 import os
 
 os.environ.setdefault("MPLBACKEND", "Agg")  # before any lazy matplotlib import
@@ -18,8 +20,11 @@ import pytest
 from quadmath.lattice.ivm_dynamics import (
     DynamicsParams,
     ball_sites,
+    conservative_heat_step,
+    dirichlet_energy,
     fit_trajectory,
     heat_step,
+    graph_laplacian,
     is_nonincreasing,
     make_lattice,
     majority_step,
@@ -425,18 +430,38 @@ def test_fit_validation():
 # --------------- demo figure ---------------
 
 
-def test_render_dynamics_demo_default_path():
-    path = render_dynamics_demo()
-    assert path.endswith("ivm_dynamics_demo.png")
-    assert os.path.isfile(path)
-    assert os.path.getsize(path) > 0
+def test_dynamics_renderer_releases_figure_after_success(tmp_path):
+    import matplotlib.pyplot as plt
+
+    before = plt.get_fignums()
+    render_dynamics_demo(
+        str(tmp_path / "dynamics.png"), horizon=2, grid_count=2, refine_rounds=0
+    )
+    assert plt.get_fignums() == before
 
 
-def test_render_dynamics_demo_explicit_path(tmp_path):
-    target = tmp_path / "ivm_dynamics_demo.png"
-    returned = render_dynamics_demo(str(target))
-    assert returned == str(target)
-    assert target.stat().st_size > 0
+def test_dynamics_renderer_releases_figure_after_save_failure(tmp_path):
+    import matplotlib.pyplot as plt
+
+    before = plt.get_fignums()
+    with pytest.raises(FileNotFoundError):
+        render_dynamics_demo(
+            str(tmp_path / "missing" / "dynamics.png"),
+            horizon=1, grid_count=2, refine_rounds=0,
+        )
+    assert plt.get_fignums() == before
+
+
+def test_dynamics_renderer_releases_figure_when_output_root_is_a_file(tmp_path, monkeypatch):
+    import matplotlib.pyplot as plt
+
+    blocked = tmp_path / "blocked"
+    blocked.write_text("not a directory", encoding="utf-8")
+    monkeypatch.setenv("QUADMATH_OUTPUT_DIR", str(blocked))
+    before = plt.get_fignums()
+    with pytest.raises(FileExistsError):
+        render_dynamics_demo(horizon=1, grid_count=2, refine_rounds=0)
+    assert plt.get_fignums() == before
 
 
 def test_ball_sites_exclude_tetrahedral_and_octahedral_voids():
@@ -451,3 +476,180 @@ def test_coupling_rejects_nan_alpha():
         heat_step(u, LATTICE, float("nan"))
     with pytest.raises(ValueError):
         majority_step(u.astype(np.int64), LATTICE, float("nan"))
+
+
+def test_integer_site_radius_retains_native_precision():
+    value = 2**1000 + 1
+    assert site_radius_sq(Quadray(value, 0, 0, 0)) == 3 * value * value
+    assert site_radius_sq(Quadray(value + 7, 7, 7, 7)) == 3 * value * value
+
+
+def test_laplacian_flux_and_dirichlet_energy_on_cuboctahedron():
+    initial = np.zeros(LATTICE.size)
+    initial[0] = 12.0
+    expected = np.full(LATTICE.size, -12.0)
+    expected[0] = 144.0
+    assert np.array_equal(graph_laplacian(initial, LATTICE), expected)
+    assert dirichlet_energy(initial, LATTICE) == 864.0
+    evolved = conservative_heat_step(initial, LATTICE, 0.5)
+    assert evolved[0] == 6.0
+    assert np.array_equal(evolved[1:], np.full(12, 0.5))
+    assert evolved.sum() == initial.sum()
+    assert dirichlet_energy(evolved, LATTICE) == 181.5
+
+
+@pytest.mark.parametrize("alpha", [0.0, 0.35, 1.0])
+def test_conservative_trajectory_preserves_mass_and_range(alpha):
+    initial = np.random.default_rng(41).uniform(0.0, 10.0, LATTICE.size)
+    trajectory = simulate(
+        12, DynamicsParams(kind="conservative", alpha=alpha), LATTICE, initial
+    )
+    energies = [dirichlet_energy(state, LATTICE) for state in trajectory.fields]
+    for state in trajectory.fields:
+        assert state.sum() == pytest.approx(initial.sum(), abs=1e-12)
+        assert state.min() >= initial.min() - 1e-12
+        assert state.max() <= initial.max() + 1e-12
+    assert is_nonincreasing(trajectory.sos, tol=1e-11)
+    assert is_nonincreasing(energies, tol=1e-11)
+
+
+def test_conservative_isolated_concentration_and_zero_laplacian():
+    isolated = make_lattice(0)
+    initial = np.array([7.0])
+    assert np.array_equal(conservative_heat_step(initial, isolated, 1.0), initial)
+    assert graph_laplacian(initial, isolated)[0] == 0.0
+    assert dirichlet_energy(initial, isolated) == 0.0
+
+
+@pytest.mark.parametrize("value", [np.nextafter(0.0, 1.0), np.finfo(float).max])
+def test_conservative_representable_constants_at_float_extremes(value):
+    initial = np.full(LATTICE.size, value)
+    assert np.array_equal(conservative_heat_step(initial, LATTICE, 1.0), initial)
+
+
+def test_conservative_subnormal_coupling_has_representable_flux():
+    initial = np.zeros(LATTICE.size)
+    initial[0] = 1e308
+    alpha = np.nextafter(0.0, 1.0)
+    expected = float(Fraction(float(alpha)) * Fraction(1e308) / 12)
+    assert expected > 0.0
+    evolved = conservative_heat_step(initial, LATTICE, alpha)
+    assert np.array_equal(evolved[1:], np.full(12, expected))
+    assert np.isfinite(evolved).all()
+
+
+def test_conservative_accumulates_individually_unrepresentable_fluxes():
+    alpha = 1e-15
+    initial = np.full(LATTICE.size, np.finfo(float).tiny)
+    initial[0] = 0.0
+    expected = float(Fraction(alpha) * Fraction(float(initial[1])))
+    assert expected > 0.0
+    assert conservative_heat_step(initial, LATTICE, alpha)[0] == expected
+
+
+@pytest.mark.parametrize("alpha", [-0.1, 1.1, float("nan")])
+def test_conservative_rejects_couplings_outside_convex_range(alpha):
+    with pytest.raises(ValueError):
+        conservative_heat_step(np.ones(LATTICE.size), LATTICE, alpha)
+
+
+@pytest.mark.parametrize(
+    "value,dtype",
+    [(2**63 - 1, np.int64), (2**63, np.uint64), (2**2000, object)],
+)
+def test_majority_preserves_large_integral_constant_fields(value, dtype):
+    initial = np.full(LATTICE.size, value, dtype=dtype)
+    evolved = simulate(3, DynamicsParams(kind="majority", alpha=0.35), LATTICE, initial)
+    for state, energy in zip(evolved.fields, evolved.sos):
+        assert all(int(entry) == value for entry in state)
+        assert energy == LATTICE.size * value * value
+
+
+def test_majority_rounds_exact_binary_coupling_before_quantization():
+    initial = np.full(LATTICE.size, 5, dtype=np.int64)
+    initial[0] = 0
+    assert Fraction(0.1) * 5 > Fraction(1, 2)
+    assert majority_step(initial, LATTICE, 0.1)[0] == 1
+    assert majority_step(np.array([3], dtype=object), make_lattice(0), 0.5)[0] == 3
+
+
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf")])
+def test_majority_rejects_nonintegral_nonfinite_states(invalid):
+    with pytest.raises(ValueError):
+        majority_step(np.full(LATTICE.size, invalid), LATTICE, 0.5)
+
+
+def test_integral_observables_retain_small_changes_at_huge_offsets():
+    value = 2**2000
+    assert sum_of_squares(np.array([value, value], dtype=object)) == 2 * value * value
+    assert not is_nonincreasing([value, value + 1])
+    assert is_nonincreasing([value + 1, value])
+    assert not is_nonincreasing([1.0, float("nan")])
+    assert sum_of_squares(np.array([[1.0, 2.0], [3.0, 4.0]])) == 30.0
+    assert sum_of_squares(np.array([Fraction(1, 2), 1], dtype=object)) == 1.25
+
+
+def test_majority_identification_subtracts_exact_integer_snapshots():
+    initial = np.arange(LATTICE.size, dtype=np.int64)
+    small = np.stack(
+        simulate(8, DynamicsParams(kind="majority", alpha=0.5), LATTICE, initial).fields
+    )
+    shifted = small.astype(object) + 2**2000
+    fit = fit_trajectory(shifted, [0.0, 0.5, 1.0], LATTICE, kind="majority", refine_rounds=0)
+    assert fit.best_alpha == 0.5
+    assert fit.best_mse == 0.0
+    assert fit.mses[0.0] > 0.0
+
+
+def test_identify_conservative_coupling_from_mass_preserving_trajectory():
+    initial = np.arange(LATTICE.size, dtype=float)
+    observed = np.stack(
+        simulate(7, DynamicsParams(kind="conservative", alpha=0.25), LATTICE, initial).fields
+    )
+    fitted = fit_trajectory(
+        observed, [0.0, 0.25, 0.5], LATTICE, kind="conservative", refine_rounds=0
+    )
+    assert fitted.best_alpha == 0.25
+    assert fitted.best_mse == 0.0
+    assert fitted.mses[0.0] > 0.0
+
+
+def test_majority_fitting_retains_count_errors_in_integral_float_observations():
+    initial = np.full(LATTICE.size, float(2**60 + 256))
+    initial[0] = float(2**60)
+    fitted = fit_trajectory(
+        np.stack([initial, initial]), [1 / 256], LATTICE,
+        kind="majority", refine_rounds=0,
+    )
+    assert fitted.best_mse == 1 / LATTICE.size
+
+
+def test_majority_grid_search_continues_past_unrepresentable_wrong_candidate():
+    initial = np.zeros(LATTICE.size, dtype=object)
+    initial[0] = 2**2000
+    observed = np.stack(
+        simulate(2, DynamicsParams(kind="majority", alpha=1.0), LATTICE, initial).fields
+    )
+    fitted = fit_trajectory(
+        observed, [0.0, 1.0], LATTICE, kind="majority", refine_rounds=0
+    )
+    assert fitted.best_alpha == 1.0
+    assert fitted.best_mse == 0.0
+    assert fitted.mses[0.0] == float("inf")
+
+
+@pytest.mark.parametrize("observation", [Fraction(7, 2), 3.5])
+def test_majority_scoring_keeps_fractional_observation_noise(observation):
+    fitted = fit_trajectory(
+        np.array([[3], [observation]], dtype=object), [0.5],
+        make_lattice(0), kind="majority", refine_rounds=0,
+    )
+    assert fitted.best_mse == 0.25
+
+
+def test_real_trajectory_mse_does_not_overflow_before_averaging():
+    observed = np.zeros((2, LATTICE.size))
+    observed[1, 0] = 2.0**512
+    fitted = fit_trajectory(observed, [0.0], LATTICE, refine_rounds=0)
+    expected = float(Fraction(2**1024, LATTICE.size))
+    assert fitted.best_mse == pytest.approx(expected, rel=1e-15)

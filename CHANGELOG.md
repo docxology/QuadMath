@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.6.0 — 2026-11-07
+
+### Exact methods and simulation
+
+- Add exact rational dot products, squared norms/distances, signed tetrahedral volume, triangle squared area and affine combinations with signed weights. Preserve explicit rational forward embeddings and resolved native cancellation before rounding.
+- Add hard-boundary harmonic extension with component anchoring, scale-safe solves and atomic failure. Keep regularized learning as a distinct soft-observation method.
+- Add cached undirected graph edges, a graph Laplacian, Dirichlet energy and conservative transport preserving ordinary mass/constants in exact arithmetic. Keep symmetric-normalized heat's different stationary mode explicit.
+- Preserve unbounded integer majority decisions, exact count objectives and fractional noisy observations; compute representable floating mean-square scores without premature squared overflow.
+
+### Geometry, visualization and orchestration
+
+- Replace malformed six-solid construction meshes with closed supporting-plane/indexed geometry; measure native volumes and edge lengths instead of copying labels. The displayed truncated octahedron has 24 vertices, 36 edges, 14 faces and native volume 96 at the declared scale.
+- Render exact sparse quotient-plane cells without dense huge-span allocation or float-collapsed cell edges. Compare hard/soft boundaries and conservative/normalized dynamics with shared scales and explicit conservation diagnostics.
+- Honor external `QUADMATH_OUTPUT_DIR` throughout all figure/data generators. Manifest entries are now relative to the configured output root, including the default root; readers must resolve against that root.
+- Add manuscript `--figures-dir` for isolated generation/porting; correct rational native-volume, reachability, unit and centered-volume examples. Rename the symbolic CSV field to `V_ace_ivm`; it is not restricted to integers.
+
+### Formal scope
+
+- Prove the integer-quadray physical quotient/canonical uniqueness, distance positivity and gauge congruence, determinant/volume bridges and universal shell lower bounds in dependency-free Lean.
+- Add pinned `lake build`/`leanchecker` CI. Universal shell counts/BFS equivalence, rational-coordinate extensions, floating simulations and gameplay remain outside those proofs.
+
+Local verification: the full mathematical suite passed **100% statement/branch coverage**; `lake build`, `leanchecker`, all 19 figure generators, strict manuscript/glossary/link checks and installed Python 3.11 wheel consumers were exercised successfully.
+
+Cross-suite consumers and limits: [interoperability guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
+
 ## 0.5.0 — 2026-11-07
 
 ### Stable information geometry

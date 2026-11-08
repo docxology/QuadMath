@@ -165,11 +165,13 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.quadray` | `IVM_NEIGHBOR_MOVES` | constant |  |  |
 | `quadmath.core.quadray` | `Quadray` | class |  | Four-component quadray vector; ``normalize`` chooses its min-zero gauge. |
 | `quadmath.core.quadray` | `ace_tetravolume_5x5` | function | `(p0, p1, p2, p3)` | Tom Ace 5x5 determinant as the exact IVM tetra-volume (Fuller.4D). |
+| `quadmath.core.quadray` | `affine_combination_exact` | function | `(points, weights)` | Canonical rational affine combination without lattice snapping. |
 | `quadmath.core.quadray` | `angle` | function | `(q1, q2, q3, embedding)` | Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians). |
 | `quadmath.core.quadray` | `centroid` | function | `(*quads)` | Round the component-wise mean of canonical representatives, exactly. |
 | `quadmath.core.quadray` | `centroid_exact` | function | `(points)` | Return the exact vertex mean in the canonical minimum-zero gauge. |
 | `quadmath.core.quadray` | `distance` | function | `(q1, q2, embedding)` | Euclidean distance between two quadray points under the given embedding. |
 | `quadmath.core.quadray` | `dot` | function | `(q1, q2, embedding)` | Return Euclidean dot product <q1,q2> under the given embedding. |
+| `quadmath.core.quadray` | `dot_exact` | function | `(q, r, embedding)` | Exact Euclidean inner product of native integer/rational components. |
 | `quadmath.core.quadray` | `integer_tetra_volume` | function | `(p0, p1, p2, p3)` | Compute the exact IVM tetra-volume of a lattice tetrahedron (Fuller.4D). |
 | `quadmath.core.quadray` | `magnitude` | function | `(q, embedding)` | Return the Euclidean magnitude of ``q`` under the given embedding (vector norm). |
 | `quadmath.core.quadray` | `qconjugate` | function | `(q)` | Conjugate (w, -x, -y, -z) of a quaternion in (w, x, y, z) order. |
@@ -177,8 +179,12 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.quadray` | `qrotate` | function | `(q, v_xyz, angle)` | Rotate a 3-vector by a unit quaternion via Rodrigues (v' = q v q*). |
 | `quadmath.core.quadray` | `quadray_from_xyz` | function | `(x, y, z, embedding)` | Map an R^3 point back by minimum-norm, component-wise half-up rounding. |
 | `quadmath.core.quadray` | `rotate_about_axis` | function | `(v_xyz, axis_xyz, angle)` | Rotate a 3-vector about an axis by an angle (axis-angle convenience). |
+| `quadmath.core.quadray` | `signed_tetra_volume_exact` | function | `(p0, p1, p2, p3)` | Signed rational native tetra measure ``det(edge projections)/4``. |
 | `quadmath.core.quadray` | `slerp` | function | `(qa, qb, t)` | Shortest-arc spherical linear interpolation between unit quaternions. |
+| `quadmath.core.quadray` | `squared_distance_exact` | function | `(q, r, embedding)` | Exact squared distance, subtracting native points before embedding. |
+| `quadmath.core.quadray` | `squared_norm_exact` | function | `(q, embedding)` | Exact squared norm, including zero for gauge aliases under quotient maps. |
 | `quadmath.core.quadray` | `to_xyz` | function | `(q, embedding)` | Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice). |
+| `quadmath.core.quadray` | `triangle_area_squared_exact` | function | `(p0, p1, p2, embedding)` | Exact squared Euclidean triangle area via its two-edge Gram determinant. |
 | `quadmath.core.symbolic` | `cayley_menger_volume_symbolic` | function | `(d2)` | Return symbolic Euclidean tetrahedron volume from squared distances. |
 | `quadmath.core.symbolic` | `convert_xyz_volume_to_ivm_symbolic` | function | `(V_xyz)` | Convert a symbolic Euclidean volume to IVM tetravolume via S3. |
 | `quadmath.inference.information` | `action_update` | function | `(action, free_energy_fn, step_size, epsilon)` | Continuous-time action update: da/dt = - dF/da. |
@@ -203,7 +209,10 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.ivm_dynamics` | `IVMLattice` | class |  | Finite IVM lattice ball with neighbor adjacency and diffusion operators. |
 | `quadmath.lattice.ivm_dynamics` | `Trajectory` | class |  | Deterministic simulation record. |
 | `quadmath.lattice.ivm_dynamics` | `ball_sites` | function | `(radius)` | Enumerate canonical quadray sites with squared IVM radius <= radius**2. |
+| `quadmath.lattice.ivm_dynamics` | `conservative_heat_step` | function | `(u, lattice, alpha)` | Diffuse equal-volume concentrations without boundary mass leakage. |
+| `quadmath.lattice.ivm_dynamics` | `dirichlet_energy` | function | `(u, lattice)` | Return E(u) = one half of the squared differences over undirected edges. |
 | `quadmath.lattice.ivm_dynamics` | `fit_trajectory` | function | `(observed, grid, lattice, kind, refine_rounds)` | Identify the coupling alpha from an observed trajectory (gradient-free). |
+| `quadmath.lattice.ivm_dynamics` | `graph_laplacian` | function | `(u, lattice)` | Apply the unnormalized graph Laplacian L = D - A. |
 | `quadmath.lattice.ivm_dynamics` | `heat_step` | function | `(u, lattice, alpha)` | One heat-diffusion step u <- (1 - alpha) u + alpha S u. |
 | `quadmath.lattice.ivm_dynamics` | `is_nonincreasing` | function | `(values, tol)` | True iff no consecutive pair of values increases by more than tol. |
 | `quadmath.lattice.ivm_dynamics` | `majority_step` | function | `(u, lattice, alpha)` | One rounded-averaging ("majority") step on integer states. |
@@ -213,7 +222,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.lattice.ivm_dynamics` | `simulate` | function | `(T, params, lattice, u0)` | Simulate T updates; deterministic given `params` (fixed seed). |
 | `quadmath.lattice.ivm_dynamics` | `site_radius_sq` | function | `(q)` | Integer squared IVM radius of a quadray site (squared embedding norm). |
 | `quadmath.lattice.ivm_dynamics` | `step` | function | `(u, lattice, params)` | Apply one update of the dynamics in `params` to the field. |
-| `quadmath.lattice.ivm_dynamics` | `sum_of_squares` | function | `(u)` | Sum of squares of a field — the observable of the heat lemma. |
+| `quadmath.lattice.ivm_dynamics` | `sum_of_squares` | function | `(u)` | Return the flattened squared norm, exact for integral fields. |
 | `quadmath.lattice.ivm_field` | `IVMField` | class |  | Scalar field over an IVM lattice ball, stored on a deterministic site index. |
 | `quadmath.lattice.ivm_field` | `IVM_NEIGHBOR_STEPS` | constant |  |  |
 | `quadmath.lattice.ivm_field` | `TetrahedronFit` | class |  | Result of :func:`fit_geometry`. |
@@ -330,10 +339,13 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.viz.plots` | `plot_slerp_path` | function | `(q0, q1, n_frames, site, save, out_path)` | Trace the 3D path of a fixed lattice site under shortest-arc slerp. |
 | `quadmath.viz.vis_lattice` | `DEFAULT_PLANE` | constant |  |  |
 | `quadmath.viz.vis_lattice` | `GALLERY_FILES` | constant |  |  |
-| `quadmath.viz.vis_lattice` | `dynamics_strip` | function | `(axs, trajectory, t_indices, embedding=, cmap=, titles=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. |
-| `quadmath.viz.vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
+| `quadmath.viz.vis_lattice` | `boundary_comparison` | function | `(axs, hard, soft, boundary_sites, boundary_values, plane=)` | Compare hard Dirichlet extension and soft learning on four caller axes. |
+| `quadmath.viz.vis_lattice` | `dynamics_comparison` | function | `(axs, conservative, normalized)` | Show finite-boundary operators and their measured invariants on six axes. |
+| `quadmath.viz.vis_lattice` | `dynamics_strip` | function | `(axs, trajectory, t_indices, embedding=, cmap=, titles=, norm=)` | Render evolution snapshots of a trajectory as a strip of 3D panels. |
+| `quadmath.viz.vis_lattice` | `field_slice` | function | `(ax, field, sites, plane, q0=, cmap=, title=, colorbar=, norm=)` | Heatmap of a scalar IVM field restricted to a lattice plane. |
 | `quadmath.viz.vis_lattice` | `gallery` | function | `(paths_out_dir, seed)` | Compose the three lattice-gallery figures deterministically. |
 | `quadmath.viz.vis_lattice` | `shell_scatter` | function | `(ax, sites, k, embedding=, color=, size=, axis_hints=, title=)` | Scatter one IVM frequency shell in 3D with tetrahedral axis hints. |
+| `quadmath.viz.vis_polyhedra` | `render_polyhedra_constructions` | function | `(out_path)` | Save measured, equal-scale solid panels and their high-resolution copy. |
 | `quadmath.viz.vis_stats` | `GALLERY_FILES` | constant |  |  |
 | `quadmath.viz.vis_stats` | `gallery` | function | `(paths_out_dir, seed)` | Compose the four statistics-gallery figures deterministically. |
 | `quadmath.viz.vis_stats` | `plot_ci_bars` | function | `(labels, means, lows, highs, ax, title=)` | Point estimates with confidence intervals ``[lows, highs]`` as error bars. |

@@ -25,26 +25,6 @@ def _ensure_src_on_path() -> None:
         sys.path.insert(0, src_path)
 
 
-def _get_output_dir() -> str:
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    out = os.path.join(repo_root, "quadmath", "output")
-    os.makedirs(out, exist_ok=True)
-    return out
-
-
-def _get_data_dir() -> str:
-    out = _get_output_dir()
-    data_dir = os.path.join(out, "data")
-    os.makedirs(data_dir, exist_ok=True)
-    return data_dir
-
-
-def _get_figure_dir() -> str:
-    out = _get_output_dir()
-    figure_dir = os.path.join(out, "figures")
-    os.makedirs(figure_dir, exist_ok=True)
-    return figure_dir
-
 
 def cayley_menger_symbolic_unit_tetra() -> Tuple[str, str]:
     """Return simplified symbolic V_xyz and V_ivm for unit-edge regular tetra.
@@ -93,6 +73,7 @@ def compare_ace_vs_cm_examples() -> str:
     import matplotlib.pyplot as plt
 
     _ensure_src_on_path()
+    from quadmath.paths import get_data_dir, get_figure_dir
     # Import numeric Ace and embedding from src
     from quadmath.core.quadray import Quadray, ace_tetravolume_5x5, DEFAULT_EMBEDDING
     from quadmath.core.symbolic import cayley_menger_volume_symbolic, convert_xyz_volume_to_ivm_symbolic
@@ -114,7 +95,7 @@ def compare_ace_vs_cm_examples() -> str:
         (Quadray(0, 0, 0, 0), Quadray(5, 2, 1, 2), Quadray(2, 5, 2, 1), Quadray(1, 2, 5, 2)),
     ]
 
-    rows = [("case", "V_ace_ivm_int", "V_cm_s3_ivm_sym", "match")]
+    rows = [("case", "V_ace_ivm", "V_cm_s3_ivm_sym", "match")]
     ace_vals = []
     cm_vals = []
 
@@ -163,8 +144,8 @@ def compare_ace_vs_cm_examples() -> str:
             f"{failed}"
         )
 
-    data_dir = _get_data_dir()
-    figure_dir = _get_figure_dir()
+    data_dir = get_data_dir()
+    figure_dir = get_figure_dir()
     csv_path = os.path.join(data_dir, "bridging_vs_native.csv")
     from quadmath.tools.atomic_write import atomic_open  # noqa: WPS433
     with atomic_open(csv_path, newline="") as f:
@@ -236,7 +217,9 @@ def main() -> None:
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()
 
-    data_dir = _get_data_dir()
+    from quadmath.paths import get_data_dir
+
+    data_dir = get_data_dir()
     V_xyz, V_ivm = cayley_menger_symbolic_unit_tetra()
     mag_expr = embedding_symbolic_magnitude()
     mag_vec_expr = magnitude_via_vector_module()

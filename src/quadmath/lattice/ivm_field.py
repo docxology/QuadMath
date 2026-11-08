@@ -15,9 +15,9 @@ Pieces:
   ``k >= 1`` (the cuboctahedral numbers 1, 12, 42, 92, 162, ...).
 - :class:`IVMField` — a scalar field over a lattice ball of radius ``R``,
   stored as a numpy array keyed by a deterministic site index, with
-  :meth:`IVMField.learn` (Laplacian-regularized kernel-weighted least
-  squares on the lattice graph), :meth:`IVMField.predict` and
-  :meth:`IVMField.score`.
+  :meth:`IVMField.learn` (soft Laplacian-regularized kernel-weighted least
+  squares), :meth:`IVMField.harmonic_extension` (hard-boundary graph
+  harmonic extension), :meth:`IVMField.predict` and :meth:`IVMField.score`.
 - :func:`fit_geometry` — least-squares recovery of the best-fit tetrahedron
   orientation+scale from noisy 3D points via the quadray basis in
   :mod:`quadmath.core.quadray` (the ``to_xyz`` mapping).
@@ -308,6 +308,10 @@ class IVMField:
         callers seed any observation sampling themselves (e.g. with
         ``numpy.random.default_rng(seed)``).
 
+        Observations are soft constraints: for positive ``lam`` even the
+        observed values can move.  Use :meth:`harmonic_extension` for hard
+        boundary constraints and a harmonic unobserved interior.
+
         Parameters
         - observation_sites: Sites carrying observations (inside the ball).
         - observation_values: Observed scalar values, one per site.
@@ -365,9 +369,95 @@ class IVMField:
 
         lap = self._laplacian()
         target = y_hat.copy()
-        target[obs_idx] = y  # observed rows are pinned to their data
+        target[obs_idx] = y  # observed targets, not hard constraints on f
         system = np.diag(confidence) + lam * lap
         self.values = np.linalg.solve(system, confidence * target)
+        return self
+
+    def harmonic_extension(
+        self,
+        boundary_sites: Sequence[Quadray],
+        boundary_values: Sequence[float],
+    ) -> "IVMField":
+        """Extend hard boundary values harmonically over the existing graph.
+
+        For boundary indices ``B`` and remaining indices ``U``, solve
+        ``L_UU f_U = -L_UB f_B`` using the graph Laplacian ``L = D - A``.
+        Boundary values are assigned directly, not fitted or regularized.
+        Each connected component must contain a boundary site; otherwise
+        its additive constant is undetermined and no unique extension
+        exists.  Isolated sites therefore must themselves be boundary.
+        Each component is solved about a boundary reference in power-of-two
+        scaled units, preserving representable constants at both floating
+        extremes. Interior harmonicity otherwise holds up to roundoff.
+
+        Parameters
+        - boundary_sites: Distinct sites in the field, normalized internally.
+          These may be any anchored subset, not only the outer shell.
+        - boundary_values: Finite scalar values, one per boundary site.
+
+        Returns
+        - IVMField: Self, with ``values`` replaced by the harmonic extension.
+
+        Raises
+        - ValueError: If no boundary is supplied, values are not a finite
+          one-dimensional sequence of matching length, a site is outside
+          the field, sites repeat (including gauge equivalents), or a
+          connected component has no boundary anchor.
+        """
+        boundary = list(boundary_sites)
+        y = np.asarray(list(boundary_values), dtype=float)
+        if not boundary:
+            raise ValueError("at least one boundary site is required")
+        if y.ndim != 1 or len(y) != len(boundary):
+            raise ValueError("boundary_sites and boundary_values must have the same length and values must be one-dimensional")
+        if not np.all(np.isfinite(y)):
+            raise ValueError("boundary values must be finite")
+        boundary_idx: List[int] = []
+        for site in boundary:
+            j = self.site_index.get(site.normalize())
+            if j is None:
+                raise ValueError(f"boundary site {site.as_tuple()} is outside the lattice ball of radius {self.radius}")
+            boundary_idx.append(j)
+        if len(set(boundary_idx)) != len(boundary_idx):
+            raise ValueError("boundary sites must be distinct")
+        values = np.empty(len(self.sites), dtype=float)
+        values[boundary_idx] = y
+        is_boundary = np.zeros(len(self.sites), dtype=bool)
+        is_boundary[boundary_idx] = True
+        seen = np.zeros(len(self.sites), dtype=bool)
+        lap = None
+        for seed in range(len(self.sites)):
+            if seen[seed]:
+                continue
+            component = [seed]
+            seen[seed] = True
+            for i in component:
+                for j in self.adjacency[i]:
+                    if not seen[j]:
+                        seen[j] = True
+                        component.append(j)
+            anchors = [i for i in component if is_boundary[i]]
+            if not anchors:
+                raise ValueError("each connected component must have a boundary anchor")
+            interior = [i for i in component if not is_boundary[i]]
+            if not interior:
+                continue
+            if lap is None:
+                lap = self._laplacian()
+            boundary_magnitude = float(np.max(np.abs(values[anchors])))
+            scale = (
+                math.ldexp(1.0, math.frexp(boundary_magnitude)[1] - 1)
+                if boundary_magnitude else 1.0
+            )
+            normalized = values[anchors] / scale
+            reference = normalized[0]
+            correction = np.linalg.solve(
+                lap[np.ix_(interior, interior)],
+                -lap[np.ix_(interior, anchors)] @ (normalized - reference),
+            )
+            values[interior] = (reference + correction) * scale
+        self.values = values
         return self
 
     def _laplacian(self) -> "np.ndarray":

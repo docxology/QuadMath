@@ -11,7 +11,7 @@ Both modules operate on canonical quadray integer 4-tuples (non-negative compone
 
 ## Omnidirectional Close Packing and Frequency Shells
 
-In the isotropic vector matrix (IVM), equal spheres pack omnidirectionally — closest packing. Starting from a central sphere, the packing builds up in consecutive **frequency shells**: the shell of frequency $k \in \mathbb{Z}_{\ge 0}$ sits $k$ radius-length increments outward of the center, the same four-dimensional buildup language synergetics uses for the growing vector equilibrium. Writing $N_k$ for the population of shell $k$, the lone center is the whole of shell 0 ($N_0 = 1$), and every shell with $k \ge 1$ carries exactly
+The IVM builds consecutive **graph-distance frequency shells**, not constant-radius Euclidean spheres. For example, shell 2 contains scale-one squared radii 16 and 32. Writing $N_k$ for the population of shell $k$, the lone center is the whole of shell 0 ($N_0 = 1$), and every shell with $k \ge 1$ carries exactly
 
 \begin{equation}\label{eq:lattice-shell-population}
 N_k \;=\; 10\,k^{2} \;+\; 2
@@ -25,9 +25,22 @@ C_k \;=\; 1 \;+\; \sum_{j=1}^{k} \left(10\,j^{2} + 2\right) \;=\; 1 + 2k + \frac
 
 The functions `shell_count(k)` and `cumulative_count(k)` evaluate Eqs. \eqref{eq:lattice-shell-population} and \eqref{eq:lattice-cumulative} (scalar or array input), and the test suite cross-validates them against direct summation.
 
-### Reachability is enumerative, not congruence-based
+### Membership and constructive reachability
 
-A normalized integer quadray $q$ with $\sum_i q_i \equiv 0 \pmod 4$ is a candidate IVM point, but not every candidate is reachable from the origin by the 12 neighbor moves. The module therefore builds the site set **layer by layer**: each new shell is produced at once by adding all 12 moves to the previous frontier, re-normalizing rows, and removing sites already seen (packed-key membership tests). The result is cached per depth: `sites_through_shell(k)` returns the `(C_k, 4)` integer array in canonical order — the center first, then each shell in lexicographic `(a, b, c, d)` order — and `generate_shell(k)` returns one shell. An independent breadth-first reference over `itertools.permutations` confirms exact agreement through frequency 8, including the counts of Eq. \eqref{eq:lattice-shell-population} on every shell.
+A canonical integer quadray is an IVM site **iff**
+$\sum_i q_i\equiv0\pmod4$. Its centered representative
+$w=q-(\sum_iq_i/4)(1,1,1,1)$ is an integer sum-zero vector. The twelve
+centered neighbor moves are precisely $e_i-e_j$ for $i\ne j$. Balancing
+positive and negative entries constructs every such $w$ in
+$\sum_i|w_i|/2$ moves; no shorter route can change that many unit transfers.
+Thus membership is not an additional enumeration-dependent restriction.
+
+The implementation expands frontiers, normalizes, removes previously seen
+sites and caches deterministic shell-major numbering. `sites_through_shell(k)`
+returns the `(C_k,4)` array; `generate_shell(k)` returns one lexicographic
+shell. The independent BFS comparisons exercise this correspondence through
+frequency 8. The constructive argument here is not a claim that its full
+BFS equivalence or universal shell count has been formalized in Lean.
 
 ### Site/index mapping
 
@@ -44,7 +57,7 @@ from quadmath.lattice.omni_numbering import (
 assert shell_count(1) == 12 and shell_count(2) == 42      # 10k^2 + 2
 assert cumulative_count(2) == 55                          # 1 + 12 + 42
 assert site_index(site_at_index(12, 3), 3) == 12          # roundtrip
-assert site_index((2, 0, 0, 0), 6) == -1                  # unreachable site
+assert site_index((2, 0, 0, 0), 6) == -1                  # octahedral void, not FCC
 ```
 
 ## Fast Nearest-Site Queries
@@ -58,11 +71,11 @@ d^{2}(p, q) \;=\; 4 \sum_{j} \delta_j^{2} \;-\; \Bigl(\sum_{j} \delta_j\Bigr)^{2
 \qquad \delta = p - q,
 \end{equation}
 
-implemented in `squared_distance` and cross-validated in the tests against direct embedding coordinates. Because the identity is exact on integers, ranking and filtering never suffer floating-point boundary errors: a site is inside the query radius $R > 0$ iff $d^{2} \le R^{2}$ evaluated exactly (in float64 the same algebra is exact for the magnitudes involved here).
+The identity is exact on integers; `lattice_search.squared_distance` evaluates gauge-free Cartesian squares in float64. Ranking and radius filtering therefore retain the documented floating limits, not arbitrary-integer exactness. Use `quadmath.squared_distance_exact` when an exact individual rational distance is required; floating input cannot restore information lost before the call.
 
 ### Truncation bound
 
-Every site $s$ on frequency shell $g$ satisfies $d^{2}(\mathbf{0}, s) \ge 8\,g$ — verified by exhaustive enumeration through frequency 8 in the test suite — and the shell maximum is exactly $8\,g^{2}$. Combining this invariant with the triangle inequality gives the depth at which a query can stop:
+Every shell-$g$ site satisfies $d^2(\mathbf0,s)\ge8g$, now proved universally for the centered enumeration in Lean as `shellSites_dist2_lower`. Finite BFS comparisons check its graph-shell interpretation; they do not replace a universal BFS proof. The shell maximum is $8g^2$. The radial lower bound and triangle inequality give the depth at which a query can stop:
 
 \begin{equation}\label{eq:lattice-truncation-bound}
 g \;\leq\; \frac{\left(\lVert c \rVert + R\right)^{2}}{8},
@@ -92,13 +105,13 @@ assert np.all(np.diff(ball_d2) >= 0)                      # ascending distances
 | `omni_numbering.generate_shell(k)` | Sites of one frequency shell (lexicographic) |
 | `omni_numbering.sites_through_shell(k)` | Whole enumeration `(C_k, 4)` in canonical order |
 | `omni_numbering.site_index` / `site_at_index` | Bidirectional site/index mapping with projective normalization |
-| `lattice_search.squared_distance` | Exact squared distances via Eq. \eqref{eq:lattice-distance-identity} |
-| `lattice_search.within_radius(site, R)` | All sites within radius, exact and sorted |
-| `lattice_search.nearest(site, R, k)` | `k` nearest sites within radius, shell-sweep with early stop |
+| `lattice_search.squared_distance` | Float64 gauge-free squared distances, matching the integer identity within its numeric range |
+| `lattice_search.within_radius(site, R)` | All sites within the supported radius, sorted with documented floating boundary semantics |
+| `lattice_search.nearest(site, R, k)` | `k` nearest supported sites, shell sweep with a conservative early-stop bound |
 
 ## Verification
 
-Both modules ship with 100% test coverage (branch coverage included): the enumeration is checked against an independent breadth-first reference through frequency 8, distance identities against direct embedding computations, and query results against brute-force filtering on fixed-seed random centers. Run:
+The regressions compare enumeration with independent BFS through frequency 8, metric identities with actual embeddings and queries with brute-force filtering. Run:
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q

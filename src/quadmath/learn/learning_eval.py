@@ -41,7 +41,9 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from quadmath.lattice.ivm_dynamics import DynamicsParams, IVMLattice, fit_trajectory, simulate, step
+from quadmath.lattice.ivm_dynamics import (
+    DynamicsParams, IVMLattice, _trajectory_mse, fit_trajectory, simulate, step,
+)
 from quadmath.lattice.ivm_field import IVMField, quadray_shell_norm
 from quadmath.core.quadray import Quadray
 
@@ -345,7 +347,7 @@ def trajectory_train_test(
       :func:`ivm_dynamics.fit_trajectory`).
     - split_frac: Training fraction in the open interval ``(0, 1)``.
     - lattice: Lattice the snapshots live on.
-    - kind: Dynamics kind, ``"heat"`` or ``"majority"``.
+    - kind: Dynamics kind, ``"heat"``, ``"conservative"`` or ``"majority"``.
     - grid: Candidate couplings for :func:`ivm_dynamics.fit_trajectory`;
       ``None`` uses ``numpy.linspace(0, 1, 11)``.
     - refine_rounds: Interval re-gridding rounds passed through to
@@ -361,7 +363,7 @@ def trajectory_train_test(
       ``(0, 1)``; further validation is propagated from
       :func:`ivm_dynamics.fit_trajectory` and :func:`ivm_dynamics.step`.
     """
-    obs = np.asarray(observed, dtype=float)
+    obs = np.asarray(observed)
     if obs.ndim != 2:
         raise ValueError("observed must have shape (T+1, N)")
     rows = obs.shape[0]
@@ -378,12 +380,12 @@ def trajectory_train_test(
     fit = fit_trajectory(obs[:n_train], grid_values, lattice, kind=kind, refine_rounds=refine_rounds)
     params = DynamicsParams(kind=kind, alpha=fit.best_alpha)
     traj = simulate(rows - 1, params, lattice=lattice, u0=obs[0])
-    predicted = np.asarray(traj.fields[1:], dtype=float)
-    test_mse = float(np.mean((predicted[n_train - 1:] - obs[n_train:]) ** 2))
-    step_errors = [
-        (step(obs[t], lattice, params) - obs[t + 1]) ** 2 for t in range(n_train - 1, rows - 1)
+    test_mse = _trajectory_mse(traj.fields[n_train:], obs[n_train:], kind)
+    predictions = [
+        step(obs[t], lattice, params)
+        for t in range(n_train - 1, rows - 1)
     ]
-    one_step_mse = float(np.mean(step_errors))
+    one_step_mse = _trajectory_mse(predictions, obs[n_train:], kind)
     return TrajectorySplitResult(
         n_train_rows=n_train,
         n_test_rows=rows - n_train,

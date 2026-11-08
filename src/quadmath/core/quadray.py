@@ -75,23 +75,43 @@ def _row_sum_is_zero(row: Iterable[float]) -> bool:
     return sum((_exact_fraction(value) for value in row), Fraction()) == 0
 
 
-def _embed_row(row: Tuple[float, ...], values: Tuple[int, ...]) -> float:
-    """Evaluate a row, retaining scaled integers too large for float coercion."""
+def _embed_row_exact(row: Iterable[float], values: Iterable[float]) -> Fraction:
+    """Evaluate native linear combinations before the floating boundary."""
+    return sum((_exact_fraction(weight) * _exact_fraction(value)
+                for weight, value in zip(row, values)), Fraction())
+
+
+def _float_metric(value: Fraction) -> float:
+    """Round once to float, returning signed infinity only outside its range."""
     try:
-        return row[0] * values[0] + row[1] * values[1] + row[2] * values[2] + row[3] * values[3]
+        return float(value)
     except OverflowError:
-        return float(sum((_exact_fraction(weight) * _exact_fraction(value)
-                          for weight, value in zip(row, values)), Fraction()))
+        return -math.inf if value < 0 else math.inf
 
 
-def to_xyz(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[float, float, float]:
+def _embed_row(
+    row: Tuple[float, ...], values: Tuple[int, ...]
+) -> float | Fraction:
+    """Preserve rational arithmetic, or round once for floating inputs."""
+    result = _embed_row_exact(row, values)
+    if all(isinstance(weight, numbers.Rational) for weight in row) and all(
+        isinstance(value, numbers.Rational) for value in values
+    ):
+        return result.numerator if result.denominator == 1 else result
+    return _float_metric(result)
+
+
+def to_xyz(
+    q: Quadray, embedding: Iterable[Iterable[float]]
+) -> Tuple[float | Fraction, float | Fraction, float | Fraction]:
     """Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice).
 
-    Rows correspond to X,Y,Z and columns to a,b,c,d. If every row sums to
-    exactly zero, remove the common integer gauge before any floating-point
-    multiplication. Arbitrarily large gauge aliases then have the same
-    image without converting their irrelevant common offset to float.
-    Other embeddings retain their ordinary, gauge-dependent linear map.
+    Rows correspond to X,Y,Z and columns to a,b,c,d. Linear combinations
+    are evaluated exactly. Rational coordinates with rational embedding rows
+    retain rational results; rows containing floating data round once after
+    interpreting finite coefficients as exact binary rationals. If every row
+    sums to exactly zero, the common gauge is removed first. Nongauge
+    embeddings retain their ordinary, gauge-dependent linear map.
     """
     r0, r1, r2 = _xyz_tuple(embedding)
     if all(_row_sum_is_zero(row) for row in (r0, r1, r2)):
@@ -169,6 +189,107 @@ def _xyz_tuple(embedding: Iterable[Iterable[float]]) -> Tuple[Tuple[float, float
     return (tuple(r0), tuple(r1), tuple(r2))  # type: ignore[return-value]
 
 
+def _components_exact(point: Quadray | Iterable[float]) -> tuple[Fraction, ...]:
+    """Read four native components without imposing a lattice snapping rule."""
+    values = point.as_tuple() if isinstance(point, Quadray) else tuple(point)
+    if len(values) != 4:
+        raise ValueError("A quadray point must have four components")
+    return tuple(_exact_fraction(value) for value in values)
+
+
+def dot_exact(q: Quadray | Iterable[float], r: Quadray | Iterable[float],
+              embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING) -> Fraction:
+    """Exact Euclidean inner product of native integer/rational components.
+
+    Finite floating embedding entries denote their exact binary rationals.
+    The default metric is ``4*sum(q_i*r_i)-sum(q_i)*sum(r_i)``.
+    Custom maps need not annihilate the common gauge or have full rank;
+    their actual linear map, not a quotient replacement, defines the metric.
+    """
+    left, right = _components_exact(q), _components_exact(r)
+    rows = _xyz_tuple(embedding)
+    if rows == DEFAULT_EMBEDDING:
+        return 4 * sum(a * b for a, b in zip(left, right)) - sum(left) * sum(right)
+    return sum((_embed_row_exact(row, left) * _embed_row_exact(row, right)
+                for row in rows), Fraction())
+
+
+def squared_norm_exact(q: Quadray | Iterable[float],
+                       embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING) -> Fraction:
+    """Exact squared norm, including zero for gauge aliases under quotient maps."""
+    values = _components_exact(q)
+    return dot_exact(values, values, embedding)
+
+
+def squared_distance_exact(q: Quadray | Iterable[float], r: Quadray | Iterable[float],
+                           embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING) -> Fraction:
+    """Exact squared distance, subtracting native points before embedding."""
+    displacement = tuple(b - a for a, b in zip(_components_exact(q), _components_exact(r)))
+    return squared_norm_exact(displacement, embedding)
+
+
+def affine_combination_exact(
+    points: Iterable[Quadray | Iterable[float]], weights: Iterable[float],
+) -> tuple[Fraction, Fraction, Fraction, Fraction]:
+    """Canonical rational affine combination without lattice snapping.
+
+    Signed weights are allowed but must sum exactly to one. Inputs must be
+    nonempty and have one weight per point. Independent point gauges do not
+    change the physical result. Floats denote their exact binary rationals.
+    """
+    totals = [Fraction() for _ in range(4)]
+    weight_sum = Fraction()
+    count = 0
+    for point, weight in zip(points, weights, strict=True):
+        weight = _exact_fraction(weight)
+        for i, value in enumerate(_components_exact(point)):
+            totals[i] += weight * value
+        weight_sum += weight
+        count += 1
+    if not count or weight_sum != 1:
+        raise ValueError("An affine combination needs points and weights summing exactly to one")
+    minimum = min(totals)
+    a, b, c, d = (value - minimum for value in totals)
+    return a, b, c, d
+
+
+def signed_tetra_volume_exact(
+    p0: Quadray | Iterable[float], p1: Quadray | Iterable[float],
+    p2: Quadray | Iterable[float], p3: Quadray | Iterable[float],
+) -> Fraction:
+    """Signed rational native tetra measure ``det(edge projections)/4``.
+
+    Projection is ``(a-d,b-d,c-d)``. Odd vertex permutations reverse sign;
+    translation and independent vertex gauges leave it unchanged. This is
+    native IVM measure, not XYZ volume under an arbitrary custom embedding.
+    Unlike the separate integer-only Bareiss APIs, rational edges stay exact.
+    """
+    origin = _components_exact(p0)
+    edges = []
+    for point in (p1, p2, p3):
+        edge = tuple(value - base for value, base in zip(_components_exact(point), origin))
+        edges.append(tuple(value - edge[3] for value in edge[:3]))
+    a, b, c = edges
+    determinant = (a[0] * (b[1] * c[2] - b[2] * c[1])
+                   - a[1] * (b[0] * c[2] - b[2] * c[0])
+                   + a[2] * (b[0] * c[1] - b[1] * c[0]))
+    return determinant / 4
+
+
+def triangle_area_squared_exact(
+    p0: Quadray | Iterable[float], p1: Quadray | Iterable[float],
+    p2: Quadray | Iterable[float],
+    embedding: Iterable[Iterable[float]] = DEFAULT_EMBEDDING,
+) -> Fraction:
+    """Exact squared Euclidean triangle area via its two-edge Gram determinant."""
+    origin = _components_exact(p0)
+    u = tuple(value - base for value, base in zip(_components_exact(p1), origin))
+    v = tuple(value - base for value, base in zip(_components_exact(p2), origin))
+    rows = _xyz_tuple(embedding)
+    return (squared_norm_exact(u, rows) * squared_norm_exact(v, rows)
+            - dot_exact(u, v, rows) ** 2) / 4
+
+
 def _to_xyz_array(q: Quadray, embedding: Iterable[Iterable[float]]) -> Tuple[float, float, float]:
     """Internal helper returning XYZ triple for vector ops."""
     return to_xyz(q, embedding)
@@ -198,10 +319,7 @@ def dot(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float
     Returns
     - float: Dot product in the embedded Euclidean space
     """
-    embedding = _xyz_tuple(embedding)
-    x1, y1, z1 = _to_xyz_array(q1, embedding)
-    x2, y2, z2 = _to_xyz_array(q2, embedding)
-    return float(x1 * x2 + y1 * y2 + z1 * z2)
+    return _float_metric(dot_exact(q1, q2, embedding))
 
 
 def distance(q1: Quadray, q2: Quadray, embedding: Iterable[Iterable[float]]) -> float:
@@ -223,10 +341,10 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
           embedding: Iterable[Iterable[float]]) -> float:
     """Angle at vertex q2 formed by rays q2->q1 and q2->q3 (radians).
 
-    Uses the embedded dot-product formula:
-        cos(theta) = <v1, v2> / (|v1| |v2|)
-    where v1 = q1 - q2 and v2 = q3 - q2 are formed before embedding to
-    preserve integer displacements under large spatial translations.
+    Uses ``atan2(|v1 cross v2|, v1 dot v2)`` after independently scaling
+    the embedded rays. This retains resolved angles near zero and pi.
+    Native displacements v1 = q1 - q2 and v2 = q3 - q2 are formed first
+    to preserve small geometry under large spatial translations.
 
     Parameters
     - q1, q2, q3: Quadray points; angle is measured at q2
@@ -247,12 +365,11 @@ def angle(q1: Quadray, q2: Quadray, q3: Quadray,
         raise ValueError("Degenerate angle: vertex coincides with an endpoint")
     v1x, v1y, v1z = v1x / scale1, v1y / scale1, v1z / scale1
     v2x, v2y, v2z = v2x / scale2, v2y / scale2, v2z / scale2
-    len1 = math.hypot(v1x, v1y, v1z)
-    len2 = math.hypot(v2x, v2y, v2z)
-    cos_theta = (v1x * v2x + v1y * v2y + v1z * v2z) / (len1 * len2)
-    # Clamp for numerical safety
-    cos_theta = max(-1.0, min(1.0, cos_theta))
-    return float(math.acos(cos_theta))
+    cross = (v1y * v2z - v1z * v2y,
+             v1z * v2x - v1x * v2z,
+             v1x * v2y - v1y * v2x)
+    product = math.fsum((v1x * v2x, v1y * v2y, v1z * v2z))
+    return math.atan2(math.hypot(*cross), product)
 
 
 def _round_half_up(v: float) -> int:
@@ -572,6 +689,12 @@ __all__ = [
     "IVM_NEIGHBOR_MOVES",
     "magnitude",
     "dot",
+    "dot_exact",
+    "squared_norm_exact",
+    "squared_distance_exact",
+    "affine_combination_exact",
+    "signed_tetra_volume_exact",
+    "triangle_area_squared_exact",
     "distance",
     "angle",
     "centroid",

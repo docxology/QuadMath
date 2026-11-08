@@ -10,18 +10,17 @@ Conventions (see `src/quadmath/lattice/ivm_field.py` and the manuscript sections
 
 * A *normalized* quadray has non-negative components and minimum zero — the
   canonical representative of its projective class (`src/quadmath/core/quadray.py:30-37`).
-* An *IVM lattice site* is a normalized quadray whose component sum is
-  divisible by 4 (`src/quadmath/lattice/ivm_field.py:69-77`).  Normalization shifts the sum by
-  a multiple of 4, so this is a property of the projective class; the
-  `(1,0,0,0)`-type void directions (sum `1` mod 4) are *not* sites.
-* The *shell norm* of an IVM site is the L1 magnitude of its sum-zero
-  representative, `N(q) = Σ|q_i - s/4|` with `s = a+b+c+d`
-  (`src/quadmath/lattice/ivm_field.py:80-106`).  Shell `k` collects the sites with `N(q) = 2k`
-  and has `10k² + 2` sites for `k ≥ 1` (cuboctahedral numbers) — the universal
-  count is stated as `shellSites_card_target` and machine-checked through
-  shell 8, while the scan-box completeness bound (`[0, 2k]^4`) is proved
-  (`shellNorm4_component_bound`), as is the exact enumeration
-  characterization (`mem_shellSites_iff`).
+* A canonical *IVM lattice site* is a normalized quadray whose component sum
+  is divisible by 4. The class-level predicate is `IsIVMSite q.normalize`;
+  `IsIVMSite q` itself is not invariant under raw representative changes.
+* The *shell norm* uses the centered, sum-zero representative of an IVM
+  class, distinct from its minimum-zero canonical representative.
+  Shell `k` means `shellNorm4 q = 8k`. Scan-box completeness and exact
+  enumeration membership are universal theorems below. No walk/reachability
+  equivalence or universal shell cardinality is proved here.
+* Cardinality instances for shells 1–4 use kernel reduction; shells 5–8 use
+  trusted native computation. `shellSites_card_target` is only a definition
+  of the desired equality at a specified index, not a universal theorem.
 -/
 
 /-- The 12 canonical IVM neighbor moves: all distinct permutations of
@@ -46,10 +45,9 @@ def IsNormalized (q : Quadray) : Prop :=
   0 ≤ q.a ∧ 0 ≤ q.b ∧ 0 ≤ q.c ∧ 0 ≤ q.d ∧
     (q.a = 0 ∨ q.b = 0 ∨ q.c = 0 ∨ q.d = 0)
 
-/-- IVM lattice site: a normalized quadray whose component sum is divisible
-by 4 (`src/quadmath/lattice/ivm_field.py:69-77`).  Decidable, hence a computable membership
-predicate; well-defined on projective classes because normalization shifts
-the sum by a multiple of 4 (`ivmSum_normalize` below). -/
+/-- Canonical IVM site: normalized and component sum divisible by 4.
+Use `IsIVMSite q.normalize` for raw-label class membership; see
+`isIVMSite_normalize`. -/
 def IsIVMSite (q : Quadray) : Prop :=
   IsNormalized q ∧ ivmSum q % 4 = 0
 
@@ -201,6 +199,34 @@ theorem shellNorm4_sameClass (t : Int) (q : Quadray) :
   simp only [shellNorm4, ivmSum]
   omega
 
+/-- The integer sum-zero gauge, available on classes with sum divisible by four.
+Unlike `normalize`, this does not promise nonnegative components. -/
+def ivmCentered (q : Quadray) : Quadray :=
+  ⟨q.a - ivmSum q / 4, q.b - ivmSum q / 4,
+    q.c - ivmSum q / 4, q.d - ivmSum q / 4⟩
+
+theorem ivmCentered_sameClass (q : Quadray) : SameClass q (ivmCentered q) := by
+  refine ⟨-(ivmSum q / 4), ?_, ?_, ?_, ?_⟩
+  all_goals simp only [ivmCentered] <;> omega
+
+/-- Divisibility is exactly what permits an integer sum-zero representative. -/
+theorem ivmCentered_sum_zero (q : Quadray) (hq : ivmSum q % 4 = 0) :
+    ivmSum (ivmCentered q) = 0 := by
+  have hs : ivmSum q = 4 * (ivmSum q / 4) := by omega
+  simp only [ivmSum, ivmCentered] at *
+  omega
+
+theorem shellNorm4_centered (q : Quadray) :
+    shellNorm4 (ivmCentered q) = shellNorm4 q := by
+  unfold ivmCentered
+  simp only [Int.sub_eq_add_neg]
+  exact shellNorm4_sameClass (-(ivmSum q / 4)) q
+
+/-- Class-level IVM membership is invariant under arbitrary gauge changes. -/
+theorem isIVMSite_normalize_congr {q r : Quadray} (h : SameClass q r) :
+    IsIVMSite q.normalize ↔ IsIVMSite r.normalize := by
+  rw [(normalize_eq_iff_sameClass q r).mpr h]
+
 /-- Shell membership determines the shell index: the same site cannot lie on
 two different shells. -/
 theorem shellSites_unique (q : Quadray) {k k' : Nat}
@@ -211,18 +237,15 @@ theorem shellSites_unique (q : Quadray) {k k' : Nat}
   obtain ⟨_, hn2⟩ := e2
   omega
 
-/- **The shell-count theorem, stated but not proved in this tree.**  For
-every `k ≥ 1` the IVM shell of frequency `k` contains exactly the
-cuboctahedral number `10k² + 2` sites (`src/quadmath/lattice/omni_numbering.py:24-26`;
-`src/quadmath/lattice/omni_numbering.py:4-9`).  This formalization keeps the universal claim
-as a proposition and **machine-checks** the instances through shell 8
-(see `lean/README.md`, "What is proved vs. machine-checked"):
-shells 1-4 by kernel-evaluated `decide`, shells 5-8 by `native_decide`
-(the virtual machine evaluates the same closed expression; the kernel
-trusts its result through `Lean.ofReduceBool`, so these instances are
-machine-checked, not kernel-checked). -/
+/- The universal positive-shell count remains unproved. The predicate below
+states one indexed equality, not `∀ k ≥ 1, ...`. Shells 1–4 have proof terms
+checked by kernel reduction (`decide`). Shells 5–8 also have theorem terms,
+but the pinned Lean 4.35 `native_decide` implementation introduces a
+per-instance axiom justified by compiled evaluation. This trust dependency
+affects those declarations and their transitive users, not unrelated
+theorems merely importing this module. `#eval` outputs are not proofs. -/
 
-/-- The universal shell-count proposition itself. -/
+/-- The indexed shell-count target; no theorem establishes it for arbitrary `k ≥ 1`. -/
 def shellSites_card_target (k : Nat) : Prop :=
   (shellSites k).length = 10 * k * k + 2
 
@@ -235,9 +258,8 @@ theorem shellSites_card_target_3 : shellSites_card_target 3 := by
   unfold shellSites_card_target; decide
 theorem shellSites_card_target_4 : shellSites_card_target 4 := by
   unfold shellSites_card_target; decide
-/-- Machine-checked (VM-evaluated) instances for shells 5-8; the kernel-only
-`decide` variants above cover shells 1-4 (larger boxes exceed practical
-kernel-evaluation cost). -/
+/-- Trusted native-computation instances for shells 5–8; unlike shells 1–4,
+these rely on the toolchain's per-instance native-evaluation axioms. -/
 theorem shellSites_card_target_5 : shellSites_card_target 5 := by
   unfold shellSites_card_target; native_decide
 theorem shellSites_card_target_6 : shellSites_card_target 6 := by

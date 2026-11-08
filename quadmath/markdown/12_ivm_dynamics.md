@@ -6,8 +6,9 @@ Where [Section 4](04_optimization_in_4d.md) descends a *single point* along the
 IVM lattice, this section evolves a *field* — one scalar per lattice site —
 and then asks the inverse question: given an observed field trajectory, what
 coupling produced it? Everything here is implemented in `ivm_dynamics.py`
-(`ball_sites`, `make_lattice`, `heat_step`, `majority_step`, `step`,
-`simulate`, `fit_trajectory`, `sum_of_squares`, `is_nonincreasing`) on top of
+(`ball_sites`, `make_lattice`, `heat_step`, `conservative_heat_step`,
+`graph_laplacian`, `dirichlet_energy`, `majority_step`, `step`, `simulate`,
+`fit_trajectory`, `sum_of_squares`, `is_nonincreasing`) on top of
 the `Quadray` class and `to_xyz` embedding in `quadray.py`; the demo figure is
 produced by `quadmath/scripts/ivm_dynamics_demo.py` (which delegates to
 `render_dynamics_demo` in `src/quadmath/lattice/ivm_dynamics.py`, per the thin-orchestrator
@@ -74,9 +75,64 @@ tested:
    row-average diffusion \(P = D^{-1}A\) on a truncated ball is **not** covered
    (boundary rows make \(P\) non-doubly-stochastic); the module neither uses
    nor claims it.
-2. In the demo run (\(\alpha = 0.35\), \(T = 40\), seed 7) the sum of squares
-   decreases monotonically from \(37.04\) to \(3.93\) while never increasing
-   at any single step.
+2. This operator does **not** conserve ordinary scalar mass on an irregular
+   graph. For \(\alpha>0\), its stationary profiles on a non-isolated component are
+   proportional to \(\sqrt{\deg(s)}\), not generally constant. Isolated values
+   decay by \(1-\alpha\). Use the conservative operator for concentrations.
+
+## Conservative graph transport
+
+For the same undirected graph, define \(L=D-A\) and let \(d_{\max}\) be its
+maximum degree. `conservative_heat_step` applies synchronous edge flux:
+
+\begin{equation}
+\label{eq:ivmdyn-conservative}
+u_{t+1}=u_t-\frac{\alpha}{d_{\max}}Lu_t,\qquad 0\leq\alpha\leq1 .
+\end{equation}
+
+An edgeless graph is the identity. Otherwise the update matrix is symmetric,
+non-negative and doubly stochastic: every row and column sums to one.
+Consequently it preserves each component's scalar mass, constant fields and
+the initial range. Its eigenvalues lie in \([-1,1]\), so both squared norm
+and graph Dirichlet energy are non-increasing:
+
+\begin{equation}
+\label{eq:ivmdyn-dirichlet}
+E(u)=\tfrac12 u^{\mathsf T}Lu
+     =\tfrac12\sum_{\{i,j\}\in\mathcal E}(u_i-u_j)^2 .
+\end{equation}
+
+`graph_laplacian` and `dirichlet_energy` expose these observables. The flux
+implementation costs \(O(N+|\mathcal E|)\); accumulation precedes the final
+state addition. Exceptional floating ranges use exact binary-rational fluxes
+before rounding, preserving recoverable subnormal flow and finite constants.
+Conservation for ordinary floating trajectories holds up to roundoff, not
+bitwise equality. At \(\alpha=1\), bipartite components can oscillate, so
+non-increasing energy is not a claim of strict convergence.
+
+For an independent hand calculation, put 12 at the center of the 13-site
+cluster and zero elsewhere. A conservative half-step gives center 6 and
+each shell site \(1/2\): mass stays 12 and \(E\) falls from 864 to 181.5.
+
+```python
+import numpy as np
+from quadmath import DynamicsParams, conservative_heat_step, make_lattice, simulate
+
+lattice = make_lattice(3)
+initial = np.zeros(lattice.size)
+initial[0] = 12
+assert conservative_heat_step(initial, lattice, 0.5)[0] == 6
+trajectory = simulate(12, DynamicsParams(kind="conservative", alpha=0.35),
+                      lattice, initial)
+```
+
+The six-panel comparison in [Lattice Visualization](16_lattice_gallery.md)
+uses one color normalization for conservative and symmetric-normalized
+transport and displays their different equilibria. QuadCraft's generic
+`ConservativeGraphField` implements the same edge operator; SimAnt supplies
+an **eight-neighbor raw-label graph**, not this twelve-neighbor FCC graph,
+and accounts for evaporation and sources separately. See the
+[suite contract](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
 
 ## Majority update on integer states
 
@@ -89,10 +145,12 @@ u_{t+1}(s) \;=\; \operatorname{rint}\!\Big( (1-\alpha)\, u_t(s)
 \end{equation}
 
 with \(N(s)\) the neighbor set of site \(s\) and \(\deg(s) = |N(s)|\) its
-degree, identity rows at isolated sites, and round-half-to-even ties
-(`numpy.rint`), computed by `majority_step`. Every new value is a rounded convex
-combination of the site and its neighbors, so the extremal structure is
-preserved:
+degree, identity rows at isolated sites, and round-half-to-even ties.
+`majority_step` evaluates the binary floating coupling as an exact rational,
+combines unbounded native integer counts, then rounds once. Output uses
+`int64` when representable and native-integer object arrays otherwise.
+Every new value is a rounded convex combination, so the extremal structure
+is preserved:
 
 **Proposition (range containment).** Under \eqref{eq:ivmdyn-majority} the
 field maximum is non-increasing and the minimum non-decreasing, at every step,
@@ -102,8 +160,11 @@ We deliberately make **no** sum-of-squares claim for this update: rounding can
 increase it, and the test suite pins a demonstrating case (origin at 0 with
 its twelve packers at 1 maps to thirteen sites at value 1, raising the sum of
 squares from 12 to 13 — `test_majority_step_sum_of_squares_can_increase`).
-The honest summary: heat is \(L_2\)-monotone, majority is range-preserving,
-and neither claim is stretched to cover the other update.
+The distinctions matter: symmetric-normalized heat is \(L_2\)-monotone;
+conservative heat additionally preserves concentration mass and range;
+rounded majority preserves integer range but can increase squared norm.
+`sum_of_squares` remains exact for integral fields, including counts beyond
+binary64 and int64 range.
 
 ## Learning the coupling from an observed trajectory
 
@@ -134,25 +195,37 @@ refinement converges to within a grid-spacing fraction of it
 (`test_fit_refinement_finds_offgrid_coupling`: 0.37 recovered to
 \(\le 0.0125\) from a coarse \(\{0, 0.25, 0.5, 0.75, 1\}\) grid).
 
+Count residuals are subtracted, squared and averaged exactly before the final
+floating score. This includes integral floating observations and fractional
+measurement noise: a single-count error at an offset \(2^{2000}\) is not
+rounded away. An incorrect candidate with an unrepresentably large MSE scores
+infinity without preventing evaluation of a correct candidate. Real-valued
+scores use scaled residuals to avoid premature squaring overflow.
+
+`trajectory_train_test` in `quadmath.learn.learning_eval` uses the same score
+for a temporal training prefix, held-out multi-step continuation and
+teacher-forced one-step prediction. It does not shuffle time or fit held-out
+rows.
+
 ## Demo figure
 
 Generated by `uv run python quadmath/scripts/ivm_dynamics_demo.py`
 (`MPLBACKEND=Agg`); all randomness is seeded (`DynamicsParams.seed`), so the
 figure is reproducible byte-for-byte up to PNG encoding.
 
-![**Dynamics and learning on the IVM lattice (\(R=3\) ball, 13 sites)**. Top row: heat-field snapshots at \(t = 0, 20, 40\) (\(\alpha = 0.35\), seed 7) over the embedded quadray sites (XYZ axes in embedding units); dot color encodes field value on a shared symmetric scale, and diffusion homogenizes the field by \(t = 40\). Bottom left: sum-of-squares histories over \(t = 0 \ldots 40\) — the heat curve decreases monotonically (lemma \eqref{eq:ivmdyn-lemma}); the majority curve falls steeply and plateaus, but unlike heat it carries no monotonicity guarantee, since rounding can increase the sum of squares (`test_majority_step_sum_of_squares_can_increase`). Bottom middle: trajectory MSE versus coupling \(\alpha\) on a logarithmic axis over the search grid, with the identified optimum (`fit 0.3000`) coinciding with the true generating \(\alpha = 0.3\) (dotted). Bottom right: the final integer majority field at \(t = 40\). Generated by `uv run python quadmath/scripts/ivm_dynamics_demo.py` (`MPLBACKEND=Agg`, seeded via `DynamicsParams.seed`).](../output/figures/ivm_dynamics_demo.png)
+![**Dynamics and learning on the 13-site IVM cluster**. Top: symmetric-normalized heat snapshots at \(t=0,20,40\), \(\alpha=0.35\), seed 7, on one color scale; the nonuniform-degree equilibrium is proportional to \(\sqrt{\deg}\), not a homogeneous concentration. Bottom: heat/majority squared norms, coupling-identification MSE and the final integer field. Conservative transport and its constant equilibrium are compared separately in the lattice gallery.](../output/figures/ivm_dynamics_demo.png)
 
 ## Reproducibility and test contract
 
-- Tests: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest
-  tests/unit/lattice/test_ivm_dynamics.py -q` then `uv run coverage report` — 42 tests,
-  100% statement and branch coverage of `src/quadmath/lattice/ivm_dynamics.py`, no mocks, all
-  examples real numerics with fixed seeds.
-- Markdown: `uv run python quadmath/scripts/validate_markdown.py`.
-- The two provable claims (lemma \eqref{eq:ivmdyn-lemma}, the range
-  proposition under \eqref{eq:ivmdyn-majority}) are asserted per step; the
-  non-claims (row-average diffusion, majority \(L_2\) behavior) are pinned by
-  the honesty tests described above rather than left implicit.
+- Run the numerical regressions with `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+  uv run --python 3.13 pytest tests/unit/lattice/test_ivm_dynamics.py
+  tests/unit/learn/test_learning_eval.py -q`.
+- Markdown: `uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict`.
+- The regressions exercise hand-computed flux/energy, component mass and range,
+  isolated nodes, floating extremes, exact large counts and temporal scoring.
+  The normalized-heat and rounded-majority non-claims remain explicit.
+- These spectral arguments are mathematical derivations and executable
+  numerical checks, not Lean proofs of the floating simulation implementation.
 
 ## Cross-references
 
