@@ -95,9 +95,8 @@ def information_length(path_gradients: np.ndarray) -> float:
     magnitudes for the weight); this is a heuristic proxy, not the Fisher-Rao
     arc length ∫ √(dθᵀ F dθ), and nothing in the codebase minimizes it.
     
-    This connects to Einstein.4D concepts where proper time is measured along
-    geodesics, but here we measure information-theoretic "distance" along
-    optimization trajectories.
+    This proxy depends on the supplied coordinate representation and scaling.
+    It is not a spacetime proper time or a statistical geodesic distance.
 
     Parameters
     - path_gradients: Array of shape (T, D), T >= 2.
@@ -118,24 +117,18 @@ def information_length(path_gradients: np.ndarray) -> float:
 
 
 def fim_eigenspectrum(F: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Eigen-decomposition of a Fisher information matrix.
+    """Eigen-decompose the symmetric part of a square parameter-space matrix.
 
-    Returns eigenvalues and eigenvectors sorted in descending eigenvalue order.
-    
-    In information geometry, this reveals the principal curvature directions
-    of the parameter manifold. Large eigenvalues indicate directions of high
-    curvature (tight constraints), while small eigenvalues indicate directions
-    of low curvature (loose constraints).
-    
-    This analysis connects to the anisotropic nature of parameter spaces,
-    explaining why natural gradient descent (which scales updates by F^(-1))
-    converges more efficiently than standard gradient descent.
+    Eigenvalues are sorted in descending order; matching unit eigenvectors
+    occupy columns. The spectrum describes the matrix's directional quadratic
+    form. It does not, by itself, calculate a loss Hessian, Riemann curvature
+    or an optimization convergence guarantee.
 
     Parameters
-    - F: Square symmetric matrix.
+    - F: Square matrix, symmetrized before decomposition.
 
     Returns
-    - Tuple[np.ndarray, np.ndarray]: (eigenvalues, eigenvectors)
+    - Tuple[np.ndarray, np.ndarray]: (descending eigenvalues, column eigenvectors)
     """
     F = np.asarray(F, dtype=float)
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
@@ -182,28 +175,24 @@ def fisher_condition_number(F: np.ndarray) -> float:
 
 
 def fisher_curvature_analysis(F: np.ndarray) -> Dict[str, Any]:
-    """Comprehensive analysis of Fisher information matrix curvature.
-    
-    This function provides a complete geometric analysis of the parameter
-    space curvature, revealing the anisotropic structure that guides
-    optimization strategies.
-    
-    The analysis connects to information geometry principles where the
-    Fisher metric defines the intrinsic geometry of the parameter space,
-    analogous to how the Minkowski metric defines spacetime geometry
-    in Einstein.4D.
+    """Compute spectral descriptors, despite the historical curvature name.
+
+    A single matrix does not supply metric derivatives or Riemann curvature.
+    Statistical Fisher interpretation requires a likelihood model; a positive
+    Fisher metric is not a Lorentzian spacetime metric.
 
     Parameters
-    - F: Square symmetric matrix.
+    - F: Square matrix; spectral helpers use its symmetric part.
 
     Returns
     - Dict containing:
-        - eigenvalues: Principal curvature strengths
-        - eigenvectors: Principal curvature directions
-        - condition_number: Anisotropy measure
-        - trace: Total curvature
-        - determinant: Volume element scaling
-        - anisotropy_index: Normalized measure of directional variation
+        - eigenvalues: Descending eigenvalues of the symmetric part.
+        - eigenvectors: Matching unit eigenvectors in columns.
+        - condition_number: The spectral condition estimate.
+        - trace: Trace of the input, not scalar curvature.
+        - determinant: Determinant of the input, not metric volume density.
+        - anisotropy_index: Eigenvalue standard deviation divided by positive
+          mean; zero when the mean is nonpositive.
     """
     F = np.asarray(F, dtype=float)
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
@@ -212,7 +201,7 @@ def fisher_curvature_analysis(F: np.ndarray) -> Dict[str, Any]:
     # Compute eigendecomposition
     evals, evecs = fim_eigenspectrum(F)
     
-    # Basic curvature measures
+    # Algebraic matrix descriptors, not intrinsic geometric curvature.
     trace = float(np.trace(F))
     determinant = float(np.linalg.det(F))
     condition_number = fisher_condition_number(F)

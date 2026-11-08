@@ -1,24 +1,29 @@
-# analysis/ — Agent Notes
+# Analysis Documentation Agent Guide: Measurement and Plot Provenance
 
-Documentation for the landed benchmarks/statistics surface:
-`src/quadmath/stats/benchmarks.py` (perf_counter timing harness),
-`src/quadmath/stats/statistics.py`
-(bootstrap, permutation tests, effect sizes, scaling fits), and
-`src/quadmath/viz/vis_stats.py` (input-agnostic gallery rendering primitives).
-Manuscript treatments: `quadmath/markdown/17_benchmarks_statistics.md` and
-`quadmath/markdown/18_stats_gallery.md`.
+Document actual `stats.benchmarks`, `stats.statistics` and `viz.vis_stats`
+contracts. Read [operations](README.md), [docs guidance](../AGENTS.md), and
+[development checks](../development/README.md).
 
-## Rules
+## Evidence boundaries
 
-- Keep this folder's API map in lock-step with the actual module docstrings;
-  the modules are owned by their implementing agent — propose changes there,
-  don't patch `src/` from here.
-- Every markdown link must resolve (checker:
-  [development/check_links.py](../development/check_links.py) validates
-  fragments too); reference section files and sources with inline code
-  paths rather than links when the target may not exist yet.
-- When the manuscript section content changes in `quadmath/markdown/`, the
-  ported copy under `docs/manuscript/` is refreshed by
-  `docs/manuscript/port_from_source.py` — do not hand-edit the port.
-- Do not duplicate the repository conventions here; link to
-  [development](../development/README.md) for the test/coverage workflow.
+Timing workload seeds do not make wall-clock measurements deterministic.
+State workload sizes, environment and summary policy rather than current speed
+promises. A log-log slope is a fit, not a complexity proof. Bootstrap,
+permutation and multiple-testing methods retain their scientific assumptions.
+The stats gallery's seeded illustrative data are not fresh benchmark results.
+
+Link methodology to canonical `17_benchmarks_statistics.md` and
+`18_stats_gallery.md` under `quadmath/markdown/`; do not maintain a second
+inconsistent derivation or edit generated projection copies. Runtime APIs are
+owned by source implementers, not this docs task.
+
+## Recipes and maintenance
+
+Use explicit Python 3.13. Isolate Python rendering with a fresh
+`QUADMATH_OUTPUT_DIR` and preserve tracked/user outputs. Caller-owned axes and
+complete gallery figures have different lifecycle responsibilities; describe the
+actual one. Do not promise byte identity across plotting/font/tool versions.
+Keep heading links navigable; no current coverage/test-count claims.
+
+During delegated edits skip builds/tests/lint/formatters and report direct probes
+separately. The integration owner checks combined docs and inspects actual figures.

@@ -1,6 +1,6 @@
 # Learning and Evaluation on the IVM Lattice
 
-## Overview
+## Prediction tasks, splitting, and model selection
 
 Learning on a lattice is easy to fake. A learner that merely interpolates its
 observations through the graph can look excellent on the very data it was fit
@@ -17,16 +17,14 @@ fixed seeds. Every behavioral claim below is pinned in
 
 ## Why held-out evaluation is harder on a lattice
 
-On independent data, random resampling is benign. On a lattice it is not:
-field values at neighboring sites are strongly correlated, and the learners of
-`ivm_field.py` exploit exactly that correlation — the kernel-weighted target
-of the normal equations \eqref{eq:ivm-normal-equations} predicts an unobserved
-site as a weighted average of its graph neighbors. A random split that leaves
-graph neighbors on both sides therefore lets the learner "cheat": the held-out
-site is predicted from observations one hop away, and the apparent skill
-measures the smoothness of the field under \eqref{eq:ivm-objective}, not
-generalization to unseen territory. The autocorrelation that makes lattice
-learning work is the same autocorrelation that inflates its evaluation:
+Spatially correlated data require an explicit prediction task. Random
+site holdout estimates interpolation from the remaining observations; nearby
+training values are legitimate inputs for that task, not necessarily leakage.
+It does not estimate transfer to a distant unobserved region. Spatial-block
+or buffer-separated holdouts would be needed for that stronger question;
+`kfold_site_splits` does not construct them. The following covariance expression
+is an illustrative smooth-field assumption, not a covariance model fitted by
+these utilities:
 
 \begin{equation}
 \label{eq:learn-correlation}
@@ -35,19 +33,14 @@ K\bigl(d(i,j)\bigr),
 \qquad d(i,j) \;=\; \text{hop distance on the IVM graph},
 \end{equation}
 
-with $K$ the Gaussian hop kernel of \eqref{eq:ivm-kernel} and $\sigma_f^2$ the
-field variance. Because $K$ decays with hop distance, the leakage is local —
-but the IVM ball is small, and a random split leaks everywhere.
+Here $K$ is the Gaussian hop kernel and $\sigma_f^2$ a hypothetical field
+variance. The learner does not infer this covariance or independence from it.
 
-The methodology below therefore always holds out *structure*, not just rows:
-whole folds of sites for the field learner (never shared between training and
-scoring), and a temporal suffix of snapshots for dynamics identification
-(never shuffled). The pinned numerical result worth internalizing: on the
-radius-2 ball (55 sites, 80% observed), the noise-free held-out error of the
-kernel-weighted interpolator is dominated not by observation noise but by
-*coverage geometry* — which sites happen to be observed — so per-fold scores
-vary substantially even at fixed sample size, and honest evaluation must
-average over folds.
+The implemented field split randomly assigns **distinct normalized sites**,
+not spatial blocks. Dynamics instead holds out a temporal suffix. The
+synthetic examples demonstrate sensitivity to observed-site coverage;
+averaging folds estimates performance for that sampling design, not all
+deployment geometries.
 
 ## K-fold site splits
 
@@ -102,11 +95,10 @@ away from exact data — the mean held-out MSE is strictly increasing in
 $\lambda$ across a grid spanning two decades. With noisy observations of a
 smooth non-harmonic field, the selection flips to $\lambda^{*} > 0$:
 interpolation carries observation noise into the fit, and moderate
-regularization wins on the held-out folds. The margin is honest about the
-learner's limits — because observed rows are pinned to their data, the noise
-propagates through the graph regardless of $\lambda$, so the achievable gain
-is set by how much neighbor averaging the kernel already performs, not by the
-regularizer alone.
+regularization wins on the held-out folds. Observed targets have unit
+confidence but are **soft** constraints: positive $\lambda$ can move fitted
+values at observed sites too. The gain depends on kernel targets, geometry,
+noise, and the chosen regularizer; no universal preferred $\lambda$ is implied.
 
 ## Temporal splits for dynamics identification
 
@@ -219,7 +211,7 @@ honest.
 `ridge_site_fit(features, values, lam=1e-3)` fits a single linear site model
 in closed form. With $X_c$ the mean-centered design matrix, $y_c$ the
 mean-centered target, and $\bar{x}$, $\bar{y}$ the feature-column means and
-target mean, the ridge normal equations are solved exactly for the slope
+target mean, the ridge normal equations are solved numerically for the slope
 vector $w$:
 
 \begin{equation}
@@ -229,8 +221,9 @@ vector $w$:
 \end{equation}
 with $b$ the intercept recovered from the centered solve; $\lambda \geq 0$
 penalizes the centered coefficient norm, shrinking $w$ toward zero, and
-$\lambda = 0$ recovers the exact least-squares solve. The returned
-`RidgeSiteFit` carries `coefficients`, `intercept`, and the in-sample
+$\lambda=0$ gives unregularized normal equations when the centered system
+is nonsingular; otherwise `numpy.linalg.solve` can raise.
+The returned `RidgeSiteFit` carries `coefficients`, `intercept`, and the in-sample
 `train_mse`, and the fit is a deterministic function of `(features, values,
 lam)` — a `numpy.linalg.solve`, not an iterative optimizer, so repeated
 calls on the same inputs reproduce it bit for bit. Validation is explicit: a
@@ -280,7 +273,7 @@ noise-floor scale $\sigma^2 = 2.5\times 10^{-3}$, flagged as converged
 after $126$ iterations. Regenerate with
 `quadmath/scripts/learning_gallery.py`.](figures/learn_loss_history.png)
 
-## Verification
+## Split, fit, and forecast regression scope
 
 `tests/unit/learn/test_learning_eval.py` pins all of the above with fixed seeds and no
 mocks: disjoint-exhaustive folds with exact fold sizes, seed-determinism and
@@ -290,10 +283,10 @@ from the fold table; the refit reproduced by hand), exact-zero errors for the
 correctly specified dynamics against a $> 2\times$ continuation blow-up for
 the misspecified one, manual recomputation of the one-step-ahead error,
 fraction clamping at both extremes, and the learning curve's final-below-first
-invariant. The module carries 100% statement and branch coverage, and the
-validation rules of every entry point (distinct normalized sites, $k \in
-[2, n]$, fractions in the open unit interval, non-empty grids, minimum row
-counts) are each exercised.
+invariant. These are test scopes, not a fresh coverage receipt. Validation
+rules and numerical limits are defined by the current implementation;
+the [operational workflow](../../WORKFLOW.md) describes how to obtain
+dated test and coverage results.
 
 ## Cross-References
 

@@ -1,21 +1,32 @@
-# learning/ — Agent Notes
+# Learning Documentation Agent Guide: Method and Evaluation Boundaries
 
-Documentation for the landed IVM learning surface: `src/quadmath/lattice/ivm_field.py`,
-`src/quadmath/lattice/ivm_dynamics.py`, `src/quadmath/learn/learning_eval.py` (evaluation methodology), and
-`src/quadmath/viz/vis_lattice.py` (gallery rendering primitives). Manuscript treatments:
-`quadmath/markdown/11_ivm_field_learning.md`, `12_ivm_dynamics.md`,
-`15_learning_evaluation.md`, `16_lattice_gallery.md`.
+This folder documents `lattice.ivm_field`, `lattice.ivm_dynamics`,
+`learn.learning_eval` and related `viz.vis_lattice` recipes. Read
+[operations](README.md), [docs guidance](../AGENTS.md) and
+[development workflow](../development/README.md).
 
-## Rules
+## Keep method claims source-bound
 
-- Keep this folder's API map in lock-step with the actual module docstrings;
-  the modules are owned by their implementing agent — propose changes there,
-  don't patch `src/` from here.
-- Every markdown link must resolve (checker:
-  [development/check_links.py](../development/check_links.py) validates
-  fragments too).
-- When the manuscript section content changes in `quadmath/markdown/`, the
-  ported copy under `docs/manuscript/` is refreshed by
-  `docs/manuscript/port_from_source.py` — do not hand-edit the port.
-- Do not duplicate the repository conventions here; link to
-  [development](../development/README.md) for the test/coverage workflow.
+Distinguish shell-radius field balls from Euclidean-radius dynamics balls and
+BFS enumeration. Soft `learn` does not fix observations as hard constraints;
+`harmonic_extension` does, with an anchor in every connected component.
+Symmetric-normalized heat, conservative concentration transport and integer
+rounded averaging have different invariants. Do not promise mass conservation
+for normalized heat or squared-norm contraction for majority updates.
+
+Random site k-folds are not spatially blocked. Selection-fold scores and refit
+errors are not untouched final-test estimates. Temporal forecasts require a
+chronological prefix/suffix and must distinguish continuation from teacher-forced
+one-step error. `fit_geometry` is a linear least-squares map, not automatically
+a constrained rigid fit. Keep example inputs complete and scale/gauge explicit.
+
+## Canonical navigation and ownership
+
+Link derivations to canonical field/dynamics/evaluation/gallery chapters under
+`quadmath/markdown/`, not copied projection prose. Do not hand-edit
+`docs/manuscript/` numbered sections or figures. No source changes from this
+documentation task. Explicit Python 3.13 and isolated Python output roots are
+required in rendering recipes; shell PDFs do not honor the override.
+
+During delegated work defer suites/builds/lint/formatters to integration; report
+only actual consumer probes. Preserve anchors and report cross-owner link changes.

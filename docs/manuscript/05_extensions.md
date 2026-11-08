@@ -1,69 +1,49 @@
-# Extensions of 4D and Quadrays
+# Research Extensions Beyond the Implemented Lattice Methods {#extensions-of-4d-and-quadrays}
 
-Here we review some extensions of the Quadray 4D framework, including multi-objective optimization, machine learning, computer graphics and GPU acceleration, active inference, complex systems, pedagogy, and implementations, with an emphasis on cognitive security.
+The modules in [coordinate methods](03_quadray_methods.md), [optimization](04_optimization_in_4d.md), [field learning](11_ivm_field_learning.md), and [dynamics](12_ivm_dynamics.md) are implemented examples. The directions below are proposals or interpretive context, not additional working APIs, measured speedups, or demonstrated security guarantees.
 
 ## Multi-Objective Optimization
 
-- A candidate $\mathbf{q}$ Pareto-dominates $\mathbf{q}'$ when $f_k(\mathbf{q}) \le f_k(\mathbf{q}')$ for every objective $k$, with strict inequality for at least one; the Pareto front is the set of undominated candidates. Simplex faces of a candidate vertex set encode these trade-offs, each face selecting one non-dominated combination.
-- Pareto front exploration via tetrahedral traversal: walking edge-adjacent simplices over the candidate set enumerates neighboring non-dominated combinations without a continuous relaxation.
-- Integer tetravolume of the solution simplex serves as a discrete diversity measure: larger volume corresponds to more mutually separated trade-off points.
+A candidate $q$ Pareto-dominates $q'$ when $f_k(q)\leq f_k(q')$ for every objective, with strict inequality for at least one. Computing that relation requires the objectives themselves. A tetrahedral face does not automatically identify a Pareto front, and traversing adjacent tetrahedra need not enumerate nondominated solutions.
+
+Native rational tetravolume could be studied as one spatial diversity diagnostic, but it depends on the embedding and can vanish for widely separated coplanar candidates. No Pareto optimizer is supplied by the discrete single-objective APIs.
 
 ## Machine Learning and Robustness
 
-- **Geometric regularization**: Quadray-constrained weights/topologies yield structural priors and improved stability.
-- **Adversarial robustness**: Discrete lattice projection reduces vulnerability to gradient-based adversarial perturbations by limiting directions.
-- **Ensembles**: Tetrahedral vertex voting and consensus improve robustness.
-
-References: see [Fisher information](https://en.wikipedia.org/wiki/Fisher_information), [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient), and quadray conversion notes by Urner for embedding choices.
+Integer coordinates can encode a structural prior. Whether that prior improves prediction or robustness requires a specified model, held-out data, and a comparator. Discrete projection alone does not establish adversarial robustness: an attacker may change lattice labels or cross a decision boundary. The existing [evaluation utilities](15_learning_evaluation.md) measure site and temporal prediction; they are not an adversarial-defense evaluation.
 
 ## Computer Graphics and GPU Acceleration
 
-- **Quadray visualization acceleration**: GPU-accelerated rendering of tetrahedral coordinate systems enables real-time exploration of 4D geometric structures. The parallel nature of GPU architectures naturally maps to the four-basis vector representation of quadrays, allowing simultaneous computation of vertex positions, edge connections, and face tessellations across thousands of tetrahedra.
-- **Integer arithmetic optimization**: GPU compute shaders excel at integer-based volume calculations and determinant computations using the Bareiss algorithm. The discrete lattice structure of quadray coordinates benefits from parallel integer arithmetic units, achieving significant speedups over CPU implementations for large-scale geometric computations.
-- **Dynamic programming acceleration**: GPU-accelerated dynamic programming algorithms leverage CUDA Dynamic Parallelism for adaptive parallel computation of recursive geometric algorithms. This approach enables efficient handling of varying computational workloads in tetrahedral decomposition and optimization problems, as demonstrated in applications like the Mandelbrot set computation where dynamic parallelism manages computational complexity effectively.
-- **Parallel geometric algorithms**: Implementation of GPU-optimized versions of algorithms like QuickHull for convex hull computation in quadray space achieves substantial performance improvements. The tetrahedral lattice structure naturally supports parallel prefix sum operations and efficient neighbor queries, enabling real-time visualization of complex 4D geometric transformations.
-- **Memory bandwidth optimization**: The structured memory access patterns of quadray coordinates align well with GPU memory hierarchies, enabling efficient coalesced memory access for large-scale geometric datasets. This optimization is particularly beneficial for applications requiring real-time rendering of complex polyhedral structures and dynamic tessellations.
+The current figures use NumPy and matplotlib on the CPU. Batched forward embedding and independent geometric calculations are candidates for GPU work, but this repository does not provide CUDA kernels, compute shaders, GPU QuickHull, or measured GPU speedups. Exact Bareiss arithmetic uses unbounded integers; replacing it with fixed-width GPU arithmetic requires overflow analysis and cannot silently retain the same exactness claim.
 
-References: GPU-accelerated geometry processing techniques ([arxiv.org](https://arxiv.org/abs/1501.04706?utm_source=openai)), CUDA Dynamic Parallelism for adaptive computation ([developer.nvidia.com](https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/?utm_source=openai)), and parallel scan algorithms for optimization ([developer.nvidia.com](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing?utm_source=openai)).
+For general GPU background, see [CUDA dynamic parallelism](https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/) and [GPU Gems parallel computing](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing). These references are not evidence of an implemented QuadMath accelerator.
 
 ## Active Inference and Free Energy
 
-- Free energy $\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}[Q(s)\,\|\,P(s)]$ (see Eq. \eqref{eq:free_energy} in the equations appendix); background: [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and overviews connecting to predictive coding and control.
-- Belief updates follow steepest descent in Fisher geometry using the natural gradient (see Eq. \eqref{eq:natural_gradient} in the equations appendix); quadray constraints improve stability/interpretability.
-- Links to metabolic efficiency and biologically plausible computation.
-- For the full treatment, see `09_free_energy_active_inference.md` (Appendix: The Free Energy Principle and Active Inference).
+The implemented discrete-state objective is $\mathcal F=\mathbb E_Q[-\log P(o\mid s)]+\mathrm{KL}(Q\|P)$. The named `expected_free_energy` helper subtracts a supplied scalar log preference; it does not construct policy-conditioned future observations or implement a full active-inference agent. See [the active-inference appendix](09_free_energy_active_inference.md) for the toy-model boundary and callable contracts.
+
+Natural-gradient increments can be composed with suitable models, but the supplied perception/action finite-difference helpers do not automatically use a Fisher metric. No biological or metabolic-efficiency result is established here.
 
 ## Complex Systems and Collective Intelligence
 
-- Tetrahedral interaction patterns support distributed consensus and emergent behavior.
-- Resource allocation and network flows benefit from geometric constraints.
-- **Cognitive security**: Applying cognitive security can safeguard distributed consensus mechanisms from manipulation, preserving the reliability of emergent behaviors in complex systems. Incorporating cognitive security measures can protect the integrity of belief updates and decision-making processes, ensuring that actions are based on accurate and unmanipulated information.
+Tetrahedral graphs could serve as interaction topologies for consensus or resource-flow models. A graph's shape alone establishes neither consensus nor resistance to manipulated inputs. Such work would need explicit dynamics, adversary assumptions, observables, and comparative experiments. The implemented [conservative graph operator](12_ivm_dynamics.md#conservative-graph-transport) establishes a narrower algebraic mass-preservation property, not a distributed-security protocol.
 
 ## Geospatial Intelligence and the World Game
 
-- **Spatial data integration**: Quadray tetrahedral frameworks provide natural tessellations for geospatial data analysis, where the Dymaxion projection's minimal distortion aligns with Fuller's World Game objectives of holistic global perspective. The tetrahedral lattice supports efficient spatial indexing and neighbor queries for distributed geospatial intelligence operations.
-- **Resource allocation optimization**: The World Game's goal of "making the world work for 100% of humanity" translates to multi-objective optimization problems where tetrahedral simplex faces encode trade-offs between population centers, resource distribution, and ecological constraints. Integer volume quantization ensures discrete, interpretable solutions for global resource allocation.
-- **Cognitive security in distributed sensing**: Geospatial intelligence networks benefit from tetrahedral consensus mechanisms that resist manipulation of spatial data streams. The geometric constraints of Fuller.4D provide natural validation frameworks for detecting anomalous spatial patterns and maintaining data integrity across distributed sensor networks.
-- **Tetrahedral tessellations for global modeling**: The World Game's emphasis on interconnected global systems maps naturally to tetrahedral decompositions of the Dymaxion projection, where each tetrahedron represents a coherent region for local optimization while maintaining global connectivity through shared faces and edges.
+Fuller's World Game motivates whole-system resource questions, but no georeferenced data pipeline, spherical Earth tessellation, global allocation solver, or sensor-authentication system is implemented here. Planar FCC indexing does not itself bound distortion on a globe. Any future geospatial model must declare its projection, geographic units, boundary conditions, data provenance, and optimization objective independently of the Quadray representation.
 
 ## Quadrays, Synergetics (Fuller.4D), and William Blake
 
-- Quadrays (tetrahedral coordinates) instantiate Fuller's Synergetics emphasis on the tetrahedron as a structural primitive; in this manuscript's terminology this corresponds to Fuller.4D. Tetrahedral frames support part–whole reasoning and efficient decompositions used throughout.
-- William Blake's "fourfold vision" (single, twofold, threefold, fourfold) provides a historical metaphor for multiscale perception and inference. Read through Fisher geometry and natural gradient dynamics, it parallels multilayer predictive processing and counterfactual simulation. For background, see a concise overview of Blake's visionary psycho‑topographies in British Art Studies ([visionary art analysis](https://www.britishartstudies.ac.uk/index/article-index/visionary-sense-of-london/article-category/cover-collaboration)) and the Active Inference Institute's MathArt Stream #8 ([Active Inference & Blake](https://zenodo.org/records/13711302)).
-- Juxtaposing Blake and Fuller foregrounds "comprehensivity": holistic design and sensemaking via geometric primitives. Context: ([Fuller & Blake: Lives in Juxtaposition](https://zenodo.org/records/7519132)) and pedagogical antecedents in experimental design education at Black Mountain College ([Diaz, Chance and Design at Black Mountain College – PDF](https://commons.princeton.edu/eng574-s23/wp-content/uploads/sites/348/2023/03/Diaz-The-Experimenters-Chance-and-Design-at-Black-Mountain-College.pdf)).
-- Implications for Quadray practice: four‑facet summaries of models/trajectories, tetrahedral consensus in ensembles, and stigmergic annotation patterns for cognitive security and distributed sensemaking.
+Blake's fourfold vision and Fuller's geometric pedagogy provide cultural metaphors for multiscale interpretation; they are not mathematical equivalences or empirical evidence for an inference algorithm. Background includes [Blake's visionary geography](https://www.britishartstudies.ac.uk/index/article-index/visionary-sense-of-london/article-category/cover-collaboration), [Active Inference and Blake](https://zenodo.org/records/13711302), and [Fuller and Blake in juxtaposition](https://zenodo.org/records/7519132).
 
 ## Pedagogy and Implementations
 
-Kirby Urner's comprehensive [4dsolutions ecosystem](https://github.com/4dsolutions) provides extensive educational resources and cross-platform implementations for Quadray computation and visualization. For comprehensive details on educational frameworks, cross-language implementations, historical context, and community development, see the [Resources](99_resources.md) section.
+The [resource bibliography](99_resources.md) links external coordinate implementations and teaching materials. They offer possible comparisons, not an assertion that this checkout has executed every external implementation.
 
 ## Higher Dimensions and Decompositions
 
-- Decompose an $n$-simplex ($n > 3$) into tetrahedra and sum their signed integer volumes; the sum extends the quantized tetravolume of Section 3 to higher-dimensional content.
-- Tessellations support parallel and distributed implementations (cells processed independently).
+An $n$-simplex for $n>3$ cannot be decomposed into three-dimensional tetrahedra to recover its $n$-dimensional volume. Its tetrahedral faces have lower-dimensional measure. Genuine higher-dimensional work requires $n$ independent directions and the corresponding $n$-volume formula, such as a generalized Cayley–Menger determinant. The implemented native tetravolume is strictly three-dimensional.
 
 ## Limitations and Future Work
 
-- Benchmark breadth: extend beyond convex/quadratic toys to real tasks (registration, robust regression, control) with ablations.
-- Distance sensitivity: compare embeddings and their effect on optimizer trajectories; document recommended defaults.
-- Hybrid schemes: study schedules that interleave continuous proposals with lattice projection.
+Research questions include broader objective families, embedding/scale sensitivity, explicit continuous/discrete projection schedules, and domain-specific robustness tests. None is a guarantee supplied by integer volume quantization. Use [the mathematical specification](../../SPEC.md) for current quotient, metric, and formal scope rather than treating this proposal chapter as an API contract.

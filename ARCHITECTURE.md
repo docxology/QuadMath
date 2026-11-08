@@ -1,274 +1,133 @@
-# QuadMath Architecture: Complete System Overview
+# QuadMath Architecture: Library, Mathematical Sources and Render Pipelines
 
-This document provides a comprehensive overview of how the QuadMath repository architecture works, explaining the connections between source code, tests, documentation, and the build pipeline.
-
-## System Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           QuadMath Repository                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │
-│  │   Source    │    │    Tests    │    │  Scripts    │    │ Markdown    │  │
-│  │   Code      │◄──►│   (tests/)  │◄──►│ (scripts/)  │◄──►│ (markdown/) │  │
-│  │   (src/)    │    │             │    │             │    │             │  │
-│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘  │
-│         │                   │                   │                   │      │
-│         │                   │                   │                   │      │
-│         ▼                   ▼                   ▼                   ▼      │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │
-│  │ Mathematical│    │ 100% Test   │    │ Figure &    │    │ Mathematical│  │
-│  │ Algorithms  │    │ Coverage    │    │ Data Gen    │    │ Concepts    │  │
-│  │ & Functions │    │ Validation  │    │ Outputs     │    │ & Code Ref  │  │
-│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘  │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                    render_pdf.sh Orchestrator                       │    │
-│  │                                                                     │    │
-│  │  1. Run all scripts (validate src/ code)                           │    │
-│  │  2. Validate markdown (images, refs, equations)                    │    │
-│  │  3. Generate glossary (auto-update from src/ API)                  │    │
-│  │  4. Build PDFs (individual + combined)                             │    │
-│  │  5. Export LaTeX (for further processing)                          │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                        Final Outputs                                │    │
-│  │                                                                     │    │
-│  │  • Individual PDFs (per markdown section)                          │    │
-│  │  • Combined PDF (complete manuscript)                               │    │
-│  │  • LaTeX exports (for academic publishing)                          │    │
-│  │  • Validation reports (ensuring coherence)                          │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+QuadMath has related but separate runtime, manuscript and formalization surfaces.
+A successful render establishes that one recipe completed; it does not establish
+universal mathematical correctness, coverage or agreement of every document.
 
 ## Component Interactions
 
-### 1. Source Code (`src/`)
-**Purpose**: Implements mathematical functionality for quadray coordinates, optimization, and information geometry.
+```text
+src/quadmath/ ──► numerical consumers and tests/
+      │
+      └──► quadmath/scripts/ ──► selected output root/figures and data
+quadmath/markdown/ ──► render_pdf.sh ──► quadmath/output/pdf and tex
+      │
+      └──► docs/manuscript/port_from_source.py ──► docs/manuscript/
+lean/ ──► independent Lean elaboration (not Python verification)
+```
 
-**Key Modules**:
-- `core/quadray.py`: Core quadray coordinate system
-- `core/cayley_menger.py`: Geometric algorithms (Bareiss algorithm)
-- `inference/information.py`: Information geometry and Fisher information
-- `optimize/discrete_variational.py`: Optimization on tetrahedral lattices
-- `viz/visualize.py`: Plotting and visualization utilities
-- `paths.py`: Path management and output directory utilities
+### Source Code (`src/`)
 
-**Responsibilities**:
-- Provide clean, well-typed APIs for mathematical operations
-- Ensure numerical stability and exact arithmetic where appropriate
-- Maintain mathematical consistency across all modules
+The wheel packages `src/quadmath/`. `core/` provides coordinates, exact/rational
+metric and affine/oriented operations, determinant volumes, symbolic helpers
+and metric diagnostics. `lattice/` provides distinct enumeration/search,
+conversion, field and dynamics surfaces. `learn/` supplies evaluation and
+linear baselines; `stats/` supplies inference and a timing harness; `viz/`
+contains reusable renderers. `pipeline.py` composes typed operations, while
+`paths.py` selects Python output locations. See the [module guide](src/README.md).
 
-### 2. Test Suite (`tests/`)
-**Purpose**: Validates all source code functionality with 100% coverage.
+Runtime code must not require sibling repositories, manuscript scripts, Pandoc
+or a Lean installation. Matplotlib, NumPy, Pillow and SymPy are declared package
+dependencies; external media/PDF tools are separate concerns.
 
-**Coverage Requirements**:
-- **Statement coverage**: 100% of all code lines executed
-- **Branch coverage**: 100% of all conditional branches taken
-- **No mocks**: Numeric code is never mocked (`monkeypatch` only redirects output paths, shrinks benchmark sizes, or wraps a real helper)
-- **Deterministic**: Fixed RNG seeds for reproducible results
+### Test Suite (`tests/`)
 
-**Validation Scope**:
-- Mathematical correctness of all functions
-- Import compatibility between modules
-- Output generation and path management
-- Integration with generation scripts
+Tests mirror subpackages under `tests/unit/`; `tests/tools/` covers checkout
+orchestrators. Some orchestration tests use external-tool substitutes; these
+are not evidence of an actual TeX installation or rendered PDF quality.
+The branch-enabled `.coveragerc` has `fail_under = 100`, an aggregate report
+gate, not a statement that every behavior or theorem has been proved. See
+[tests/README.md](tests/README.md) for running and extending the suite.
 
-### 3. Generation Scripts (`quadmath/scripts/`)
-**Purpose**: Generate figures and data from source modules for documentation.
+### Generation Scripts (`quadmath/scripts/`)
 
-**Key Scripts**:
-- `information_demo.py`: Information geometry visualizations
-- `simplex_animation.py`: Nelder-Mead optimization animations
-- `volumes_demo.py`: Volume calculations and scaling
-- `ivm_neighbors.py`: IVM lattice neighbor analysis
-- `quadray_clouds.py`: Quadray coordinate visualizations
+Scripts bootstrap `src/quadmath` in a checkout, choose deterministic example
+inputs and print generated paths. Reusable computation and rendering belong in
+the package, not duplicated orchestration code. `make_all_figures.py` uses its
+explicit `FIGURE_SCRIPTS` sequence, drives children with `sys.executable`,
+rejects emitted recognized paths outside the configured output root and writes
+a relative-path manifest. It requires at least one existing emitted artifact
+per generator, not independent inspection of every figure's content.
 
-**Workflow**:
-1. Import required functions from `src/` modules
-2. Generate deterministic outputs with fixed seeds
-3. Save figures to `quadmath/output/figures/`
-4. Save data to `quadmath/output/data/`
-5. Print output paths for manifest collection
+### Documentation (`quadmath/markdown/`)
 
-### 4. Documentation (`quadmath/markdown/`)
-**Purpose**: Document mathematical concepts with references to implemented code.
+Canonical chapters hold the mathematical explanations; [SPEC.md](SPEC.md)
+defines conventions. [Operational docs](docs/README.md) explain how to use the
+implementation, linking to chapters instead of maintaining another derivation.
+Only the marked API block in `10_symbols_glossary.md` is automatically
+regenerated; prose elsewhere remains manually maintained.
 
-**Structure**:
-- `00_preamble.md`: LaTeX preamble source (extracted by `render_pdf.sh`)
-- `01_introduction.md`: Introduction to 4D namespaces
-- `02_4d_namespaces.md`: Coxeter.4D, Einstein.4D, Fuller.4D
-- `03_quadray_methods.md`: Quadray analytical details
-- `04_optimization_in_4d.md`: Optimization methods
-- `05_extensions.md`: Extensions and applications
-- `06_discussion.md`: Discussion and implications
-- `07_resources.md`: References and resources
-- `08_equations_appendix.md`: Mathematical equations
-- `09_free_energy_active_inference.md`: Active inference
-- `10_symbols_glossary.md`: Symbols and glossary, including the auto-generated API index
-- `11_ivm_field_learning.md`: Static IVM field learning
-- `12_ivm_dynamics.md`: Dynamics and learning on the IVM lattice
-- `13_lattice_tooling.md`: Omnidirectional numbering and nearest-site search
-- `14_conversions_spec.md`: Conversions and specification
-- `15_learning_evaluation.md`: Learning and evaluation on the IVM lattice
-- `16_lattice_gallery.md`: Lattice visualization gallery
-- `17_benchmarks_statistics.md`: Benchmarks and statistics
-- `18_stats_gallery.md`: Statistics and scaling gallery
-
-**Content Requirements**:
-- Reference source code using inline code formatting
-- Display generated figures from `quadmath/output/`
-- Use descriptive links (no bare URLs)
-- Pass all validation checks
+`docs/manuscript/` is a template-layout projection with rewritten figure paths
+and section ordering. Port changes from canonical sources; do not independently
+edit its numbered chapters or copied figures. The shared external rendering
+workflow is distinct from the checkout's shell renderer; see
+[projection documentation](docs/manuscript/README.md) and
+[manuscript status](docs/MANUSCRIPT_STATUS.md).
 
 ## The render_pdf.sh Pipeline
 
-### Phase 1: Code Validation
-```bash
-# Run all figure/data generation scripts in one pass (fails hard on error)
-uv run python quadmath/scripts/make_all_figures.py
-```
+`quadmath/scripts/render_pdf.sh`:
 
-**Purpose**: Ensures that all source code modules can be imported and used successfully by generation scripts.
+1. Checks Pandoc, XeLaTeX, fontconfig and the required DejaVu families.
+2. Checks its explicit `MODULES`/`EXCLUDED_MODULES` inventory against numbered
+   manuscript files and extracts `00_preamble.md` into temporary TeX.
+3. Runs `make_all_figures.py` unless `--skip-figures`, then
+   `generate_glossary.py` and `validate_markdown.py --strict`, in that order.
+4. Converts module/combined Markdown with shared Pandoc options, then compiles
+   individual PDFs and `quadmath_review.pdf`, retaining TeX exports.
 
-### Phase 2: Documentation Generation
-```bash
-# Auto-generate glossary from current src/ API
-uv run python quadmath/scripts/generate_glossary.py
-```
-
-**Purpose**: Keeps documentation automatically synchronized with source code changes.
-
-### Phase 3: Markdown Validation
-```bash
-# Validate all markdown references and images (strict: issues fail the build)
-uv run python quadmath/scripts/validate_markdown.py --strict
-```
-
-**Purpose**: Ensures all referenced figures, links, and equation labels resolve before building.
-
-### Phase 4: Output Generation
-```bash
-# Convert validated markdown to LaTeX (with preamble included)
-pandoc [markdown_file] -o [output_tex] -H [preamble.tex]
-
-# Compile PDFs with xelatex (multiple passes for cross-references)
-xelatex [output_tex] -output-directory=[output/pdf]
-```
-Individual per-section PDFs and the combined `quadmath_review.pdf` are both
-built this way by `render_pdf.sh`.
+This renderer does not run pytest, coverage, the `docs/` checker or Lean.
+`run_all.sh` separately runs coverage/tests, figures, glossary freshness and
+strict manuscript validation; `--with-pdf` adds the shell renderer with
+`--skip-figures`. Its default is not a PDF build. See [WORKFLOW.md](WORKFLOW.md)
+for interpreter selection and exact commands.
 
 ## Data Flow and Dependencies
 
-### Input Dependencies
-1. **Source code** (`src/`) - Mathematical implementations
-2. **Markdown files** (`quadmath/markdown/`) - Documentation content
-3. **LaTeX preamble** (`quadmath/output/latex_temp/preamble.tex`, generated from `quadmath/markdown/00_preamble.md`) - Formatting
+### Mathematical contracts
 
-### Processing Pipeline
-1. **Scripts import from src/** → Validate code functionality
-2. **Scripts generate outputs** → Create figures and data
-3. **Markdown references outputs** → Link documentation to results
-4. **Validation ensures coherence** → All references are valid
-5. **PDF generation** → Create final documentation
+Physical four-tuples are classes under a common offset. Exact native volume
+can be fractional; Cartesian volume and native IVM volume have different
+normalizations. The [methods chapter](quadmath/markdown/03_quadray_methods.md)
+and [conversion chapter](quadmath/markdown/14_conversions_spec.md) are canonical.
+
+Field shell radius, Euclidean radius and BFS shell numbering must not be
+silently identified. Likewise soft fitting is not hard-boundary harmonic
+extension; normalized heat is not mass-preserving concentration transport.
+See [learning operations](docs/learning/README.md).
 
 ### Output Structure
+
+```text
+selected Python output root/
+├── figures/       # image/animation artifacts
+└── data/          # numeric artifacts and figure_manifest.txt
+quadmath/output/   # fixed shell-renderer destination
+├── pdf/           # per-section and combined PDFs
+├── tex/           # exported TeX
+└── latex_temp/    # intermediate render files
 ```
-quadmath/output/
-├── figures/          # PNG/MP4/SVG files from scripts
-├── data/             # CSV/NPZ files and manifests
-├── pdf/              # Individual and combined PDFs
-└── tex/              # Exported LaTeX files
-```
+
+`QUADMATH_OUTPUT_DIR` is expanded and made absolute by `quadmath.paths`; path
+helpers create requested directories. Without an override they search upward
+from the package for checkout markers. Installed consumers should set the
+override. The shell PDF and cleanup scripts instead use the checkout's
+`quadmath/output/`, so the override does not isolate an entire PDF pipeline.
 
 ## Quality Assurance Mechanisms
 
-### 1. Test Coverage Enforcement
-- **100% coverage required** via `.coveragerc`
-- **Enforced locally** via `uv run coverage report` (`fail_under = 100` in `.coveragerc`)
-- **Real numerical examples** ensure mathematical correctness
-
-### 2. Markdown Validation
-- **Image reference validation** - All figures must exist
-- **Link validation** - Internal references must be valid
-- **Equation validation** - Proper LaTeX formatting required
-
-### 3. Pipeline Validation
-- **Script execution** - All generation scripts must succeed
-- **Output generation** - All expected files must be created
-- **PDF compilation** - All markdown must generate valid PDFs
-
-### 4. Reproducibility
-- **Deterministic RNG** - Fixed seeds for all random operations
-- **Headless plotting** - `MPLBACKEND=Agg` for CI compatibility
-- **Path management** - Consistent output directory structure
-
-### 5. Automatic Numbering and Cross-Referencing
-- **Figure numbering**: Automatically managed by LaTeX/pandoc for consistent cross-referencing
-- **Equation numbering**: LaTeX equation environments provide automatic numbering with `\label{}` and `\eqref{}`
-- **Section numbering**: Automatic section numbering with `--number-sections` pandoc flag
-- **Table of contents**: Auto-generated TOC with `--toc` and `--toc-depth=3`
-- **Cross-references**: Use `\ref{}` for figures and `\eqref{}` for equations in markdown
-
-**Example markdown usage**:
-```markdown
-![**Figure caption**](../output/figures/figure.png)
-
-\begin{equation}
-\label{eq:example}
-E = mc^2
-\end{equation}
-
-See Figure \ref{fig:example} and Equation \eqref{eq:example}.
-```
+- Numerical and resource/error regressions exercise concrete consumer behavior.
+- Coverage identifies unexecuted code; it does not prove arithmetic contracts.
+- Manuscript and docs checkers cover different trees and limited link syntax;
+  they do not check every citation, semantic claim or rendered layout.
+- Seeded inputs aid repeatability. Wall timings, fonts, plotting/TeX versions
+  and encoders can change output; do not promise cross-platform byte identity.
+- Lean supplies handwritten integer theorem sources with explicit trust and
+  finite-computation boundaries, not verification of floating implementations.
+  See [Lean scope](docs/lean/README.md).
 
 ## Development Workflow
 
-### 1. Code Changes
-```bash
-# Write tests first (TDD)
-# Implement functionality
-# Ensure 100% test coverage
-# Update documentation if needed
-```
-
-### 2. Validation
-```bash
-# Run complete test suite
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q
-
-# Generate figures and validate
-uv run python quadmath/scripts/make_all_figures.py
-uv run python quadmath/scripts/validate_markdown.py
-```
-
-### 3. Integration
-```bash
-# Run complete pipeline
-quadmath/scripts/render_pdf.sh
-
-# Verify all outputs are generated
-# Check that PDFs build successfully
-```
-
-## Benefits of This Architecture
-
-1. **Coherence**: Source code, tests, and documentation stay synchronized
-2. **Validation**: Automatic checking of all references and outputs
-3. **Reproducibility**: Deterministic generation of all artifacts
-4. **Maintainability**: Clear separation of concerns with unified workflow
-5. **Quality**: 100% test coverage enforced automatically
-6. **Documentation**: Auto-generated API references and validation
-
-## Key Principles
-
-1. **Single Source of Truth**: Source code is the authoritative implementation
-2. **Test-Driven Development**: Tests validate functionality before implementation
-3. **Automated Validation**: All components are automatically checked for coherence
-4. **Reproducible Outputs**: All results are deterministic and verifiable
-5. **Integrated Workflow**: One command (`render_pdf.sh`) validates the entire system
-
-This architecture ensures that QuadMath maintains the highest standards of mathematical rigor, code quality, and documentation coherence while providing a clear, maintainable structure for development and collaboration.
+Use [WORKFLOW.md](WORKFLOW.md) for implementation and integration responsibilities,
+[root agent guidance](AGENTS.md) for ownership and safe output handling, and
+[the documentation index](docs/README.md) for focused operational topics.

@@ -16,13 +16,12 @@ from quadmath.core.metrics import (
 
 
 def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> np.ndarray:
-    """Estimate the Fisher information matrix via sample gradients.
+    """Compute a sample-gradient outer-product matrix.
 
-    Uses the empirical outer-product estimator: F = (1/N) sum g g^T.
-    
-    In information geometry, this matrix defines a Riemannian metric on parameter space,
-    capturing local curvature of the log-likelihood surface. This connects to Einstein.4D
-    concepts where geodesics follow the Fisher metric rather than Euclidean distance.
+    With normalization, F = (1/N) sum g g^T. This estimates empirical Fisher
+    information only when the rows are appropriate likelihood scores.
+    Arbitrary loss gradients instead yield their uncentered second moment;
+    it is not automatically a population Fisher matrix or a loss Hessian.
 
     Parameters
     - gradients: Finite real array of shape (num_samples, num_params)
@@ -37,10 +36,11 @@ def fisher_information_matrix(gradients: np.ndarray, normalize: bool = True) -> 
     - ndarray[num_params, num_params]: Symmetric positive semi-definite matrix.
     
     Notes
-    - The FIM acts as a metric tensor in information geometry, analogous to the
-      Minkowski metric in Einstein.4D but for parameter space curvature.
-    - Eigenvalues of F indicate curvature strength along principal directions.
-    - Natural gradient descent uses F^(-1) to scale parameter updates optimally.
+    - The output is positive semidefinite and can be singular; a Riemannian
+      metric requires a positive-definite parameterization or damping.
+    - Eigenvalues describe this quadratic form, not intrinsic manifold curvature.
+    - A statistical Fisher metric is positive semidefinite, unlike a Lorentzian
+      spacetime metric. These are not interchangeable geometric structures.
     """
     if np.iscomplexobj(gradients):
         raise ValueError("gradients must be real")
@@ -134,9 +134,9 @@ def natural_gradient_step(
 
     Solves (F + ridge I) delta = gradient and returns -step_size * delta.
     
-    This implements geodesic motion on the information manifold, analogous to
-    how particles follow geodesics in Einstein.4D spacetime. The Fisher metric
-    replaces the physical metric, but the geometric principle remains the same.
+    For a specified positive-definite metric, this is a local metric-steepest-
+    descent update. It does not integrate a geodesic. Statistical Fisher
+    information requires a likelihood model and appropriate score functions.
 
     Parameters
     - gradient: Array of shape (num_params,).
@@ -150,7 +150,7 @@ def natural_gradient_step(
     if fisher.shape[0] != fisher.shape[1] or fisher.shape[0] != gradient.shape[0]:
         raise ValueError("shape mismatch between fisher and gradient")
     
-    # Ensure positive definiteness for numerical stability
+    # Damping shifts eigenvalues; arbitrary indefinite inputs need not become SPD.
     A = fisher + ridge * np.eye(fisher.shape[0], dtype=fisher.dtype)
     
     # Solve the linear system (F + ridge*I) * delta = gradient
@@ -166,9 +166,9 @@ def free_energy(log_p_o_given_s: np.ndarray, q: np.ndarray, p: np.ndarray) -> fl
     are normalized without overflowing their total mass. The KL term uses
     normalized probability pseudocounts of 1e-15, as in kl_divergence.
     
-    This function connects to active inference frameworks where minimizing free
-    energy drives both perception and action, analogous to how geodesics minimize
-    proper time in Einstein.4D.
+    This is a finite-state variational objective. Perception/action dynamics,
+    Markov-blanket independences and a spacetime metric are separate modeling
+    assumptions, not consequences of this scalar calculation.
 
     Parameters
     - log_p_o_given_s: Log-likelihoods for each latent state.

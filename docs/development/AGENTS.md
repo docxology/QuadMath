@@ -1,21 +1,27 @@
-# development/ — Agent Notes
+# Development Documentation Agent Guide: Separate Verification Gates
 
-Documentation of the test/coverage workflow, plus the docs-tree link checker.
+`README.md` explains integration checks; `check_links.py` implements a Markdown
+link checker. Follow [root rules](../../AGENTS.md), [docs ownership](../AGENTS.md)
+and [the workflow](../../WORKFLOW.md).
 
-## Contents
+## Documentation responsibilities
 
-- `README.md` — the test/coverage contract (mirrors root `AGENTS.md`).
-- `check_links.py` — resolves every relative markdown link/image under
-  `docs/` against the filesystem; run after any `docs/` edit:
-  `uv run python docs/development/check_links.py` (exit 0 = all resolve).
+Keep commands source-accurate, explicitly selecting scientific Python 3.13 and
+preserving `.python-version`. Distinguish configured coverage floors from measured
+results, Markdown syntax checks from semantic review, and external-tool fixtures
+from actual PDF builds. Do not promise a single wrapper proves complete coherence.
 
-## Rules
+Explain that Python rendering honors `QUADMATH_OUTPUT_DIR`, but the shell PDF
+renderer/cleanup script uses fixed checkout paths and can update canonical
+sources. Preserve generated user work and immutable release artifacts.
 
-- Keep `README.md` in lock-step with the root `AGENTS.md` quality gates; this
-  folder restates for navigation, it does not override.
-- `check_links.py` skips fenced code blocks and non-`http(s)`/relative
-  targets; treat any new failure as a broken doc link, not a checker bug,
-  unless you can reproduce the miss on a resolvable file.
-- The manuscript markdown validator (`quadmath/scripts/validate_markdown.py`)
-  owns `quadmath/markdown/`; this checker owns `docs/`. Do not merge their
-  responsibilities.
+## Checker and integration ownership
+
+The integration owner owns checker source changes and final combined link checks.
+Read its actual CLI/scope when documenting invocation; do not assume every Markdown
+construct or remote URL is validated. The canonical manuscript validator remains
+a separate tool. When a link fails, inspect the intended source/anchor before
+changing text or suppressing the checker.
+
+During delegated edits skip builds/tests/lint/formatters. Report actual isolated
+consumer probes separately, with expanded paths and unresolved cross-owner links.

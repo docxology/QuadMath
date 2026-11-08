@@ -1,6 +1,6 @@
-# Resources
+# References, External Implementations, and Teaching Context {#resources}
 
-This section provides comprehensive resources for learning about and working with Quadrays, synergetics, and the computational methods discussed in this manuscript.
+These references support the manuscript's definitions and historical context. External repository links are comparison resources, not a claim that their current revisions were executed or validated during this documentation pass.
 
 ## Core Concepts and Background
 
@@ -35,7 +35,7 @@ This section provides comprehensive resources for learning about and working wit
 
 ## 4dsolutions Ecosystem: Comprehensive Computational Framework
 
-The [4dsolutions organization](https://github.com/4dsolutions) provides the most extensive computational framework for Quadrays and synergetic geometry, spanning 29+ repositories with implementations across multiple programming languages.
+The [4dsolutions organization](https://github.com/4dsolutions) hosts related Quadray and synergetic-geometry projects in several languages. The selection below is a bibliography, not a version-pinned integration or benchmark manifest.
 
 ### Core Computational Modules
 
@@ -63,7 +63,7 @@ The [4dsolutions organization](https://github.com/4dsolutions) provides the most
 #### Key Notebooks
 - **`Qvolume.ipynb`**: Tom Ace 5×5 determinant with random-walk demonstrations ([source](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/Qvolume.ipynb))
 - **`VolumeTalk.ipynb`**: Comparative analysis of bridging vs native tetravolume formulations ([source](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/VolumeTalk.ipynb))
-- **`QuadCraft_Project.ipynb`**: 1,255 lines of interactive CCP navigation and visualization tutorials ([source](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb))
+- **QuadCraft_Project.ipynb**: Interactive CCP navigation and visualization tutorial ([source](https://github.com/4dsolutions/School_of_Tomorrow/blob/master/QuadCraft_Project.ipynb)).
 - **Additional notebooks**: `TetraBook.ipynb`, `CascadianSynergetics.ipynb`, `Rendering_IVM.ipynb`, `SphereVolumes.ipynb` (visual and curricular materials)
 
 ### Additional Repositories
@@ -104,12 +104,12 @@ The [4dsolutions organization](https://github.com/4dsolutions) provides the most
 ## Related Projects and Applications
 
 ### Tetrahedral Voxel Engines
-- **QuadCraft**: [Tetrahedral voxel engine using Quadrays](https://github.com/docxology/quadcraft/)
+- **QuadCraft**: [Quadray game collection and native experiments](https://github.com/docxology/QuadCraft/) — consult its current architecture before assuming a unified voxel-engine API.
 
 ### Academic Publications
 - **Flextegrity**: [Generating the Flextegrity Lattice (academia.edu)](https://www.academia.edu/44531954/Generating_the_Flextegrity_Lattice)
 
 ### Context and Integration
-These materials popularize the IVM/CCP/FCC framing of space, integer tetravolumes, and projective Quadray normalization. They inform the methods in this paper and complement the `src/` implementations (see `quadray.py`, `cayley_menger.py`, `linalg_utils.py`).
+These materials discuss FCC sphere centers, selected integer-volume solids, and common-offset Quadray normalization. Arbitrary integer Quadray vertices need only have quarter-unit rational tetravolumes; see [native volume conventions](03_quadray_methods.md#sec:integer_volume).
 
-The ecosystem provides extensive validation, pedagogical context, and practical implementations that complement and extend the methods developed in this manuscript. Cross-language implementations serve as independent verification of algorithmic correctness while educational materials demonstrate practical applications across diverse computational environments.
+For an actual comparison, record the external revision, basis orientation, length scale, inputs, and observed outputs. External implementations are potential independent evidence, not automatic verification of this codebase.

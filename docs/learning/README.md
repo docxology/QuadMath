@@ -1,110 +1,109 @@
-# learning/ — IVM learning surface
+# IVM Learning Operations: Fields, Transport and Held-Out Evaluation
 
-Documentation for the machine-learning modules over the IVM lattice — all
-landed on disk (checked 2026-09-10):
+This page maps runtime methods to their canonical chapters. It does not define
+an independent geometry or promise out-of-sample skill from a successful fit.
+Start with the [methods](../../quadmath/markdown/03_quadray_methods.md), then
+[field learning](../../quadmath/markdown/11_ivm_field_learning.md),
+[dynamics](../../quadmath/markdown/12_ivm_dynamics.md),
+[evaluation](../../quadmath/markdown/15_learning_evaluation.md) and
+[lattice gallery](../../quadmath/markdown/16_lattice_gallery.md).
 
-- `src/quadmath/lattice/ivm_field.py` — static field learning on the lattice
-- `src/quadmath/lattice/ivm_dynamics.py` — field dynamics + coupling identification
-- `src/quadmath/learn/learning_eval.py` — training/testing methodology (honest evaluation)
-- `src/quadmath/viz/vis_lattice.py` — the matplotlib rendering primitives behind the
-  visualization gallery (see section `16_lattice_gallery.md`)
+## Field fitting and hard-boundary extension
 
-Design lineage: quadray coordinates (`src/quadmath/core/quadray.py`) → IVM lattice geometry
-→ field evolution → learning/identification → evaluation, all numpy-only and
-deterministic (no ML frameworks; seeded `numpy.random.default_rng`).
+[`ivm_field.py`](../../src/quadmath/lattice/ivm_field.py) supplies
+`IVMField.lattice_ball`, `learn`, `harmonic_extension`, `predict` and `score`.
+`learn` solves soft Laplacian-regularized kernel-weighted least squares: observed
+targets need not be retained exactly. `harmonic_extension` fixes supplied values
+exactly and solves the interior graph Laplacian system; each connected component
+must have an anchor. Boundary sites can be any anchored subset, not just the
+outer shell. Duplicate gauge-equivalent anchors, nonfinite values and unanchored
+components are rejected.
 
-Manuscript treatments (ported copies live under
-[manuscript/](../manuscript/)): [11_ivm_field_learning.md](../manuscript/11_ivm_field_learning.md),
-[12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md),
-[15_learning_evaluation.md](../manuscript/15_learning_evaluation.md), and
-[16_lattice_gallery.md](../manuscript/16_lattice_gallery.md).
+`quadray_shell_norm` is the centered L1 norm, with `shell_sites(k)` targeting
+norm `2k`; `shell_ball_sites(radius)` uses **shell units**. The positive-shell
+formula excludes the singleton origin. `fit_geometry` estimates an unconstrained
+3-by-3 linear map of labeled tetrahedral vertex centroids. It does not fit an
+independent translation or constrain the map to a pure rotation plus uniform
+scale; its reported scale is the signed cube root of the determinant.
 
-## `src/quadmath/lattice/ivm_field.py` — static field learning on the lattice
+## Dynamics: three distinct update laws
 
-Public API (`__all__`): `IVM_NEIGHBOR_STEPS`, `IVMField`, `TetrahedronFit`,
-`shell_ball_sites`, `fit_geometry`, `is_ivm_site`, `quadray_shell_norm`,
-`shell_sites`, `shell_cardinalities`.
+[`ivm_dynamics.py`](../../src/quadmath/lattice/ivm_dynamics.py) constructs
+`IVMLattice` with `make_lattice(radius)`, whose ball uses **scale-one Euclidean
+radius**, not the field learner's shell radius. The twelve canonical neighbor
+moves have squared length 8; a Euclidean radius-3 ball has 13 sites.
 
-- **Geometry**: a lattice site is a normalized quadray (non-negative, one
-  zero) whose component sum is divisible by 4 — exactly the close-packed
-  sphere centers. `quadray_shell_norm` is the centered L1 shell norm;
-  shell `k` has cardinality `10k² + 2` (cuboctahedral numbers 1, 12, 42, …).
-  `shell_sites` / `shell_ball_sites` enumerate exactly (integers only).
-- **`IVMField`**: scalar field over a lattice ball; sites ordered by
-  (shell, lexicographic quadray) via `shell_ball_sites`. Methods: `learn`
-  (Laplacian-regularized kernel-weighted least squares on the lattice
-  graph), `predict(site)`, `score(sites, values)`.
-- **`fit_geometry`**: least-squares recovery of best-fit tetrahedron
-  orientation+scale from noisy 3D points through the quadray basis
-  (`to_xyz`); returns a `TetrahedronFit`.
+| Method / `DynamicsParams.kind` | Meaning and limits |
+|---|---|
+| `heat_step` / `"heat"` | Symmetric-normalized adjacency update; squared-norm contraction for coupling in `[0,1]`, not general total-mass or constant preservation on irregular boundary degrees |
+| `conservative_heat_step` / `"conservative"` | Unnormalized-Laplacian concentration transport scaled by maximum degree; mass/constant and range preservation with norm/Dirichlet-energy contraction in the finite-graph model, subject to floating arithmetic |
+| `majority_step` / `"majority"` | Integer rounded neighbor averaging, exact round-half-to-even; range preserving, **not** generally squared-norm monotone |
 
-## `src/quadmath/lattice/ivm_dynamics.py` — dynamics and coupling identification
+`graph_laplacian`, `dirichlet_energy` and `sum_of_squares` provide observables.
+`simulate` preserves the selected update law; `fit_trajectory` performs a
+candidate-grid/refinement search for coupling, not a general optimizer or
+identifiability theorem. Integer majority trajectories can admit coupling ties.
+Neither normalized heat nor conservative transport is a proved continuum solver.
 
-Public API: `neighbor_shifts`, `site_radius_sq`, `ball_sites`, `IVMLattice`,
-`make_lattice`, `sum_of_squares`, `is_nonincreasing`, `heat_step`,
-`majority_step`, `DynamicsParams`, `step`, `Trajectory`, `simulate`,
-`FitResult`, `fit_trajectory`, `render_dynamics_demo`.
+## Evaluation: selection is not an independent test
 
-- **Move graph**: adjacency = embedding difference is one of the 12
-  canonical IVM neighbor shifts (permutations of `(2,1,1,0)`). Sites are the
-  quadrays with coordinate sum divisible by 4. The R=3 ball (13 sites) is a
-  single 12-around-one cluster; the update laws act independently per
-  connected component.
-- **Heat update** (`heat_step`): `u ← (1−α)u + α·S·u` with the symmetric
-  normalization `S = D^{-1/2} A D^{-1/2}`; provably non-increasing in ‖u‖²
-  (lemma in the manuscript section, asserted per step in
-  `tests/unit/lattice/test_ivm_dynamics.py::test_heat_update_l2_nonincreasing_per_step`).
-  No claim is made for plain row-average diffusion.
-- **Majority update** (`majority_step`): rounded neighbor averaging on
-  integer fields; range-preserving (max non-increasing, min non-decreasing).
-  Deliberately *no* L2 claim — rounding can increase sum of squares, and a
-  test pins a demonstrating case.
-- **Identification** (`fit_trajectory`): gradient-free grid + refinement
-  search over the coupling α minimizing trajectory MSE against observed
-  snapshots; deterministic, ties to smallest α. Demo: α_true = 0.3 recovered
-  at machine precision (`render_dynamics_demo` produces
-  `quadmath/output/figures/ivm_dynamics_demo.png`).
+[`learning_eval.py`](../../src/quadmath/learn/learning_eval.py) provides:
 
-## `src/quadmath/learn/learning_eval.py` — honest evaluation methodology
+- `kfold_site_splits`: seeded random partitions of distinct normalized observed
+  sites. These are **not spatially blocked** folds; autocorrelation remains.
+- `cross_validate_field`: select `lam` using mean validation-fold MSE, then refit
+  on all observations. `best_mean_mse` is a selection score; `refit_mse` is
+  in-sample. Neither is an untouched final-test estimate.
+- `learning_curve`: seeded nested training subsets, scored on each complement;
+  the held-out composition changes with training fraction.
+- `trajectory_train_test`: fit only the chronological prefix; report held-out
+  multi-step continuation and teacher-forced one-step errors separately.
+  `kind` must match the intended update law, including `"conservative"` when
+  modeling concentration transport. Do not shuffle snapshots.
+- `three_way_split`, `ridge_site_fit`, `GradientDescentTrainer`: tabular index
+  splits, a floating closed-form ridge baseline and standardized full-batch
+  gradient descent, not exact rational fitting or an ML framework.
 
-Public API (`__all__`): `CrossValidationResult`, `LearningCurveResult`,
-`TrajectorySplitResult`, `cross_validate_field`, `enclosing_radius`,
-`kfold_site_splits`, `learning_curve`, `trajectory_train_test`,
-`RidgeSiteFit`, `three_way_split`, `ridge_site_fit`,
-`GradientDescentTrainer`.
+Choose an independent spatial/temporal evaluation design suited to the scientific
+question. A seeded split is reproducible, not automatically statistically independent.
 
-Principle: spatial autocorrelation makes naive resampling optimistic, and
-time-ordered dynamics data must never be shuffled — every surface here holds
-out explicit structure. Four surfaces:
+## Small numerical consumer recipe
 
-- **`kfold_site_splits`** — deterministic seeded k-fold partition of the
-  observed lattice sites into disjoint, exhaustive train/test pairs.
-- **`cross_validate_field`** — k-fold cross-validation of the
-  Laplacian-regularized field learner (`IVMField.learn`): the regularization
-  strength is chosen on held-out folds only and the final model is refit on
-  all observed data (honest model selection). Returns
-  `CrossValidationResult` (per-fold, pooled, and refit MSE).
-- **`trajectory_train_test`** — temporal (first-fraction) train/test split
-  for `ivm_dynamics.fit_trajectory`: identify on the training prefix, score
-  by multi-step continuation MSE on the held-out suffix plus a
-  teacher-forced one-step-ahead error (`TrajectorySplitResult`).
-- **`learning_curve`** — held-out MSE as a function of the fraction of
-  observed sites, the classic data-coverage curve on a lattice
-  (`LearningCurveResult`).
+After the [Python 3.13 setup](../../README.md#quick-start), run with
+`uv run --python 3.13 python`:
 
-All numpy-only and deterministic for fixed seeds; the split randomness is
-confined to fold/subset assignment, never to the fits themselves.
+```python
+import numpy as np
+from quadmath.lattice.ivm_field import IVMField
+from quadmath.lattice.ivm_dynamics import conservative_heat_step, make_lattice
+from quadmath.learn.learning_eval import cross_validate_field
 
-## Reading order
+field = IVMField.lattice_ball(1)
+field.harmonic_extension([field.sites[0]], [2.0])
+print("constant extension range:", field.values.min(), field.values.max())
 
-1. [manuscript/11_ivm_field_learning.md](../manuscript/11_ivm_field_learning.md)
-   — field learning on the lattice
-2. [manuscript/12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md) — the
-   analytical treatment (lemma, proposition, honest non-claims)
-3. [manuscript/15_learning_evaluation.md](../manuscript/15_learning_evaluation.md)
-   — the evaluation methodology this folder implements
-4. This README — API map
-5. `tests/unit/lattice/test_ivm_field.py`, `tests/unit/lattice/test_ivm_dynamics.py`,
-   `tests/unit/learn/test_learning_eval.py` — the contracts as executable assertions
-   (100% coverage, fixed seeds, no mocks — see
-   [development](../development/README.md))
+lattice = make_lattice(3)
+u = np.arange(lattice.size, dtype=float)
+v = conservative_heat_step(u, lattice, 0.3)
+print("transport mass:", u.sum(), v.sum())
+
+sites = field.sites[:6]
+values = [float(i) for i in range(len(sites))]
+selection = cross_validate_field(values, sites, k=3,
+                                 lam_grid=[0.01, 0.1], seed=7, radius=1)
+print("selected lambda:", selection.best_lam)
+print("validation / in-sample refit:", selection.best_mean_mse, selection.refit_mse)
+```
+
+This is a tiny synthetic consumer example, not evidence of real-data skill.
+For a figure without tracked-output writes:
+
+```bash
+QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results" MPLBACKEND=Agg \
+  uv run --python 3.13 python quadmath/scripts/ivm_field_demo.py
+```
+
+Python renderers honor the output helper policy; the shell PDF pipeline does not
+share that override. See [workflow](../../WORKFLOW.md) and
+[development checks](../development/README.md). Return to the
+[documentation index](../README.md).

@@ -1,39 +1,44 @@
-# Agent guide — QuadMath docs/
+# Documentation Agent Guide: Canonical Sources and Operational Ownership
 
-## Layout
+Read [root guidance](../AGENTS.md) and [the documentation index](README.md).
 
-- `manuscript/` — template-layout manuscript projection of
-  `quadmath/markdown/` (`config.yaml`, `preamble.md`, `references.bib`,
-  sections `01…99`, `figures/`). `quadmath/markdown/` remains the editing
-  source of truth; content changes happen there and are re-ported.
-- `development/` — test/coverage workflow (`README.md`) and the docs-tree
-  link checker (`check_links.py`).
-- `learning/` — docs for the landed IVM learning surface (`src/quadmath/lattice/ivm_field.py`,
-  `src/quadmath/lattice/ivm_dynamics.py`, `src/quadmath/learn/learning_eval.py`, `src/quadmath/viz/vis_lattice.py`).
-- `analysis/` — docs for the landed benchmarks/statistics surface
-  (`src/quadmath/stats/benchmarks.py`, `src/quadmath/stats/statistics.py`, `src/quadmath/viz/vis_stats.py`).
-- `lean/` — docs for the landed Lean 4 formalization at `lean/` (build
-  command, module map, proof status: zero sorries; universal shell count
-  machine-checked through shell 8, universal distance identity proved).
-- `overview.md` — repository tour.
+## Layout and responsibility
 
-## Conventions observed
+- `overview.md`: repository tour, not an alternate mathematical specification.
+- `development/`: separate test/coverage, link-check and render gates.
+- `learning/`: runtime field/dynamics/evaluation operations with canonical links.
+- `analysis/`: timing/statistical methods and figure data provenance.
+- `lean/`: declaration/trust scope, not an undated green-build receipt.
+- `manuscript/`: scripted template-layout projection of `quadmath/markdown/`.
+  Canonical chapters and copied figures are not independently edited here.
+- `MANUSCRIPT_STATUS.md`: projection/render evidence maintained by integration.
 
-- Every subfolder ships `README.md` (human-facing) + `AGENTS.md` (agent
-  notes), matching the repository's docs contract.
-- Manuscript sections in `manuscript/` follow the template discovery buckets:
-  numbered `NN_*.md`, glossary `98_*`, references `99_*` (always last),
-  `preamble.md` with a ` ```latex ` block, top-level `*.bib`.
-- Generated outputs (`quadmath/output/`, manuscript `figures/` copies) are
-  regeneratable — never hand-edit.
+## Source-informed maintenance
 
-## Docs maintenance
+Audit actual signatures/implementations before documenting recipes. Link
+mathematical details to canonical chapters. Distinguish package runtime from
+checkout scripts, soft fitting from hard constraints, normalized heat from
+conservative transport, and validation selection from untouched test estimates.
+Do not claim universal Lean counts from finite checks, source elaboration from
+unrun builds, or complete semantic coherence from a validator.
 
-- After any `docs/` edit, run `uv run python docs/development/check_links.py`
-  — every relative link/image in these files must resolve on disk.
-- Manuscript source-tree invariants are checked separately with
-  `uv run python quadmath/scripts/validate_markdown.py`.
-- Keep claims traceable to root `README.md` / `pyproject.toml`; the DOI and
-  title live in the root `README.md` and `docs/manuscript/config.yaml`.
-- `docs/MANUSCRIPT_STATUS.md` tracks render parity between the two
-  manuscript trees; update it when either tree changes structurally.
+Use informative topic-specific headings and relative navigation. Preserve explicit
+equation/code anchors and update inbound links when headings change. Avoid saved
+current test/file counts and cross-platform determinism promises. Historical
+receipts must identify their date/revision and not imply current status.
+
+## Recipes and output safety
+
+Use explicit Python 3.13 commands, retaining `.python-version`. Isolated Python
+rendering sets a fresh `QUADMATH_OUTPUT_DIR`; the shell PDF/cleanup scripts do
+not share that override. Never purge or overwrite tracked/user-generated outputs.
+A projection port or PDF render can write beyond an apparent output directory;
+follow its real implementation and [workflow](../WORKFLOW.md).
+
+## Integration handoff
+
+During delegated editing skip builds/tests/lint/formatters. The integration owner
+runs source/docs checks, actual rendering/visual inspection and any Lean gate
+once edits settle. Report expanded changed paths, direct recipe evidence and
+cross-owner heading-link changes. `development/check_links.py` is checker source,
+not a prose-maintenance workaround; source changes require its owner's scope.

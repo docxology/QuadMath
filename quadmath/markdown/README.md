@@ -1,209 +1,58 @@
-# QuadMath Manuscript Source
+# Canonical QuadMath Manuscript Sources
 
-This directory contains the markdown source files for the QuadMath manuscript. These files are processed by `render_pdf.sh` to generate PDFs and LaTeX exports.
+Edit these Markdown sources, not generated copies under `docs/manuscript/` or `quadmath/output/`. The build scripts assemble individual chapters and the combined manuscript. The mathematical authority for quotient coordinates, conversion, and lattice contracts is [SPEC.md](../../SPEC.md).
 
-## Manuscript Sections
+## Reading paths through the mathematical modules {#manuscript-sections}
 
-| File | Section | Description |
-|------|---------|-------------|
-| `00_preamble.md` | Front Matter | Title, abstract, author info |
-| `01_introduction.md` | Introduction | 4D namespaces and motivation |
-| `02_4d_namespaces.md` | 4D Namespaces | Coxeter.4D, Einstein.4D, Fuller.4D |
-| `03_quadray_methods.md` | Quadray Methods | Analytical details and algorithms |
-| `04_optimization_in_4d.md` | Optimization | Nelder-Mead, discrete descent |
-| `05_extensions.md` | Extensions | Applications and generalizations |
-| `06_discussion.md` | Discussion | Implications and future work |
-| `07_resources.md` | Resources | References and bibliography |
-| `08_equations_appendix.md` | Appendix A | Mathematical equations |
-| `09_free_energy_active_inference.md` | Appendix B | Active inference application |
-| `10_symbols_glossary.md` | Appendix C | Auto-generated API glossary |
-| `11_ivm_field_learning.md` | IVM Field Learning | Static field learning on the isotropic vector matrix |
-| `12_ivm_dynamics.md` | IVM Dynamics | Dynamic lattice fields and trajectory identification |
-| `13_lattice_tooling.md` | Lattice Tooling | Nearest-site queries and shell numbering |
-| `14_conversions_spec.md` | Conversions & Specification | Embedding, Gram identities, exact canonical inversion, round-trip contracts |
-| `15_learning_evaluation.md` | Learning & Evaluation | K-fold validation, temporal splits, learning curves |
-| `16_lattice_gallery.md` | Lattice Visualization Gallery | Shell, field-slice, and dynamics figure gallery |
-| `17_benchmarks_statistics.md` | Benchmarks & Statistics | Timing harness, bootstrap CIs, permutation tests, scaling fits |
-| `18_stats_gallery.md` | Statistics Gallery | Deterministic gallery: latency, scaling, CI bars, ECDF |
+| Source | Topic and boundary |
+| --- | --- |
+| [01_introduction.md](01_introduction.md) | Rank-three physical coordinates, manuscript scope, native-basis/FCC graphical abstract |
+| [02_4d_namespaces.md](02_4d_namespaces.md) | Euclidean four-space, Minkowski spacetime, and tetrahedral three-space are distinct |
+| [03_quadray_methods.md](03_quadray_methods.md) | Exact metric/affine primitives, rational volumes, source-linked code anchors |
+| [04_optimization_in_4d.md](04_optimization_in_4d.md) | Discrete search, finite local stopping, and metric increments rather than geodesic integration |
+| [05_extensions.md](05_extensions.md) | Explicitly unimplemented research directions and cultural context |
+| [06_discussion.md](06_discussion.md) | Evidence boundaries, units, statistical interpretation, and limitations |
+| [07_resources.md](07_resources.md) | External bibliography, not an executed validation manifest |
+| [08_equations_appendix.md](08_equations_appendix.md) | Labeled volume, probability, and metric equations with scale conventions |
+| [09_free_energy_active_inference.md](09_free_energy_active_inference.md) | Toy probability objectives, state increments, and didactic partition diagrams |
+| [10_symbols_glossary.md](10_symbols_glossary.md) | Authored notation plus a generated API-index block |
+| [11_ivm_field_learning.md](11_ivm_field_learning.md) | Soft observations, hard-boundary harmonic extension, and general linear geometry fitting |
+| [12_ivm_dynamics.md](12_ivm_dynamics.md) | Symmetric-normalized heat versus conservative transport versus rounded averaging |
+| [13_lattice_tooling.md](13_lattice_tooling.md) | FCC graph-shell enumeration and bounded float64 spatial queries |
+| [14_conversions_spec.md](14_conversions_spec.md) | Embedding/gauge, exact inverse membership, and distinct floating snapping |
+| [15_learning_evaluation.md](15_learning_evaluation.md) | Random-site interpolation holdouts, temporal forecasting, and tabular fits |
+| [16_lattice_gallery.md](16_lattice_gallery.md) | Composable lattice panels, owned figures, and distinct animation diffusion |
+| [17_benchmarks_statistics.md](17_benchmarks_statistics.md) | Variable wall-clock timing and assumption-bound statistical inference |
+| [18_stats_gallery.md](18_stats_gallery.md) | Synthetic plotting examples, not measured benchmark evidence |
 
-## Writing Guidelines
+For coordinate geometry, read 02 → 03 → 14 and consult SPEC. For lattice models, read 11 → 12 → 13 → 15, then the gallery in 16. For measurement, read 17 before interpreting 18.
 
-### Image References
+## Equations, listings, and source references {#writing-guidelines}
 
-Always use relative paths from the `markdown/` directory:
+- Preserve explicit equation and code identifiers when changing titles; update heading backlinks when an automatic identifier changes.
+- Use LaTeX for mathematical prose. Do not put mathematical Unicode or prose equations inside inline code/listings; reserve code formatting for actual identifiers, paths, and executable expressions.
+- State the embedding scale. Default scale-one XYZ uses native volume factor 3/8; S3 applies only to sphere-radius-one lengths.
+- Use relative image paths such as `../output/figures/graphical_abstract_quadray.png`, with captions tied to the script's actual model, axes, units, and display normalization.
+- Reference implementations under `src/quadmath/` and distinguish implemented APIs from proposals.
+- A saved seeded example is not a current test/coverage receipt. Record actual execution evidence separately.
 
-```markdown
-<!-- Correct -->
-![Caption describing the figure](../output/figures/figure_name.png)
+## Preamble and generated API block {#special-files}
 
-<!-- Wrong - absolute path -->
-![Caption](/Users/.../figure.png)
+`00_preamble.md` contains LaTeX commands and listing styles, not YAML author/title front matter. Its code fence is consumed by the manuscript tooling.
 
-<!-- Wrong - missing caption -->
-![](../output/figures/figure.png)
-```
-
-### Equations
-
-Use LaTeX equation environments with unique labels:
-
-```markdown
-\begin{equation}
-\label{eq:quadray_norm}
-\mathbf{q}_{\text{norm}} = \mathbf{q} - \min(\mathbf{q}) \cdot \mathbf{1}
-\end{equation}
-```
-
-Reference equations:
-
-```markdown
-As shown in Equation \eqref{eq:quadray_norm}, normalization ensures...
-```
-
-### Code References
-
-Reference source code with inline formatting:
-
-```markdown
-The `Quadray` class in `quadray.py` implements the core coordinate system.
-
-The function `integer_tetra_volume()` computes exact volumes using
-the Bareiss algorithm from `linalg_utils.py`.
-```
-
-### Section Cross-References
-
-Link to other sections:
-
-```markdown
-See [Quadray Methods](03_quadray_methods.md) for implementation details.
-
-The optimization methods in [Section 4](04_optimization_in_4d.md)
-build on these foundations.
-```
-
-### External Links
-
-Use descriptive text, never bare URLs:
-
-```markdown
-<!-- Correct -->
-The [Zenodo archive](https://zenodo.org/records/16887791) contains...
-
-<!-- Wrong - bare URL -->
-See https://zenodo.org/records/16887791 for...
-```
-
-## Validation
-
-Before committing markdown changes:
+Only the block between `BEGIN: AUTO-API-GLOSSARY` and `END: AUTO-API-GLOSSARY` in `10_symbols_glossary.md` is generated. The preceding symbol tables are authored and should be edited normally. Regenerate the API block with:
 
 ```bash
-# Run validation script
-uv run python quadmath/scripts/validate_markdown.py
-
-# Check for issues
-uv run python quadmath/scripts/validate_markdown.py --strict
+uv run --python 3.13 python quadmath/scripts/generate_glossary.py
 ```
 
-### What Gets Validated
+## Validation and build entry points {#validation}
 
-1. **Image references** - every image embed (caption plus relative path) must resolve to an existing file under `quadmath/output/`
-2. **Equation labels** - All `\label{eq:...}` must be unique
-3. **Internal links** - Anchors must exist in target files
-4. **URL format** - No bare URLs (use `[text](url)` format)
-
-## Building PDFs
-
-### Single Section
-
-The `render_pdf.sh` script builds all sections, but for testing a single file:
+Run from the repository root in the supported Python 3.13 environment. These are instructions, not a claim that the commands were run for this edit:
 
 ```bash
-pandoc quadmath/markdown/01_introduction.md \
-    -o quadmath/output/pdf/01_introduction.pdf \
-    --pdf-engine=xelatex
-```
-
-### Full Manuscript
-
-```bash
+uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
 bash quadmath/scripts/render_pdf.sh
 ```
 
-This creates:
-
-- Individual PDFs in `quadmath/output/pdf/`
-- Combined `quadmath_review.pdf`
-- LaTeX exports in `quadmath/output/tex/`
-
-## Special Files
-
-### `00_preamble.md`
-
-Contains YAML front matter for pandoc:
-
-```yaml
----
-title: "QuadMath: Analytical Review of Quadray Coordinates (4D)"
-author: "docxology"
-date: "2025"
-abstract: |
-  This paper presents...
----
-```
-
-### `10_symbols_glossary.md`
-
-**Auto-generated** - Do not edit manually!
-
-This file is regenerated by:
-
-```bash
-uv run python quadmath/scripts/generate_glossary.py
-```
-
-It documents all public APIs from `src/` modules.
-
-## LaTeX Compatibility
-
-### Supported Environments
-
-```markdown
-\begin{equation}...\end{equation}
-\begin{align}...\end{align}
-\begin{figure}...\end{figure}
-```
-
-### Custom Macros
-
-If needed, add to `quadmath/markdown/00_preamble.md`:
-
-```latex
-\newcommand{\quadray}[4]{(#1, #2, #3, #4)}
-```
-
-## Troubleshooting
-
-### "Image not found" Error
-
-1. Check the image path is relative to `markdown/`
-2. Run the generation script that creates the image
-3. Verify file exists: `ls quadmath/output/figures/`
-
-### "Duplicate label" Error
-
-1. Search all markdown files for the label
-2. Rename one to be unique
-
-### LaTeX Build Errors
-
-1. Check for unescaped special characters: `_`, `%`, `&`
-2. Verify equation syntax is valid
-3. Check `pandoc` version compatibility
-
-## Cross-References
-
-- [../scripts/README.md](../scripts/README.md) - Generation scripts
-- [../README.md](../README.md) - Build system overview
-- [../../WORKFLOW.md](../../WORKFLOW.md) - Development workflow
+The builder owns combined/individual PDF and LaTeX output. A direct single-file Pandoc invocation does not reproduce its preamble, staging, and figure handling. See [the build-system overview](../README.md), [script documentation](../scripts/README.md), and [operational workflow](../../WORKFLOW.md). When retaining existing generated evidence, select an isolated `QUADMATH_OUTPUT_DIR`; do not overwrite user-generated outputs just to inspect an example.

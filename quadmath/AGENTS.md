@@ -1,246 +1,48 @@
-# AGENTS.md - Build System Directory
+# Manuscript Tool Agent Guide: Canonical Sources and Safe Outputs
 
-## Purpose
+Read [root guidance](../AGENTS.md), [build operations](README.md), and scoped
+instructions before editing `markdown/` or `scripts/`.
 
-This directory contains the complete build system for generating figures, PDFs, and LaTeX exports from QuadMath manuscript sources.
+## Directory Roles
 
-## Agent Guidelines
+- `markdown/`: canonical chapters, preserved equation/code anchors and preamble.
+  Only the marked API-glossary block is generated from Python.
+- `scripts/`: thin numerical/render orchestration and checkout build tools.
+- `output/`: generated and partly tracked artifacts that may contain user work.
+  Regeneratable does not mean safe to delete or overwrite.
 
-### Critical Rules
-
-1. **Scripts import from `src/` only** - No code duplication
-2. **Headless plotting required** - Use `MPLBACKEND=Agg`
-3. **Fixed RNG seeds** - Deterministic output generation
-4. **Print output paths** - Scripts must print generated file paths
-
-### Directory Roles
-
-| Directory | Role | Regeneratable? |
-|-----------|------|-------------|
-| `markdown/` | Manuscript source | ❌ No |
-| `scripts/` | Build scripts | ❌ No |
-| `output/` | Generated artifacts | 🔁 Regeneratable (git-tracked) |
-
-### Before Modifying Scripts
-
-1. **Run tests**: `uv run pytest -q`
-2. **Check that script runs**: `uv run python quadmath/scripts/<script>.py`
-3. **Verify outputs generated**: Check `quadmath/output/`
-
-### Before Modifying Markdown
-
-1. **Validate existing state**: `uv run python quadmath/scripts/validate_markdown.py`
-2. **Check image references exist**: All `![...]()` paths must be valid
-3. **Verify equation labels unique**: No duplicate `\label{eq:...}`
+`docs/manuscript/` is a scripted projection of canonical sources. Do not hand-edit
+its chapter/figure copies; coordinate porting with the integration owner.
 
 ## Script Development Standards
 
-### Figure Generation Scripts
+Import reusable operations from `quadmath.*`, not obsolete flat modules such as
+`quadray` or `paths`. Use existing package renderers, `quadmath.paths`,
+`figure_scope` and `save_figure` patterns; keep resource closure correct on errors.
+Use headless rendering and explicit seeded inputs where needed. Print actual
+written paths for manifest collection. Never promise machine-independent timing
+or cross-toolchain image/media bytes because the inputs are seeded.
 
-```python
-#!/usr/bin/env python
-"""Generate [description] figures.
+Adding a generator requires its explicit `make_all_figures.py` inventory entry.
+Adding a numbered chapter requires a `render_pdf.sh` module entry or a reasoned
+exclusion. Actual mathematical content belongs in canonical chapters, not a
+second operational derivation.
 
-Outputs:
-    quadmath/output/figures/figure_name.png
-    quadmath/output/data/data_name.csv
-"""
-from __future__ import annotations
+## Output and orchestration boundary
 
-import os
-import sys
-os.environ["MPLBACKEND"] = "Agg"  # Headless mode - BEFORE importing matplotlib
+Use fresh `QUADMATH_OUTPUT_DIR` for isolated Python recipes. The shell renderer
+and cleanup script fix their paths under checkout `quadmath/output/`; the
+override does not isolate PDF/TeX writes or glossary updates. Use an isolated
+checkout for full PDF work. Never invoke `clean_output.sh` as routine preparation.
 
-import matplotlib.pyplot as plt
-import numpy as np
+The renderer generates figures, refreshes the glossary, validates Markdown and
+compiles PDFs; it does not run pytest, coverage or Lean. `run_all.sh` is the
+separate test/coverage wrapper, with PDF only under `--with-pdf`. All scientific
+recipes explicitly select Python 3.13; preserve `.python-version`.
 
-# src/ path bootstrap, then import top-level src/ modules
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src"))
-from quadray import Quadray
-from paths import get_figure_dir, get_data_dir
+## Delegated implementation
 
-def main():
-    np.random.seed(42)  # Deterministic
-    
-    # Generate figure
-    fig, ax = plt.subplots()
-    # ... plotting code ...
-    
-    # Save with explicit path
-    out_path = get_figure_dir() / "figure_name.png"
-    fig.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    
-    # Print output path (for manifest)
-    print(f"Generated: {out_path}")
-
-if __name__ == "__main__":
-    main()
-```
-
-### Key Requirements
-
-1. **Set MPLBACKEND before import**:
-
-   ```python
-   import os
-   os.environ["MPLBACKEND"] = "Agg"
-   import matplotlib.pyplot as plt
-   ```
-
-2. **Use path utilities**:
-
-   ```python
-   from paths import get_figure_dir, get_data_dir, get_output_dir
-   ```
-
-3. **Print outputs**:
-
-   ```python
-   print(f"Generated: {output_path}")
-   ```
-
-4. **Close figures**:
-
-   ```python
-   plt.close(fig)  # Prevent memory leaks
-   ```
-
-## Markdown Standards
-
-### Image References
-
-```markdown
-<!-- Correct: relative path from markdown/ directory -->
-![Caption](../output/figures/figure_name.png)
-
-<!-- Wrong: absolute path -->
-![Caption](/Users/.../figure.png)
-```
-
-### Equation Labels
-
-```markdown
-<!-- Must be unique across all markdown files -->
-\begin{equation}
-\label{eq:unique_name}
-E = mc^2
-\end{equation}
-```
-
-### Cross-References
-
-```markdown
-<!-- Reference equations -->
-See Equation \eqref{eq:unique_name}.
-
-<!-- Reference figures -->
-See Figure \ref{fig:figure_name}.
-```
-
-### Internal Links
-
-```markdown
-<!-- Link to other sections -->
-See [Section Title](02_4d_namespaces.md#section-anchor)
-```
-
-## Build Pipeline Modifications
-
-### Adding a New Generation Script
-
-1. Create script in `scripts/`:
-
-   ```python
-   # quadmath/scripts/new_figure.py
-   ```
-
-2. Add to `make_all_figures.py`:
-
-   ```python
-   scripts = [
-       # ...existing...
-       "new_figure.py",
-   ]
-   ```
-
-### Adding a New Markdown Section
-
-1. Create file with proper numbering:
-
-   ```
-   quadmath/markdown/XX_section_name.md
-   ```
-
-2. Add to `MODULES` array in `render_pdf.sh`:
-
-   ```bash
-   MODULES=(
-       # ...existing...
-       "XX_section_name.md"
-   )
-   ```
-
-3. Update `00_preamble.md` table of contents if needed
-
-## Validation Commands
-
-```bash
-# Validate markdown references
-uv run python quadmath/scripts/validate_markdown.py
-
-# Check for broken image links
-uv run python quadmath/scripts/validate_markdown.py --strict
-
-# Regenerate glossary from src/
-uv run python quadmath/scripts/generate_glossary.py
-```
-
-## Common Issues
-
-### Missing Images
-
-```
-ERROR: Image not found: ../output/figures/missing.png
-```
-
-**Solution**: Run the generation script that creates this figure:
-
-```bash
-uv run python quadmath/scripts/<relevant_script>.py
-```
-
-### Duplicate Equation Labels
-
-```
-ERROR: Duplicate label: eq:example
-```
-
-**Solution**: Rename one of the duplicate labels to be unique
-
-### LaTeX Build Failures
-
-```
-! LaTeX Error: File 'something.sty' not found.
-```
-
-**Solution**: Install missing LaTeX package:
-
-```bash
-# macOS
-tlmgr install package-name
-
-# Ubuntu
-sudo apt-get install texlive-latex-extra
-```
-
-## Quality Checklist
-
-Before committing build system changes:
-
-- [ ] All scripts run without errors
-- [ ] `validate_markdown.py` passes
-- [ ] `render_pdf.sh` completes successfully
-- [ ] Generated PDFs render correctly
-- [ ] No hardcoded paths
-- [ ] Outputs are deterministic (same input → same output)
+Skip builds/tests/lint/formatters while editing. Isolated real consumer probes
+are allowed when assigned, with actual output paths reported. The integration
+owner runs combined checks and inspects visuals once edits settle. Preserve
+immutable releases and user outputs; report cross-owner heading-link changes.

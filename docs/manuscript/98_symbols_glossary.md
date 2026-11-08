@@ -15,7 +15,7 @@ This appendix consolidates the symbols, variables, and constants used throughout
 Descriptions:
 
 - $\mathbb{R}^n$: $n$-dimensional real vector space.
-- IVM: Quadray integer lattice (CCP sphere centers).
+- IVM: The FCC sphere-center coset of the integer Quadray quotient (component sum divisible by four), not every integer Quadray.
 - Coxeter.4D: Four-dimensional Euclidean geometry (not spacetime); see Coxeter, Regular Polytopes (Dover ed., p. 119); related lattice/packing background in Conway & Sloane.
 - Einstein.4D: Relativistic spacetime with Minkowski metric.
 - Fuller.4D: Quadrays with projective normalization and IVM unit conventions.
@@ -34,11 +34,11 @@ Descriptions:
 | $\lvert\cdot\rvert$ | Magnitude | Absolute value (determinant magnitude) |
 | $V_{ivm}$ | Tetravolume (IVM) | Tetrahedron volume in synergetics/IVM units; unit regular tetra has $V_{ivm}=1$ |
 | $V_{xyz}$ | Tetravolume (XYZ) | Euclidean tetrahedron volume |
-| $S3$ | Scale factor | $S3=\sqrt{9/8}$ with $V_{ivm} = S3\,V_{xyz}$ (synergetics unit convention) |
+| $S3$ | Scale factor | $\sqrt{9/8}$ only for sphere-radius-one XYZ; default scale-one XYZ instead uses $V_{ivm}=(3/8)V_{xyz}$ |
 | Coxeter.4D | Namespace | Euclidean E⁴; regular polytopes |
 | Einstein.4D | Namespace | Minkowski spacetime (metric analogy only here) |
-| Fuller.4D | Namespace | Quadrays/IVM; integer tetravolume |
-| Eq. (lattice_det) | Lattice determinant | Integer-lattice volume via 3x3 determinant |
+| Fuller.4D | Namespace | Rank-three Quadray quotient; native quarter-unit rational tetravolume |
+| Eq. (lattice_det) | XYZ determinant | Euclidean tetrahedral volume from embedded edge vectors |
 | Eq. (ace5x5) | Tom Ace 5x5 | Direct IVM tetravolume from Quadrays |
 | Eq. (cayley_menger) | Cayley–Menger | Length-based formula: 288 V^2 = det(·) |
 
@@ -50,7 +50,7 @@ Descriptions:
 | $\gamma$ | Expansion coefficient |
 | $\rho$ | Contraction coefficient |
 | $\sigma$ | Shrink coefficient |
-| $V_{ivm}$ | Integer volume monitor |
+| $V_{ivm}$ | Exact rational volume monitor |
 
 Descriptions:
 
@@ -64,9 +64,9 @@ Descriptions:
 | $\log$ | Natural logarithm | Logarithm base $e$ |
 | $\mathbb{E}[\cdot]$ | Expectation | Mean with respect to a distribution |
 | $F_{ij}$ | Fisher Information Matrix | $\mathbb{E}[\partial_{\theta_i}\log p \cdot \partial_{\theta_j}\log p]$; Eq. \eqref{eq:fim} in the equations appendix |
-| $\mathcal{F}$ | Variational free energy | $-\log P(o\mid s) + \mathrm{KL}\big[Q(s)\,\|\,P(s)\big]$; Eq. \eqref{eq:free_energy} in the equations appendix |
-| $\mathrm{KL}[Q\,\|\,P]$ | Kullback–Leibler divergence | $\sum Q\log(Q/P)$; information distance |
-| $\nabla_{\theta} L$ | Natural gradient | $F(\theta)^{-1} \nabla_{\theta} L(\theta)$; Eq. \eqref{eq:natural_gradient} in the equations appendix |
+| $\mathcal{F}$ | Variational free energy | $\mathbb E_Q[-\log P(o\mid s)]+\mathrm{KL}(Q\|P)$; Eq. \eqref{eq:free_energy} |
+| $\mathrm{KL}[Q\,\|\,P]$ | Kullback–Leibler divergence | $\sum Q\log(Q/P)$; asymmetric divergence, not a metric |
+| $F^{-1}\nabla_{\theta} L$ | Natural gradient | Metric-raised loss gradient; $\nabla_\theta L$ alone is the ordinary gradient |
 | $\eta$ | Step size | Learning-rate scalar used in updates |
 | $\theta$ | Parameters | Model parameter vector; indices $\theta_i$ |
 | $ds^2$ | Minkowski line element | $-c^2\,dt^2 + dx^2 + dy^2 + dz^2$; Eq. \eqref{eq:minkowski_line_element} in the equations appendix |
@@ -78,7 +78,7 @@ Descriptions:
 | --- | --- | --- |
 | $M$ | Embedding matrix | Linear map from Quadray to $\mathbb{R}^3$ (Urner-style unless noted) |
 | $\lVert\cdot\rVert_2$ | Euclidean norm | $\sqrt{x_1^2+\cdots+x_n^2}$ |
-| $R, D$ | Edge scales | Cube edge $R$ and Quadray edge $D$ with $D=2R$ (common convention) |
+| $L_0$ | Reference tetrahedron edge | $2\sqrt2$ in default scale-one XYZ; 2 in sphere-radius-one XYZ |
 
 ## Greek Letters (usage)
 
@@ -106,7 +106,7 @@ Descriptions:
 | Octahedron | Regular octahedron | V=4 in IVM units; edge-midpoint construction |
 | Rhombic Dodecahedron | 12-faced solid | V=6 in IVM units; Voronoi cell of FCC packing |
 | Cuboctahedron | Vector equilibrium | V=20 in IVM units; shell of 12 IVM neighbors |
-| Truncated Octahedron | Archimedean solid | V=20 in IVM units; space-filling tiling |
+| Truncated Octahedron | Archimedean solid | V=96 for the edge-$2\sqrt2$ placement used in the polyhedra figure; scale must be specified |
 
 ## Acronyms and abbreviations
 
@@ -151,9 +151,9 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.core.linalg_utils` | `bareiss_rank` | function | `(matrix)` | Compute the exact integer rank of a matrix via Bareiss elimination. |
 | `quadmath.core.linalg_utils` | `integer_adjugate` | function | `(matrix)` | Compute the exact integer adjugate (classical adjoint) of a square matrix. |
 | `quadmath.core.metrics` | `angle_error` | function | `(q1, q2)` | Geodesic rotation angle between two quaternions, in radians. |
-| `quadmath.core.metrics` | `fim_eigenspectrum` | function | `(F)` | Eigen-decomposition of a Fisher information matrix. |
+| `quadmath.core.metrics` | `fim_eigenspectrum` | function | `(F)` | Eigen-decompose the symmetric part of a square parameter-space matrix. |
 | `quadmath.core.metrics` | `fisher_condition_number` | function | `(F)` | Compute the condition number of the Fisher information matrix. |
-| `quadmath.core.metrics` | `fisher_curvature_analysis` | function | `(F)` | Comprehensive analysis of Fisher information matrix curvature. |
+| `quadmath.core.metrics` | `fisher_curvature_analysis` | function | `(F)` | Compute spectral descriptors, despite the historical curvature name. |
 | `quadmath.core.metrics` | `fisher_quadray_comparison` | function | `(F_cartesian, F_quadray)` | Compare Fisher information matrices between coordinate systems. |
 | `quadmath.core.metrics` | `fisher_rao_metric` | function | `(p, q, eps)` | Fisher–Rao geodesic distance on the probability simplex. |
 | `quadmath.core.metrics` | `information_length` | function | `(path_gradients)` | Gradient-weighted proxy for informational path length (NOT the |
@@ -191,7 +191,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.inference.information` | `active_inference_step` | function | `(mu, action, free_energy_fn, derivative_operator, step_size, epsilon)` | Joint perception-action update step in Active Inference. |
 | `quadmath.inference.information` | `expected_free_energy` | function | `(log_p_o_given_s, q, p, log_p_o)` | Expected free energy for Active Inference with prior preferences. |
 | `quadmath.inference.information` | `finite_difference_gradient` | function | `(function, x, epsilon)` | Compute numerical gradient of a scalar function via central differences. |
-| `quadmath.inference.information` | `fisher_information_matrix` | function | `(gradients, normalize)` | Estimate the Fisher information matrix via sample gradients. |
+| `quadmath.inference.information` | `fisher_information_matrix` | function | `(gradients, normalize)` | Compute a sample-gradient outer-product matrix. |
 | `quadmath.inference.information` | `fisher_information_quadray` | function | `(gradients, embedding_matrix)` | Compute Fisher information matrix in both Cartesian and Quadray coordinates. |
 | `quadmath.inference.information` | `free_energy` | function | `(log_p_o_given_s, q, p)` | Variational free energy for discrete latent states. |
 | `quadmath.inference.information` | `information_gain` | function | `(prior, posterior, eps)` | Information gain (Bayesian surprise) between prior and posterior. |
@@ -325,6 +325,7 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.viz._common` | `resolve_output_path` | function | `(path, figure_dir)` | Return the location to write ``path`` under the viz output policy. |
 | `quadmath.viz._common` | `save_figure` | function | `(fig, path, **kwargs)` | Write ``fig`` to ``path`` atomically; keyword arguments go to ``savefig``. |
 | `quadmath.viz._common` | `set_axes_equal` | function | `(ax)` | Scale a 3D axes box to the data spans so equal lengths match on every axis. |
+| `quadmath.viz.abstracts` | `render_quadray_abstract` | function | `(out_path)` | Save the native basis and the canonical thirteen-site FCC neighborhood. |
 | `quadmath.viz.animations` | `Frame` | class |  | A single animation frame. |
 | `quadmath.viz.animations` | `GRID_SIZE` | constant |  |  |
 | `quadmath.viz.animations` | `diffusion_frames` | function | `(n_steps, seed)` | Render explicit heat diffusion on the IVM radius-3 ball adjacency. |

@@ -12,7 +12,7 @@ import sys
 import subprocess
 from typing import Dict, List
 
-OUTPUT_SUFFIXES = (".png", ".mp4", ".pdf", ".csv", ".npz", ".gif", ".txt")
+OUTPUT_SUFFIXES = (".png", ".svg", ".mp4", ".pdf", ".csv", ".npz", ".gif", ".txt")
 # Figure/data generators run by main(), in order. gpu_acceleration_demo.py is
 # deliberately absent: it is a timing benchmark that writes no artifact.
 FIGURE_SCRIPTS = (

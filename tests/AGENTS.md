@@ -1,286 +1,38 @@
-# AGENTS.md - Test Suite Directory
+# Test Agent Guide: Real Consumer Behavior, Not Incidental Counters
 
-## Purpose
+Read [root guidance](../AGENTS.md), [test operations](README.md) and
+[the workflow](../WORKFLOW.md). `unit/` mirrors runtime package responsibilities;
+`tools/` tests checkout orchestrators. Do not maintain exhaustive saved inventories
+or current test counts in documentation.
 
-This directory contains all tests for the QuadMath `quadmath` package
-(`src/quadmath/`). Tests mirror the package layout (`tests/unit/<subpackage>/`),
-enforce **100% coverage**, and use **real numerical examples only** (numeric code is never mocked).
+## Selecting useful regressions
 
-## Agent Guidelines
+Use real arithmetic/geometry and declared invariants, including failure/edge
+conditions, gauge aliases and resource transitions where consumer behavior is
+uncertain. Never mock numerical results. Temporary output redirection, controlled
+external-program fixtures and wrapping a real helper do not substitute for real
+mathematics; external-tool fixtures do not establish an actual PDF build.
 
-### Critical Rules
+Prefer local seeded random generators. A fixed seed does not guarantee stable
+elapsed timings or identical image/video bytes across dependency/tool versions.
+Do not add tests that only pin wording, default spellings, source text, current
+counts or file existence. Existing incidental assertions should be removed rather
+than re-pinned when their subject changes.
 
-1. **NO MOCKS** - Never mock numeric code or the internal functions it calls; `monkeypatch` only redirects output paths, shrinks benchmark sizes, or wraps a real helper
-2. **FIXED SEEDS** - Always set `np.random.seed(42)` before random operations
-3. **100% COVERAGE** - Every new branch must be tested
-4. **REAL VALUES** - Use known mathematical results for assertions
+## Output/resource safety
 
-### Before Adding Tests
+Use `tmp_path` or explicit isolated output roots. Never overwrite user-generated
+or tracked figures. Test the observable geometry or data alongside a relevant
+output contract, not just a nonempty path. Owned figures must close on success
+and failure; axes primitives must respect caller-owned figures. Cover actual
+resource errors without suppressing them.
 
-1. **Check existing coverage**:
+## Coverage and handoff
 
-   ```bash
-   uv run coverage run -m pytest tests/unit/core/test_quadray.py
-   uv run coverage report -m --include="src/quadmath/core/quadray.py"
-   ```
-
-2. **Identify uncovered branches** in the coverage report
-
-3. **Understand the mathematical expectations** for the function being tested
-
-### After Adding Tests
-
-1. **Run full suite**: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q`
-2. **Verify 100% coverage**: `uv run coverage report`
-3. **Check that tests are deterministic**: Run twice, same results
-
-## Test Naming Conventions
-
-### File Names
-
-- `tests/unit/<subpackage>/test_<module>.py` - Primary tests for
-  `quadmath/<subpackage>/<module>.py` (package-root modules in `tests/unit/`,
-  script-module tests in `tests/tools/`)
-- `test_<module>_cov.py` - Additional coverage tests
-- Current files (snapshot 2026-10-07, from `find tests -name 'test_*.py' | sort`):
-
-```text
-tests/tools/test_generate_glossary.py
-tests/tools/test_render_pdf.py
-tests/tools/test_make_all_figures.py
-tests/tools/test_sympy_formalisms.py
-tests/tools/test_validate_markdown.py
-tests/unit/core/test_cayley_menger.py
-tests/unit/core/test_examples.py
-tests/unit/core/test_examples_cov.py
-tests/unit/core/test_geometry.py
-tests/unit/core/test_linalg_utils.py
-tests/unit/core/test_metrics.py
-tests/unit/core/test_metrics_cov.py
-tests/unit/core/test_quadray.py
-tests/unit/core/test_quadray_cov.py
-tests/unit/core/test_symbolic.py
-tests/unit/core/test_symbolic_cov.py
-tests/unit/inference/test_active_inference.py
-tests/unit/inference/test_information.py
-tests/unit/inference/test_information_cov.py
-tests/unit/lattice/test_conversions.py
-tests/unit/lattice/test_ivm_dynamics.py
-tests/unit/lattice/test_ivm_field.py
-tests/unit/lattice/test_lattice_search.py
-tests/unit/lattice/test_omni_numbering.py
-tests/unit/lattice/test_spec_examples.py
-tests/unit/learn/test_learning_eval.py
-tests/unit/optimize/test_discrete_variational.py
-tests/unit/optimize/test_nelder_mead_visual.py
-tests/unit/stats/test_benchmarks.py
-tests/unit/stats/test_statistics.py
-tests/unit/test_paths.py
-tests/unit/test_paths_cov.py
-tests/unit/test_pipeline.py
-tests/unit/tools/test_atomic_write.py
-tests/unit/tools/test_glossary_gen.py
-tests/unit/validate/test_validate.py
-tests/unit/viz/test_animations.py
-tests/unit/viz/test_common.py
-tests/unit/viz/test_figure_lifecycle.py
-tests/unit/viz/test_mp4_reproducibility.py
-tests/unit/viz/test_output_policy.py
-tests/unit/viz/test_plots.py
-tests/unit/viz/test_vis_lattice.py
-tests/unit/viz/test_vis_stats.py
-tests/unit/viz/test_visualize.py
-tests/unit/viz/test_visualize_cov.py
-```
-
-### Function Names
-
-```python
-# Descriptive names that explain what's being tested
-def test_quadray_normalize_positive_components():
-    ...
-
-def test_fisher_information_symmetric():
-    ...
-
-def test_discrete_descent_reaches_minimum():
-    ...
-```
-
-### Class Names (Optional)
-
-```python
-class TestQuadrayOperations:
-    """Group related Quadray tests."""
-    
-    def test_add(self):
-        ...
-    
-    def test_sub(self):
-        ...
-```
-
-## Common Testing Patterns
-
-### Testing Quadray Operations
-
-```python
-from quadmath.core.quadray import Quadray, integer_tetra_volume
-
-def test_integer_tetra_volume_unit():
-    """Unit tetrahedron should have volume 1."""
-    # Use known vertices
-    p0 = Quadray(0, 0, 0, 0)
-    p1 = Quadray(2, 1, 1, 0)
-    p2 = Quadray(1, 2, 1, 0)
-    p3 = Quadray(1, 1, 2, 0)
-    
-    vol = integer_tetra_volume(p0, p1, p2, p3)
-    assert vol == 1
-```
-
-### Testing Information Geometry
-
-```python
-import numpy as np
-from quadmath.inference.information import fisher_information_matrix
-
-def test_fisher_symmetric():
-    """Fisher information matrix must be symmetric."""
-    np.random.seed(42)
-    gradients = np.random.randn(100, 3)
-    
-    F = fisher_information_matrix(gradients)
-    assert np.allclose(F, F.T)
-```
-
-### Testing Optimization
-
-```python
-from quadmath.optimize.nelder_mead_quadray import nelder_mead_quadray
-from quadmath.core.quadray import Quadray
-
-def test_nelder_mead_improves():
-    """Optimizer should improve or maintain objective."""
-    def objective(q: Quadray) -> float:
-        return sum(abs(x) for x in q.as_tuple())
-    
-    initial = [
-        Quadray(5, 4, 3, 2),
-        Quadray(6, 4, 3, 2),
-        Quadray(5, 5, 3, 2),
-        Quadray(5, 4, 4, 2),
-    ]
-    
-    result = nelder_mead_quadray(objective, initial, max_iter=50)
-    
-    # Best value should be <= initial best
-    assert result.values[0] <= objective(initial[0])
-```
-
-### Testing Visualization (Headless)
-
-```python
-import os
-os.environ["MPLBACKEND"] = "Agg"  # Set before importing matplotlib
-
-from quadmath.viz.visualize import plot_ivm_neighbors
-
-def test_plot_saves_file(tmp_path, monkeypatch):
-    """Test that plotting saves a file."""
-    monkeypatch.chdir(tmp_path)
-    
-    path = plot_ivm_neighbors(save=True)
-    assert path != ""
-    assert os.path.exists(path)
-```
-
-## What NOT to Do
-
-### ❌ Mocking
-
-```python
-# WRONG - Never do this
-from unittest.mock import patch
-
-def test_with_mock():
-    with patch('quadmath.core.quadray.bareiss_determinant_int', return_value=4):
-        ...
-```
-
-### ❌ Non-deterministic Tests
-
-```python
-# WRONG - No fixed seed
-def test_random_data():
-    gradients = np.random.randn(100, 3)  # Different every run!
-    ...
-```
-
-### ❌ Testing Implementation Details
-
-```python
-# WRONG - Testing internal state
-def test_internal():
-    assert obj._private_attr == 5  # Don't test private members
-```
-
-## Fixtures in `conftest.py`
-
-Available fixtures:
-
-```python
-# conftest.py adds src/ (the quadmath package) and quadmath/scripts/ to sys.path
-# Package modules import absolutely; script modules import bare
-
-# Example: Import directly
-from quadmath.core.quadray import Quadray
-from quadmath.inference.information import fisher_information_matrix
-```
-
-## Coverage Requirements
-
-The `.coveragerc` file enforces:
-
-```ini
-[report]
-fail_under = 100
-```
-
-If coverage drops below 100%, CI will fail.
-
-## Adding Coverage for Edge Cases
-
-When adding `*_cov.py` files:
-
-```python
-"""Additional coverage tests for quadmath/<subpackage>/module.py
-
-These tests cover:
-- Error handling paths
-- Edge cases (empty inputs, boundary values)
-- Rarely executed branches
-"""
-
-def test_empty_input():
-    """Test that empty input is handled correctly."""
-    result = function([])
-    assert result == expected_empty_result
-
-def test_boundary_value():
-    """Test at numerical boundaries."""
-    result = function(np.finfo(float).tiny)
-    assert np.isfinite(result)
-```
-
-## Quality Checklist
-
-Before committing test changes:
-
-- [ ] All tests pass: `pytest -q`
-- [ ] Coverage is 100%: `coverage report`
-- [ ] Tests are deterministic (run twice)
-- [ ] No mocks of numeric code
-- [ ] Fixed seeds for random operations
-- [ ] Descriptive test names
-- [ ] Edge cases covered
+`.coveragerc` enables branch coverage and sets an aggregate report floor.
+Configuration is not a current measured percentage or proof of correctness.
+The test guide provides explicit Python 3.13 commands for assigned verification.
+During delegated implementation do not run suites/builds/lint/formatters; the
+integration owner verifies once all edits settle. Report real probes separately,
+including inputs, output locations and limitations. Python tests do not elaborate
+Lean, inspect every panel's legibility or prove every canonical chapter claim.

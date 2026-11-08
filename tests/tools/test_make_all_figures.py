@@ -18,10 +18,12 @@ def test_extract_takes_path_token_from_prose_prefix():
     stdout = (
         "4D trajectory figure saved: " f"{FIG}/figure_13_4d_trajectory.png\n"
         "Figure 14 saved to: " f"{FIG}/figure_14_free_energy_landscape.png\n"
+        f"Vector companion: {FIG}/graphical_abstract_quadray.svg\n"
     )
     assert extract_output_paths(stdout, ROOT) == [
         "figures/figure_13_4d_trajectory.png",
         "figures/figure_14_free_energy_landscape.png",
+        "figures/graphical_abstract_quadray.svg",
     ]
 
 

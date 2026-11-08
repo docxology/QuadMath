@@ -1,143 +1,77 @@
-# MANUSCRIPT_STATUS
+# Manuscript sources, generated projection and rendering evidence
 
-## Repo type
+## Edit canonical chapters, then regenerate the template projection
 
-Published analytical paper repository. The paper is maintained under
-`quadmath/markdown/` as numbered section files with render/clean scripts,
-plus a versioned PDF (`QuadMath_v1_DAF_08-16-2025.pdf`, not kept in git — the
-canonical copy is on Zenodo via the DOI above; regenerate locally with
-`bash quadmath/scripts/render_pdf.sh`) and a Zenodo DOI.
+| Tree | Role | Update path |
+|---|---|---|
+| [`quadmath/markdown/`](../quadmath/markdown/01_introduction.md) | Authoritative preamble, chapters, equations, captions and API glossary | Edit authored chapters; regenerate the glossary |
+| [`docs/manuscript/`](manuscript/config.yaml) | Generated template-layout projection and copied figures | Run [`port_from_source.py`](manuscript/port_from_source.py); do not hand-edit projected chapters |
+| `quadmath/output/` or `QUADMATH_OUTPUT_DIR` | Generated Python figure/data artifacts | Run the registered figure generators |
+| `quadmath/output/pdf/`, `quadmath/output/tex/` | Local shell renderer's publications | Run [`render_pdf.sh`](../quadmath/scripts/render_pdf.sh) with its real media/TeX prerequisites |
 
-## Current layout (updated 2026-09-11, factored package + 18-section set)
+The source has preamble `00` and chapters `01`–`18`. The projection maps chapter
+`07_resources.md` to `99_resources.md` and `10_symbols_glossary.md` to
+`98_symbols_glossary.md`; other numbered chapters retain their filenames.
+The porter rewrites figure/section/resource links and copies available figures.
+Its required manuscript-figure inventory is a render-input contract, not a
+claim that every generated PNG is cited in the paper.
 
-The manuscript exists in **two coordinated trees**:
+## Regenerate Python artifacts without overwriting local output
 
-1. **Source tree** — `quadmath/markdown/` (**authoritative for content
-   edits**): `00_preamble.md` (LaTeX preamble) and numbered sections
-   `01_introduction.md` … `18_stats_gallery.md` (19 files), built by
-   `quadmath/scripts/render_pdf.sh`. Future content edits happen here.
+Run from the repository root, with the scientific and media prerequisites in
+the [build guide](../quadmath/README.md):
 
-2. **Template-layout tree** — `docs/manuscript/` (**generated
-   projection — do not hand-edit section content**, re-port with
-   `port_from_source.py`): the same content ported into the shared
-   docxology/template render layout:
+```bash
+OUT="$(mktemp -d)"
+export MPLBACKEND=Agg
+export QUADMATH_OUTPUT_DIR="$OUT"
+export UV_PROJECT_ENVIRONMENT="$OUT/environment"
+uv run --python 3.13 --group dev python quadmath/scripts/make_all_figures.py
+uv run --python 3.13 --group dev python quadmath/scripts/generate_glossary.py
+uv run --python 3.13 --group dev python quadmath/scripts/validate_markdown.py --strict
+uv run --python 3.13 --group dev python docs/manuscript/port_from_source.py --figures-dir "$OUT/figures"
+uv run --python 3.13 --group dev python docs/development/check_links.py
+```
 
-   - `config.yaml` — title/authors/DOI/keywords/license/render toggles
-     (metadata sourced from root `README.md` and the manuscript itself)
-   - `preamble.md` — LaTeX preamble (port of `00_preamble.md` + closing fence)
-   - `references.bib` — BibTeX built from `07_resources.md` plus in-text
-     citations (Conway & Sloane, Coxeter, methods references, self-citation)
-   - **16 numbered main-bucket sections**: `01…06`, `08`, `09`, `11`
-     (ivm field learning), `12` (ivm dynamics), `13` (lattice tooling),
-     `14` (conversions & specification), `15` (learning & evaluation),
-     `16` (lattice visualization gallery), `17` (benchmarks & statistics),
-     `18` (statistics gallery) — sections `11`–`16` added on
-     2026-09-10 and `17`–`18` on 2026-09-11; `07` and `10` are renamed into
-     the template buckets below
-   - the two template buckets: `98_symbols_glossary.md` (glossary; from
-     `10_symbols_glossary.md`) and `99_resources.md` (references; from
-     `07_resources.md`)
-   - `figures/` — copies of the PNGs referenced by the sections (17
-     original + `ivm_field_demo.png` + the three lattice gallery renders
-     `vis_gallery_{dynamics,field,shell}.png` at the 2026-09-10 port, plus
-     the four statistics gallery renders
-     `stats_gallery_{latency,scaling,ci,ecdf}.png` from
-     `quadmath/scripts/stats_gallery.py` once sections `17`–`18` re-port)
+The current figure registry includes nineteen generators. The manifest contains
+deduplicated **emitted** paths relative to the configured output root, including
+the graphical abstract's PNG and SVG. It is not an inventory of every file
+ever written. Resolve manifest entries against that output root.
 
-   Path rewrites applied by the port: images `../output/figures/X` →
-   `figures/X`; `../LICENSE` → `../../LICENSE`; section links renumbered to
-   the 98/99 buckets. Sections `11`–`18` port under their own numbers;
-   their cross-links (`02`, `03`, `11`, `12`, `13`) are same-name in both
-   trees, and sections `17`–`18` reference sources and sibling sections
-   with inline code paths only (no markdown links to rewrite).
-   Equations, labels, anchors, and captions are otherwise verbatim (one
-   deliberate deviation, see Known caveats).
+Porting updates tracked projection files: preserve unrelated local manuscript
+edits before using it. Generated default output must not be casually deleted or
+committed merely because it differs from a fresh isolated render.
 
-## Render parity
+## Keep mathematical captions aligned with actual simulations
 
-- **Target pipeline**: template `scripts/pipeline/stage_03_render.py` →
-  `infrastructure.rendering`. Discovery contract met by this tree:
-  top-level numbered `NN_*.md` sections, `preamble.md` (```latex block),
-  `config.yaml`, top-level `*.bib`.
-- **Local pipeline**: `quadmath/scripts/render_pdf.sh` builds from
-  `quadmath/markdown/`, checks combined-source construction and publishes PDFs
-  only after successful compiler passes.
-- The published v1 PDF stays on Zenodo (DOI 10.5281/zenodo.16887791).
-  [Linux verification](../.github/workflows/verify.yml) now provisions the real
-  font/TeX/video/Pandoc toolchain and runs the complete local manuscript pipeline.
+- The Quadray abstract draws a rank-three quotient in physical scale-one XYZ,
+  actual basis-ray lengths and a complete twelve-around-one contact cluster.
+- Regression figures distinguish actual fitted/generating coefficients, loss
+  gradients and their Gram matrices. They do not simulate a biological agent
+  or establish geodesic motion.
+- Categorical free energy is sampled on its declared feasible simplex face;
+  the displayed minimum is grid-restricted. Ideal entropy curvature is labeled
+  separately from the library's pseudocount-smoothed objective.
+- Integer Nelder–Mead snapshots include the final recorded frame. The marked
+  best vertex is measured from that frame, not hard-coded at the origin.
 
-## Evidence checked
+## Separate source checks, PDF builds and archived publications
 
-- `README.md` (title, DOI 10.5281/zenodo.16887791, render/clean commands)
-- `quadmath/markdown/` (`00_preamble.md` through `18_stats_gallery.md`)
-  — sections `17_benchmarks_statistics.md` and `18_stats_gallery.md` added
-  2026-09-11, documenting the benchmarks/statistics/visualization surface:
-  `src/quadmath/stats/benchmarks.py` (perf_counter timing harness, `BenchRow`),
-  `src/quadmath/stats/statistics.py` (bootstrap CIs, permutation tests, `cohens_d`,
-  Bonferroni, log-log scaling fits), `src/quadmath/viz/vis_stats.py` (input-agnostic
-  matplotlib primitives), with the four gallery figures generated by
-  `quadmath/scripts/stats_gallery.py` (fixed seed 32) and registered in
-  `quadmath/scripts/make_all_figures.py`
-- `run_all.sh`, `quadmath/scripts/render_pdf.sh`, `quadmath/scripts/clean_output.sh`
-- Template contracts: `template/docs/RUN_GUIDE.md` (stage map),
-  `infrastructure/rendering/manuscript_discovery.py` (section discovery +
-  `EXCLUDE_NAMES`), `_pdf_combined_preamble.py` (preamble injection),
-  `_bibliography.py` (bib discovery + key-uniqueness gate),
-  `projects/templates/template_active_inference/manuscript/config.yaml` (config shape)
-- Template render (2026-09-11, manuscript-improvement wave): `stage_03_render.py`
-  --project quadmath produced `quadmath_combined.pdf` (10.34 MB, 96 pages,
-  29 figures embedded) and the combined web edition, under the new typography
-  (extarticle 9pt, `metadata.geometry: margin=2cm`) and with the four new
-  gallery figures embedded (`quaternion_slerp_path.png`,
-  `learn_loss_history.png`, `animation_frames_strip.png`,
-  `stats_ci_comparison.png`); pre-render validation passed with 0 content
-  blockers (web-link advisories are shim-location artifacts of hosting the
-  tree under `projects/active/`). Earlier same-day render: 9.66 MB, 99 pages,
-  article default, 25 figures.
-- Port surface: `docs/manuscript/port_from_source.py` — re-port 2026-09-11
-  after the improvement wave: "ported 18 sections, 29 figures, preamble.md;
-  all links resolve", exit 0 (idempotent re-run also exit 0).
-  The same sweep refreshed in-section source references to the factored
-  package (`src/quadmath/<sub>/<mod>.py`, package-form imports) and the
-  98-glossary snapshot to the regenerated 301-row auto-glossary.
-  This file was relocated from `docs/manuscript/MANUSCRIPT_STATUS.md` to
-  `docs/MANUSCRIPT_STATUS.md` (2026-09-11) so the template render sweep
-  cannot pick it up as an "other" section.
+The local shell pipeline regenerates figures/glossary, validates the canonical
+chapters and builds per-chapter plus combined PDFs through Pandoc/XeLaTeX.
+`--skip-figures` skips figure generation, not glossary or source validation.
+Python output helpers honor `QUADMATH_OUTPUT_DIR`; the shell's PDF/TeX
+publication directories remain fixed under the checkout's default output.
+Use a separate checkout for a fully isolated PDF build.
 
-## Known caveats
+The [Linux verification workflow](../.github/workflows/verify.yml) provisions
+the real font/TeX/Pandoc/video toolchain and exercises the manuscript build.
+The local macOS build previously failed to load the required DejaVu fonts;
+source validation or an alternate-font diagnostic is not evidence that this
+production-font build succeeded.
 
-- **Deliberate content divergence (code-anchor repoint)**: section 09
-  upstream links `{#code:*}` anchors at `08_equations_appendix.md`, but 08
-  defines only `{#eq:*}` anchors — the `{#code:*}` targets live in
-  `03_quadray_methods.md` (an upstream link defect). The port repoints the
-  three affected links (`free_energy`, `fisher_information_matrix`,
-  `natural_gradient_step`) to `03#code:*`. Everything else is verbatim.
-- **Fixed (2026-10-25)**: `quadmath/markdown/00_preamble.md` opens a
-  ` ```latex ` fence that was never closed until 2026-10-25: the local
-  `render_pdf.sh` sed extractor then dropped the file's last line, and the
-  template `extract_preamble`
-  drops an unclosed-fence preamble entirely. `preamble.md` here already
-  matches the closed-fence source, so source tree and port are now
-  byte-identical.
-- `MANUSCRIPT_STATUS.md` was relocated out of the render tree to
-  `docs/MANUSCRIPT_STATUS.md` (2026-09-11): the template `EXCLUDE_NAMES` set
-  does not cover it, so keeping it beside the sections would sweep it into
-  the "other" section bucket at render time. Resolved by relocation.
-- `figures/` holds copies; regenerate via `quadmath/scripts/` into
-  `quadmath/output/figures/` and re-port — never hand-edit either tree's
-  images (`quadmath/output/` is disposable: `clean_output.sh` wipes it).
-- `98_symbols_glossary.md` is a snapshot of the auto-generated
-  `10_symbols_glossary.md`; regenerate upstream and re-port.
-- Section numbering skips `07` (renamed to `99_resources.md`) and `10`
-  (renamed to `98_symbols_glossary.md`) by template bucket convention;
-  `11`–`18` are main-bucket sections and port under their own numbers.
-- `references.bib` was **not** extended for the new sections: sections
-  `14`/`15`/`16` introduce no new `\cite` keys (checked at port time
-  2026-09-10), and sections `17`/`18` likewise introduce no new `\cite`
-  keys (checked at authoring time 2026-09-11). If a future source section
-  cites new works, rebuild the bib
-  from `07_resources.md` + in-text citations and re-check.
-- Link integrity for this tree: `uv run python docs/development/check_links.py`
-  (validates relative targets **and** `{#id}` fragments);
-  `uv run python quadmath/scripts/validate_markdown.py --strict` covers the
-  source tree; re-port with `uv run python docs/manuscript/port_from_source.py`.
+The historical Zenodo deposit, DOI `10.5281/zenodo.16887791`, and immutable
+GitHub release assets identify their own archived versions. Neither their page
+counts nor old render/test statistics describe a changed `main` checkout.
+Current release and verification boundaries are in the [changelog](../CHANGELOG.md)
+and [suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).

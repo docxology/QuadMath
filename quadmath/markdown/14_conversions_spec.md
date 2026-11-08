@@ -1,6 +1,6 @@
-# Conversions & Specification
+# Embedding, Exact Inversion, and Floating Snapping Contracts {#conversions-specification}
 
-## Overview
+## The conversion layer and its mathematical authority
 
 Sections [2](02_4d_namespaces.md), [3](03_quadray_methods.md) and [13](13_lattice_tooling.md)
 establish the Quadray/IVM framework and its computational tooling; this section documents the
@@ -10,14 +10,13 @@ here: the embedding itself and its projective fiber, the Gram identities that ma
 distances exact, and an **exact rational inversion** that answers "which lattice point is this
 point?" with `fractions.Fraction` arithmetic instead of floating-point rounding.
 
-The full mathematical specification of this layer is the repository-root file `SPEC.md`; the
-`tests/unit/lattice/test_spec_examples.py` pins its worked examples numerically. This section is the
-manuscript projection of that specification: same definitions, same error taxonomy, same
-guarantees, prose instead of source. The analytical foundations it draws on are
-[Quadray Methods](03_quadray_methods.md) (normalization, the `Quadray` class), the shell machinery
-of [IVM Field Learning](11_ivm_field_learning.md), and the nearest-site search of
-[Lattice Tooling](13_lattice_tooling.md), whose exact-distance identity this section re-derives
-from the embedding's Gram matrix.
+The full mathematical authority is [SPEC.md](../../SPEC.md), whose worked
+examples are transcribed in `tests/unit/lattice/test_spec_examples.py`.
+This chapter explains the same representation, numerical boundaries, and
+error taxonomy. Its dependencies are [coordinate methods](03_quadray_methods.md),
+[FCC membership and graph shells](11_ivm_field_learning.md), and
+[float64 nearest-site search](13_lattice_tooling.md). Exact identities
+must not be confused with arbitrary-precision query implementations.
 
 ## The embedding (Fuller.4D to Coxeter.4D)
 
@@ -68,17 +67,16 @@ and column-wise, with $C_j$ the four columns of $M$ and $J_4$ the all-ones matri
 
 \begin{equation}
 \label{eq:conv-gram-col}
-M^{\mathsf{T}}M \;=\; 4\,I_{4} \;-\; J_{4},
+M^{\mathsf{T}}M \;=\; s^2(4\,I_{4} - J_{4}),
 \qquad \text{i.e.} \qquad
-C_i \cdot C_j \;=\; 4\,\delta_{ij} \;-\; 1 \;\; (s = 1).
+C_i \cdot C_j \;=\; s^2(4\,\delta_{ij} - 1).
 \end{equation}
 
 `embedding_basis(M=None)` returns the columns of the validated embedding as a `(4, 3)` array $B$
 whose *rows* are the $C_j$; at scale 1 the identity \eqref{eq:conv-gram-col} reads
 $B\,B^{\mathsf{T}} = 4\,I_4 - J_4$ exactly (diagonal 3, off-diagonal $-1$), and it scales by
-$s^2$ for `urner_embedding(scale)`. This is the identity that `lattice_search.squared_distance`
-relies on: for integer quadrays $p, q$ with $\delta = p - q$, the Euclidean squared distance in
-embedded coordinates is the exact integer
+$s^2$ for `urner_embedding(scale)`. At **scale one**, for integer quadrays
+$p,q$ with $\delta=p-q$, the exact squared-distance identity is
 
 \begin{equation}
 \label{eq:conv-distance}
@@ -206,7 +204,7 @@ assert quadray_roundtrip(q0, urner_embedding(0.5)) == q0   # scale-robust (same 
 The canonical representatives produced by \eqref{eq:conv-canonical} sit in the IVM site structure
 of [IVM Field Learning](11_ivm_field_learning.md). A normalized quadray whose component sum is
 $\equiv 0 \pmod 4$ is an IVM sphere center (`is_ivm_site`); the other three residue classes are the
-octahedral and tetrahedral voids of the packing. The radial observable is the shell norm
+octahedral and tetrahedral voids of the packing. The graph-shell observable is
 
 \begin{equation}
 \label{eq:conv-shell}
@@ -215,9 +213,9 @@ N(q) \;=\; \sum_{i} \Bigl|\, q_i \;-\; \sigma/4 \,\Bigr| \;=\; 2k,
 \end{equation}
 
 computed by `quadray_shell_norm`: shell $k$ is the set of sites with $N(q) = 2k$, populated by
-$10k^2 + 2$ centers (Eq. \eqref{eq:lattice-shell-population} in [Lattice Tooling](13_lattice_tooling.md)),
-and `ivm_field.shell_sites(k)` enumerates shell $k$ in lexicographic order (1, 12, 42, 92, 162
-sites for $k = 0..4$). Conversions, shells, and nearest-site search share one geometry; Sections
+$10k^2+2$ centers for $k\ge1$ (one center at $k=0$).
+`ivm_field.shell_sites(k)` enumerates each graph shell lexicographically.
+Graph shells are not surfaces of constant Euclidean radius. Sections
 [11](11_ivm_field_learning.md) and [13](13_lattice_tooling.md) detail the field learner and the
 query machinery respectively.
 
@@ -232,9 +230,9 @@ query machinery respectively.
 | `conversions.embedding_basis(M=None)` | `(4, 3)` array of embedding columns; Gram identity \eqref{eq:conv-gram-col} |
 | `quadray.to_xyz(q, embedding)` | Underlying forward product $\mathrm{xyz} = M\,q$ |
 | `quadray.quadray_from_xyz(x, y, z, embedding)` | Float inverse: pseudoinverse + round-half-up (snapping, not exact inversion) |
-| `lattice_search.squared_distance(p, sites)` | Exact squared distances via Eq. \eqref{eq:conv-distance} |
+| `lattice_search.squared_distance(p, sites)` | Float64 gauge-free squared distances corresponding to Eq. \eqref{eq:conv-distance}, within numerical limits |
 
-## Verification
+## Conversion regressions and worked-example scope
 
 `tests/unit/lattice/test_conversions.py` covers the layer end to end: round-trips of
 \eqref{eq:conv-roundtrip} over shells 0–4 (309 enumerated sites, center included) and at scaled
@@ -248,6 +246,6 @@ repository-root `SPEC.md` (the full mathematical specification) and `tests/unit/
 pin the worked examples of this section numerically as they land. Run the suite:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q
-uv run coverage report
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
+uv run --python 3.13 coverage report
 ```

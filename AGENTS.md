@@ -1,152 +1,110 @@
-# AGENTS.md - QuadMath Repository
-
-## Overview
-
-QuadMath is a comprehensive analytical review of Quadray coordinates (Fuller.4D), integer volume quantization, optimization on tetrahedral lattices, and information geometry. The repository implements a unified test-driven development workflow where source code, tests, and documentation remain in perfect coherence.
-
-**Repository**: [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)  
-**DOI**: [10.5281/zenodo.16887791](https://zenodo.org/records/16887791)  
-**License**: Apache-2.0
+# QuadMath Agent Guide: Source Ownership and Evidence Boundaries
 
 ## Repository Architecture
 
-```
-QuadMath/
-├── src/                    # Source code modules (100% test coverage)
-├── tests/                  # Test suite (no mocks, real numerical examples)
-├── quadmath/
-│   ├── markdown/           # Manuscript source files
-│   ├── scripts/            # Figure generation and build scripts
-│   └── output/             # Generated artifacts (disposable)
-├── ARCHITECTURE.md         # Detailed system architecture
-├── WORKFLOW.md             # Development workflow documentation
-└── README.md               # Quick start and overview
-```
+- `src/quadmath/`: importable runtime library. Reusable numerical and rendering
+  methods belong here; use concrete subpackage imports.
+- `tests/unit/`: library behavior/resource regressions; `tests/tools/`:
+  checkout-orchestration regressions.
+- `quadmath/scripts/`: thin example/generation and manuscript/PDF orchestration.
+- `quadmath/markdown/`: canonical mathematical chapters. Preserve explicit
+  equation/code anchors; regenerate only the marked API-glossary block.
+- `docs/`: operational guides; `docs/manuscript/` is a scripted projection,
+  not a second source of mathematical prose or hand-edited figures.
+- `quadmath/output/`: generated, partly tracked and possibly user-modified.
+- `lean/`: independent handwritten Lean models, not Python extraction.
 
-## The render_pdf.sh Paradigm
+See [ARCHITECTURE.md](ARCHITECTURE.md), [WORKFLOW.md](WORKFLOW.md) and the
+[documentation index](docs/README.md). Scoped `AGENTS.md` refine local guidance.
 
-This repository follows a unified test-driven development workflow orchestrated by `render_pdf.sh`:
+## Before Making Changes
 
-1. **Source Code** (`src/`) → Implements mathematical functionality
-2. **Tests** (`tests/`) → Validates all functionality with 100% coverage
-3. **Scripts** (`quadmath/scripts/`) → Generate figures and data from source modules
-4. **Documentation** (`quadmath/markdown/`) → References code and displays generated outputs
-5. **`render_pdf.sh`** → Orchestrates the entire pipeline ensuring coherence
+Read the implementing source and its callers. Respect task ownership and
+unexpected user changes. During concurrent/delegated implementation, do not
+run builds, test suites, lint or formatters; the integration owner runs those
+once edits settle. Isolated real consumer/render probes are distinct from
+suite verification and must identify actual inputs, outputs and limitations.
+Do not mutate Git branches, tags or generated release artifacts unless assigned.
 
-## Agent Guidelines
+## Source Code Standards (`src/`)
 
-### Before Making Changes
+- Keep computation in existing modules unless a separate responsibility is real.
+  No production dependency on symergetics, QuadCraft or checkout-only tools.
+- Preserve exact integer/rational arithmetic until the declared floating boundary.
+  Physical gauge classes are rank three; raw four-tuples need not compare equal
+  merely because their physical positions coincide.
+- Refer to [SPEC.md](SPEC.md) and canonical
+  [methods](quadmath/markdown/03_quadray_methods.md) for embedding and volume
+  contracts. Native volume may be `Fraction`; do not infer integrality from a name.
+- Give public methods accurate annotations and docstrings, including units,
+  gauge, shapes, errors and ownership of returned resources.
+- Find exact-symbol references before changing signatures/exports; keep
+  `__all__` and package exports intentional, accounting for colliding names.
+- Use seeded RNG inputs where appropriate; do not call measured timings or
+  arbitrary cross-platform image/media bytes deterministic.
 
-1. **Run tests first**: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q`
-2. **Check coverage**: `uv run coverage report` (must be 100%)
-3. **Understand dependencies**: Source modules import from each other; check imports before refactoring
+## Test Standards (`tests/`)
 
-### Source Code Standards (`src/`)
+Use real numerical/geometry examples, not mocked numerical implementations.
+Temporary output redirection and controlled external-tool fixtures are different
+from replacing the mathematics. Prefer regressions for uncertain observable
+behavior, invariants, resource closure, errors and transitions; do not add tests
+that only pin wording, test counts, default spellings or source text.
+The branch-enabled coverage floor is a configured aggregate integration gate,
+not proof of universal correctness or a current measured result.
 
-- **100% test coverage required** - No exceptions
-- **Type hints required** - All public functions must have full type annotations
-- **Docstrings required** - Follow NumPy-style docstrings with Parameters/Returns sections
-- **No external runtime dependencies** - Beyond numpy, matplotlib, sympy
-- **Deterministic execution** - Use fixed RNG seeds where randomness is involved
+## Documentation Standards (`quadmath/markdown/` and `docs/`)
 
-### Test Standards (`tests/`)
+Canonical chapters own mathematical explanations; operational guides link there.
+Keep module recipes source-accurate and self-contained, distinguish validation
+scores from independent tests, and describe Lean theorem/trust scope honestly.
+No saved current line/test counts or promises of automatic semantic coherence.
+Update inbound heading links when renaming; preserve explicit equation/code anchors.
+Do not hand-edit generated manuscript projections, copied figures or user outputs.
 
-- **No mocks allowed** - Use real numerical examples
-- **Fixed RNG seeds** - Ensure reproducibility
-- **Fast and hermetic** - Tests should not depend on external state
-- **Coverage files**: `tests/unit/<sub>/test_<module>.py` tests `src/quadmath/<sub>/<module>.py`
+## Build Pipeline Standards (`quadmath/scripts/`)
 
-### Documentation Standards (`quadmath/markdown/`)
-
-- **Reference source code** using inline code formatting (backticks)
-- **Display generated figures** from `quadmath/output/figures/`
-- **Use descriptive links** - No bare URLs
-- **Equation labels must be unique** across all markdown files
-- **All image references must exist** - Validated by `validate_markdown.py`
-
-### Build Pipeline Standards (`quadmath/scripts/`)
-
-- **Import from src/ only** - No code duplication
-- **Use headless plotting** - `MPLBACKEND=Agg` for CI compatibility
-- **Print output paths** to stdout for manifest collection
-- **Generate deterministic outputs** with fixed seeds
+Reuse package renderers and `quadmath.paths`, not obsolete flat imports.
+Headless recipes use `MPLBACKEND=Agg`; use existing `figure_scope`/`save_figure`
+patterns to close resources on success and errors. Emit actual output paths.
+`make_all_figures.py` owns its explicit generator list and manifest; adding a
+chapter also requires `render_pdf.sh` module/exclusion inventory maintenance.
+The shell renderer compiles documents but does not run pytest, coverage or Lean.
 
 ## Key Commands
 
+From the repository root, scientific commands explicitly select Python 3.13;
+leave `.python-version` unchanged. For an assigned integration owner:
+
 ```bash
-# Install dependencies
-uv sync
-
-# Run tests with coverage
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q
-uv run coverage report
-
-# Generate all figures
-uv run python quadmath/scripts/make_all_figures.py
-
-# Validate markdown
-uv run python quadmath/scripts/validate_markdown.py
-
-# Build complete PDF pipeline
-bash quadmath/scripts/render_pdf.sh
-
-# Clean all generated outputs
-bash quadmath/scripts/clean_output.sh
+uv sync --python 3.13
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
+uv run --python 3.13 coverage report
+uv run --python 3.13 python quadmath/scripts/generate_glossary.py --check
+uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
+uv run --python 3.13 python docs/development/check_links.py
 ```
 
-## Module Dependencies
+For isolated Python rendering, set `QUADMATH_OUTPUT_DIR` to a fresh external
+root and use a specific generator. **This does not redirect the shell PDF
+renderer or cleanup script.** PDF builds update checkout outputs and the
+canonical API glossary; use an isolated checkout when needed. Full commands
+and dependencies are in [WORKFLOW.md](WORKFLOW.md).
 
-```
-Convention: `A ──► B` means module A imports module B. Paths are relative to `src/quadmath/`.
+## Quality Gates and Handoff
 
-core/quadray.py ──► core/linalg_utils.py
-core/cayley_menger.py ──► core/quadray.py (lazy import of to_xyz)
-core/examples.py ──► core/quadray.py, optimize/nelder_mead_quadray.py
-core/symbolic.py, tools/glossary_gen.py: leaf modules
-core/metrics.py: standalone
-inference/information.py ──► core/quadray.py (DEFAULT_EMBEDDING)
-optimize/nelder_mead_quadray.py ──► core/quadray.py
-optimize/discrete_variational.py ──► core/quadray.py
-lattice/conversions.py ──► core/quadray.py
-lattice/omni_numbering.py ──► core/quadray.py (Quadray; layer-BFS shells, packed int64 site keys)
-lattice/lattice_search.py ──► lattice/omni_numbering.py (precomputed ball index; nearest-site queries)
-lattice/ivm_field.py ──► core/quadray.py (DEFAULT_EMBEDDING/to_xyz; shell enumeration + field learning)
-lattice/ivm_dynamics.py ──► core/quadray.py, paths.py (lattice graph; heat/majority dynamics + trajectory fit)
-learn/learning_eval.py ──► lattice/ivm_field.py, lattice/ivm_dynamics.py (k-fold CV, temporal splits, learning curves)
-viz/vis_lattice.py ──► core/quadray.py, lattice/omni_numbering.py, lattice/ivm_field.py, lattice/ivm_dynamics.py (headless gallery)
-pipeline.py ──► core/quadray.py, lattice/ivm_field.py, lattice/ivm_dynamics.py (typed Step/Pipeline composition; structural protocols)
-stats/benchmarks.py ──► core/quadray.py, lattice/lattice_search.py, lattice/ivm_field.py, lattice/omni_numbering.py (perf_counter timing harness)
-stats/statistics.py: standalone numpy (bootstrap, permutation, scaling fits)
-viz/vis_stats.py: matplotlib-only primitives (input-agnostic; no src imports)
-validate/validate.py ──► core/quadray.py quaternion ops (property checks: normalization, conjugate-inverse,
-                         double-cover, slerp midpoint, associativity; run_validation -> List[ValidationReport])
-viz/animations.py ──► core/quadray.py, lattice/ivm_field.py, paths.py (deterministic frames + byte-stable GIF writer)
-viz/plots.py ──► core/quadray.py, lattice/ivm_field.py, paths.py, viz/_common.py (input-agnostic loss/shell/histogram/3D-shell builders)
-viz/visualize.py ──► core/quadray.py, optimize/discrete_variational.py, optimize/nelder_mead_quadray.py, paths.py, viz/_common.py
-
-New methods extend existing modules in place: qmul/qconjugate/qrotate/slerp/rotate_about_axis (core/quadray.py),
-angle_error/quat_log_euclidean_dispersion (core/metrics.py), jackknife_ci/benjamini_hochberg/welch_t_test/
-rotation_stats (stats/statistics.py), three_way_split/ridge_site_fit/GradientDescentTrainer (learn/learning_eval.py).
-
-lean/ ── Lean 4 (core, no Mathlib) mirror of quadray.py + ivm_field.py lattice definitions;
-        zero sorries (universal shell count stated as shellSites_card_target, machine-checked
-        through shell 8; universal distance identity proved); see lean/README.md.
-```
-
-## Quality Gates
-
-Before any PR or commit:
-
-1. ✅ All tests pass: `pytest -q`
-2. ✅ 100% coverage maintained: `coverage report`
-3. ✅ Markdown validation passes: `python quadmath/scripts/validate_markdown.py`
-4. ✅ Figure generation succeeds: `python quadmath/scripts/make_all_figures.py`
-5. ✅ PDF builds successfully: `bash quadmath/scripts/render_pdf.sh`
+The integration owner selects and reports numerical tests/coverage,
+source/docs-link checks, actual visual inspection, PDF builds and Lean
+elaboration separately. A successful image save or stubbed tool test does not
+establish visual quality or a real PDF build. Report only exercised checks,
+include expanded changed paths and actual probe outputs, and identify unresolved
+cross-owner links. Never clean `quadmath/output/` merely because it is generated.
 
 ## Cross-References
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed system architecture
-- [WORKFLOW.md](WORKFLOW.md) - Development workflow documentation
-- [src/README.md](src/README.md) - Source module documentation
-- [tests/README.md](tests/README.md) - Test suite documentation
-- [quadmath/README.md](quadmath/README.md) - Build system documentation
+- [Source guide](src/README.md)
+- [Test guide](tests/README.md)
+- [Figure/PDF guide](quadmath/README.md)
+- [Learning operations](docs/learning/README.md)
+- [Benchmark/statistics operations](docs/analysis/README.md)
+- [Lean scope](docs/lean/README.md)

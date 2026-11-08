@@ -3,14 +3,14 @@
 **Status.** This is the canonical mathematical specification of the QuadMath lattice core
 (quadray coordinates, the Urner embedding, exact conversion and inversion, exact distances,
 shell structure, close-packing numbering, and nearest-site search). Its executable
-transcription is `tests/unit/lattice/test_spec_examples.py`: every normative claim below carries an
-identifier `S#` and is exercised by exactly one named test; the set of test names in that
-file equals the set of names in the claim index (§7.5), enforced mechanically in both
-directions. The manuscript projection of this specification is
-`quadmath/markdown/14_conversions_spec.md` (same definitions, same error taxonomy, same
-guarantees, prose instead of source); that section already points back here.
+transcription is `tests/unit/lattice/test_spec_examples.py`; claim identifiers
+`S#` connect the mathematical contracts and worked examples to named
+regressions in §7.5. The [conversion chapter](quadmath/markdown/14_conversions_spec.md)
+explains the same definitions and error taxonomy.
 
-All claims are stated against the landed code in `src/` and were verified numerically on it.
+This specification distinguishes exact identities, finite numerical examples,
+and Lean theorem scope. It is not a fresh execution or coverage receipt;
+current verification requires a dated run in the supported environment.
 
 ---
 
@@ -44,7 +44,7 @@ visualization/pipeline scripts.
   $\mathbf{1} = (1, 1, 1, 1)$. The **canonical representative** of a class is its unique
   representative with all components non-negative and at least one component zero;
   `Quadray.normalize` selects it by subtracting $(k,k,k,k)$ with $k = \min_i q_i$.
-- **XYZ** is the Coxeter.4D Cartesian image $\mathrm{xyz}(q) = M\,q \in \mathbb{R}^3$.
+- **XYZ** is the ordinary three-dimensional Cartesian image $\mathrm{xyz}(q)=Mq\in\mathbb R^3$. The four-label quotient has rank three; it is not Euclidean four-space.
 - An **IVM lattice site** is a quadray whose canonical representative has component sum
   $s \equiv 0 \pmod 4$. The other three residue classes ($s \equiv 1, 2, 3 \pmod 4$) are
   the tetrahedral ($1, 3$) and octahedral ($2$) **voids** of the close packing — not sites.
@@ -115,13 +115,17 @@ $\lvert\det\rvert/4$ as an exact `fractions.Fraction`. For integer quadray verti
 two determinants have equal magnitude, so **the two functions agree exactly on every
 integer input**. Worked values:
 
-- **Unit tetrahedron** $(0,0,0,0), (2,1,1,0), (1,2,1,0), (1,1,2,0)$: determinant $4$,
-  volume exactly $1$ (one IVM unit — four ABCD volumes).
+- **Regular unit tetrahedron** $(0,0,0,0), (2,1,1,0), (1,2,1,0), (1,1,2,0)$:
+  determinant 4, native volume 1, default XYZ edge $2\sqrt2$ and volume $8/3$.
 - **Primitive tetrahedron** $(0,0,0,0), (1,0,0,0), (0,1,0,0), (0,0,1,0)$: determinant
   $1$, volume exactly $1/4$.
 - General tetrahedron $(0,0,0,0), (4,2,2,0), (2,4,2,0), (2,2,4,0)$: volume exactly $8$
   (both functions, exactly equal). General lattice tetrahedra may have non-integral
   volume; no integrality is assumed.
+
+For the uniformly scaled embedding $M=cM_0$, Euclidean tetrahedral volume is
+$(8|c|^3/3)V_{\mathrm{ivm}}$. Thus default scale-one XYZ uses native factor
+$3/8$; $S3=\sqrt{9/8}$ applies only at $|c|=1/\sqrt2$.
 
 ### 2.5 Embedded geometry (S5)
 
@@ -290,16 +294,14 @@ $(2,1,1,0)$), agreeing with §4.7:
 
 ### 4.10 Nearest-site search (S18, S19)
 
-`lattice_search.within_radius(site, R)` returns all sites with $d^2 \le R^2$ of the
-center, enumerated exactly through the shell depth required by (S11) and filtered with
-the exact identity (S10); `lattice_search.nearest(site, R, k)` returns the $k$ closest
-such sites, sweeping shells outward (S18). Both are **deterministic**: results are sorted by
-$d^2$ ascending with lexicographic $(a,b,c,d)$ order breaking ties. Worked case: center
-$(0.5, 1.0, -0.5, 2.0)$, $R = 3$, $k = 5$ returns five sites at
-$d^2 = 1, 5, 5, 5, 5$, the first being $(1,1,0,2)$; `within_radius((0,0,0,0), 2\sqrt{2})`
-returns 13 sites — the center plus the twelve shell-1 sites, all twelve tied at $d^2=8$
-in lexicographic order. Queries whose required enumeration depth exceeds `MAX_SHELL = 32`
-raise `ValueError` rather than silently truncating results (S19).
+`lattice_search.within_radius(site,R)` returns FCC sites whose computed float64
+squared distances satisfy `d2 <= R*R`. `nearest(site,R,k)` returns at most `k`
+such hits, using a shell sweep and the conservative radial bound (S18).
+The algebraic identity (S10) is exact, but ranking and cutoff comparisons use
+floating arithmetic, not arbitrary-size integer distance certificates.
+Results are deterministic for fixed numerical inputs, ordered by distance
+then lexicographic `(a,b,c,d)` ties. Requests needing a shell depth beyond
+`MAX_SHELL=32` raise `ValueError` rather than silently truncate (S19).
 
 ---
 
@@ -356,8 +358,8 @@ and only if $x_1, x_2, x_3$ are all integers (every integer preimage is
 $y + t\,\mathbf{1}$, $t \in \mathbb{Z}$). A non-integral preimage raises `ValueError`
 ("not in the embedding image") — **the point is rejected, never snapped** to a neighbor.
 Worked rejections: $(0.5, 0.5, 0.5)$ has exact preimage $(\tfrac12, 0, 0, 0)$ and
-$(0.1, 0, 0)$ has non-integral preimage $(-\tfrac{1}{20}, \tfrac{1}{20}, \tfrac{1}{20})$
-— both rejected.
+$(0.1,0,0)$ has a nonintegral exact binary-rational preimage (its decimal
+ideal would be $(0,-1/20,-1/20,0)$ in the fourth-component-zero gauge).
 
 ### 5.6 Fail-closed taxonomy (S25)
 
@@ -435,10 +437,10 @@ off-lattice displacement on a different axis.
 
 ### 6.5 Snapping, not inversion, for general points (S30)
 
-For a general $\mathbb{R}^3$ point the result is the nearest lattice point **in quadray
-coordinates** (component-wise rounding of $q_{\mathrm{real}}$), which is **not always the
-nearest in embedded XYZ distance**. Worked counterexample under `DEFAULT_EMBEDDING`: the
-point $xyz = (-\tfrac14, \tfrac34, \tfrac34)$ is the image of the sum-zero vector
+For a general $\mathbb R^3$ point the function component-rounds a chosen
+minimum-norm preimage. This is not a gauge-independent closest-point solve
+and is **not always nearest in embedded XYZ distance**. Counterexample:
+The point $xyz = (-\tfrac14,\tfrac34,\tfrac34)$ is the image of the sum-zero vector
 $w = (\tfrac{5}{16}, \tfrac{1}{16}, \tfrac{1}{16}, -\tfrac{7}{16})$; every component of
 $w$ rounds to $0$, so `quadray_from_xyz` returns $(0,0,0,0)$ at squared XYZ distance
 $\tfrac{19}{16}$ — while the genuinely closest quadray lattice point is $(1,1,1,0)$, at
@@ -457,7 +459,7 @@ test (deterministic, real numerical examples, no mocks, stdlib `fractions` allow
 new dependencies). Run it from the repo root:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --no-sync pytest tests/unit/lattice/test_spec_examples.py -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 --no-sync pytest tests/unit/lattice/test_spec_examples.py -q
 ```
 
 The set of test functions in that file equals the set of names in the claim index
@@ -548,7 +550,7 @@ function appears here).
 | S15 | The neighbor moves are exactly the 12 normalized permutations of $(2,1,1,0)$ = shell 1; images are the $(\pm2,\pm2,0)$ cuboctahedron vertices, each at $d^2 = 8$ | `ivm_field.IVM_NEIGHBOR_STEPS` | `test_twelve_neighbor_moves_cuboctahedron` |
 | S16 | `shell_count(k)` $= 10k^2+2$ ($1$ for $k=0$) and `cumulative_count(k)` $= 1 + 2k + 10k(k+1)(2k+1)/6$ match the partial sums through shell 6 | `omni_numbering.shell_count`, `omni_numbering.cumulative_count` | `test_shell_count_and_cumulative_closed_form` |
 | S17 | `sites_through_shell` is shell-major lexicographic (center first); `site_index`/`site_at_index` are mutual inverses; non-sites map to $-1$; `MAX_SHELL = 32` | `omni_numbering.sites_through_shell`, `omni_numbering.site_index`, `omni_numbering.site_at_index` | `test_omni_numbering_bidirectional_bijection` |
-| S18 | `within_radius`/`nearest` return exact-$d^2$ results consistent with brute force, sorted by $d^2$ then lexicographic $(a,b,c,d)$ | `lattice_search.nearest`, `lattice_search.within_radius` | `test_nearest_within_radius_exact_and_deterministic` |
+| S18 | `within_radius`/`nearest` use float64 distances and radius cutoffs, with deterministic distance/lexicographic ordering and brute-force comparison examples | `lattice_search.nearest`, `lattice_search.within_radius` | `test_nearest_within_radius_exact_and_deterministic` |
 | S19 | Search is fail-closed: queries needing enumeration beyond `MAX_SHELL` raise `ValueError` instead of truncating | `lattice_search.nearest`, `lattice_search.within_radius` | `test_search_fails_closed_beyond_max_shell` |
 | S20 | Exact canonical recovery: `xyz_to_quadray_canonical(to_xyz(q)) == q` for all 309 canonical sites through shell 4, also at scale $1/2$ | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_exact_recovery_shells_0_to_4` |
 | S21 | Exact entry types: `int`/`float`/`Fraction`/`np.int64`/`np.float64` accepted and converted to exact rationals | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_exact_entry_types` |
@@ -557,7 +559,7 @@ function appears here).
 | S24 | $xyz$ is in the image iff the preimage is integral; non-image points raise `ValueError` (never snapped) | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_rejects_non_image` |
 | S25 | Fail-closed taxonomy: wrong length/shape/row sums $\to$ `ValueError`; non-numeric entries (`str`, `np.float32`) $\to$ `TypeError` | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_fail_closed_taxonomy` |
 | S26 | Round-trip identity `quadray_roundtrip(q) == q` for all 309 canonical sites through shell 4; both legs share the same rows | `conversions.quadray_roundtrip` | `test_roundtrip_identity_shells_0_to_4` |
-| S27 | Scale robustness: exact at every Urner scale $c \neq 0$; $\operatorname{pinv}(cM)(cM\,q) = q - (\sum q / 4)\mathbf{1}$ | `conversions.quadray_roundtrip` | `test_roundtrip_scale_robustness` |
+| S27 | The exact-real inverse identity is scale independent for $c\ne0$; numerical round trips require finite resolvable images and coherent rounding | `conversions.quadray_roundtrip` | `test_roundtrip_scale_robustness` |
 | S28 | Documented failure: unnormalized input raises `AssertionError` "roundtrip is not the identity"; $(2,2,2,1) \to (1,1,1,0)$ | `conversions.quadray_roundtrip` | `test_roundtrip_documented_failure_unnormalized` |
 | S29 | `quadray_from_xyz` = pseudoinverse projection + round-half-up preserving the $(1,1,1,1)$-coset; lattice points of every residue class round-trip exactly (scales 1 and 1/2) | `quadray.quadray_from_xyz` | `test_quadray_from_xyz_coset_preserving_roundtrip` |
-| S30 | For general points the result is the component-wise quadray-nearest, not always the XYZ-nearest: worked counterexample $(-\tfrac14, \tfrac34, \tfrac34)$ | `quadray.quadray_from_xyz` | `test_quadray_from_xyz_not_always_xyz_nearest` |
+| S30 | Component-wise minimum-norm-preimage snapping is not always XYZ-nearest; worked counterexample $(-\tfrac14,\tfrac34,\tfrac34)$ | `quadray.quadray_from_xyz` | `test_quadray_from_xyz_not_always_xyz_nearest` |

@@ -1,217 +1,153 @@
-# QuadMath: Analytical Review of Quadray Coordinates (4D)
+# QuadMath: Quadray Mathematics, Lattice Methods and Manuscript Tools
 
-This repository organizes a comprehensive review of Quadray coordinates, integer volume quantization, optimization on tetrahedral lattices, and information geometry. It contains modular Markdown sources, LaTeX outputs, and build scripts to produce individual and combined PDFs.
+QuadMath combines an importable Python library, canonical mathematical chapters,
+Lean models and source-checkout tools for figures and PDFs. Physical quadrays
+are common-offset equivalence classes of four coordinates with rank-three
+geometry, not four independent Euclidean axes.
 
-**Repository**: [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)
-
-**DOI**: [10.5281/zenodo.16887791](https://zenodo.org/records/16887791)
-
-**License**: Apache-2.0
+**Repository:** [docxology/QuadMath](https://github.com/docxology/QuadMath) ·
+**License:** [Apache-2.0](LICENSE) ·
+**Manuscript DOI:** [10.5281/zenodo.16887791](https://zenodo.org/records/16887791)
 
 ## Status & Next Actions
 
-- **Status**: Published v1 (Zenodo DOI above). Manuscript details and layout
-  rationale: `docs/MANUSCRIPT_STATUS.md`. Verify against disk, not
-  this line: `ls quadmath/output/pdf/quadmath_review.pdf`.
-- **Backlog / next actions**: `TODO.md` at repo root is the single canonical
-  to-do list.
-- **Verification**: `./run_all.sh --test-only` (tests + 100% coverage gate).
-  Full pipeline: `./run_all.sh --with-pdf`.
-
-## Synergetics suite
-
-QuadMath supplies the mathematical specification, exact determinants, lattice
-algorithms and Lean formalization. Its companion projects are
-[symergetics](https://github.com/docxology/symergetics) for rational geometry and
-research workflows, and [QuadCraft](https://github.com/docxology/QuadCraft) for
-interactive/native/browser applications.
-
-The [suite interoperability guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md)
-defines gauge equivalence, embedding orientation, length/volume units and the
-different inverse contracts. Its
-[executable example](https://github.com/docxology/symergetics/blob/main/examples/suite_interoperability.py)
-exercises the real Python, JavaScript and C++ implementations without adding a
-runtime dependency between repositories.
-
-The methods suite adds exact rational metric, affine and oriented primitives;
-hard-boundary harmonic extension; conservative graph transport distinct from
-symmetric-normalized heat; and count-preserving trajectory identification.
-Closed-mesh figures measure their labels in explicit units. Lean proves the
-physical quotient, distance/volume bridges and shell bounds, not the floating
-simulation implementation. See [methods](quadmath/markdown/03_quadray_methods.md),
-[dynamics](quadmath/markdown/12_ivm_dynamics.md) and [release notes](CHANGELOG.md).
+This guide describes the development checkout. The version-1 manuscript archived
+on Zenodo and the immutable `0.6.0` package release are historical artifacts;
+a fresh render is not a reproduction of the archived PDF. See the
+[release notes](CHANGELOG.md), [manuscript status](docs/MANUSCRIPT_STATUS.md)
+and [backlog](TODO.md). Test counts and coverage results belong to dated run
+receipts, not permanent claims about this checkout.
 
 ## Quick Start
 
+Run commands from the repository root. The scientific workflow uses Python 3.13
+explicitly; the repository's `.python-version` pin is unchanged.
+
 ```bash
-# Clone and setup
 git clone https://github.com/docxology/QuadMath.git
 cd QuadMath
 uv sync --python 3.13
-
-# Run tests to ensure everything works
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
-
-# Generate all outputs (figures, PDFs, LaTeX)
-UV_PYTHON=3.13 bash quadmath/scripts/render_pdf.sh
-
-# Clean all generated outputs (regeneratable)
-bash quadmath/scripts/clean_output.sh
+uv run --python 3.13 python -c "from quadmath import Quadray; print(Quadray(3, 2, 2, 1).normalize())"
 ```
 
-> The published version-1 PDF (`QuadMath_v1_DAF_08-16-2025.pdf`) is not kept in
-> git (8.5MB; canonical copy on Zenodo via the DOI above). Generate a fresh
-> copy with `bash quadmath/scripts/render_pdf.sh`.
+For an isolated, headless figure recipe that does not touch tracked outputs:
+
+```bash
+export QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results"
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+```
+
+The output override applies to Python path helpers and cooperating generators,
+not the shell PDF renderer. See [Figure and Manuscript Generation](#figure-and-manuscript-generation).
 
 ### Installed package
 
-Release wheels contain the `quadmath` package; the manuscript scripts remain
-source-checkout tools. Build distributions with `uv build --python 3.13`.
-For installed plotting code, set `QUADMATH_OUTPUT_DIR=/path/to/results` to
-select an output root without requiring a checkout. Without the override,
-source-checkout tools retain `quadmath/output/`.
+The distribution name is `quadmath-project`; the import name is `quadmath`.
+Wheels include `src/quadmath`, not the checkout's manuscript scripts or Lean tree.
+Use `QUADMATH_OUTPUT_DIR` for installed plotting code: without it, output helpers
+search for a repository root and can raise outside a checkout. Development
+source and released wheels can expose different APIs; consult the corresponding
+[API glossary](quadmath/markdown/10_symbols_glossary.md).
 
-The coordinated release notes are in [CHANGELOG.md](CHANGELOG.md). The
-[suite verifier](https://github.com/docxology/symergetics/blob/main/verify_suite.py)
-runs frozen environments, coverage gates, games, native tests, interoperability
-and documentation checks across all three projects; `--browser` adds all
-30 live Chromium game scenarios and a portable, revision-specific receipt.
+## Synergetics suite
 
+QuadMath supplies mathematical specification, exact determinants, lattice
+methods and Lean models. Companion projects are
+[symergetics](https://github.com/docxology/symergetics) for rational geometry and
+research workflows, and [QuadCraft](https://github.com/docxology/QuadCraft) for
+interactive/native/browser applications. They are not production dependencies
+of this package.
 
-## Repository Architecture: The render_pdf.sh Paradigm
-
-This repository follows a **unified test-driven development workflow** where source code, tests, and documentation are developed together in complete coherence:
-
-### Core Workflow
-
-1. **Source Code** (`src/`): Implements mathematical functionality with 100% test coverage
-2. **Tests** (`tests/`): Validates all functionality using real numerical examples
-3. **Scripts** (`quadmath/scripts/`): Generate figures and data from `src/` modules
-4. **Documentation** (`quadmath/markdown/`): Documents mathematical concepts and references code
-5. **`render_pdf.sh`**: Orchestrates the entire pipeline ensuring coherence
-
-### How render_pdf.sh Works
-
-The `render_pdf.sh` script orchestrates a complete pipeline that ensures all components work together:
-
-- **Runs all generation scripts** (validates `src/` code works)
-- **Validates markdown integrity** (images, references, equations)
-- **Generates auto-updated glossary** from `src/` API
-- **Builds individual and combined PDFs** from validated markdown
-- **Exports LaTeX** for further processing
-
-This ensures that the mathematical concepts in the markdown, the implemented code in `src/`, and the generated figures are all coherent and synchronized.
+The [suite interoperability guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md)
+and its [executable example](https://github.com/docxology/symergetics/blob/main/examples/suite_interoperability.py)
+cover gauge equivalence, orientation, units and different inverse rules.
+Do not interchange default embeddings or assume all native tetra-volumes are integers.
 
 ## Project Structure
 
-- `src/quadmath/`: Factored package — `core/`, `lattice/`, `optimize/`, `inference/`, `stats/`, `learn/`, `viz/`, `validate/`, `tools/` subpackages (100% test coverage required)
-- `tests/`: Test suite (no mocks, real numerical examples)
-- `quadmath/markdown/` (numbered sections, assembled in order by `render_pdf.sh`)
-  - `00_preamble.md`: LaTeX preamble source (generated from markdown)
-  - `01_introduction.md`: Introduction to 4D namespaces and quadrays
-  - `02_4d_namespaces.md`: Coxeter.4D, Einstein.4D, Fuller.4D distinctions
-  - `03_quadray_methods.md`: Quadray analytical details and methods
-  - `04_optimization_in_4d.md`: Optimization on tetrahedral lattices
-  - `05_extensions.md`: Extensions and applications
-  - `06_discussion.md`: Discussion and implications
-  - `07_resources.md`: References and resources
-  - `08_equations_appendix.md`: Mathematical equations supplement
-  - `09_free_energy_active_inference.md`: Free energy and active inference
-  - `10_symbols_glossary.md`: Auto-generated API glossary from source code
-  - `11_ivm_field_learning.md`: IVM field learning (shells, Laplacian-regularized fitting)
-  - `12_ivm_dynamics.md`: Dynamics and trajectory identification on the lattice
-  - `13_lattice_tooling.md`: Nearest-site queries and shell numbering
-  - `14_conversions_spec.md`: Conversions and the mathematical specification
-  - `15_learning_evaluation.md`: Training/testing methodology for the learners
-  - `16_lattice_gallery.md`: Visualization gallery for shells, fields, dynamics
-  - `17_benchmarks_statistics.md`: Benchmarks and statistics (timing harness, bootstrap CIs, permutation tests, scaling fits)
-  - `18_stats_gallery.md`: Deterministic statistics gallery (latency, scaling, CI bars, ECDF)
-- `quadmath/scripts/`: Figure, data, and GIF generation scripts that import from `src/quadmath/`
-- `quadmath/output/`: All generated artifacts (figures, data, PDFs, LaTeX; regeneratable)
-- `lean/`: Lean 4 (core, no Mathlib) formalization mirror — zero sorries; `cd lean && lake build`
-- `SPEC.md`: mathematical specification (conventions, embedding, Gram identity, shells)
-- `docs/MANUSCRIPT_STATUS.md`: manuscript status and canonical-layout rationale
+| Path | Responsibility | Start here |
+|---|---|---|
+| `src/quadmath/` | Runtime coordinates, exact/rational primitives, fields, dynamics, evaluation, statistics and plotting | [Module guide](src/README.md) |
+| `tests/` | Numerical, resource-lifecycle and orchestration regression tests | [Test guide](tests/README.md) |
+| `quadmath/markdown/` | Canonical mathematical chapters | [Specification](SPEC.md), [methods](quadmath/markdown/03_quadray_methods.md) |
+| `quadmath/scripts/` | Figure/data orchestration, API glossary and PDF tools | [Build guide](quadmath/README.md) |
+| `quadmath/output/` | Generated, partly tracked artifacts; preserve user work | [Output policy](WORKFLOW.md#output-management) |
+| `docs/manuscript/` | Scripted template-layout projection, not an independent editing source | [Projection guide](docs/manuscript/README.md) |
+| `docs/` | Operational navigation and focused learning/analysis/Lean guides | [Documentation index](docs/README.md) |
+| `lean/` | Handwritten Lean 4 integer quotient, distance, volume and shell models | [Proof scope](docs/lean/README.md) |
 
-## Test Suite and Code Connections
+## Mathematical and learning entry points
 
-The test suite (`tests/`) ensures 100% coverage of all `src/` modules, validating that:
-
-- All mathematical functions work correctly
-- Figure generation scripts can import and use source modules
-- Generated outputs are deterministic and reproducible
-- Markdown documentation accurately reflects implemented functionality
+- [Quadray methods](quadmath/markdown/03_quadray_methods.md) and
+  [conversions](quadmath/markdown/14_conversions_spec.md): gauge, metric, affine,
+  oriented and volume contracts.
+- [Field learning](quadmath/markdown/11_ivm_field_learning.md): soft regularized
+  fitting versus hard-boundary harmonic extension.
+- [Dynamics](quadmath/markdown/12_ivm_dynamics.md): symmetric-normalized heat,
+  conservative concentration transport and integer rounded averaging are distinct laws.
+- [Evaluation](quadmath/markdown/15_learning_evaluation.md): validation-fold
+  selection, temporal continuation and tabular baselines. Random site folds
+  do not guarantee spatially independent generalization.
+- [Benchmarks/statistics](quadmath/markdown/17_benchmarks_statistics.md): seeded
+  workloads and inference; elapsed timings remain machine-dependent.
 
 ## Figure and Manuscript Generation
 
-Figures are generated by scripts in `quadmath/scripts/` that:
-- Import directly from `src/` modules (no code duplication)
-- Generate PNG/MP4/SVG files to `quadmath/output/figures/`
-- Save raw data (CSV/NPZ) to `quadmath/output/data/`
-- Print output paths for manifest collection
+Python renderers are library operations. Scripts select examples, call them and
+print paths. `make_all_figures.py` runs its explicit generator list and writes
+`data/figure_manifest.txt` under the configured output root. It is not a test suite.
 
-The markdown files reference these generated figures, and `render_pdf.sh` ensures all references are valid before building PDFs.
+The canonical graphical abstract is emitted by
+`quadmath/scripts/graphical_abstract_quadray.py`; its PNG remains
+`figures/graphical_abstract_quadray.png`, with an SVG companion. The panels
+identify the scale-one basis and actual FCC 12-contact neighborhood rather
+than treating four basis vectors as a packing neighborhood.
 
-## Build (PDF)
+### Build (PDF)
 
-Dependencies: `pandoc`, `xelatex` (TeX Live).
-
-- Ubuntu/Debian:
-  - sudo apt-get update
-  - sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended fonts-dejavu
-- macOS:
-  - brew install pandoc
-  - brew install --cask mactex-no-gui
-
-### Build Commands
+The shell renderer requires `pandoc`, `xelatex`, `fontconfig` (`fc-list`),
+DejaVu Serif and DejaVu Sans Mono. On macOS install Pandoc, TeX Live/MacTeX,
+fontconfig and DejaVu; on Debian/Ubuntu install `pandoc texlive-xetex
+texlive-fonts-recommended fontconfig fonts-dejavu`.
 
 ```bash
-# Generate all outputs (figures, PDFs, LaTeX)
-bash quadmath/scripts/render_pdf.sh
-
-# Clean all generated outputs (regeneratable)
-bash quadmath/scripts/clean_output.sh
+# Deliberately writes checkout artifacts and updates the canonical API glossary.
+# Run in a separate checkout if those writes must be isolated.
+unset QUADMATH_OUTPUT_DIR
+UV_PYTHON=3.13 bash quadmath/scripts/render_pdf.sh
 ```
 
-### Output Structure
-
-After running `render_pdf.sh`, you'll find:
-
-```
-quadmath/output/
-├── figures/          # PNG/MP4/SVG files
-├── data/             # CSV/NPZ files and manifests
-├── pdf/              # Individual and combined PDFs
-│   ├── 01_introduction.pdf
-│   ├── 02_4d_namespaces.pdf
-│   ├── ...
-│   └── quadmath_review.pdf (combined)
-└── tex/              # Exported LaTeX files
-```
+It generates figures (unless `--skip-figures`), refreshes the glossary, runs
+strict manuscript validation, then builds individual/combined PDF and TeX.
+It does **not** run pytest, coverage or Lean. PDF/TeX remain fixed under
+`quadmath/output/`; setting `QUADMATH_OUTPUT_DIR` does not redirect them and
+can separate new figures from the paths expected by the manuscript.
 
 ## Development Workflow
 
-1. **Always run tests first**: `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q`
-2. **Ensure 100% coverage** for `src/` (enforced via `.coveragerc`)
-3. **Run render_pdf.sh** after significant changes to validate coherence
-4. **Source code changes** must be reflected in tests AND documentation
-5. **Documentation changes** must generate working PDFs
+[WORKFLOW.md](WORKFLOW.md) separates runtime changes, documentation checks,
+rendering and integration. [ARCHITECTURE.md](ARCHITECTURE.md) describes boundaries.
+For an integration owner explicitly running verification:
 
-For detailed workflow information, see `WORKFLOW.md`. For development rules and enforcement, see `.cursorrules`.
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
+uv run --python 3.13 coverage report
+```
+
+The configured coverage floor is a gate, not proof of every mathematical claim.
+During delegated implementation, defer builds/tests/lint/formatters to the
+integration owner and preserve generated files. Never clean outputs merely
+because they can theoretically be regenerated.
 
 ## Contributing
 
-This project follows a strict test-driven development workflow. Before contributing:
-
-1. **Fork the repository** from [https://github.com/docxology/QuadMath](https://github.com/docxology/QuadMath)
-2. **Create a feature branch** for your changes
-3. **Write tests first** following TDD principles
-4. **Ensure 100% test coverage** is maintained
-5. **Run the complete pipeline** with `bash quadmath/scripts/render_pdf.sh`
-6. **Submit a pull request** with clear description of changes
+Use a feature branch, read [agent guidance](AGENTS.md), add behavior-level
+regressions for changed consumer contracts, and update affected chapters or
+operational guides. Preserve explicit equation/code anchors. Record only
+checks actually exercised and review figure labels, units and legibility in
+addition to successful saves.
 
 ## Citation
-
-If you use this work in your research, please cite:
 
 ```bibtex
 @software{quadmath2025,

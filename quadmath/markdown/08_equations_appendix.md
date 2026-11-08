@@ -1,6 +1,6 @@
 # Equations and Math Supplement (Appendix)
 
-Conventions for this appendix: vertices are $P_0,\ldots,P_3$ with Quadray components $(a_i, b_i, c_i, d_i)$; volumes are $V_{xyz}$ (Euclidean, cubic length units) and $V_{ivm}$ (synergetics/IVM tetravolume units, unit regular tetrahedron $V_{ivm} = 1$), related by $V_{ivm} = S3\,V_{xyz}$ with $S3=\sqrt{9/8}$ (Section 3); $M$ denotes the Quadray-to-XYZ embedding matrix (Sections 3 and 14), $\lVert\cdot\rVert_2$ the Euclidean norm, and $\mathrm{KL}\big[Q\,\|\,P\big]$ the Kullback–Leibler divergence of $Q$ relative to $P$ (Section 10). Three symbol overloads are scoped by context and flagged where they occur: $c$ is a Quadray component (and a PdF edge length) in the volume formulas but the speed of light in the Minkowski line element; $d$ is the fourth Quadray component in the coordinate formulas but an edge length in the length-based formulas and the distance function $d(\cdot,\cdot)$ of the embedding section; and $P$ is a vertex label $P_i$ in the volume sections but a probability distribution in the free-energy sections.
+Conventions: $P_0,\ldots,P_3$ denote vertices, with Quadray components $(a_i,b_i,c_i,d_i)$ or explicitly embedded XYZ coordinates as stated. Native volume $V_{ivm}$ assigns 1 to the regular reference tetrahedron; Euclidean $V_{xyz}$ uses cubic coordinate-length units. Their ratio is $3/(8|c|^3)$ for $M=cM_0$, not a scale-independent S3. Only at $c=1/\sqrt2$ is the ratio $S3=\sqrt{9/8}$. $M$ is the embedding matrix, $\lVert\cdot\rVert_2$ the Euclidean norm, and $\mathrm{KL}(Q\|P)$ relative entropy. The letters $c,d,P$ are context-dependent: coordinate components/edge lengths in geometry, speed of light in the Minkowski formula, and probability distributions in inference.
 
 ## Volume of a Tetrahedron (Lattice)
 
@@ -57,12 +57,12 @@ V_{xyz} = \tfrac{1}{6} \left| \det \begin{pmatrix}
  x_1 & y_1 & z_1 & 1 \\
  x_2 & y_2 & z_2 & 1 \\
  x_3 & y_3 & z_3 & 1 \\
-\end{pmatrix} \right|, \qquad V_{ivm} = S3\, V_{xyz},\quad S3=\sqrt{\tfrac{9}{8}}
+\end{pmatrix} \right|, \qquad V_{ivm} = \frac{3}{8|c|^3}\, V_{xyz}\quad(M=cM_0,\ c\ne0)
 \end{equation}
 
 Notes.
 
-- Homogeneous-row determinant in Cartesian coordinates: each row is $(x_i, y_i, z_i, 1)$ for vertex $P_i$, with coordinates in length units; the absolute determinant divided by 6 is the Euclidean volume $V_{xyz}$ in cubic length units. This is the homogeneous form of Eq. \eqref{eq:lattice_det}; conversion to IVM units uses $V_{ivm} = S3\,V_{xyz}$ with $S3=\sqrt{9/8}$ as used throughout.
+- The homogeneous XYZ determinant divided by six gives Euclidean tetrahedral volume. Native conversion is $3/8$ at default scale $c=1$. At $c=1/\sqrt2$ only, the regular tetrahedron edge is 2 and the conversion is $S3=\sqrt{9/8}$; length-based routines that multiply by S3 assume those sphere-radius-one units.
 
 ## Cayley-Menger Determinant (Coxeter.4D)
 
@@ -82,7 +82,7 @@ Notes.
 
 - **Pairwise distances**: $d_{ij}$ is the Euclidean distance between vertices $P_i$ and $P_j$ in length units; the matrix stores the squared distances $d_{ij}^2$, so the formula is length-only — no coordinates enter (Coxeter.4D).
 - **Length-only formulation**: Cayley–Menger provides a length-only formula for simplex volumes, here specialized to tetrahedra.
-- **Conversion to IVM**: $V_{xyz}$ is the Euclidean volume in cubic length units; use $V_{ivm} = S3\,V_{xyz}$ with $S3=\sqrt{9/8}$ (Eq. \eqref{eq:xyz_det}); the PdF formula of Eq. \eqref{eq:pdf} consumes the same lengths in closed algebraic form.
+- **Conversion to IVM**: Apply the scale-specific factor of Eq. \eqref{eq:xyz_det}. The `ivm_tetra_volume_cayley_menger` convenience function assumes sphere-radius-one lengths and multiplies by S3; default embedding lengths must first be divided by $\sqrt2$, or the Euclidean result multiplied by $3/8$ instead.
 
 ## Piero della Francesca Formula (PdF)
 
@@ -94,8 +94,8 @@ For tetrahedron volume from edge lengths meeting at a vertex:
 
 Notes.
 
-- **Edge lengths**: $a, b, c$ are the three edges meeting at the apex vertex $P_0$ — $a = d_{01}$, $b = d_{02}$, $c = d_{03}$ — and $d, e, f$ are the respective opposite edges, $d = d_{23}$, $e = d_{13}$, $f = d_{12}$, in length units (the same $d_{ij}$ as Eq. \eqref{eq:cayley_menger}).
-- **Conversion to IVM**: $V_{xyz}$ is the Euclidean volume in cubic length units (the prefactor 144 is the standard Heron-like PdF normalization); use $V_{ivm} = S3\,V_{xyz}$ with $S3=\sqrt{9/8}$ (Eq. \eqref{eq:xyz_det}).
+- **Edge lengths**: $a=d_{01}$, $b=d_{02}$, $c=d_{03}$ meet at $P_0$; the other edges are $d=d_{12}$, $e=d_{13}$, $f=d_{23}$. In the displayed polynomial, $f$ is opposite $a$, $e$ opposite $b$, and $d$ opposite $c$.
+- **Conversion to IVM**: Apply the declared embedding-scale factor of Eq. \eqref{eq:xyz_det}, not S3 indiscriminately.
 
 ## Gerald de Jong Formula (GdJ)
 
@@ -108,7 +108,7 @@ V_{ivm} = \tfrac{1}{4}\,\left|\det\big[\, \pi(P_1) - \pi(P_0),\; \pi(P_2) - \pi(
 Notes.
 
 - **Projection**: $\pi$ maps a Quadray vertex $P_i$ with components $(a_i, b_i, c_i, d_i)$ to $\mathbb{R}^3$ by subtracting the fourth component from the first three; each bracketed column is a projected edge vector. Because $\pi$ kills the direction $(1,1,1,1)$, it is invariant under $q \to q + t\,(1,1,1,1)$ — the projective fiber of Eq. \eqref{eq:conv-fiber} (Section 14) — so the determinant is unchanged by projective normalization of the vertices. When all four vertices share the same fourth component (in particular $d_i = 0$), $\pi(P_i)$ reduces to $(a_i, b_i, c_i)$.
-- **Native IVM**: no S3 conversion; the factor $1/4$ returns IVM tetravolume directly — for the unit tetrahedron (origin plus three IVM neighbor moves) the determinant is exactly 4, giving $V_{ivm} = 1$ (Section 3).
+- **Native IVM**: No S3 conversion is needed. The factor $1/4$ returns native tetravolume; a regular tetrahedron formed by the origin and three mutually adjacent FCC neighbors has determinant magnitude 4 and volume 1.
 - **Exact arithmetic**: integer Quadray coordinates give an integer determinant, evaluated exactly by the Bareiss algorithm as a `fractions.Fraction`; the code implements Eq. \eqref{eq:gdj} as `integer_tetra_volume`, and the magnitude agrees exactly with the Ace determinant of Eq. \eqref{eq:ace5x5} on every integer-quadray input.
 
 See code: [`tetra_volume_cayley_menger`](03_quadray_methods.md#code:tetra_volume_cayley_menger). For tetrahedron volume background, see [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume). Exact integer determinants in code use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm). External validation: these formulas align with implementations in the 4dsolutions ecosystem. See the [Resources](07_resources.md) section for comprehensive details.
@@ -125,7 +125,7 @@ Notes.
 
 - **Symbols**: $x$ is an observation, $\theta = (\theta_1, \ldots, \theta_m)$ the parameter vector, and $p(x;\theta)$ the likelihood; the expectation is over $x \sim p(\cdot;\theta)$, so $F$ is a function of $\theta$. Each score $\partial \log p(x;\theta)/\partial \theta_i$ carries inverse parameter units, so $F_{i,j}$ carries inverse squared parameter units per observation.
 - $F$ is symmetric positive semi-definite: large eigenvalues mark sensitive (high-curvature) directions, small eigenvalues sloppy ones (Section 4 and the Discussion). The empirical estimate of Eq. \eqref{eq:fim_empirical} is the per-observation counterpart.
-- See code: [`fisher_information_matrix`](03_quadray_methods.md#code:fisher_information_matrix) in `src/quadmath/inference/information.py` — empirical outer-product estimator. Figure: the empirical estimate is shown in the FIM heatmap figure of Section 4.
+- See [`fisher_information_matrix`](03_quadray_methods.md#code:fisher_information_matrix) for the empirical outer-product implementation. The regression heatmap in Section 4 instead supplies squared-loss gradients and must be read as a Gram surrogate.
 
 ## Empirical Fisher Information Matrix
 
@@ -138,7 +138,7 @@ F_{i,j} = \frac{1}{N} \sum_{n=1}^{N} \frac{\partial \, \log p(x_n;\theta)}{\part
 Notes.
 
 - **Symbols**: $x_1, \ldots, x_N$ are $N$ i.i.d. observations and $g_n = \nabla_\theta \log p(x_n;\theta)$ the per-sample score vector (same units as Eq. \eqref{eq:fim}); the estimator is $F = \tfrac{1}{N} \sum_n g_n g_n^{\mathsf{T}}$, with a `normalize` flag controlling the $1/N$ division.
-- Converges to Eq. \eqref{eq:fim} as $N \to \infty$; used by natural-gradient descent (Eq. \eqref{eq:natural_gradient}) and the information-geometry applications of Section 4.
+- With observations drawn from the model and finite score second moments, this estimator converges to Eq. \eqref{eq:fim}. Arbitrary loss gradients produce a Gram surrogate instead. See the regression-estimator note in [optimization](04_optimization_in_4d.md).
 
 ## Natural Gradient {#eq:natgrad}
 
@@ -151,7 +151,7 @@ Background: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient) (
 Explanation.
 
 - **Symbols**: $\theta$ the parameter vector, $L(\theta)$ a differentiable loss, $\nabla_\theta L$ its gradient, $F(\theta)$ the Fisher matrix of Eq. \eqref{eq:fim} — or its empirical estimate, Eq. \eqref{eq:fim_empirical} — evaluated at $\theta$, and $\eta > 0$ the step size (learning rate).
-- **Update**: right-preconditioning by the inverse Fisher metric gives the steepest-descent direction under the Fisher metric (Amari), invariant to smooth invertible reparameterizations of $\theta$.
+- **Update**: Applying the inverse metric to the gradient gives metric steepest descent. The ideal undamped vector field is coordinate-covariant; finite Euler steps and ridge damping need not preserve exact reparameterization invariance. Natural-gradient flows are not generally geodesics.
 - **Damping**: the implementation `natural_gradient_step` solves the damped system $(F + \lambda I)\,\delta = \nabla_\theta L$ and applies $\theta \leftarrow \theta - \eta\,\delta$, with a small Tikhonov ridge $\lambda$ (default $10^{-9}$) keeping the solve stable when $F$ is near-singular.
 
 See code: [`natural_gradient_step`](03_quadray_methods.md#code:natural_gradient_step) in `src/quadmath/inference/information.py` — damped inverse-Fisher step.
@@ -159,13 +159,13 @@ See code: [`natural_gradient_step`](03_quadray_methods.md#code:natural_gradient_
 ## Free Energy (Active Inference) {#eq:free_energy}
 
 \begin{equation}\label{eq:free_energy}
-\mathcal{F} = -\log P(o\mid s) + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
+\mathcal{F} = \mathbb{E}_{Q(s)}[-\log P(o\mid s)] + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
 \end{equation}
 
 Explanation.
 
 - **Symbols**: $o$ the observation, $s$ the latent state, $Q(s)$ the approximate posterior (recognition distribution), and $P$ the generative model, so $P(o \mid s)$ is the likelihood and $P(s)$ the prior; $\mathcal{F}$ is the variational free energy in nats (natural logarithm, Section 10). **Notation flag**: capital $P$ here is a probability distribution, unrelated to the vertex labels $P_i$ of the volume sections.
-- **Partition**: minimizing $\mathcal{F}$ over $Q$ trades the expected negative log-likelihood $\mathbb{E}_Q[-\log P(o \mid s)]$ (the displayed $-\log P(o\mid s)$ is read under this $Q$-expectation, as implemented) against the KL divergence $\mathrm{KL}\big[Q\,\|\,P\big]$ that ties the posterior to the prior; see [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle).
+- **Trade-off**: The likelihood contribution is explicitly averaged under $Q$; the KL term compares that normalized posterior with the prior. With a well-defined generative model, minimizing over unrestricted $Q$ recovers the posterior. Arbitrary supplied log-likelihood arrays do not automatically describe a normalized generative model.
 
 See code: [`free_energy`](03_quadray_methods.md#code:free_energy) in `src/quadmath/inference/information.py` — discrete-state variational free energy (inputs are unnormalized distributions, normalized internally).
 
@@ -181,13 +181,11 @@ G = \mathrm{KL}\big[ Q(s)\;\|\;P(s) \big] \;-\; \mathbb{E}_{q}\big[\log P(o\mid 
 
 Explanation.
 
-- **Symbols**: $Q(s)$ the approximate posterior and $P(s)$ the prior over states (as in Eq. \eqref{eq:free_energy}), $P(o \mid s)$ the likelihood, $P(o)$ the prior preference over outcomes in nats (uniform when omitted), $H\big[Q\big] = -\sum_s Q(s) \log Q(s)$ the Shannon entropy in nats, and $\mathbb{E}_q$ expectation under $Q$; $G$ is the expected free energy minimized during action selection.
-- **Epistemic term**: the KL divergence between variational posterior and prior over states.
-- **Entropy**: the posterior entropy is already inside the KL term, since $\mathrm{KL}[Q\|P] = \mathbb{E}_q[\log Q(s)] - \mathbb{E}_q[\log P(s)] = -H[Q(s)] - \mathbb{E}_q[\log P(s)]$; subtracting $H$ again would count it twice.
-- **Ambiguity**: the negative expected log-likelihood of outcomes penalizes noisy observations.
-- **Pragmatic term**: prior preferences $P(o)$ enter negatively ($-\log P(o)$), so preferred outcomes lower $G$; agents minimize $G$ during action selection.
+- **Implemented scope**: This helper computes `free_energy(log_p_o_given_s, q, p) - log_p_o` for supplied state weights and one scalar log preference. It does not construct predictive policies or a joint future state/outcome distribution.
+- The KL term already includes negative posterior entropy. The likelihood term is an expected negative log-likelihood under the supplied $Q$; calling it conditional outcome entropy requires additional model assumptions.
+- $-\log P(o)$ lowers the scalar objective for preferred outcomes. With the default `log_p_o=0`, this preference term vanishes; it does not normalize an unspecified outcome distribution.
 
-See code: [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy) in `src/quadmath/inference/information.py` — all four terms of Eq. \eqref{eq:expected_free_energy} as implemented.
+See [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy). Equation \eqref{eq:expected_free_energy} documents this toy objective, not every expected-free-energy convention in the literature.
 
 ## Quadray Normalization (Fuller.4D)
 
@@ -209,7 +207,7 @@ Signature convention $(-,+,+,+)$ (mostly-plus, Section 2): $c$ is the speed of l
 
 ## High-Precision Arithmetic Note
 
-When evaluating determinants, FIMs, or geodesic distances for sensitive problems, use quad precision (binary128) via GCC's `libquadmath` (`__float128`, functions like `expq`, `sqrtq`, and `quadmath_snprintf`). See [GCC libquadmath](https://gcc.gnu.org/onlinedocs/libquadmath/index.html). Where possible, it is useful to use symbolic math libraries like SymPy to compute exact values.
+For sensitive determinants, exact native rational arithmetic or SymPy is available where appropriate. GCC's separate [libquadmath library](https://gcc.gnu.org/onlinedocs/libquadmath/index.html) provides binary128 C/C++ facilities; the Python QuadMath package does not wrap it or automatically switch NumPy calculations to quad precision.
 
 ### Reproducibility artifacts and external validation
 
@@ -220,10 +218,10 @@ When evaluating determinants, FIMs, or geodesic distances for sensitive problems
   - `ivm_neighbors_data.csv` / `ivm_neighbors_edges_data.npz`: neighbor coordinates (Quadray and XYZ)
   - `polyhedra_quadray_constructions.png`: synergetics volume relationships schematic
 
-- **External validation resources**: The [4dsolutions ecosystem](https://github.com/4dsolutions) provides extensive cross-validation. See the [Resources](07_resources.md) section for comprehensive details on computational implementations and validation.
+- **External comparison resources**: The [resource bibliography](07_resources.md) links related implementations; links alone do not establish an executed cross-validation.
 
 ## Namespaces summary (notation)
 
 - Coxeter.4D: Euclidean E⁴; regular polytopes; not spacetime (cf. Coxeter, Regular Polytopes, Dover ed., p. 119). Connections to higher-dimensional lattices and packings as in Conway & Sloane.
 - Einstein.4D: Minkowski spacetime; indefinite metric; used here only as a metric analogy when discussing geodesics and information geometry.
-- Fuller.4D: Quadrays/IVM; tetrahedral lattice with integer tetravolume; unit regular tetrahedron has volume 1; synergetics scale relations (e.g., S3).
+- Fuller.4D: Rank-three common-offset Quadrays, the FCC sphere-center coset, and exact quarter-unit rational native tetravolumes. S3 applies only to its declared length convention.

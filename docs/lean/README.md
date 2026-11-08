@@ -1,66 +1,68 @@
-# lean/ — Lean 4 formalization
+# Lean Formalization: Integer Quotients, Metric/Volume Bridges and Proof Limits
 
-The QuadMath repository carries a **Lean 4 formalization** of the quadray
-foundations at `lean/` (repository root): integer quadray coordinates,
-projective normalization, the exact integer tetra-volume determinant, IVM
-lattice membership and shell enumeration, and the omnidirectional
-close-packing numbering `10k² + 2`.
+The root [`lean/`](../../lean/README.md) tree contains handwritten core-only
+Lean 4 mathematical models. It is not extraction from, or verification of, the
+Python library, sibling implementations or floating simulations. This guide
+maps declarations and their scope; it does not report a fresh Lean build.
 
 ## Build
 
+From the repository root, when Lean verification is assigned:
+
 ```bash
-cd lean && lake build
+(cd lean && lake build)
 ```
 
-- Toolchain pinned in `lean/lean-toolchain`: `leanprover/lean4:v4.35.0`.
-- **Core Lean 4 only** — zero external packages (`lake-manifest.json` has an
-  empty `packages` list); no Mathlib. Proofs rely on `Int`/`Nat`/`List`,
-  `decide`, and `rfl`.
-- The root module is `lean/Quadlean.lean` (library target `Quadlean`,
-  `defaultTargets = ["Quadlean"]`).
+`lean/lean-toolchain` pins `leanprover/lean4:v4.35.0`. `lakefile.toml` defines
+`Quadlean` as the default target; `Quadlean.lean` imports four model modules.
+There is no Mathlib dependency. Printed `#eval` examples during compilation are
+not theorem assertions. Integration must elaborate current sources before a
+new revision is described as machine-verified.
 
 ## Module map
 
-| Module | Mirrors | Contents |
-|---|---|---|
-| `lean/QuadMath/Quadray.lean` | `src/quadmath/core/quadray.py`, `src/quadmath/core/linalg_utils.py` | `Quadray` structure (integer 4-tuple), projective normalization (classes differ by multiples of `(1,1,1,1)`), exact tetra-volume determinant `|det| / 4`; unit IVM tetrahedron has determinant `4` and volume exactly `1` |
-| `lean/QuadMath/IVM.lean` | `src/quadmath/lattice/ivm_field.py` | The 12 neighbor moves (permutations of `(2,1,1,0)`), computable site membership `IsIVMSite` (normalized quadray with component sum ≡ 0 mod 4), L1-centered shell norm, computable `shellSites` enumeration via a bounded `quadBox` filter |
-| `lean/QuadMath/Lattice.lean` | `src/quadmath/lattice/omni_numbering.py` | `omniNumber k = 10k² + 2` (shells `k ≥ 1`), cumulative site counts, and cross-checks of the numbering function against the concrete `IVM.shellSites` enumeration |
-| `lean/QuadMath/Distance.lean` | `src/quadmath/core/quadray.py` (`DEFAULT_EMBEDDING`, `distance`); identity used by `src/quadmath/lattice/lattice_search.py` | Universal squared-distance identity `d² = 4Σδ² − (Σδ)²` over integer deltas (`deltaDist2_eq`), neighbor-move distances (all 12 moves at d² = 8) |
-| `lean/Quadlean.lean` | — | Root module importing the four modules above |
+| Source | Mathematical declarations and scope |
+|---|---|
+| [`Quadray.lean`](../../lean/QuadMath/Quadray.lean) | Integer four-tuples, `SameClass`, actual `PhysicalQuadray` quotient, unique minimum-zero normalization, three-coordinate projection and independently gauged tetra-volume invariance |
+| [`Distance.lean`](../../lean/QuadMath/Distance.lean) | Universal scale-one integer squared-distance identity, separation modulo common offset, signed XYZ determinant/native-volume bridge and shell radial lower bounds |
+| [`IVM.lean`](../../lean/QuadMath/IVM.lean) | Canonical site predicate, centered gauge/shell norm, bounded enumeration completeness/uniqueness, neighbor inventory and finite shell-count declarations |
+| [`Lattice.lean`](../../lean/QuadMath/Lattice.lean) | Numbering/cumulative formula definitions and explicitly indexed links to enumerated shells |
 
-## Proof status (checked 2026-09-10)
+## Exact geometry scope
 
-- `lake build` exits 0.
-- **Zero sorries.** The former sorry'd `shellSites_card` was deleted and
-  restated honestly as `def shellSites_card_target` (universal
-  `(shellSites k).length = 10k² + 2` for `k ≥ 1`), machine-checked through
-  shell 8: `k ∈ {1..4}` by kernel `decide` (no axioms), `k ∈ {5..8}` by
-  `native_decide` (one per-instance VM-trust axiom, disclosed in
-  `lean/README.md`). `#eval` smoke checks reach shell 8
-  ([12, 42, 92, 162, 252, 362, 492, 642]).
-- **Newly proved (kernel-checked; propext/Quot.sound only)**:
-  `shellNorm4_component_bound` (scan-box completeness — every shell-k site has
-  components in [0, 2k]; previously taken from the Python reference),
-  `mem_shellSites_iff` (exact enumeration characterization),
-  `shellSites_unique`, `isIVMSite_normalize`, `shellNorm4_sameClass`, and
-  `Distance.deltaDist2_eq` — the universal squared-distance identity
-  `d² = 4Σδ² − (Σδ)²` matching `src/quadmath/lattice/lattice_search.py`.
-- The universal shell count remains an explicit open obligation (proof sketch
-  in `lean/README.md`: sum-zero representative bijection; missing step =
-  composition counting in core Lean).
-- Everything else is fully proved: the neighbor-move inventory (length 12,
-  no duplicates, all are IVM sites), the normalization congruence
-  (`ivmSum_normalize`), the shell-0/1/2 cardinalities, `omniNumber`/`cumulativeCount`
-  instances (12, 42, 92; cumulative 147 through shell 3), and the
-  enumeration↔numbering agreement on shells 1–2.
+`PhysicalQuadray` is the integer common-offset quotient, not an identification
+of separate raw game slots. `dist2_eq_zero_iff` separates physical classes;
+it does not turn raw four-tuples into four independent Euclidean axes.
+The squared-distance results are not a Lean `MetricSpace` structure or a
+square-root metric/ordinary triangle-inequality formalization.
 
-## Relationship to the manuscript
+Native volume is rational `abs(tetraDet)/4`; a primitive tetrahedron can have
+volume `1/4`. `tetraVolume_xyz_bridge` uses **scale-one XYZ**: native volume is
+`3/8` of XYZ volume. QuadCraft's swapped/rescaled embedding is not the same
+convention and its irrational scaling is not formalized here. See the canonical
+[methods](../../quadmath/markdown/03_quadray_methods.md),
+[conversions](../../quadmath/markdown/14_conversions_spec.md) and
+[equations](../../quadmath/markdown/08_equations_appendix.md).
 
-Lean statements are a third witness alongside the Python implementations and
-the analytical text: volume identities in
-[the equations appendix](../manuscript/08_equations_appendix.md), IVM shell
-structure and dynamics in
-[12_ivm_dynamics.md](../manuscript/12_ivm_dynamics.md) (with the field-learning
-treatment in source section `11_ivm_field_learning.md`), and the `10k² + 2`
-sequence mirrored in `src/quadmath/lattice/omni_numbering.py`.
+The shell lower bounds concern centered-norm enumeration. No Lean theorem here
+identifies that enumeration with Python's BFS implementation, proves a general
+Bareiss implementation correct, or verifies graph transport/harmonic fitting.
+
+## Finite computation and open obligations
+
+- `shellSites_card_target` is a proposition-valued definition, **not** a proof
+  of the universal positive-shell formula.
+- Explicit shells 1–4 use `decide` proof terms checked by kernel reduction.
+  Shells 5–8 use `native_decide`; the pinned implementation introduces
+  per-instance compiled-evaluation trust dependencies. These do not infect
+  unrelated declarations merely because a module is imported.
+- Formula definitions and printed matching values do not prove universal
+  enumeration counts. There is no arbitrary-positive-shell count or universal
+  cumulative-ball-cardinality theorem in this model.
+- Zero `sorry` is not an axiom audit. Review `#print axioms` for the actual
+  declaration in the pinned toolchain; no new axiom audit is claimed here.
+
+The fuller statement/trust inventory is maintained in
+[`lean/README.md`](../../lean/README.md), not duplicated as a dated green-build
+receipt in this operational guide. Return to [documentation](../README.md) or
+[development operations](../development/README.md).

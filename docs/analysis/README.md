@@ -1,119 +1,88 @@
-# analysis/ — benchmarks, statistics, and stats visualization
+# Analysis Operations: Measured Timings, Resampling and Statistics Figures
 
-Documentation for the measurement and analysis modules over the manuscript's
-numerical surfaces — all landed on disk (checked 2026-09-11):
+Keep numerical inference, timing measurements and illustrative rendering separate.
+The canonical treatments are [benchmarks/statistics](../../quadmath/markdown/17_benchmarks_statistics.md)
+and the [statistics gallery](../../quadmath/markdown/18_stats_gallery.md).
+This page maps methods and practical recipes, not fixed performance claims.
 
-- `src/quadmath/stats/benchmarks.py` — `perf_counter` timing harness over the core
-  surfaces (`BenchRow`, `time_callable`, the four `bench_*` constructors,
-  `run_all`, `summary_table`)
-- `src/quadmath/stats/statistics.py` — resampling-based inference on standalone numpy
-  (`summarize`, `bootstrap_ci`, `permutation_test`, `cohens_d`,
-  `p_adjust_bonferroni`, `scaling_fit`)
-- `src/quadmath/viz/vis_stats.py` — the input-agnostic matplotlib rendering primitives
-  behind the statistics gallery (see section `18_stats_gallery.md`)
+## Timing harness and workload scope
 
-Design lineage: measured surfaces (`src/quadmath/core/quadray.py`, `src/quadmath/lattice/omni_numbering.py`,
-`src/quadmath/lattice/lattice_search.py`, `src/quadmath/lattice/ivm_field.py`) → timing harness → statistical
-analysis → rendering, all numpy + matplotlib only and deterministic (no new
-dependencies; seeded `numpy.random.default_rng` everywhere).
+[`stats/benchmarks.py`](../../src/quadmath/stats/benchmarks.py) provides:
 
-Manuscript treatments (source of truth under `quadmath/markdown/`):
-`17_benchmarks_statistics.md` (methodology and a reproducible numeric
-example) and `18_stats_gallery.md` (the four-figure gallery).
+- `time_callable(fn, trials=..., warmup=...)`: discarded warmup calls followed
+  by a list of `time.perf_counter` wall-time samples.
+- `bench_conversions`, `bench_shell_enumeration`, `bench_lattice_search`,
+  `bench_field_fit`: seeded workload constructors returning `BenchRow` lists.
+- `run_all`: use the module's `BENCH_DEFAULTS` at call time.
+- `summary_table`: format measured rows; `BenchRow.as_dict` exposes row fields.
 
-## `src/quadmath/stats/benchmarks.py` — perf_counter timing harness
+Workload seeds stabilize inputs, not timings. Record hardware, interpreter,
+dependency versions, workload sizes, warmup and trial policy before comparing
+runs. `ops_per_s` is based on the constructor's declared work count divided by
+mean time; it is not an independent measure of mathematical operations. The
+harness does not enforce a speed threshold or prove asymptotic complexity.
 
-Public API: `BenchRow` (frozen dataclass: `name`, `n`, `trials`, `total_s`,
-`mean_s`, `median_s`, `p95_s`, `ops_per_s`, with `as_dict()`),
-`time_callable(fn, *, trials=5, warmup=1)`, `bench_conversions(n=200,
-trials=5)`, `bench_shell_enumeration(k_max=4, trials=5)`,
-`bench_lattice_search(n_sites=200, queries=50, trials=5)`,
-`bench_field_fit(n_sites=64, trials=3)`, `summary_table(rows)`, `run_all()`,
-`BENCH_DEFAULTS`.
+## Statistical methods and assumptions
 
-- **Method**: `time.perf_counter` wall-clock timing; one warmup call is run
-  and discarded, then `trials` timed calls produce `mean_s`, `median_s`,
-  and `p95_s` summaries plus throughput `ops_per_s = n / mean_s`.
-- **Constructors**: `bench_conversions` times quadray/embedding round-trips,
-  `bench_shell_enumeration` times shell enumeration, `bench_lattice_search`
-  times nearest-site queries over a random ball, `bench_field_fit` times a
-  synthetic `IVMField.learn` fit.  `run_all()` returns the `BenchRow` list;
-  `summary_table(rows)` renders a fixed-width text table.
-- **The harness measures only** — it never asserts; timing claims live in
-  the manuscript, not in test assertions.
+[`stats/statistics.py`](../../src/quadmath/stats/statistics.py) supplies NumPy-based
+methods without a SciPy dependency:
 
-## `src/quadmath/stats/statistics.py` — honest analysis methodology
+| Methods | Interpretation |
+|---|---|
+| `summarize`, `cohens_d` | Descriptive sample summaries and pooled-standard-deviation effect size |
+| `bootstrap_ci` | Seeded percentile bootstrap for a supplied statistic; resampling assumptions still matter |
+| `permutation_test` | Pooled-label difference-of-means test with add-one finite-simulation p-values; exchangeability is a scientific assumption |
+| `p_adjust_bonferroni`, `benjamini_hochberg` | Multiple-comparison adjustments with different error-control meanings |
+| `scaling_fit` | Floating OLS slope/intercept/R² on log-log data, not a complexity proof |
+| `jackknife_ci` | Leave-one-out estimate, interval and bias estimate |
+| `welch_t_test` | Unequal-variance two-sample test implemented locally |
+| `rotation_stats` | Circular summaries for angles in radians |
 
-Public API: `summarize(x)`, `bootstrap_ci(x, stat=np.mean, *, iters=2000,
-seed=0, alpha=0.05)`, `permutation_test(a, b, *, iters=2000, seed=0,
-alternative="two-sided")`, `cohens_d(a, b)`, `p_adjust_bonferroni(pvals)`,
-`scaling_fit(sizes, times) -> (slope, intercept, r2)`, `jackknife_ci(x, ...)`,
-`benjamini_hochberg(pvals)`, `welch_t_test(a, b, ...)`,
-`rotation_stats(angles)`.
+Seeded resampling is repeatable within its numerical environment. Neither a
+bootstrap nor random site folds automatically correct spatial/temporal dependence.
+Use [learning operations](../learning/README.md) for selection/test boundaries.
 
-- **`bootstrap_ci`**: percentile bootstrap over vectorized resampling
-  indices (`rng.integers(0, n, size=(iters, n))`); no distributional
-  assumption beyond the resampling approximation.
-- **`permutation_test`**: pooled labels, permuted and split at `len(a)` per
-  iteration; p-values use the add-one convention
-  `(count + 1) / (iters + 1)` — never zero, conservative by construction.
-  Alternatives `greater`/`less` reuse the same convention with signed
-  comparisons.
-- **`cohens_d`** — standardized mean difference with pooled standard
-  deviation; **`p_adjust_bonferroni`** — family-wise correction
-  `min(1, m·p_i)`; **`scaling_fit`** — ordinary least squares on log-log
-  data returning the complexity exponent, intercept, and `r2`.
-- All numpy-only and exactly reproducible for fixed seeds: every draw comes
-  from `numpy.random.default_rng(seed)`.
+## Composable statistics plotting
 
-## `src/quadmath/viz/vis_stats.py` — input-agnostic stats rendering
+[`viz/vis_stats.py`](../../src/quadmath/viz/vis_stats.py) exposes
+`plot_latency_hist`, `plot_scaling_loglog`, `plot_ci_bars` and `plot_ecdf`.
+They accept supplied data and optional caller-owned axes rather than running
+the benchmark suite themselves. Manage figures created by a caller explicitly.
+`gallery(out_dir)` owns its complete saved figures and writes:
 
-Public API: `plot_latency_hist(times, ax=None, *, bins=20, title=...)`,
-`plot_scaling_loglog(sizes, times, ax=None, *, title=...)`,
-`plot_ci_bars(labels, means, lows, highs, ax=None, *, title=...)`,
-`plot_ecdf(values, ax=None, *, title=...)`.
+- `stats_gallery_latency.png`
+- `stats_gallery_scaling.png`
+- `stats_gallery_ci.png`
+- `stats_gallery_ecdf.png`
 
-- Every primitive takes plain numpy arrays and an explicit axes object (or
-  creates one); none imports from the other `src/` modules — the panels
-  compose inside caller-owned figures and nothing renders at import time.
-- The gallery function writes exactly four PNGs —
-  `stats_gallery_latency.png`, `stats_gallery_scaling.png`,
-  `stats_gallery_ci.png`, `stats_gallery_ecdf.png` — in that order into the
-  figure directory, creating it when missing.
+The gallery's illustrative seeded data are **not a fresh measurement of this
+checkout's performance**. A successful save also does not establish correct
+labels, clipping-free layout or cross-platform byte identity.
 
-## Running the surface
+## Isolated consumer recipes
+
+From the repository root after `uv sync --python 3.13`:
 
 ```bash
-# Regenerate the four gallery figures (sets MPLBACKEND=Agg and seed=32;
-# stdout is exactly the four written paths)
-uv run python quadmath/scripts/stats_gallery.py
-
-# Run the benchmark suite and print its summary table
-uv run python -c "import sys; sys.path.insert(0, 'src'); from quadmath.stats.benchmarks import run_all, summary_table; print(summary_table(run_all()))"
+# Four gallery figures, all outside tracked outputs:
+QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results" MPLBACKEND=Agg \
+  uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+# A small real wall-clock workload, without modifying default benchmark sizes:
+uv run --python 3.13 python -c "from quadmath.stats.benchmarks import bench_conversions, summary_table; print(summary_table(bench_conversions(n=20, trials=2)))"
 ```
 
-## Invariants
+A small resampling example, run with `uv run --python 3.13 python`:
 
-- **Determinism**: fixed seeds everywhere (`seed=0` defaults in
-  `bootstrap_ci` / `permutation_test`, `seed=32` in the gallery script);
-  re-renders are byte-identical and the numbers in
-  `17_benchmarks_statistics.md` reproduce exactly.
-- **Headless rendering**: scripts set `MPLBACKEND=Agg` themselves; nothing
-  touches a display.
-- **No timing assertions in tests**: `tests/` pins structure and
-  determinism (artist placement, ECDF monotonicity, exact statistics), but
-  never asserts wall-clock performance values.
-- **100% coverage**: `tests/unit/stats/test_benchmarks.py`, `tests/unit/stats/test_statistics.py`,
-  and `tests/unit/viz/test_vis_stats.py` fully cover the three modules (the repo's
-  `test_<module>.py` convention; workflow in
-  [development](../development/README.md)).
+```python
+import numpy as np
+from quadmath.stats.statistics import bootstrap_ci, permutation_test
 
-## Reading order
+sample = np.array([1.0, 2.0, 3.0, 4.0])
+print("mean interval:", bootstrap_ci(sample, iters=200, seed=7))
+print("permutation p:", permutation_test(sample, sample + 1, iters=200, seed=7))
+```
 
-1. `quadmath/markdown/17_benchmarks_statistics.md` — the methodology and
-   the reproducible numeric example
-2. `quadmath/markdown/18_stats_gallery.md` — the four-figure gallery
-3. This README — API map
-4. `tests/unit/stats/test_benchmarks.py`, `tests/unit/stats/test_statistics.py`,
-   `tests/unit/viz/test_vis_stats.py` — the contracts as executable assertions
-   (fixed seeds, no mocks — see [development](../development/README.md))
+These are consumer recipes, not test-suite gates or evidence of real-world
+effectiveness. See [development checks](../development/README.md),
+[output policy](../../WORKFLOW.md#output-management) and the
+[documentation index](../README.md).
