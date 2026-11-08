@@ -5,6 +5,7 @@
 ### Graphical evidence and numerical diagnostics
 
 - Add importable `quadmath.viz.abstracts.render_quadray_abstract`, producing PNG/SVG with actual native basis endpoints, the rank-three gauge quotient and all twelve FCC neighbors in contact with a central sphere. Preserve caller figures and atomic per-format saves.
+- Publish the scalable quadray/FCC abstract on the repository landing page with direct producer and reproduction links.
 - Include SVG companions in isolated output manifests. Replace the regression demo's unrelated polynomial and framework tetrahedron with actual predictions; orient spectral tips along eigenvector columns.
 - Distinguish sample-gradient Gram matrices, statistical Fisher information, metric descent and geodesic integration in figures, API docstrings and manuscript captions.
 - Align regression state/loss/gradient arrays, report actual stopping reasons and expose raw model inputs. Restrict categorical landscapes to their valid simplex face, identify sampled minima and label ideal interior entropy curvature explicitly.
