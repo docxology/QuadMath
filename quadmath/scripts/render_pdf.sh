@@ -382,6 +382,10 @@ compile_tex_to_pdf() (
   fi
   log_error "❌ Failed to build: $pdf_out (xelatex exit $compile_status)"
   if [ -f "$xelatex_log" ]; then
+    log_error "TeX error context:"
+    if ! grep -n -A4 '^!' "$xelatex_log" >&2; then
+      log_error "No !-prefixed TeX diagnostic; showing compiler tail."
+    fi
     log_error "Last 20 lines of $xelatex_log:"
     tail -n 20 "$xelatex_log" >&2
   fi

@@ -133,11 +133,11 @@ documented in the [Synergetics suite guide](https://github.com/docxology/symerge
 | Object | Quadray construction (sketch) | IVM volume |
 | --- | --- | --- |
 | Regular tetrahedron | Vertices `o=(0,0,0,0)`, `p=(2,1,0,1)`, `q=(2,1,1,0)`, `r=(2,0,1,1)` | 1 |
-| Cube (tetrahedron inscribed) | XYZ vertices `(±1,±1,±1)`; edge 2, shorter than the unit tetra edge `2√2` | 3 |
-| Octahedron (tetra edge) | XYZ vertices `±2 e_i`; twice the tetrahedron edge midpoints | 4 |
+| Cube (tetrahedron inscribed) | XYZ vertices $(\pm1,\pm1,\pm1)$; edge 2, shorter than the unit tetra edge $2\sqrt{2}$ | 3 |
+| Octahedron (tetra edge) | XYZ vertices $\pm2 e_i$; twice the tetrahedron edge midpoints | 4 |
 | Rhombic dodecahedron | Voronoi cell of FCC/CCP packing at origin (dual to cuboctahedron) | 6 |
 | Cuboctahedron (vector equilibrium) | Shell of the 12 nearest IVM neighbors: permutations of `(2,1,1,0)` | 20 |
-| Truncated octahedron (tetra edge) | All XYZ permutations of `(0, ±2, ±4)`; 24 vertices, 6 square and 8 hexagonal faces | 96 |
+| Truncated octahedron (tetra edge) | All XYZ permutations of $(0,\pm2,\pm4)$; 24 vertices, 6 square and 8 hexagonal faces | 96 |
 
 Small coordinate examples (subset):
 

@@ -310,7 +310,16 @@ def test_harmonic_extension_recovers_linear_field_from_boundary_only():
         len(field.adjacency[i]) * field.values[i] - sum(field.values[j] for j in field.adjacency[i])
         for i in interior_idx
     ]
-    np.testing.assert_allclose(residual, 0.0, rtol=0.0, atol=5e-14)
+    # Bound the backward error of each Laplacian row, not an absolute residual
+    # tied to one BLAS implementation's rounding at this particular field scale.
+    row_magnitude = np.array([
+        len(field.adjacency[i]) * abs(field.values[i])
+        + sum(abs(field.values[j]) for j in field.adjacency[i])
+        for i in interior_idx
+    ])
+    term_count = np.array([len(field.adjacency[i]) + 1 for i in interior_idx])
+    gamma = term_count * np.finfo(float).eps / (1 - term_count * np.finfo(float).eps)
+    assert np.all(np.abs(residual) <= gamma * row_magnitude)
 
 
 def test_harmonic_extension_preserves_boundary_and_maximum_principle():

@@ -15,6 +15,8 @@
 - Render exact sparse quotient-plane cells without dense huge-span allocation or float-collapsed cell edges. Compare hard/soft boundaries and conservative/normalized dynamics with shared scales and explicit conservation diagnostics.
 - Honor external `QUADMATH_OUTPUT_DIR` throughout all figure/data generators. Manifest entries are now relative to the configured output root, including the default root; readers must resolve against that root.
 - Add manuscript `--figures-dir` for isolated generation/porting; correct rational native-volume, reachability, unit and centered-volume examples. Rename the symbolic CSV field to `V_ace_ivm`; it is not restricted to integers.
+- Keep mathematical Unicode out of code listings: render the construction table's square roots and signed coordinates as mathematics. PDF failures now print actual TeX error context before the compiler tail.
+- Check harmonic residuals with degree/scale-aware floating backward-error bounds, retaining exact boundary and independent linear-field recovery assertions across BLAS platforms.
 
 ### Formal scope
 
