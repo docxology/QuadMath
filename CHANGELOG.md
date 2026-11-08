@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Graphical evidence and numerical diagnostics
+
+- Add importable `quadmath.viz.abstracts.render_quadray_abstract`, producing PNG/SVG with actual native basis endpoints, the rank-three gauge quotient and all twelve FCC neighbors in contact with a central sphere. Preserve caller figures and atomic per-format saves.
+- Include SVG companions in isolated output manifests. Replace the regression demo's unrelated polynomial and framework tetrahedron with actual predictions; orient spectral tips along eigenvector columns.
+- Distinguish sample-gradient Gram matrices, statistical Fisher information, metric descent and geodesic integration in figures, API docstrings and manuscript captions.
+- Align regression state/loss/gradient arrays, report actual stopping reasons and expose raw model inputs. Restrict categorical landscapes to their valid simplex face, identify sampled minima and label ideal interior entropy curvature explicitly.
+- Mark the simplex's actual final recorded best, include the final snapshot and distinguish simplex slots from persistent vertex identities.
+
+### Modular documentation and verification
+
+- Audit mathematical chapters, specification and operational guides against current source; preserve explicit anchors, regenerate the API glossary and port the canonical manuscript.
+- Check fragment-only links, duplicate heading slugs, encoded/reference targets and linked Markdown outside scanned roots. Preserve long code fences. Missing/empty authored roots fail; multi-root repository scans prune dependency/generated trees without exempting linked targets.
+- Add numerical data/domain/eigenvector regressions and real multi-root link-gate fixtures. Historical releases and deposited PDFs remain version-specific evidence, not claims about current main.
+
 ## 0.6.0 — 2026-11-07
 
 ### Exact methods and simulation

@@ -1,6 +1,6 @@
 # Quadray Analytical Details and Methods
 
-## Overview
+## Coordinate, volume, and metric contracts
 
 This section provides detailed analytical methods for working with Quadray coordinates, including coordinate conventions, volume calculations, and optimization approaches. We emphasize the distinction between different 4D frameworks and provide practical computational methods.
 
@@ -15,12 +15,12 @@ The methods presented here rest on three interconnected mathematical frameworks.
 
 ### Key Mathematical Principles
 - **Rational volume quantization**: Lattice constraints quantize tetrahedral volumes to exact quarter-unit (1/4-grain) rationals in IVM units — integral for unit-tetra tilings, e.g. $\tfrac14$ for the primitive tetrahedron
-- **Coordinate system bridges**: Linear transformations between Fuller.4D and Coxeter.4D preserve geometric relationships
+- **Coordinate bridges**: The declared rank-three embedding supplies distances and scale-dependent volume conversion; it is not an isometry from four independent Euclidean axes.
 - **Information geometry**: Fisher metric provides Riemannian structure for optimization on parameter manifolds
 - **Exact arithmetic**: Bareiss algorithm ensures determinant calculations remain exact for integer inputs
 
 ### Implementation Strategy
-All mathematical concepts are implemented with:
+The implemented numerical methods use:
 - **Exact arithmetic** where possible (integer determinants, symbolic computation)
 - **Numerical stability** for floating-point operations (ridge regularization, condition number monitoring)
 - **Cross-validation** between different formulations (Ace 5×5 vs Cayley–Menger, native vs bridging approaches)
@@ -30,7 +30,7 @@ All mathematical concepts are implemented with:
 
 The three 4D frameworks serve distinct but complementary roles in our implementation:
 
-- **Coxeter.4D provides the container**: Euclidean 4D space serves as the mathematical foundation for volume calculations, distance metrics, and geometric transformations. When we compute volumes via Cayley–Menger determinants or XYZ coordinate determinants, we operate in this framework.
+- **Euclidean geometry supplies lengths**: XYZ determinants and tetrahedral Cayley–Menger formulas operate in ordinary three-space. The Coxeter.4D namespace distinguishes higher-dimensional Euclidean theory; it does not add a dimension to the Quadray image.
 
 - **Einstein.4D provides the analogy**: Information geometry uses the positive-semidefinite Fisher metric on parameter space, not the indefinite Minkowski metric. Natural-gradient descent is metric-aware; its trajectories are not generally geodesics.
 
@@ -38,7 +38,7 @@ The three 4D frameworks serve distinct but complementary roles in our implementa
 
 This multi-framework approach allows us to:
 1. Use standard Euclidean methods for volume calculations where relevant or already in use (Coxeter.4D)
-2. Apply information geometry principles for geodesic optimization (Einstein.4D analogy)  
+2. Apply information geometry principles for metric-aware optimization (not a geodesic integrator)
 3. Maintain exact arithmetic in the Isotropic Vector Matrix (IVM) setting through integer lattice constraints (Fuller.4D)
 4. Bridge and swap among frameworks via coordinate transformations and unit conversions
 
@@ -147,7 +147,7 @@ Small coordinate examples (subset):
 Short scripts:
 
 ```bash
-python3 quadmath/scripts/polyhedra_quadray_constructions.py
+uv run --python 3.13 python quadmath/scripts/polyhedra_quadray_constructions.py
 ```
 
 Programmatic check (neighbors, equal radii, adjacency):
@@ -206,15 +206,15 @@ V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 
 Notes.
 
-- The octahedron and cube decompositions above execute exactly as shown (verified against `ace_tetravolume_5x5`). Other equivalent tilings are possible.
+- The octahedron and cube snippets specify exact decompositions using `ace_tetravolume_5x5`; they are examples to reproduce, not a new verification receipt.
 - Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a tetra (projective normalization), which the 5×5 determinant respects.
 
-## Integer Volume Quantization {#sec:integer_volume}
+## Quarter-Unit Rational Volume Quantization {#sec:integer_volume}
 
 For a tetrahedron with vertices P₀..P₃ in the Quadray integer lattice (Fuller.4D), see Eq. \eqref{eq:lattice_det} in the equations appendix.
 
 - With integer quadray coordinates the projected determinant is an exact integer, and the IVM tetravolume is the exact rational $|{\det}|/4$ (see Eq. \eqref{eq:gdj}), implemented with `fractions.Fraction` in `integer_tetra_volume` and `ace_tetravolume_5x5`. Volumes are integral for tetrahedra that tile into unit IVM tetras (determinant divisible by 4) and fractional otherwise: the primitive tetrahedron spanned by $(0,0,0,0)$, $(1,0,0,0)$, $(0,1,0,0)$, $(0,0,1,0)$ has determinant 1 and exact volume $\tfrac{1}{4}$.
-- Unit conventions: the unit IVM tetrahedron (origin plus three IVM neighbor moves, permutations of $(2,1,1,0)$) has determinant 4 and volume exactly 1 (synergetics).
+- Unit convention: the particular regular tetrahedron listed above (origin and three mutually adjacent IVM neighbors) has determinant 4 and volume 1. Arbitrary triples of neighbor moves need not form this tetrahedron.
 
 Notes.
 
@@ -280,12 +280,12 @@ The conversion depends on the coordinate scale: `DEFAULT_EMBEDDING` has unit tet
 - Euclidean embedding distance via appropriate linear map from quadray to R³.
 - Information geometry metric: Fisher Information Matrix (FIM)
   - $\mathrm{FIM}[i,j] = \mathbb{E}\big[\, \partial_{\theta_i} \log p(x;\theta)\,\partial_{\theta_j} \log p(x;\theta)\,\big]$
-  - Acts as Riemannian metric; natural gradient uses FIM⁻¹ ∇θ L. See [Fisher information](https://en.wikipedia.org/wiki/Fisher_information).
+  - It is a Riemannian metric on identifiable parameter directions; redundant directions can make it singular. Natural-gradient increments solve a damped system.
 
-## Fisher Geometry in Quadray Space
+## Fisher pullbacks, rank, and probability support {#fisher-geometry-in-quadray-space}
 
-- Symmetries of quadray lattices often induce near block-diagonal FIM.
-- Determinant and spectrum characterize conditioning and information concentration.
+- A Cartesian score metric pulls back through the $3\times4$ embedding to a $4\times4$ matrix with the common-offset direction in its kernel. Tetrahedral coordinates alone do not imply a block-diagonal Fisher matrix.
+- Eigenvalues describe score sensitivity; a loss-gradient Gram matrix is not automatically the Hessian of a loss.
 
 The empirical estimator widens integral scores before products. Ordinary
 batches use the floating Gram fast path; overflow-risk normalized batches use
@@ -321,7 +321,7 @@ marginals. Free energy ignores zero-posterior likelihood terms, but retains
 infinite or undefined likelihood contributions on positive support; arbitrary
 supplied log likelihoods do not guarantee a nonnegative free energy.
 
-## Practical Methods
+## Native volume recipes and scale-aware comparisons {#practical-methods}
 
 ### Tetravolumes with Quadrays {#sec:tetravolumes_quadrays}
 
@@ -341,7 +341,7 @@ factor instead.
 
 ![**Closed polyhedra in shared scale-one XYZ units.** Six panels use identical axes, camera and unit aspect. Face cycles come from supporting planes; native tetrahedral decompositions measure the displayed volumes: 1, 3, 4, 6, 20 and 96. Edge-squared labels distinguish the cube and FCC Voronoi cell from the four solids with tetrahedron-length edges. The truncated octahedron has all 24 vertices and 14 faces; no independent display rescaling or guessed volume network is used.](../output/figures/polyhedra_quadray_constructions.png)
 
-### Short Python snippets
+### Exact and length-based Python volume recipes {#short-python-snippets}
 
 ```python
 from quadmath.core.quadray import Quadray, ace_tetravolume_5x5
@@ -363,7 +363,7 @@ V_ivm = ivm_tetra_volume_cayley_menger(d2)   # = 1/8 in IVM tetra-units
 ```
 
 ```python
-# SymPy implementation of Tom Ace 5×5 (symbolic determinant)
+# SymPy implementation of Tom Ace 5x5 (symbolic determinant)
 from sympy import Matrix
 
 def qvolume(q0, q1, q2, q3):
@@ -419,51 +419,30 @@ V = ace_tetravolume_5x5(A,B,C,D)            # exact IVM volume as a Fraction
 
 ### XYZ determinant and the S3 conversion
 
-- Using XYZ coordinates of the four vertices: see Eq. \eqref{eq:xyz_det} for the determinant form and the S3 conversion to IVM units.
+- Use Eq. \eqref{eq:xyz_det} with the declared scale: native factor $3/8$ for default XYZ, or S3 only for sphere-radius-one lengths.
 
 ### D^3 vs R^3: 60° “closing the lid” vs orthogonal “cubing”
 
-- **IVM (D^3) heuristic**: From a 60–60–60 corner, three non-negative edge lengths $A,B,C$ along quadray directions enclose a tetrahedron by “closing the lid.” In synergetics, the tetravolume scales as the simple product $ABC$ under IVM conventions (unit regular tetra has volume 1). By contrast, in the orthogonal (R^3) habit, one constructs a full parallelepiped (12 edges); the tetra occupies one-sixth of the triple product of edge vectors. The IVM path is more direct for tetrahedra.
+- **60-degree corner heuristic**: Three edges of lengths $A,B,C$ meeting pairwise at 60 degrees enclose a tetrahedron of Euclidean volume $ABC/(6\sqrt2)$. Dividing by the regular reference tetrahedron's Euclidean volume $L_0^3/(6\sqrt2)$ gives native volume $ABC/L_0^3$. Thus the product rule holds for edge ratios measured against $L_0$, not for arbitrary unscaled XYZ lengths or for the four origin-to-vertex basis rays.
 - **Pedagogical note**: Adopt a vector-first approach. Differences like $(P_i-P_0)$ denote edge vectors; Quadrays and Cartesian can be taught in parallel as vector languages on the same Euclidean container.
 
 Reference notebook with worked examples and code: See the [Resources](07_resources.md) section for comprehensive educational materials and computational implementations.
 
 See implementation: `tetra_volume_cayley_menger`.
 
-- Lattice projection: round to nearest integer quadray; renormalize to maintain non-negativity and a minimal zero.
+- Lattice snapping is implementation-specific: `quadray_from_xyz` uses half-up component rounding with coherent recovery of resolvable lattice images. It is not generally XYZ-nearest; see [canonical inversion and snapping](14_conversions_spec.md#exact-canonical-inversion).
 
-## Practical Implementation Workflow
+## Reproducing native and numerical calculations {#practical-implementation-workflow}
 
-The methods described in this document follow a unified workflow that ensures mathematical correctness, computational efficiency, and reproducibility:
+1. Declare the representation, embedding, and length units before comparing formulas.
+2. Use native integer determinants for exact rational tetravolumes; use the scale-specific XYZ bridge for length-based formulas.
+3. Distinguish score-based Fisher information from loss-gradient Gram surrogates. Damping is numerical regularization, not a proof of geometric invariance.
+4. Run examples in the supported Python 3.13 environment and route generated artifacts with `QUADMATH_OUTPUT_DIR` when preserving a working output tree.
+5. Use the [learning evaluation module](15_learning_evaluation.md) for held-out predictions and the [benchmark module](17_benchmarks_statistics.md) for measurements. A fixed workload seed does not make timing deterministic.
 
-### 1. Mathematical Formulation
-- **Theoretical foundations**: Establish mathematical relationships between frameworks (Coxeter.4D ↔ Fuller.4D ↔ Einstein.4D)
-- **Coordinate transformations**: Define linear maps between coordinate systems with exact arithmetic
-- **Volume formulations**: Implement multiple approaches (Ace 5×5, Cayley–Menger, symbolic) for cross-validation
+The source index below preserves explicit code anchors. Formulas discussed as proposals in [extensions](05_extensions.md) are not implemented promises.
 
-### 2. Implementation Strategy
-- **Exact arithmetic**: Use Bareiss algorithm for integer determinants, symbolic computation for exact results
-- **Numerical stability**: Implement ridge regularization, condition number monitoring, and error handling
-- **Cross-validation**: Ensure different formulations produce identical results on test cases
-
-### 3. Testing and Validation
-- **Unit tests**: 100% coverage of all mathematical functions with edge case handling
-- **Integration tests**: Validate coordinate transformations and volume calculations across frameworks
-- **Numerical validation**: Compare floating-point implementations with exact symbolic results
-
-### 4. Documentation and Reproducibility
-- **Code-documentation sync**: All mathematical concepts have corresponding implementations in `src/`
-- **Figure generation**: Scripts in `quadmath/scripts/` generate all figures from source code
-- **Data export**: CSV/NPZ files accompany all figures for complete reproducibility
-
-### 5. Optimization and Extension
-- **Lattice constraints**: Integer volume quantization enables discrete optimization methods
-- **Information geometry**: Fisher metric guides natural gradient descent on parameter manifolds
-- **Active inference**: Free energy minimization drives both perception and action updates
-
-This workflow ensures that mathematical theory, computational implementation, and practical application remain coherent and verifiable throughout the development process.
-
-## Code methods (anchors)
+## Source-linked mathematical API index {#code-methods-anchors}
 
 ### Core Quadray operations {#code:core_quadray}
 
@@ -523,7 +502,7 @@ Source: `src/quadmath/core/quadray.py` — axis-angle convenience wrapper: build
 
 The property checks in `src/quadmath/validate/validate.py` — normalization, conjugate-inverse, double cover, slerp midpoint, and associativity — consume these operations over quaternion sequences via `run_validation`, which collects the resulting deterministic validation reports.
 
-![**Shortest-arc slerp geodesic from the identity to a $\pi/2$ rotation about the $z$ axis.** The path traced by the canonical $(2, 0, 0, 0)$ quadray axis point (embedded at $(2, 2, 2)$ under `DEFAULT_EMBEDDING`) as the rotation quaternion is interpolated from the identity $(1, 0, 0, 0)$ to $(\cos\frac{\pi}{4}, 0, 0, \sin\frac{\pi}{4})$ — a right-handed $\pi/2$ rotation about the $z$ axis — over 16 samples of $t \in [0, 1]$, rendered by `plot_slerp_path` in `src/quadmath/viz/plots.py` via the script `quadmath/scripts/quaternion_gallery.py`. Because `slerp` negates the second quaternion whenever $\langle q_0, q_1 \rangle < 0$, the interpolation always follows the shorter arc of the geodesic on the rotation sphere: the rotation angle grows linearly from $0$ to $\pi/2$, so the site sweeps the quarter circle of radius $2\sqrt{2}$ about the $z$ axis at constant height $z = 2$ (blue line), from the start marker at $t = 0$ (green) to the end marker at $t = 1$ (red). Reproduce with `uv run python quadmath/scripts/quaternion_gallery.py`.](../output/figures/quaternion_slerp_path.png)
+![**Shortest-arc quaternion interpolation and its rotated site path.** A unit quaternion interpolates from identity to a right-handed $\pi/2$ rotation about Z over sixteen samples. The displayed site starts at $(2,2,2)$ and follows a quarter-circle of radius $2\sqrt2$ at height $z=2$. Slerp is a shortest arc in unit-quaternion rotation geometry; the displayed Euclidean site path is not a straight-line XYZ geodesic or a natural-gradient trajectory. Generated by `uv run --python 3.13 python quadmath/scripts/quaternion_gallery.py`.](../output/figures/quaternion_slerp_path.png)
 
 ### Quaternion metrics {#code:quaternion_metrics}
 
@@ -577,7 +556,7 @@ Source: `src/quadmath/optimize/nelder_mead_quadray.py` — Nelder–Mead optimiz
 
 #### `discrete_ivm_descent` {#code:discrete_ivm_descent}
 
-Source: `src/quadmath/optimize/discrete_variational.py` — greedy integer-valued descent over the IVM using canonical neighbor moves; returns a `DiscretePath` with visited Quadrays and objective values.
+Source: `src/quadmath/optimize/discrete_variational.py` — greedy descent over integer FCC locations using canonical neighbor moves; objective values may be real. Returns a `DiscretePath` with visited Quadrays and objective values.
 
 #### `neighbor_moves_ivm` {#code:neighbor_moves_ivm}
 
@@ -607,7 +586,7 @@ Source: `src/quadmath/inference/information.py` — discrete-state variational f
 
 #### `expected_free_energy` {#code:expected_free_energy}
 
-Source: `src/quadmath/inference/information.py` — canonical expected free energy $G$ for Active Inference (epistemic KL + ambiguity − pragmatic; see the equations appendix).
+Source: `src/quadmath/inference/information.py` — the implemented toy objective is `free_energy(...) - log_p_o`; it is not a complete policy-conditioned expected-free-energy solver.
 
 #### `active_inference_step` {#code:active_inference_step}
 
@@ -615,15 +594,15 @@ Source: `src/quadmath/inference/information.py` — joint perception-action upda
 
 #### `information_geometric_distance` {#code:information_geometric_distance}
 
-Source: `src/quadmath/inference/information.py` — compute information-geometric distance between two points.
+Source: `src/quadmath/inference/information.py` — evaluate $\sqrt{\max(0,\Delta^\mathsf{T}F\Delta)}$ for one supplied, fixed matrix. For a positive-definite constant metric this is its distance; it does not integrate a position-dependent Fisher geodesic.
 
 #### `perception_update` {#code:perception_update}
 
-Source: `src/quadmath/inference/information.py` — continuous-time perception update: dμ/dt = D μ - dF/dμ.
+Source: `src/quadmath/inference/information.py` — return the scaled increment $\eta(D\mu-\partial_\mu F)$ using a finite-difference gradient; the caller adds it to the state.
 
 #### `action_update` {#code:action_update}
 
-Source: `src/quadmath/inference/information.py` — continuous-time action update: da/dt = -dF/da.
+Source: `src/quadmath/inference/information.py` — return the scaled increment $-\eta\,\partial_a F$; the caller performs the state update.
 
 #### `finite_difference_gradient` {#code:finite_difference_gradient}
 
@@ -780,52 +759,15 @@ Relevant tests (`tests/`):
 - `test_examples.py`, `test_examples_cov.py` (neighbors, examples)
 - `test_metrics.py`, `test_metrics_cov.py`, `test_information.py`, `test_paths.py`, `test_paths_cov.py`
 
-### Comprehensive test coverage
+### Regression coverage and evidence boundaries
 
-The test suite provides 100% coverage of all source modules with the following focus areas:
-
-#### Core functionality tests
-- **`test_quadray.py`**: Quadray class operations, normalization, volume calculations, vector operations
-- **`test_cayley_menger.py`**: Cayley–Menger determinant validation, IVM conversion accuracy
-- **`test_linalg_utils.py`**: Bareiss algorithm correctness, edge cases, numerical stability
-
-#### Optimization and variational methods
-- **`test_nelder_mead_visual.py`**: Nelder–Mead adaptation to quadray lattice, simplex evolution
-- **`test_discrete_variational.py`**: IVM neighbor moves, discrete descent algorithms, path tracking
-- **`test_active_inference.py`**: Free energy minimization, perception-action updates
-
-#### Information geometry and metrics
-- **`test_information.py`**: Fisher information matrix computation, natural gradient steps
-- **`test_metrics.py`**: FIM eigendecomposition, curvature analysis, coordinate system comparisons
-- **`test_information_cov.py`**: Extended coverage of information geometry functions
-
-#### Examples and utilities
-- **`test_examples.py`**: IVM neighbor constructions, polyhedra volume relationships
-- **`test_examples_cov.py`**: Extended example function coverage
-- **`test_paths.py`**: Repository structure utilities, output directory management
-
-#### Visualization and symbolic computation
-- **`test_visualize.py`**: Plotting functions, animation generation, data export
-- **`test_visualize_cov.py`**: Extended visualization coverage, edge case handling
-- **`test_symbolic.py`**: SymPy symbolic volume calculations, exact arithmetic
-- **`test_symbolic_cov.py`**: Symbolic computation error handling
-- **`test_sympy_formalisms.py`**: End-to-end symbolic workflow validation
-
-#### API and documentation generation
-- **`test_glossary_gen.py`**: Automatic API index generation, markdown table formatting
-- **`test_glossary_gen_cov.py`**: Extended glossary generation coverage
+The numerical regressions under `tests/unit/` cover coordinate operations, rational determinants, optimization trajectories, information metrics, plotting, and symbolic comparisons. Their existence is not a current pass or coverage result. Consult [the operational workflow](../../WORKFLOW.md) for the integrated verification procedure.
 
 ## Reproducibility checklist
 
-- **Complete implementation coverage**: All formulas and methods discussed in the paper are implemented in `src/` modules and verified by comprehensive test suites in `tests/`.
-- **Exact arithmetic for integer inputs**: Determinants are computed using the Bareiss algorithm for exact integer arithmetic; floating-point paths are used only where appropriate and results are converted (e.g., via S3) as specified.
-- **Deterministic random experiments**: Random-walk experiments use fixed seeds and produce integer volumes; Ace 5×5 determinant agrees with length-based methods across all test cases.
-- **Volume tracking and convergence**: Integer simplex volume monitoring detects convergence plateaus; face/edge analyses interpret sensitivity along edges and enable subspace searches across faces.
-- **Test-driven development**: All source code follows TDD principles with 100% coverage requirements enforced via `.coveragerc` configuration.
-- **Figure and data generation**: All figures referenced in documentation are generated by scripts in `quadmath/scripts/` that import from `src/` modules, ensuring code-documentation coherence.
-- **Cross-platform compatibility**: Headless matplotlib backend (MPLBACKEND=Agg) ensures CI compatibility; deterministic RNG seeds guarantee reproducible outputs.
-- **Dependency management**: All dependencies managed through `uv` and `pyproject.toml` with exact version pinning via `uv.lock`.
-- **Path resolution**: No hardcoded paths; all output directories resolved via `paths.py` utilities for cross-platform compatibility.
-- **Data export formats**: Figures saved alongside CSV/NPZ data for complete reproducibility; all generation scripts print output paths for manifest collection.
-
-All source code, tests, and documentation are available in the docxology/QuadMath repository, ensuring complete transparency and reproducibility of the methods described herein.
+- Keep exact integer/rational and floating calculations distinct; symbolic optional dependencies must be installed for symbolic examples.
+- Compare native volumes with length formulas only after declaring the embedding scale.
+- Record seeds, parameters, dependency versions, and output locations with numerical results.
+- Treat simplex volume as a diagnostic, not a monotone objective or a convergence certificate.
+- Preserve generated evidence as a dated result. Re-running a script may change outputs when its implementation or scientific environment changes.
+- Consult [the conversion specification](../../SPEC.md) for integer quotient and formalization scope; it does not verify floating simulation or application-level claims.

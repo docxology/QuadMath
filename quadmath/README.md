@@ -1,156 +1,132 @@
-# QuadMath Build System
+# QuadMath Manuscript Tools: Figures, Glossary, PDF and TeX
 
-This directory contains the build system for generating figures, PDFs, and LaTeX exports from the manuscript source files.
+This checkout directory is not the runtime Python package. Reusable numerical
+and rendering methods live in [`src/quadmath/`](../src/README.md); scripts here
+select examples, call package methods and orchestrate manuscript conversion.
 
 ## Directory Structure
 
+| Directory | Responsibility |
+|---|---|
+| `markdown/` | Canonical mathematical chapters, preamble and API-glossary source |
+| `scripts/` | Figure/data recipes, glossary generation, Markdown validation and shell PDF tools |
+| `output/figures/`, `output/data/` | Default Python-generated artifacts and relative-path figure manifest |
+| `output/pdf/`, `output/tex/` | Fixed shell-renderer outputs |
+| `output/latex_temp/` | Renderer intermediate files |
+
+Outputs are generated and partly tracked; they may contain user changes.
+Do not hand-edit or purge them as a routine preparation step.
+
+## Python figure recipes with isolated outputs
+
+Run from the repository root after `uv sync --python 3.13`:
+
+```bash
+export QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results"
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/graphical_abstract_quadray.py
 ```
-quadmath/
-├── markdown/          # Manuscript source files (19 numbered files, 00-18)
-├── scripts/           # Generation and build scripts (23 Python, 2 shell)
-├── output/            # Generated artifacts (regeneratable; git-tracked)
-│   ├── figures/       # PNG, MP4, SVG files
-│   ├── data/          # CSV, NPZ data files
-│   ├── pdf/           # Generated PDFs
-│   ├── tex/           # Exported LaTeX
-│   └── latex_temp/    # Temporary build files
-└── README.md          # This file
+
+The abstract script delegates to
+`quadmath.viz.abstracts.render_quadray_abstract`, returning the canonical
+`graphical_abstract_quadray.png` and a vector SVG companion. Its scale-one basis
+and FCC 12-contact neighborhood use the declared embedding and physical units.
+Other focused recipes include field/dynamics, lattice, learning, quaternion
+and statistics galleries; consult the actual script for its inputs and outputs.
+
+For assigned integrated generation:
+
+```bash
+MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/make_all_figures.py
 ```
+
+`FIGURE_SCRIPTS` is the explicit run order. The orchestrator uses the same Python
+executable for children, collects recognized emitted paths under the selected
+root and writes `data/figure_manifest.txt`. It does not run tests or establish
+mathematical/visual correctness. Changing the output root does not rewrite
+canonical manuscript image links.
 
 ## The render_pdf.sh Pipeline
 
-The central orchestrator `scripts/render_pdf.sh` ensures coherence between source code, figures, and documentation:
-
 ```bash
-# Full pipeline (figures + validation + PDFs + LaTeX)
-bash quadmath/scripts/render_pdf.sh
-
-# Clean all generated outputs
-bash quadmath/scripts/clean_output.sh
+# Writes checkout-generated artifacts and the canonical API block.
+# For fully isolated PDF work, use a separate checkout.
+unset QUADMATH_OUTPUT_DIR
+UV_PYTHON=3.13 bash quadmath/scripts/render_pdf.sh
+# Reuse existing checkout figures, but still regenerate glossary and compile:
+UV_PYTHON=3.13 bash quadmath/scripts/render_pdf.sh --skip-figures
 ```
 
 ### Pipeline Phases
 
-1. **Check Dependencies** - Verify pandoc, xelatex installed
-2. **Setup Directories** - Create output subdirectories
-3. **Run Generation Scripts** - Execute all figure/data generators
-4. **Validate Markdown** - Check image references, links, equations
-5. **Generate Glossary** - Auto-update API reference from `src/`
-6. **Build Individual PDFs** - One PDF per markdown section
-7. **Build Combined PDF** - Single `quadmath_review.pdf`
-8. **Export LaTeX** - Generate `.tex` files for academic publishing
+1. Verify Pandoc, XeLaTeX, `fc-list` and DejaVu Serif/DejaVu Sans Mono.
+2. Check the explicit `MODULES`/`EXCLUDED_MODULES` inventory against numbered
+   Markdown files, prepare output directories and extract the preamble.
+3. Run figure generation unless skipped, then regenerate the API glossary,
+   then run strict manuscript validation.
+4. Build each module and the combined `quadmath_review.pdf`, exporting TeX
+   through shared Pandoc options and XeLaTeX passes.
+
+The renderer does not run pytest, coverage, Lean or the operational-doc checker.
+Its `OUTPUT_DIR` is fixed to `quadmath/output/`: **`QUADMATH_OUTPUT_DIR` only
+redirects cooperating Python generators**, not PDF/TeX/temp paths. Mixing an
+override with this renderer can leave the manuscript using older checkout figures.
 
 ## Manuscript Sections
 
-| File | Topic |
-|------|-------|
-| `00_preamble.md` | Title, abstract, metadata |
-| `01_introduction.md` | Introduction to 4D namespaces |
-| `02_4d_namespaces.md` | Coxeter.4D, Einstein.4D, Fuller.4D |
-| `03_quadray_methods.md` | Quadray analytical details |
-| `04_optimization_in_4d.md` | Optimization methods |
-| `05_extensions.md` | Extensions and applications |
-| `06_discussion.md` | Discussion and implications |
-| `07_resources.md` | References and resources |
-| `08_equations_appendix.md` | Mathematical equations |
-| `09_free_energy_active_inference.md` | Active inference application |
-| `10_symbols_glossary.md` | Auto-generated API glossary |
-| `11_ivm_field_learning.md` | Static IVM field learning |
-| `12_ivm_dynamics.md` | Dynamics and learning on the IVM lattice |
-| `13_lattice_tooling.md` | Lattice tooling: omnidirectional numbering and nearest-site search |
-| `14_conversions_spec.md` | Conversions and specification |
-| `15_learning_evaluation.md` | Learning and evaluation on the IVM lattice |
-| `16_lattice_gallery.md` | Lattice visualization gallery |
-| `17_benchmarks_statistics.md` | Benchmarks and statistics |
-| `18_stats_gallery.md` | Statistics and scaling gallery |
+Canonical mathematics is maintained in `markdown/`, not repeated in this guide:
 
-## Generation Scripts
+- [Methods and exact geometry](markdown/03_quadray_methods.md),
+  [equations](markdown/08_equations_appendix.md), [specification](../SPEC.md).
+- [Field learning](markdown/11_ivm_field_learning.md),
+  [dynamics](markdown/12_ivm_dynamics.md), [lattice tooling](markdown/13_lattice_tooling.md),
+  [conversions](markdown/14_conversions_spec.md), [evaluation](markdown/15_learning_evaluation.md).
+- [Lattice gallery](markdown/16_lattice_gallery.md),
+  [benchmarks/statistics](markdown/17_benchmarks_statistics.md),
+  [statistics gallery](markdown/18_stats_gallery.md),
+  [API glossary](markdown/10_symbols_glossary.md).
 
-Key scripts in `scripts/`:
-
-| Script | Purpose | Output |
-|--------|---------|--------|
-| `render_pdf.sh` | Main orchestrator | PDFs, LaTeX |
-| `make_all_figures.py` | Run all figure generators | figures/ |
-| `validate_markdown.py` | Check references | Validation report |
-| `generate_glossary.py` | Auto-generate API docs | `10_symbols_glossary.md` |
-| `clean_output.sh` | Remove generated files | (cleans output/) |
-| `information_demo.py` | Information geometry figures | PNG files |
-| `simplex_animation.py` | Nelder-Mead animations | MP4 files |
-| `ivm_neighbors.py` | IVM lattice visualization | PNG files |
-| `quadray_clouds.py` | Quadray point clouds | PNG files |
-| `volumes_demo.py` | Volume calculations | PNG, CSV |
-
-## Output Files
-
-All files under `output/` are regeneratable from source:
-
-```
-output/
-├── figures/
-│   ├── ivm_neighbors_edges.png
-│   ├── fisher_information_matrix.png
-│   ├── simplex_final.png
-│   └── ...
-├── data/
-│   ├── volumes_scale_data.csv
-│   ├── simplex_trace.npz
-│   └── figure_manifest.txt
-├── pdf/
-│   ├── 01_introduction.pdf
-│   ├── 02_4d_namespaces.pdf
-│   └── quadmath_review.pdf (combined)
-└── tex/
-    ├── 01_introduction.tex
-    └── ...
-```
+`00_preamble.md` supplies the extracted TeX header, not a standalone numbered
+section. The renderer's module table is the authoritative build inventory;
+adding a chapter requires updating it or recording an explicit exclusion.
+`docs/manuscript/` is a separate scripted projection; see its
+[guide](../docs/manuscript/README.md) and [status](../docs/MANUSCRIPT_STATUS.md).
+A new build is not the archived version-1 Zenodo PDF.
 
 ## Build Requirements
 
-### System Dependencies
-
-- **pandoc**: Markdown to PDF/LaTeX conversion
-- **xelatex** (TeX Live): PDF generation with custom fonts
-- **fonts-dejavu** or similar: Unicode font support
-
-### Installation
+Python requirements are declared in [`pyproject.toml`](../pyproject.toml):
+NumPy, Matplotlib, Pillow and SymPy, with development test/coverage tools.
+Scientific recipes explicitly use Python 3.13 without changing `.python-version`.
+Animation formats can additionally depend on external encoders such as ffmpeg.
 
 ```bash
-# macOS
-brew install pandoc
-brew install --cask mactex-no-gui
-
-# Ubuntu/Debian
-sudo apt-get install pandoc texlive-xetex texlive-fonts-recommended fonts-dejavu
+# macOS: TeX Live/MacTeX may require PATH setup in a new shell.
+brew install pandoc fontconfig
+brew install --cask mactex-no-gui font-dejavu
+# Debian/Ubuntu:
+sudo apt-get install pandoc texlive-xetex texlive-fonts-recommended fontconfig fonts-dejavu
 ```
 
-### Python Dependencies
+Fonts and toolchain versions affect layout. `SOURCE_DATE_EPOCH` controls the
+renderer date; it does not alone ensure byte-identical PDFs across environments.
 
-Managed by `uv`:
+## Validation and cleanup boundaries
 
 ```bash
-uv sync
+uv run --python 3.13 python quadmath/scripts/generate_glossary.py --check
+uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
 ```
 
-## Quick Commands
-
-```bash
-# Generate all figures only
-uv run python quadmath/scripts/make_all_figures.py
-
-# Validate markdown only
-uv run python quadmath/scripts/validate_markdown.py
-
-# Full build
-bash quadmath/scripts/render_pdf.sh
-
-# Clean everything
-bash quadmath/scripts/clean_output.sh
-```
+Without `--check`, glossary generation updates only its marked canonical API
+block. Validators do not replace semantic review or visual inspection.
+`clean_output.sh` removes the whole fixed checkout `quadmath/output/` tree;
+it does not honor the Python override. Never invoke it without explicit output
+preservation and authorization.
 
 ## Cross-References
 
-- [AGENTS.md](AGENTS.md) - Agent guidance for build system
-- [scripts/README.md](scripts/README.md) - Detailed script documentation
-- [markdown/README.md](markdown/README.md) - Manuscript formatting guide
-- [../WORKFLOW.md](../WORKFLOW.md) - Development workflow
+- [Agent guidance](AGENTS.md)
+- [Script guide](scripts/README.md)
+- [Canonical source formatting](markdown/README.md)
+- [Development workflow](../WORKFLOW.md)

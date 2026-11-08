@@ -1,46 +1,53 @@
-# QuadMath — documentation
+# QuadMath Documentation: Operational Guides and Canonical Mathematics
 
-Analytical review of Quadray coordinates (4D): integer volume quantization,
-optimization on tetrahedral lattices, and information geometry. Published with
-DOI [10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
+This index describes the development checkout, not a frozen package release or
+a new receipt for the [archived manuscript DOI](https://zenodo.org/records/16887791).
 
-## Repository map
+## Choose a task
 
-| Path | Contents |
+| Need | Guide |
 |---|---|
-| `quadmath/markdown/` | Numbered manuscript sections (`00_preamble.md` + `01_introduction.md` … `18_stats_gallery.md`, 19 files) — editing source of truth |
-| `quadmath/scripts/` | Render/clean scripts plus figure, data, glossary, GIF, and validation generators (23 Python + 2 shell scripts) |
-| `src/quadmath/`, `tests/` | Factored source package (`core`, `lattice`, `optimize`, `inference`, `stats`, `learn`, `viz`, `validate`, `tools`) and mirrored test suite |
-| `docs/manuscript/` | Template-layout manuscript projection for the shared docxology render pipeline (`config.yaml`, `preamble.md`, `references.bib`, sections `01…99`, `figures/`) — see its `README.md` and `docs/MANUSCRIPT_STATUS.md` |
-| `docs/development/` | Test/coverage workflow and the docs link checker (`check_links.py`) |
-| `docs/learning/` | Docs for the landed IVM learning surface (`src/quadmath/lattice/ivm_field.py`, `src/quadmath/lattice/ivm_dynamics.py`, `src/quadmath/learn/learning_eval.py`, `src/quadmath/viz/vis_lattice.py`) |
-| `docs/lean/` | Lean 4 formalization docs (`lean/` landed — core Lean 4, one open shell-count theorem) |
-| `docs/overview.md` | Repository tour |
-| `QuadMath_v1_DAF_08-16-2025.pdf` | Published version-1 PDF (not git-tracked; regenerate via `render_pdf.sh`, canonical copy on Zenodo) |
-| `run_all.sh` | Full build entry point |
+| Install, import and orient yourself | [Root README](../README.md), [repository tour](overview.md) |
+| Understand runtime modules and exactness | [Source guide](../src/README.md), [architecture](../ARCHITECTURE.md) |
+| Change code/docs safely, then integrate | [Workflow](../WORKFLOW.md), [development checks](development/README.md), [tests](../tests/README.md) |
+| Fit fields, extend boundary values or identify trajectories | [Learning operations](learning/README.md) |
+| Measure runtime, analyze samples or render statistics figures | [Analysis operations](analysis/README.md) |
+| Understand Lean declarations and trust limits | [Lean scope](lean/README.md) |
+| Generate figures, PDF or TeX | [Manuscript tools](../quadmath/README.md) |
+| Understand the template-layout projection | [Projection guide](manuscript/README.md), [manuscript status](MANUSCRIPT_STATUS.md) |
 
-## How to run
+## Canonical mathematical reading
 
-From the repository root (commands from `README.md`):
+[`quadmath/markdown/`](../quadmath/markdown/README.md) is the editing source of
+truth. Start with [SPEC.md](../SPEC.md),
+[quadray methods](../quadmath/markdown/03_quadray_methods.md), and
+[conversions](../quadmath/markdown/14_conversions_spec.md). Specialized treatments:
+[field learning](../quadmath/markdown/11_ivm_field_learning.md),
+[dynamics](../quadmath/markdown/12_ivm_dynamics.md),
+[evaluation](../quadmath/markdown/15_learning_evaluation.md),
+[benchmarks/statistics](../quadmath/markdown/17_benchmarks_statistics.md), and
+[API glossary](../quadmath/markdown/10_symbols_glossary.md).
+
+`docs/manuscript/` is a scripted projection with rewritten layout/figure paths;
+its numbered chapters and figures must not be independently edited.
+Operational pages link to canonical explanations rather than maintaining
+conflicting mathematical summaries or current test/file counts.
+
+## Scientific commands and output safety
+
+Run from the repository root, explicitly selecting Python 3.13 while preserving
+the existing `.python-version` pin:
 
 ```bash
-uv sync
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 coverage run -m pytest -q
-bash quadmath/scripts/render_pdf.sh   # generate figures, LaTeX, PDFs
-bash quadmath/scripts/clean_output.sh # remove generated outputs
+uv sync --python 3.13
+QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results" MPLBACKEND=Agg \
+  uv run --python 3.13 python quadmath/scripts/stats_gallery.py
 ```
 
-## Docs checks
-
-```bash
-uv run python quadmath/scripts/validate_markdown.py  # manuscript source tree
-uv run python docs/development/check_links.py        # this docs tree
-```
-
-## Status
-
-Published (v1, Zenodo). The manuscript now has two coordinated trees:
-`quadmath/markdown/` (source) and `docs/manuscript/` (template-layout
-projection for the shared render pipeline). See
-`docs/MANUSCRIPT_STATUS.md` for the layout, render parity, and
-caveats.
+This isolates cooperating **Python** generator outputs. The shell PDF renderer
+and cleanup script use fixed checkout paths; the override does not isolate their
+writes. Preserve tracked and user-generated outputs and use a separate checkout
+for isolated PDF work. Validation/build recipes belong to the
+[integration workflow](../WORKFLOW.md); workers do not run suites/builds merely
+because they edited documentation. A green command is not semantic or visual
+review of every mathematical claim.

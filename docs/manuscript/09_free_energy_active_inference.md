@@ -1,30 +1,30 @@
 # Appendix: The Free Energy Principle and Active Inference
 
-## Overview
+## Toy objectives and geometric interpretation
 
 The Free Energy Principle (FEP) posits that biological systems maintain their states by minimizing variational free energy, thereby reducing surprise via prediction and model updating. Active Inference extends this by casting action selection as inference under prior preferences. Background: see the concise overview on the [Free energy principle](https://en.wikipedia.org/wiki/Free_energy_principle) and the monograph [Active Inference (MIT Press)](https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind).
 
-This appendix emphasizes relationships among: (i) the four-fold partition of Active Inference, (ii) Quadrays (Fuller.4D) as a geometric scaffold for mapping this partition, and (iii) information-geometric flows (Einstein.4D analogy) that underpin perception–action updates. For the naming of 4D namespaces used throughout—Coxeter.4D (Euclidean E4), Einstein.4D (Minkowski spacetime analogy), Fuller.4D (Synergetics/Quadrays)—see `02_4d_namespaces.md`.
+This appendix separates discrete probability objectives, finite-difference state increments, and didactic tetrahedral diagrams. The four-state partition is not four independent spatial dimensions, and its tetrahedral display is not a probabilistic graphical model. See the [namespace reference](02_4d_namespaces.md).
 
 ## Mathematical Formulation and Equation Callouts (Equations linkage)
 
-- Variational free energy (discrete states) — see Eq. \eqref{eq:free_energy} in the equations appendix, implemented by [`free_energy`](03_quadray_methods.md#code:free_energy): $\mathcal{F} = -\log P(o \mid s) + \mathrm{KL}[\,Q(s)\,\|\,P(s)\,]$, where $o$ are observations, $s$ latent states, $Q(s)$ the variational posterior, and $P(s)$ the prior; minimizing $\mathcal{F}$ drives perception.
+- Variational free energy is $\mathcal F=\mathbb E_Q[-\log P(o\mid s)]+\mathrm{KL}(Q\|P)$, implemented by [`free_energy`](03_quadray_methods.md#code:free_energy). Inputs are log likelihoods and matching nonnegative state-weight arrays, normalized internally; the expectation must not be omitted.
 
-- Expected free energy (action selection) — see Eq. \eqref{eq:expected_free_energy} in the equations appendix, implemented by [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy): $G = \mathrm{KL}[\,Q(s)\,\|\,P(s)\,] - \mathbb{E}_{q}[\log P(o \mid s)] - \log P(o)$, where the epistemic term is the KL divergence between posterior $Q(s)$ and prior $P(s)$ over states (its entropy part, $\mathbb{E}_{q}[\log Q(s)] = -H[Q(s)]$, is already included, so $H$ is not subtracted again), the ambiguity term $-\mathbb{E}_{q}[\log P(o \mid s)]$ penalizes expected surprise about outcomes $o$, and the pragmatic preference $-\log P(o)$ lowers $G$ for preferred outcomes; agents minimize $G$ when selecting actions.
+- [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy) implements that same scalar objective minus supplied `log_p_o`. Equation \eqref{eq:expected_free_energy} records this toy convention. It is not a full policy-conditioned predictive expected-free-energy calculation, and its positive state KL is not by itself an exploration policy.
 
 - Fisher Information Matrix (FIM) as metric — see Eq. \eqref{eq:fim} in the equations appendix and [`fisher_information_matrix`](03_quadray_methods.md#code:fisher_information_matrix): $F_{ij} = \mathbb{E}\big[\partial_{\theta_i} \log p(x;\theta)\, \partial_{\theta_j} \log p(x;\theta)\big]$, the expected outer product of score functions $\partial_{\theta_i} \log p(x;\theta)$, serving as the Riemannian metric on parameter space $\theta$.
 
 - Natural gradient descent under information geometry — see Eq. \eqref{eq:natural_gradient} in the equations appendix and [`natural_gradient_step`](03_quadray_methods.md#code:natural_gradient_step): the update $\theta \leftarrow \theta - \eta\, F^{-1} \nabla_{\theta} L$ preconditions the loss gradient $\nabla_{\theta} L$ by the inverse Fisher metric $F^{-1}$ at step size $\eta$; the implementation solves the damped system $(F + \varepsilon I)\,\delta = \nabla_{\theta} L$ and moves by $-\eta\,\delta$. Overview: [Natural gradient](https://en.wikipedia.org/wiki/Natural_gradient).
 
-Figures: three Active Inference figures follow — the partition tetrahedron, the 4D natural-gradient trajectory (`figure_13_4d_trajectory.png`), and the free-energy landscape (`figure_14_free_energy_landscape.png`).
+The three figures below separate a partition mnemonic, a regression optimization demonstration, and a genuine discrete-state variational landscape. Their unchanged filenames are artifact identifiers, not mathematical claims.
 
 Discrete variational optimization on the quadray lattice: `discrete_ivm_descent` greedily descends a free-energy-like objective over IVM moves, yielding integer-valued trajectories. See the path animation artifact `discrete_path.mp4` in `quadmath/output/`.
 
-![**Active Inference four-fold partition mapped to a Quadray tetrahedron in Fuller.4D**. The four vertices of a regular tetrahedron, embedded in XYZ via the quadray embedding `to_xyz` (axes range $-2$ to $2$), carry the four partition components: $\mu$ internal states (blue), $s$ sensory observations (orange), $a$ actions (green), and $\psi$ external causes (red). The gray edges are the six pairwise couplings of the partition — e.g., $\mu$–$s$ perceptual inference and $a$–$\psi$ control (see the partition section below). Generated by `quadmath/scripts/active_inference_figures.py` (`MPLBACKEND=Agg`, fixed seed 42).](figures/partition_tetrahedron.png)
+![**Didactic four-state partition tetrahedron.** Vertices label internal, sensory, active, and external states, embedded through `to_xyz`. The six drawn edges are geometric edges, not a claim that every pair is directly probabilistically coupled: Markov-blanket conditional independences require a separate model. Generated by the active-inference figure tooling.](figures/partition_tetrahedron.png)
 
-![**4D natural-gradient trajectory with Active Inference context** (`figure_13_4d_trajectory.png`). Top left: the trajectory of natural gradient descent in $(\mu, a, s)$ coordinates — perception weight $\mu$, action weight $a$, internal-state coordinate $s$ — from the initial state (green circle) through the converged state (red star) toward the true optimum (blue triangle), converging in 11 steps with final parameter errors below 0.015. Top right: free energy (squared loss, log scale) falling from about $10^{-1}$ to $10^{-4}$ over the 11 optimization steps. Bottom left: evolution of the four partition components $\mu, a, s, \psi$ against their true values (dashed lines). Bottom middle: step size (linear scale) and gradient norm (log scale) per step. Bottom right: the $4 \times 4$ Fisher information matrix $F_{ij}$ (entries of order $10^{-7}$) that preconditions the updates via Eq. \eqref{eq:natural_gradient}. Generated by `quadmath/scripts/active_inference_figures.py` (`MPLBACKEND=Agg`, fixed seed 42); raw data in `figure_13_data.npz`.](figures/figure_13_4d_trajectory.png)
+![**Four-parameter regression diagnostics.** A seeded linear-regression example optimizes half summed squared residuals, not Eq. \eqref{eq:free_energy}. Six panels distinguish initial, final, planted generating and sample least-squares coefficients; display state-aligned objective/coefficient/gradient traces and applied step sizes; and show the final residual-weighted sample-gradient Gram matrix and actual fitted residuals. The Gram matrix is not automatically population Fisher information or a Hessian. No biological agent or geodesic solver is demonstrated. Generated by `quadmath/scripts/active_inference_figures.py`, seed 42; raw model inputs and diagnostics: `figure_13_data.npz`.](figures/figure_13_4d_trajectory.png)
 
-![**Free-energy landscape over perception and action parameters** (`figure_14_free_energy_landscape.png`). Top left: the variational free energy $\mathcal{F}$ of Eq. \eqref{eq:free_energy} as a surface over the perception parameter $q_1$ and action parameter $q_2$ (values in nats, about 1.2 to 2.4; color bar at right), with the global minimum starred. Top right: level contours of the same surface. Bottom left: one-dimensional cross-sections $\mathcal{F}(q_1)$ at three fixed values of $q_2$, showing sensitivity to each parameter. Bottom right: local curvature over $(q_1, q_2)$ (Fisher information structure). The text panel summarizes the four-fold partition ($\mu, s, a, \psi$), the roles of Fuller.4D/Coxeter.4D/Einstein.4D, and the generative-model objects $Q(s)$, $P(s)$, $P(o \mid s)$. Generated by `quadmath/scripts/active_inference_figures.py` (`MPLBACKEND=Agg`, fixed seed 42); raw data in `figure_14_data.npz`.](figures/figure_14_free_energy_landscape.png)
+![**Variational landscape on a three-state simplex face.** The family is $Q=(q_1,q_2,1-q_1-q_2,0)$ with positive $q_1,q_2$ and nonnegative $q_3$; the exterior of $q_1+q_2\le1$ is masked, not clipped and renormalized. The uniform four-state prior and likelihood $(0.6,0.4,0.3,0.5)$ are explicit model inputs. The star is the minimum among sampled valid points, not a global-minimum certificate for the full simplex. Cross-sections terminate at the boundary; the probability bars expose the imposed fourth-state zero. The analytic interior entropy-Hessian trace is $1/q_1+1/q_2+2/q_3$ in probability-coordinate units, not a statistical Fisher estimate. This curvature formula is unsmoothed; the evaluated objective retains the library's normalized KL pseudocount $10^{-15}$. Generated by `quadmath/scripts/active_inference_figures.py`; raw data: `figure_14_data.npz`.](figures/figure_14_free_energy_landscape.png)
 
 ## Four-Fold Partition and Tetrahedral Mapping (Quadrays; Fuller.4D)
 
@@ -37,7 +37,7 @@ Active Inference partitions the agent–environment system into four coupled sta
 
 See, for an overview of this partition and generative process formulations, the [Active Inference review](https://discovery.ucl.ac.uk/id/eprint/10176959/1/1-s2.0-S1571064523001094-main.pdf) and the general entry on [Active inference](https://en.wikipedia.org/wiki/Active_inference).
 
-Tetrahedral mapping via Quadrays (Fuller.4D): assign each state to a vertex of a tetrahedron, using Quadray coordinates `(A,B,C,D)` with non-negative components and at least one zero after normalization. One canonical mapping is $A \leftrightarrow \mu$ (internal), $B \leftrightarrow s$ (sensory), $C \leftrightarrow a$ (active), $D \leftrightarrow \psi$ (external). The edges capture the pairwise couplings (e.g., $\mu\text{--}s$ for perceptual inference; $a\text{--}\psi$ for control). Integer tetravolume then quantifies the “coupled capacity” region spanned by jointly feasible states in a time slice; see `Quadray` and tetravolume methods in `03_quadray_methods.md`.
+For a didactic tetrahedral mapping, assign internal, sensory, active, and external labels to its four vertices. This supplies a visual mnemonic, not an identification of arbitrary state values with nonnegative Quadray coordinates. Native tetravolume measures the declared geometry only; no implemented theorem interprets it as statistical capacity or jointly feasible belief volume.
 
 Interpretation note: this Quadray-based mapping is a didactic geometric scaffold. It is not standard in the Active Inference literature, which typically develops the four-state partition in probabilistic graphical terms. Our use highlights structural symmetries and discrete volumetric quantities available in Fuller.4D, building on the computational foundations developed in the [4dsolutions ecosystem](https://github.com/4dsolutions) for tetrahedral modeling and volume calculations. See the [Resources](99_resources.md) section for comprehensive details on the computational implementations.
 
@@ -45,22 +45,23 @@ Code linkage (no snippet): see `example_partition_tetra_volume` in `src/quadmath
 
 ## How the 4D namespaces relate here
 
-- Fuller.4D (Quadrays): geometric embedding of the four-state partition on a tetrahedron; integer tetravolumes and IVM moves provide discrete combinatorial structure.
+- Fuller.4D (Quadrays): rank-three geometric display and native rational tetravolumes; FCC moves supply a separate discrete graph.
 - Coxeter.4D (Euclidean E4): exact Euclidean measurements (e.g., Cayley–Menger determinants) for tetrahedra underlying volumetric comparisons and scale relations.
 - Einstein.4D (Minkowski analogy): information-geometric flows (natural gradient, metric-aware updates) supply a continuum picture for perception–action dynamics.
 
-The three roles are complementary: Fuller.4D encodes partition structure, Coxeter.4D provides exact metric geometry for static comparisons, and Einstein.4D guides dynamical descent.
+These are complementary descriptions only when their assumptions are declared. Euclidean geometry does not make floating inference exact, and the Minkowski analogy supplies no dynamical law.
 
 ## Joint Optimization in the Tetrahedral Framework (Methods linkage)
 
-- Perception: update \(\mu\) to minimize prediction error on \(s\) under the generative model; `perception_update` integrates the flow \(\dot{\mu} = D\,\mu - \partial_{\mu} F\), where \(D\) is the model's derivative operator and \(F\) the free energy of Eq. \eqref{eq:free_energy}.
-- Action: select \(a\) that steers \(\psi\) toward preferred outcomes; `action_update` descends the action gradient, \(a \leftarrow a - \eta\,\partial_{a} F\) at step size \(\eta\).
+- `perception_update(mu, derivative_operator, free_energy_fn, step_size, epsilon)` returns $\eta(D\mu-\nabla_\mu F)$, using central finite differences.
+- `action_update(action, free_energy_fn, step_size, epsilon)` returns $-\eta\nabla_a F$.
+- `active_inference_step` returns the pair of increments evaluated at the current state. The caller adds them to its states; these functions do not integrate time, invoke a Fisher solve, or build a generative model automatically.
 
-Continuous-time flows (Einstein.4D analogy for metric/geodesic intuition): see `perception_update` and `action_update` in `src/quadmath/inference/information.py`; their discrete Quadray counterpart is `discrete_ivm_descent` in `src/quadmath/optimize/discrete_variational.py`, described above.
+For a separate discrete objective over integer lattice locations, use [`discrete_ivm_descent`](03_quadray_methods.md#code:discrete_ivm_descent). That graph search is not a discretization theorem for these continuous flows.
 
 ## Implications for AI and Robust Computation
 
-FEP/Active Inference provide algorithms that unify perception and action under uncertainty, offering biologically plausible alternatives to standard RL with adaptive exploration and robust decision-making. See [applications in AI (arXiv:1907.03876)](https://arxiv.org/abs/1907.03876).
+Active inference is a broader research framework; see [applications in AI](https://arxiv.org/abs/1907.03876). The toy helpers here do not demonstrate biological plausibility, adversarial robustness, or superiority to reinforcement learning.
 
 ## Code, Reproducibility, and Cross-References
 

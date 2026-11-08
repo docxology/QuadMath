@@ -1,36 +1,24 @@
 #!/usr/bin/env python3
-"""Port quadmath/markdown/ sections into this template-layout tree.
+"""Project canonical manuscript chapters and required figure assets into docs/.
 
-Idempotent re-port: copies the numbered sections and referenced figures from
-the editing source of truth (``quadmath/markdown/`` + ``quadmath/output/figures/``)
-into ``docs/manuscript/``, applying the layout rewrites this tree requires:
+The authoritative source is ``quadmath/markdown/``. The port rewrites figure
+and license paths, maps resource/glossary chapters to the template's 99/98
+buckets and copies the closed canonical preamble unchanged. It does not repair
+obsolete source defects or maintain a divergent manuscript.
 
-1. images ``../output/figures/X`` -> ``figures/X``
-2. LICENSE link ``../LICENSE`` -> ``../../LICENSE``
-3. section renumbering to template buckets: ``07_resources.md`` ->
-   ``99_resources.md`` (references render last), ``10_symbols_glossary.md`` ->
-   ``98_symbols_glossary.md`` (glossary bucket)
-4. inherited broken code-anchor links repointed: 09 links {#code:*} targets at
-   ``08_equations_appendix.md`` (which defines only {#eq:*} anchors); the
-   targets live in ``03_quadray_methods.md``
-5. ``00_preamble.md`` -> ``preamble.md``; upstream the ``​```latex`` fence is
-   now closed (2026-10-25): an unclosed fence made the local render_pdf.sh
-   sed extractor drop the file's last line, and the template's
-   ``extract_preamble`` drops the whole preamble.  A closing fence is still
-   appended whenever it is absent, so the port stays idempotent
+Usage from the repository root::
 
-Usage (from the repository root)::
+    python docs/manuscript/port_from_source.py
+    python docs/manuscript/port_from_source.py --figures-dir /tmp/run/figures
 
-    uv run python docs/manuscript/port_from_source.py
-    uv run python docs/manuscript/port_from_source.py --figures-dir /tmp/run/figures
-
-Exits 0 when the tree is in sync, 1 when a figure or link is missing.
+Missing required assets fail. The shared documentation gate checks relative
+targets and Markdown fragments after porting.
 """
 
 from __future__ import annotations
 
 import argparse
-import re
+import runpy
 import shutil
 import sys
 from pathlib import Path
@@ -73,6 +61,7 @@ FIGURE_NAMES = [
     "fisher_information_matrix.png",
     "free_energy_curve.png",
     "graphical_abstract_quadray.png",
+    "graphical_abstract_quadray.svg",
     "ivm_dynamics_demo.png",
     "ivm_field_demo.png",
     "ivm_neighbors_edges.png",
@@ -96,11 +85,6 @@ FIGURE_NAMES = [
     "animation_frames_strip.png",
     "stats_ci_comparison.png",
 ]
-# Broken inherited code-anchor links (upstream defect): the {#code:*} targets
-# live in 03_quadray_methods.md, not 08_equations_appendix.md.
-REPOINT_FROM = "08_equations_appendix.md"
-REPOINT_TO = "03_quadray_methods.md"
-REPOINT_NAMES = ("free_energy", "fisher_information_matrix", "natural_gradient_step")
 
 
 def rewrite(text: str) -> str:
@@ -114,18 +98,12 @@ def rewrite(text: str) -> str:
     Returns
     -------
     str
-        Markdown with figures, LICENSE, section links, and code anchors
-        rewritten.
+        Markdown with figure, license and resource/glossary links rewritten.
     """
     text = text.replace("](../output/figures/", "](figures/")
     text = text.replace("](../LICENSE)", "](../../LICENSE)")
     for old, new in RENAMES.items():
         text = text.replace(f"]({old}", f"]({new}")
-    for name in REPOINT_NAMES:
-        text = text.replace(
-            f"]({REPOINT_FROM}#code:{name})",
-            f"]({REPOINT_TO}#code:{name})",
-        )
     return text
 
 
@@ -135,8 +113,6 @@ def port(figures_dir: Path = FIGS) -> None:
     DST_FIGS.mkdir(parents=True, exist_ok=True)
 
     preamble = (SRC / "00_preamble.md").read_text(encoding="utf-8")
-    if not re.search(r"```\s*latex\s*\n.*\n\s*```\s*$", preamble, re.DOTALL):
-        preamble = preamble.rstrip("\n") + "\n```\n"
     (DST / "preamble.md").write_text(preamble, encoding="utf-8")
 
     for name in FIGURE_NAMES:
@@ -151,28 +127,9 @@ def port(figures_dir: Path = FIGS) -> None:
 
 
 def verify() -> list[str]:
-    """Verify every relative link/image in the ported sections resolves.
-
-    Returns
-    -------
-    list of str
-        Human-readable problems; empty when clean.
-    """
-    problems: list[str] = []
-    for md in sorted(DST.glob("*.md")):
-        text = md.read_text(encoding="utf-8")
-        for lineno, line in enumerate(text.splitlines(), 1):
-            for target in re.findall(r"\]\(([^)\s]+)\)", line):
-                if "://" in target or target.startswith("#"):
-                    continue
-                resolved = (md.parent / target.split("#")[0]).resolve()
-                if not resolved.exists():
-                    problems.append(f"{md.name}:{lineno} unresolved link {target}")
-            if "](07_resources.md" in line or "](10_symbols_glossary.md" in line:
-                problems.append(f"{md.name}:{lineno} stale section link")
-            if "](08_equations_appendix.md#code:" in line:
-                problems.append(f"{md.name}:{lineno} un-repointed code-anchor link")
-    return problems
+    """Validate the projection through the same multi-root documentation gate."""
+    checker = runpy.run_path(str(ROOT / "docs/development/check_links.py"))
+    return checker["check_docs"](DST)
 
 
 def main() -> int:
@@ -194,7 +151,7 @@ def main() -> int:
     if problems:
         print("\n".join(problems), file=sys.stderr)
         return 1
-    print(f"ported {len(SECTIONS)} sections, {len(FIGURE_NAMES)} figures, preamble.md; all links resolve")
+    print(f"ported {len(SECTIONS)} sections, {len(FIGURE_NAMES)} figure assets, preamble.md; relative links and fragments resolve")
     return 0
 
 

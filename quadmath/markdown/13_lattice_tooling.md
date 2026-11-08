@@ -1,6 +1,6 @@
 # Lattice Tooling: Omnidirectional Numbering and Nearest-Site Search
 
-## Overview
+## Shell indexing and bounded spatial queries
 
 Sections [2](02_4d_namespaces.md) and [3](03_quadray_methods.md) develop the Quadray/IVM framework analytically; this section documents the computational tooling that operates directly on the close-packed lattice. Two modules extend the analytical core without touching it:
 
@@ -85,13 +85,13 @@ for a query center $c$ and radius $R > 0$, where $\lVert c \rVert$ is the Euclid
 
 ### Shell-sweep `nearest`
 
-`nearest(site, R, k)` sweeps shells outward, ranking each shell's squared distances with `numpy.argsort`; once `k` candidates are in hand, the invariant behind Eq. \eqref{eq:lattice-truncation-bound} supplies an early-stop test — no unvisited shell can contain a closer site: a site at depth $g + 1$ satisfies $d^{2}(\mathbf{0}, s) \ge 8\,(g+1)$, so the sweep stops once $8\,(g+1) > (\sqrt{d^{2}_{(k)}} + \lVert c \rVert)^{2}$, with $d^{2}_{(k)}$ the current k-th best squared distance. The sweep never under-enumerates (the bound is conservative; ties at the boundary are kept), and answers always match the brute-force reference over the same region, as the tests assert on fixed-seed random queries.
+`nearest(site, R, k)` ranks FCC candidates within the Euclidean cutoff `R`, sweeping graph shells outward. It returns at most `k` hits, possibly fewer or none. After obtaining `k` candidates it can stop if the lower bound for every unvisited shell exceeds the current k-th distance. Results use float64 distances and lexicographic tie-breaking; this is not arbitrary-integer exact nearest-neighbor arithmetic.
 
 ```python
 import numpy as np
 from quadmath.lattice.lattice_search import nearest, within_radius
 
-sites, d2 = nearest((0.4, -0.3, 0.9, 0.1), R=2.0, k=5)   # 5 nearest centers
+sites, d2 = nearest((0.4, -0.3, 0.9, 0.1), R=4.0, k=5)   # at most 5 within radius
 ball, ball_d2 = within_radius((2, 1, 1, 0), R=4.0)       # everything within 4
 assert np.all(np.diff(ball_d2) >= 0)                      # ascending distances
 ```
@@ -109,11 +109,11 @@ assert np.all(np.diff(ball_d2) >= 0)                      # ascending distances
 | `lattice_search.within_radius(site, R)` | All sites within the supported radius, sorted with documented floating boundary semantics |
 | `lattice_search.nearest(site, R, k)` | `k` nearest supported sites, shell sweep with a conservative early-stop bound |
 
-## Verification
+## Enumeration and query regression scope
 
 The regressions compare enumeration with independent BFS through frequency 8, metric identities with actual embeddings and queries with brute-force filtering. Run:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q
-uv run coverage report
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
+uv run --python 3.13 coverage report
 ```

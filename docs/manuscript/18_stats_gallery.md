@@ -1,6 +1,6 @@
 # Statistics and Scaling Gallery
 
-## Overview
+## Synthetic examples of statistical plotting primitives
 
 This section is the figure surface of the benchmarks-and-statistics layer:
 every rendering primitive used by section `17_benchmarks_statistics.md`
@@ -17,7 +17,7 @@ its own line: those stdout lines are the `make_all_figures` manifest
 contract.  The gallery writes exactly four PNGs —
 `stats_gallery_latency.png`, `stats_gallery_scaling.png`,
 `stats_gallery_ci.png`, `stats_gallery_ecdf.png` — and every random draw
-comes from the fixed seed, so the whole set is deterministic.
+comes from a fixed seed. These are synthetic plotting examples, not benchmark measurements; byte reproducibility assumes a fixed rendering environment.
 
 ## Latency histogram
 
@@ -56,21 +56,18 @@ recover the planted exponent 1.35.
 ## Confidence intervals
 
 `plot_ci_bars(labels, means, lows, highs, ax=None, *, title=...)` renders
-paired estimates as a bar-and-whisker chart: one bar per label at its
-point estimate, with error bars spanning the low and high ends of a
-percentile bootstrap interval `src/quadmath/stats/statistics.py::bootstrap_ci`
-(\eqref{eq:stat-bootstrap}).  Overlapping intervals visually encode the
-same information a permutation test quantifies
-(\eqref{eq:stat-permutation}): two conditions whose intervals do not
-overlap are the ones the pooled test flags.  The gallery panel shows three
-benchmark estimates (`to_xyz`, `quadray_from_xyz`, `shell_enum`) with
-symmetric intervals whose half-widths are seeded uniform draws on
-$[0.05, 0.25]$ from the same fixed-seed `numpy.random.default_rng(32)`
-generator: the primitive renders whatever `lows` / `highs` it is given, and
-in a measured analysis those bounds are the percentile endpoints
-`bootstrap_ci` returns (\eqref{eq:stat-bootstrap}).
+the supplied estimates and interval endpoints. It does not calculate
+confidence levels or hypothesis tests. The gallery uses three API-name
+labels with synthetic estimates and seeded arbitrary half-widths on
+$[0.05,0.25]$, not measured timings or bootstrap intervals.
 
-![**Point estimates with confidence intervals by condition.** Three benchmark estimates (`to_xyz`, `quadray_from_xyz`, `shell_enum`) in synthetic estimate units, rendered by `plot_ci_bars` as points with symmetric error bars whose half-widths are uniform draws on [0.05, 0.25] from the fixed-seed `numpy.random.default_rng(32)` generator; in a measured analysis the bar ends would be the 95% percentile bootstrap endpoints from `bootstrap_ci` (2000 resamples, \eqref{eq:stat-bootstrap}), whose non-overlap is the visual cue the permutation test of \eqref{eq:stat-permutation} quantifies.](figures/stats_gallery_ci.png)
+In a real analysis, callers may supply bootstrap bounds from
+[the statistical module](17_benchmarks_statistics.md). Overlap of two
+individual confidence intervals is not equivalent to a test of their
+difference; the relevant comparison depends on sampling design, dependence,
+and confidence level.
+
+![**Synthetic interval-rendering example.** API-name labels carry illustrative estimates and seeded symmetric half-widths, not measured latency or calculated 95% coverage. `plot_ci_bars` displays the supplied endpoints; neither overlap nor non-overlap substitutes for a specified test of differences.](figures/stats_gallery_ci.png)
 
 ## Empirical CDF
 
@@ -85,14 +82,14 @@ distribution function
 
 a monotone step function that jumps by $1/n$ at every observed value —
 the exact distribution of the sample, with no binning choices at all.  For
-timing data the ECDF answers directly what a percentile summary rounds
-off: the curve passes through the empirical median at height $0.5$ and
-through the 95th percentile at height $0.95$, so `median_s` and `p95_s`
-are readable off the plot.  The gallery panel draws the ECDF of the same
+timing data the ECDF displays the empirical fraction at or below a duration.
+Quantiles can be read through a chosen inverse-ECDF convention; NumPy's
+interpolated percentile summaries need not sit exactly on its step heights.
+The gallery panel draws the ECDF of the same
 256-draw clipped lognormal latency sample as the histogram panel above, so
 the two panels read as one distribution in two renderings.
 
-![**Empirical cumulative distribution of the latency sample.** Exact step-function ECDF $\hat{F}(t)$ of the same 256-draw clipped lognormal sample as the histogram panel above (fixed seed 32, latency in seconds-scale units), rendered by `plot_ecdf`; the empirical median (height 0.5) and 95th percentile (height 0.95) are read directly off the curve.](figures/stats_gallery_ecdf.png)
+![**Empirical cumulative distribution of the synthetic latency sample.** Step-function ECDF of the same 256-draw clipped lognormal sample as the histogram, seed 32. It displays sample fractions, not a future-latency guarantee; interpolated percentile conventions may differ from inverse-step quantiles.](figures/stats_gallery_ecdf.png)
 
 ## Reproducibility and test contract
 
@@ -109,10 +106,10 @@ the two panels read as one distribution in two renderings.
   `17_benchmarks_statistics.md`, no test asserts wall-clock timing
   values.
 - Figure regeneration:
-  `uv run python quadmath/scripts/stats_gallery.py` (the script sets
+  `uv run --python 3.13 python quadmath/scripts/stats_gallery.py` (the script sets
   `MPLBACKEND=Agg` itself); stdout is exactly the four written paths, the
   same manifest contract as `quadmath/scripts/lattice_gallery.py`.
-- Markdown: `uv run python quadmath/scripts/validate_markdown.py`.
+- Markdown: `uv run --python 3.13 python quadmath/scripts/validate_markdown.py`.
 
 ## Cross-references
 

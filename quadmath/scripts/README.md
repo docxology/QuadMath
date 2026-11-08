@@ -1,9 +1,9 @@
-# QuadMath Scripts
+# Manuscript figures, data manifests and PDF orchestration
 
-Thin orchestrators for the QuadMath manuscript pipeline. Each script only
-bootstraps paths, sets up the environment, and delegates to importable modules
-under `src/` — figure/data/analysis logic lives in `src/` and is tested under
-`tests/`.
+Checkout entrypoints compose seeded examples and call package numerical and
+rendering primitives under `src/`. Reusable algorithms and general-purpose
+renderers belong in the package. Established manuscript demos retain some
+model setup and plot composition here; they are not all single-call wrappers.
 
 ## Script Inventory
 
@@ -14,15 +14,15 @@ under `src/` — figure/data/analysis logic lives in `src/` and is tested under
 | `make_all_figures.py` | Run the 19 generators; atomically write deduplicated paths relative to the configured output root, including isolated `QUADMATH_OUTPUT_DIR` builds | the 19 scripts listed under Pipeline composition (subprocess); `quadmath.tools.atomic_write`; `src/quadmath/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
 | `validate_markdown.py` | Check image refs, internal links/anchors, equation-label uniqueness | none (stdlib only) | `uv run python quadmath/scripts/validate_markdown.py` |
 | `generate_glossary.py` | Regenerate `quadmath/markdown/10_symbols_glossary.md` from the `src/` API; `--check` exits 1 when the file is stale and never writes | `src/quadmath/tools/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py [--check]` |
-| `information_demo.py` | Information geometry: Fisher curvature, natural-gradient descent, free energy (figures + CSV) | `src/quadmath/inference/information.py`, `src/quadmath/optimize/discrete_variational.py`, `src/quadmath/core/metrics.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/information_demo.py` |
-| `active_inference_figures.py` | Active-inference figures: free energy, perception-action loop | `src/quadmath/inference/information.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/active_inference_figures.py` |
-| `simplex_animation.py` | Nelder-Mead simplex animation (MP4) and trace figures | `src/quadmath/optimize/nelder_mead_quadray.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/simplex_animation.py` |
+| `information_demo.py` | Actual regression predictions and gradient-Gram spectra; separate constant-metric descent, categorical free energy and discrete path | `src/quadmath/inference/information.py`, `src/quadmath/core/metrics.py`, `src/quadmath/optimize/discrete_variational.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/viz/_common.py` | `uv run --python 3.13 python quadmath/scripts/information_demo.py` |
+| `active_inference_figures.py` | State-aligned four-coefficient regression diagnostics and a valid categorical-simplex face; not a biological agent | `src/quadmath/inference/information.py`, `src/quadmath/viz/_common.py`, `src/quadmath/paths.py` | `uv run --python 3.13 python quadmath/scripts/active_inference_figures.py` |
+| `simplex_animation.py` | Integer Nelder–Mead history, bounded snapshots and the actual final recorded best; slot traces are not persistent vertex identities | `src/quadmath/optimize/nelder_mead_quadray.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/viz/_common.py`, `src/quadmath/core/quadray.py` | `uv run --python 3.13 python quadmath/scripts/simplex_animation.py` |
 | `discrete_variational_demo.py` | Discrete IVM-lattice descent demo (figure + data) | `src/quadmath/optimize/discrete_variational.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/discrete_variational_demo.py` |
 | `volumes_demo.py` | Tetrahedron volume scaling: integer vs Cayley-Menger (figure + CSV) | `src/quadmath/core/cayley_menger.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/volumes_demo.py` |
 | `ivm_neighbors.py` | 12-neighbor IVM lattice structure (figure + NPZ data) | `src/quadmath/viz/visualize.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/ivm_neighbors.py` |
 | `quadray_clouds.py` | 3D scatter of deterministic quadray point clouds | `src/quadmath/lattice/conversions.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/quadray_clouds.py` |
 | `polyhedra_quadray_constructions.py` | Closed polyhedra on shared XYZ axes, with native volumes measured from their faces | `src/quadmath/viz/vis_polyhedra.py` | `uv run python quadmath/scripts/polyhedra_quadray_constructions.py` |
-| `graphical_abstract_quadray.py` | Journal graphical-abstract overview figure | `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/graphical_abstract_quadray.py` |
+| `graphical_abstract_quadray.py` | PNG and SVG of the rank-three Quadray quotient, native basis rays and complete twelve-around-one FCC contact cluster | `src/quadmath/viz/abstracts.py` (`render_quadray_abstract`) | `uv run --python 3.13 python quadmath/scripts/graphical_abstract_quadray.py` |
 | `sympy_formalisms.py` | Symbolic Cayley-Menger / IVM volume formalisms (SymPy figure + CSV) | `src/quadmath/core/symbolic.py`, `src/quadmath/core/quadray.py` | `uv run python quadmath/scripts/sympy_formalisms.py` |
 | `gpu_acceleration_demo.py` | Integer tetra-volume timing benchmark (manual; prints timings, writes no artifact, not part of the pipeline) | `src/quadmath/core/quadray.py` | `uv run python quadmath/scripts/gpu_acceleration_demo.py` |
 | `ivm_field_demo.py` | Static IVM field learning demo: three-panel lattice / noisy observations / learned-field figure | `src/quadmath/lattice/ivm_field.py`, `src/quadmath/core/quadray.py`, `src/quadmath/paths.py` | `uv run python quadmath/scripts/ivm_field_demo.py` |
@@ -74,78 +74,47 @@ All commands run from the repository root.
 
 ## Script Development
 
-### Template
+### Importable graphical-abstract entrypoint
+
+From a current checkout environment, the renderer is directly usable:
 
 ```python
-#!/usr/bin/env python
-"""Generate [description] figures.
+from quadmath.viz.abstracts import render_quadray_abstract
 
-Outputs:
-    quadmath/output/figures/name.png
-    quadmath/output/data/name.csv
-"""
-from __future__ import annotations
-
-import os
-import sys
-
-
-def _repo_root() -> str:
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-
-
-def _ensure_src_on_path() -> None:
-    src_path = os.path.join(_repo_root(), "src")
-    if src_path not in sys.path:
-        sys.path.insert(0, src_path)
-
-
-def main() -> None:
-    os.environ.setdefault("MPLBACKEND", "Agg")  # before importing matplotlib
-    _ensure_src_on_path()
-
-    import numpy as np  # noqa: WPS433
-    import matplotlib.pyplot as plt  # noqa: WPS433
-
-    # Prefer the source checkout when regenerating its manuscript artifacts.
-    from quadmath.core.quadray import Quadray, to_xyz  # noqa: WPS433
-    from quadmath.paths import get_figure_dir, get_data_dir  # noqa: WPS433
-
-    np.random.seed(42)  # deterministic
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    # ... plotting code ...
-
-    fig_path = os.path.join(get_figure_dir(), "output_name.png")
-    fig.savefig(fig_path, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Generated: {fig_path}")  # stdout paths feed the manifest
-
-    data_path = os.path.join(get_data_dir(), "output_name.csv")
-    # ... save data ...
-    print(f"Generated: {data_path}")
-
-
-if __name__ == "__main__":
-    main()
+png_path, svg_path = render_quadray_abstract()
+print(png_path)
+print(svg_path)
 ```
+
+The default PNG filename is unchanged. The sibling SVG preserves vector
+geometry and belongs in the figure manifest. An explicit destination must be a
+PNG path; the sibling uses its stem. Each save is atomic, but the pair is not
+a transaction: a successfully saved PNG remains if the SVG save fails.
+Renderer-owned figures close on success and failure without closing caller
+figures. This entrypoint is a main/Unreleased addition, not an API of the
+immutable 0.6.0 wheel.
 
 ### Requirements
 
-1. **Thin orchestrator**: bootstrap + environment setup + delegated call into
-   `src/` entrypoints; logic belongs in `src/` (tested there, 100% coverage gate)
+1. **Reusable behavior in `src/`**: keep shared numerical kernels and renderers
+   importable and tested; established demos may compose fixed models and plots.
 2. **Path bootstrap**: `_ensure_src_on_path()` inserts `<repo>/src` so manuscript
    builds exercise that checkout rather than an unrelated installed version.
    The same `quadmath` modules are also shipped in the release wheel.
 3. **Headless mode**: `MPLBACKEND=Agg` before importing matplotlib
-4. **Fixed seeds**: `np.random.seed(42)` for reproducibility
-5. **Print outputs**: print every generated absolute path; stdout lines ending in
-   `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` feed the `make_all_figures.py` manifest
-6. **Close figures + main guard**: `plt.close(fig)`; all entry logic behind
-   `if __name__ == "__main__":` so scripts stay import-safe
+4. **Local seeded generators**: use `np.random.default_rng(seed)` without
+   resetting another consumer's global random state.
+5. **Print outputs**: absolute paths ending in
+   `.png/.svg/.mp4/.pdf/.csv/.npz/.gif/.txt` feed the manifest.
+6. **Failure-safe figures and main guards**: use `figure_scope`/`save_figure`
+   from `quadmath.viz._common`; keep entry logic behind `if __name__ == "__main__"`.
    (`tests/tools/test_sympy_formalisms.py` imports `sympy_formalisms.py` directly)
 
 ## Output Locations
+
+Python output helpers honor `QUADMATH_OUTPUT_DIR`; the comments show defaults.
+The PDF shell script still publishes PDF/TeX under the checkout's default output
+tree. Use a separate checkout for a fully isolated PDF build.
 
 ```python
 from quadmath.paths import get_figure_dir, get_data_dir, get_output_dir  # after bootstrap
@@ -157,7 +126,7 @@ get_output_dir()  # -> quadmath/output/
 
 ## Adding New Scripts
 
-1. Follow the template above
+1. Follow the import/bootstrap, numerical-delegation and figure-lifetime rules above
 2. If it is a figure generator, add it to the `FIGURE_SCRIPTS` tuple in
    `make_all_figures.py` (`render_pdf.sh` reaches it through that script)
 3. Test individually: `uv run python quadmath/scripts/new_script.py`

@@ -7,7 +7,6 @@ TeX or pandoc process is started.
 from __future__ import annotations
 
 import os
-import re
 import subprocess
 import shutil
 import sys
@@ -19,8 +18,6 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 MARKDOWN = ROOT / "quadmath" / "markdown"
 RENDER = ROOT / "quadmath" / "scripts" / "render_pdf.sh"
-README = MARKDOWN / "README.md"
-SECTION_GLOB = "[0-9][0-9]_*.md"
 
 # Records every argument (one per line) into the file named by -o.
 PANDOC_STUB = r"""#!/bin/bash
@@ -73,8 +70,6 @@ def _pairs(var: str) -> list[tuple[str, str]]:
     return pairs
 
 
-def _disk_sections(markdown: Path = MARKDOWN) -> list[str]:
-    return sorted(p.name for p in markdown.glob(SECTION_GLOB))
 
 
 @pytest.fixture
@@ -127,38 +122,6 @@ def _margin_lines(tex_text: str) -> list[str]:
 
 
 # --- section coverage contract -------------------------------------------------
-
-
-def test_modules_and_exclusions_cover_every_section_file_exactly_once():
-    listed = [name for name, _ in _pairs("MODULES")] + [name for name, _ in _pairs("EXCLUDED_MODULES")]
-    assert len(listed) == len(set(listed)), "a section file is listed twice"
-    assert sorted(listed) == _disk_sections()
-
-
-def test_modules_are_built_in_numeric_order_with_titles():
-    modules = _pairs("MODULES")
-    names = [name for name, _ in modules]
-    assert names == sorted(names)
-    assert all(title.strip() for _, title in modules)
-
-
-def test_module_titles_contain_no_latex_special_characters():
-    # pandoc copies -V title into \title{} unescaped, so & % $ # _ would break xelatex
-    special = re.compile(r"[&%$#_{}~^\\]")
-    offenders = [(name, title) for name, title in _pairs("MODULES") if special.search(title)]
-    assert offenders == []
-
-
-def test_excluded_sections_carry_a_reason():
-    excluded = _pairs("EXCLUDED_MODULES")
-    assert excluded, "expected at least the preamble exclusion"
-    assert all(reason.strip() for _, reason in excluded)
-
-
-def test_readme_section_table_lists_the_same_files_as_disk():
-    text = README.read_text(encoding="utf-8")
-    rows = re.findall(r"^\| `(\d\d_[^`]+\.md)` \|", text, flags=re.MULTILINE)
-    assert sorted(rows) == _disk_sections()
 
 
 def test_check_module_coverage_passes_for_repository():

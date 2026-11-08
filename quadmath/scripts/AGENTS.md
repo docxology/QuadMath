@@ -1,22 +1,23 @@
-# `quadmath/scripts/` — Thin-Orchestrator Contract
+# `quadmath/scripts/` — Manuscript Entry Points
 
 ## Contract
 
-Scripts in this directory are thin orchestrators ONLY: argument handling, path
-bootstrap, logging/environment setup, and a single delegated call into
-importable entrypoints under `src/`.
-
-- Business/data/plot/analysis logic lives in `src/` (importable, tested under
-  `tests/`, 100% coverage gate). New behavior goes in `src/`, never in scripts.
+Keep argument handling, checkout bootstrap, environment setup and pipeline
+orchestration here. Reusable numerical kernels and general-purpose renderers
+belong under `src/`, with the package's statement/branch coverage gate.
+Established seeded demonstrations also compose fixed model inputs and plots;
+they are not all single-call wrappers. Do not duplicate package algorithms.
 - Checkout scripts bootstrap `<repo>/src` onto `sys.path`
   (`_repo_root()` / `_ensure_src_on_path()`) and import the package. Installed
   wheels are supported separately; scripts do not require an editable install.
 - All entry logic sits behind `if __name__ == "__main__":` — keep scripts
   import-safe (`tests/tools/test_sympy_formalisms.py` imports
   `quadmath/scripts/sympy_formalisms.py` directly).
-- Known inline-logic exceptions (documented, do not grow):
-  `validate_markdown.py` (stdlib-only checks, no src delegation),
-  `render_pdf.sh` / `clean_output.sh` (bash orchestration).
+- Existing inline composition includes `information_demo.py`,
+  `active_inference_figures.py`, `simplex_animation.py` and `quadray_clouds.py`.
+  Promote repeated reusable rendering into `src/`, as `viz.abstracts` does.
+- `validate_markdown.py` remains a stdlib-only manuscript checker;
+  `render_pdf.sh` / `clean_output.sh` are shell orchestration.
 
 ## Inventory
 
@@ -27,15 +28,15 @@ importable entrypoints under `src/`.
 | `make_all_figures.py` | 19 figure scripts in `FIGURE_SCRIPTS` (subprocess); `quadmath.paths`; `quadmath.tools.atomic_write` (manifest) |
 | `validate_markdown.py` | none (stdlib only) |
 | `generate_glossary.py` | `quadmath.tools.glossary_gen` |
-| `information_demo.py` | `quadmath.inference.information`, `quadmath.optimize.discrete_variational`, `quadmath.core.metrics`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
-| `active_inference_figures.py` | `quadmath.inference.information`, `quadmath.paths` |
-| `simplex_animation.py` | `quadmath.optimize.nelder_mead_quadray`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
+| `information_demo.py` | `quadmath.inference.information`, `quadmath.optimize.discrete_variational`, `quadmath.core.metrics`, `quadmath.viz.visualize`, `quadmath.viz._common`, `quadmath.core.quadray`, `quadmath.paths` |
+| `active_inference_figures.py` | `quadmath.inference.information`, `quadmath.viz._common`, `quadmath.paths` |
+| `simplex_animation.py` | `quadmath.optimize.nelder_mead_quadray`, `quadmath.viz.visualize`, `quadmath.viz._common`, `quadmath.core.quadray`, `quadmath.paths` |
 | `discrete_variational_demo.py` | `quadmath.optimize.discrete_variational`, `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
 | `volumes_demo.py` | `quadmath.core.cayley_menger`, `quadmath.core.quadray`, `quadmath.paths` |
 | `ivm_neighbors.py` | `quadmath.viz.visualize`, `quadmath.core.quadray`, `quadmath.paths` |
 | `quadray_clouds.py` | `quadmath.lattice.conversions`, `quadmath.core.quadray`, `quadmath.paths` |
 | `polyhedra_quadray_constructions.py` | `quadmath.viz.vis_polyhedra` (closed supporting meshes, measured volumes, shared-scale rendering) |
-| `graphical_abstract_quadray.py` | `quadmath.core.quadray`, `quadmath.paths` |
+| `graphical_abstract_quadray.py` | `quadmath.viz.abstracts.render_quadray_abstract` (PNG and sibling SVG) |
 | `sympy_formalisms.py` | `quadmath.core.symbolic`, `quadmath.core.quadray` |
 | `gpu_acceleration_demo.py` | `quadmath.core.quadray`; manual benchmark, not in `FIGURE_SCRIPTS` |
 | `ivm_field_demo.py` | `quadmath.lattice.ivm_field`, `quadmath.core.quadray`, `quadmath.paths` |
@@ -58,18 +59,17 @@ importable entrypoints under `src/`.
 - Deferred imports: import src modules only after `_ensure_src_on_path()`;
   most scripts import inside `main()`.
 - `make_all_figures.py` writes `figure_manifest.txt` from stdout lines ending
-  in `.png/.mp4/.pdf/.csv/.npz/.gif/.txt` — generators MUST print absolute output
+  in `.png/.svg/.mp4/.pdf/.csv/.npz/.gif/.txt` — generators MUST print absolute output
   paths under the configured output root (`QUADMATH_OUTPUT_DIR`, or the default).
   The path ends the line, may contain spaces, and is stored output-root-relative
   and deduplicated. Each `FIGURE_SCRIPTS` entry must emit at least one existing
   path; there are no exemptions. The manifest is written
   with `atomic_write_text`.
 - Atomic data writes: use `quadmath.tools.atomic_write.atomic_open(path,
-  newline=...)` or `atomic_write_text` for CSV/TXT outputs. Pass
-  `newline=""` for `csv.writer` so rows end in `\r\n` as before. Converted:
-  `volumes_demo.py`, `ivm_neighbors.py`, `sympy_formalisms.py` (two outputs),
-  `information_demo.py` (CSV and `np.savetxt` via `_savetxt_atomic`).
-- Archives: write every `.npz` with `quadmath.tools.atomic_savez(path,
+  newline=...)` or `atomic_write_text` for CSV/TXT outputs. For `csv.writer`,
+  pass `newline=""` and choose the intended line terminator explicitly.
+  `information_demo.py` uses LF-delimited `np.savetxt` output.
+- Archives: write every `.npz` with `quadmath.tools.atomic_write.atomic_savez(path,
   **arrays)`. It is atomic and stamps fixed ZIP timestamps, so regenerated
   archives are byte-identical. Do not call `np.savez` directly. The glossary
   markdown is written with `atomic_write_text`.

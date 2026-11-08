@@ -1,20 +1,20 @@
-# Introduction
+# Quadray Geometry, Lattice Optimization, and Information Metrics {#introduction}
 
 ## Abstract
 
-We review a unified analytical framework for four-dimensional (4D) modeling with Quadray coordinates, synthesizing geometric foundations, optimization on tetrahedral lattices, and information geometry. Building on R. Buckminster Fuller's [Synergetics](https://en.wikipedia.org/wiki/Synergetics_(Fuller)) and Kirby Urner's computational implementations in the [4dsolutions ecosystem](https://github.com/4dsolutions) (Python, Rust, Clojure, and POV-Ray), we show that integer lattice constraints force the volume of any tetrahedron with lattice vertices to be an integer multiple of the unit tetrahedron's volume — a quantization into discrete "energy levels" that regularizes optimization on the tetrahedral lattice. We adapt the [Nelder–Mead method](https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method) to the Quadray lattice, define [Fisher information](https://en.wikipedia.org/wiki/Fisher_information) in Quadray parameter space, and analyze optimization as geodesic motion on an information manifold via the [natural gradient](https://en.wikipedia.org/wiki/Natural_gradient). We distinguish three 4D namespaces — Coxeter.4D (Euclidean E⁴), Einstein.4D (Minkowski spacetime), and Fuller.4D (synergetics/Quadrays) — and map each to the analytical tools it supports. The result is a cohesive, interpretable approach for robust, geometry-grounded computation in 4D. All source code for the manuscript is available at [QuadMath](https://github.com/docxology/quadmath).
+We review tetrahedral coordinates for ordinary three-dimensional space, exact lattice volumes, discrete optimization, and information metrics. A physical Quadray is a common-offset equivalence class of four components, with three independent spatial degrees of freedom; it is not Euclidean four-space. Integer Quadray vertices have exact native tetravolumes in quarter-unit increments, not necessarily whole units. The Python implementation supplies determinant formulas, lattice-adapted Nelder–Mead and twelve-neighbor descent, score-Gram estimators, and damped natural-gradient increments. These illustrate mathematical relationships rather than establish universal convergence, physical energy quantization, or application-level robustness. Natural-gradient flows are metric-aware steepest descent, not generally geodesics. The [namespace reference](02_4d_namespaces.md), [coordinate methods](03_quadray_methods.md), and [conversion specification](14_conversions_spec.md) separate these contracts.
 
-**Keywords**: Quadray coordinates, 4D geometry, tetrahedral lattice, integer volume quantization, information geometry, optimization, synergetics, active inference.
+**Keywords**: Quadray coordinates, rank-three quotient, tetrahedral lattice, rational tetravolume, information geometry, discrete optimization.
 
-## Overview
+## Coordinates, packing, and optimization scope
 
-Quadray coordinates provide a tetrahedral basis for modeling space and computation, standing in contrast to Cartesian cubic frameworks. Originating in Buckminster Fuller's Synergetics, Quadray coordinates replace right-angle orthonormal assumptions with 60-degree coordination and a unit tetrahedron of volume 1. This reframing yields striking integer relationships among common polyhedra and provides a natural account of space via close-packed spheres and the isotropic vector matrix (IVM).
+Quadrays use four symmetric tetrahedral directions to describe Euclidean three-space. Distinct origin-to-vertex basis directions make angles $\arccos(-1/3)$; the 60-degree angles belong to regular tetrahedron faces and suitable FCC neighbor directions, not pairs of these basis rays. The regular unit tetrahedron has native volume 1 and edge $2\sqrt2$ in `DEFAULT_EMBEDDING`. Close-packed sphere centers form one residue class of the ambient integer Quadray quotient.
 
 This paper unifies three threads:
 
 - **Foundations**: Quadray coordinates and their relation to 4D modeling more generally, with explicit namespace usage (Coxeter.4D, Einstein.4D, Fuller.4D) to maintain clarity.
-- **Optimization framework**: Leverages integer volume quantization on tetrahedral lattices to achieve robust, discrete convergence.
-- **Information geometry**: Tools (e.g., Fisher Information, free-energy minimization) for interpreting optimization as geodesic motion on statistical manifolds.
+- **Optimization framework**: Tracks exact rational simplex volumes and discrete moves without a general convergence or efficiency guarantee.
+- **Information geometry**: Separates score-based Fisher metrics, illustrative loss-gradient Gram matrices, and free-energy toy models.
 
 ## 4D Namespace Framework
 
@@ -43,7 +43,7 @@ The paper makes the following key contributions:
 
 ## Companion Code and Tests
 
-The manuscript is accompanied by a fully-tested Python codebase under `src/` with unit tests under `tests/`. Key artifacts used throughout the paper:
+The companion Python implementation is under `src/quadmath/`, with numerical regressions under `tests/`. This chapter identifies source surfaces; it does not certify a fresh test or coverage run. Key artifacts:
 
 - **Quadray APIs**: `src/quadmath/core/quadray.py` (`Quadray`, `integer_tetra_volume`, `ace_tetravolume_5x5`).
 - **Determinant utilities**: `src/quadmath/core/linalg_utils.py` (`bareiss_determinant_int`).
@@ -57,14 +57,19 @@ For comprehensive background resources, computational implementations, and relat
 
 - The manuscript Markdown and code to generate the PDF are available on the project repository (`QuadMath` on GitHub, `@docxology` username). See the repository home page for source, figures, and scripts: [QuadMath repository](https://github.com/docxology/QuadMath). The repository is also archived on [Zenodo record 16887791](https://zenodo.org/records/16887791) with DOI 10.5281/zenodo.16887791.
 - The manuscript is licensed under the Apache License 2.0. See the [LICENSE](../../LICENSE) file for details.
-- The manuscript is accompanied by a fully-tested Python codebase under `src/` with unit tests under `tests/`, complemented by extensive cross-validation against Kirby Urner's reference implementations in the [4dsolutions ecosystem](https://github.com/4dsolutions). See the [Resources](07_resources.md) section for comprehensive details on computational implementations and validation.
-- All figures referenced in the manuscript are generated by scripts under `quadmath/scripts/` and saved to `quadmath/output/` with lightweight CSV/NPZ alongside images.
-- Tests accompany all methods under `src/` and enforce 100% coverage for `src/`.
+- Numerical regressions and external reference implementations provide comparison routes, not an assertion that all external projects have been cross-validated against this checkout.
+- Figure scripts under `quadmath/scripts/` normally write to `quadmath/output/`; `QUADMATH_OUTPUT_DIR` selects an isolated output root. CSV/NPZ companions are script-specific.
+- Coverage requirements are project policy; current results must come from a dated run.
 - Symbols and notation are standardized across sections; see [Appendix: Symbols and Glossary](10_symbols_glossary.md) for a consolidated table of variables and constants used throughout. Equation labels (e.g., Eq. \eqref{eq:lattice_det} and Eq. \eqref{eq:fim}) and figure labels are automatically numbered by LaTeX for consistent cross-referencing.
 - The manuscript is a work in progress and will be updated as the project progresses. There may be errors and missing references, check all methods and equations for consistency.
 
-## Graphical Abstract
+## Native basis, common-offset gauge, and FCC contacts {#graphical-abstract}
 
-**Panel A** shows the four Quadray axes (A, B, C, D) under the default symmetric embedding with a tetrahedron wireframe. **Panel B** shows the same vertices as close-packed spheres (IVM = CCP = FCC) sized to kiss along the tetrahedron edges.
+Panel A displays the actual columns of `DEFAULT_EMBEDDING`, not unit-normalized substitutes. Their sum is zero, making the common-offset gauge visible. Panel B displays the complete thirteen-site cluster: a center and twelve FCC neighbors, not merely four tangent spheres.
 
-![**Quadray coordinate system overview (graphical abstract)**. **Panel A**: The four Quadray axes — rays A, B, C, D from the origin to the vertices of a reference regular tetrahedron under the default symmetric embedding — drawn as colored arrows (A=blue, B=orange, C=green, D=red) with axis labels at the vertex endpoints and a light gray wireframe joining the four vertices. Notice that the axes are four canonical directions (spokes) separated by 60° angles, not orthogonal Cartesian dimensions — the defining "directions, not dimensions" character of Fuller.4D. **Panel B**: The same four vertices shown as close-packed spheres, each colored to match its Panel A axis and with radius equal to half the minimum edge length, so neighboring spheres kiss exactly along the tetrahedron edges; a light black wireframe marks those edges. This is the local building block of the Isotropic Vector Matrix (IVM) = Cubic Close Packing (CCP) = Face-Centered Cubic (FCC) correspondence; extending the kissing arrangement across the lattice yields the "twelve around one" coordination central to synergetics. What to notice: one and the same tetrahedral skeleton underlies both the direction-based Quadray coordinate system and the densest sphere packing in 3D, which is why integer Quadray coordinates and integer sphere counts (and hence integer volumes) live on a single lattice. Generated by `quadmath/scripts/graphical_abstract_quadray.py` (output at `quadmath/output/figures/graphical_abstract_quadray.png`).](../output/figures/graphical_abstract_quadray.png)
+![**Native Quadray basis and complete twelve-around-one FCC neighborhood.** Left: the four basis endpoints $A=(1,1,1)$, $B=(-1,1,-1)$, $C=(-1,-1,1)$, $D=(1,-1,-1)$ in scale-one XYZ. Their sum is zero. Right: the origin plus all twelve permutations of the Quadray move $(2,1,1,0)$, embedded as permutations of $(\pm2,\pm2,0)$. Center-to-neighbor distance is $2\sqrt2$ and the tangent-sphere radius is $\sqrt2$; the outer centers form a cuboctahedron. The cluster demonstrates local FCC coordination, not a finite proof of global packing optimality or integer volumes for all Quadrays. Generated by `quadmath/scripts/graphical_abstract_quadray.py`; the reusable renderer also emits an SVG companion.](../output/figures/graphical_abstract_quadray.png)
+
+The reusable API is `quadmath.viz.abstracts.render_quadray_abstract`. It owns
+and closes its figure and returns the written PNG/SVG paths; the existing
+script is the command-line entry. See the [operational workflow](../../WORKFLOW.md)
+for isolated output generation.

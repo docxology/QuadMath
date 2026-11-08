@@ -1,6 +1,6 @@
 # Benchmarks and Statistics
 
-## Overview
+## Measuring workloads and interpreting uncertainty
 
 This section documents the measurement surface behind the preceding
 chapters.  It is split across three modules with one job each:
@@ -13,10 +13,10 @@ matplotlib primitives; the figures they produce are collected in
 manuscript already treats: quadray conversions (`quadray.py`, conventions
 in `SPEC.md`), shell enumeration (`omni_numbering.py`, `13_lattice_tooling.md`),
 nearest-site search (`lattice_search.py`), and field fitting
-(`ivm_field.py`, `11_ivm_field_learning.md`).  Everything here is
-deterministic: every random draw comes from a seeded
-`numpy.random.default_rng`, and every timing routine is fully specified by
-its arguments, so the numbers below reproduce bit-for-bit.
+(`ivm_field.py`, `11_ivm_field_learning.md`). Workload construction and
+resampling draws are seeded. Wall-clock timings necessarily vary with
+hardware, scheduling, caches, and library versions; they do not reproduce
+bit-for-bit merely because their workloads are deterministic.
 
 ## Timing methodology
 
@@ -38,26 +38,26 @@ t_{95} \;=\; Q_{0.95}(t_1,\dots,t_T),
 \end{equation}
 
 where $T$ is the number of trials and $Q_p$ the empirical $p$-quantile.
-The median is robust to a single outlier trial; the 95th percentile bounds
-the tail that a user would actually feel.  Results are returned as
-`BenchRow`, a frozen dataclass with fields `name`, `n`, `trials`, `total_s`,
+The median summarizes the center of the measured trials; the empirical
+95th percentile summarizes those trials, not a guaranteed future latency bound.
+Summaries are returned as `BenchRow`, a frozen dataclass with fields `name`, `n`, `trials`, `total_s`,
 `mean_s`, `median_s`, `p95_s`, and `ops_per_s`, plus `as_dict()` for plain
-data.  Here `n` is the per-call workload size (conversions per call, shell
-depth, sites or queries per call), and throughput is
+data. `n` is scenario-specific: conversions, returned enumeration sites,
+queries, or field observations per call. Throughput is
 
 \begin{equation}
 \label{eq:bench-ops}
 \text{ops\_per\_s} \;=\; \frac{n}{\bar{t}} .
 \end{equation}
 
-Four constructors wrap the core surfaces with these defaults:
-`bench_conversions(n=200, trials=5)` times round-trip quadray/embedding
-conversions, `bench_shell_enumeration(k_max=4, trials=5)` times shell
-enumeration through `omni_numbering.generate_shell`, `bench_lattice_search(n_sites=200, queries=50, trials=5)` times
-`lattice_search` nearest-site queries over a random ball of sites, and
-`bench_field_fit(n_sites=64, trials=3)` times a synthetic field fit through
-`IVMField.learn`.  `run_all()` executes all four with the shared defaults
-collected in the module constant `BENCH_DEFAULTS` and returns the list of
+The constructors are `bench_conversions(n=200, trials=5)` (forward and
+inverse rows), `bench_shell_enumeration(k_max=4, trials=5)` (three enumeration
+rows, including cold-cache BFS), `bench_lattice_search(n_sites=200,
+queries=50, trials=5)` (queries cycling through sampled FCC centers), and
+`bench_field_fit(n_sites=64, trials=3)` (a fixed-domain field fit).
+`n_sites` in the search constructor sizes the center pool, not a replacement
+search index; its returned `n` counts queries. `run_all()` executes the
+scenarios with defaults from `BENCH_DEFAULTS` and returns
 `BenchRow` records; `summary_table(rows)` renders them as a fixed-width
 text table.  The harness measures only; it asserts nothing — timing
 distributions belong to analysis, not to test assertions.
@@ -90,9 +90,9 @@ reproducible.
 ## Pooled permutation tests
 
 `permutation_test(a, b, *, iters=2000, seed=0, alternative="two-sided")`
-tests whether two samples differ in location without assuming a
-distribution.  Both samples are pooled; the observed statistic is
-$o = \big|\bar{a} - \bar{b}\big|$; each of the `iters` iterations draws
+tests sample exchangeability under a pooled null, not merely equality of
+means with arbitrary unequal distributions. Both samples are pooled; the
+observed absolute difference is $o=|\bar a-\bar b|$. Each iteration draws a
 `rng.permutation` of the pool, splits it at $\lvert a\rvert$ into a fake
 $a$ and $b$, and recomputes the difference.  The two-sided p-value uses the
 add-one convention
@@ -122,10 +122,9 @@ s_p \;=\;
 \sqrt{\frac{(n_a - 1)\,s_a^2 + (n_b - 1)\,s_b^2}{n_a + n_b - 2}},
 \end{equation}
 
-with $s_a, s_b$ the unbiased sample standard deviations.  A p-value says
-whether a difference is distinguishable from noise; $d$ says how large the
-difference is, which is the question that matters when comparing benchmark
-configurations.
+with $s_a,s_b$ the unbiased sample standard deviations. A p-value measures
+compatibility with the chosen null/test assumptions; it is not the probability
+that a difference is noise. The effect size describes standardized magnitude.
 
 `p_adjust_bonferroni(pvals)` controls the family-wise error rate when $m$
 hypotheses are tested at once:
@@ -146,11 +145,10 @@ data,
 \log t \;=\; \beta_1 \log n + \beta_0,
 \end{equation}
 
-and returns `(slope, intercept, r2)`.  The slope is the empirical
-complexity exponent: $\beta_1 \approx 1$ indicates linear work in the
-input size $n$, $\beta_1 \approx 2$ quadratic, and the coefficient of
-determination $r^2$ measures how well the power law describes the
-measurements.
+and returns `(slope, intercept, r2)`. The fitted exponent describes the
+sampled size range and machine environment; it is not a proof of algorithmic
+asymptotic complexity. The coefficient of determination summarizes fit
+quality on those log-transformed measurements.
 
 ## Jackknife, FDR, Welch, and circular statistics {#sec:jackknife_fdr_welch_circular}
 
@@ -191,10 +189,10 @@ seeded routines above, but with no generator to seed at all.
 
 `benjamini_hochberg(pvals)` controls a different error rate from the
 Bonferroni map of \eqref{eq:stat-bonferroni}: instead of the
-family-wise error rate it controls the expected proportion of false
-discoveries among rejections, the false discovery rate.  The step-up
-procedure sorts the $m$ p-values ascending, forms the raw values
-$m\,p_{(i)} / i$ for ranks $i = 1,\dots,m$, and then enforces monotonicity
+family-wise error rate it controls false discovery rate under independent
+or suitable positively dependent valid p-values. Arbitrary dependence is
+not covered by this guarantee. The step-up procedure sorts the $m$ p-values,
+forms $m\,p_{(i)}/i$ for ranks $i=1,\ldots,m$, and enforces monotonicity
 with a running minimum taken from the largest rank backwards,
 
 \begin{equation}
@@ -281,13 +279,12 @@ cancelled components.  Like everything else in
 `numpy`-plus-`math` computations: no randomness, no optional scientific
 stack, and bit-identical repeats for identical arguments.
 
-## A reproducible example
+## Seeded resampling examples and Monte Carlo resolution {#a-reproducible-example}
 
-Both workhorses above are fully determined by their arguments, so the
-following numbers are exact for any reader.  The first call computes the
-95% bootstrap confidence interval of the mean of the first seven Fibonacci
-numbers; the second asks whether the shifted ranges $1..10$ and $11..20$
-differ in location:
+The seeded examples below are reproducible in the documented numerical
+environment, not mathematical constants independent of library versions.
+The first call bootstraps the mean of seven successive Fibonacci numbers
+starting at 2; the second compares the shifted ranges $1..10$ and $11..20$:
 
 ```python
 import numpy as np
@@ -320,18 +317,12 @@ p \;=\; \frac{2 + 1}{2000 + 1} \;=\; \frac{3}{2001}
 \;\approx\; 0.00149925 .
 \end{equation}
 
-The count of 2 deserves a comment.  Among the
-$\binom{20}{10} = 184{,}756$ possible splits of the pool, exactly two
-achieve $|d_r| = 10$ — the observed arrangement ($1..10$ against $11..20$)
-and its complement — so the expected hit count over 2000 random draws is
-only $2000 \cdot 2/184756 \approx 0.02$.  The add-one floor of
-\eqref{eq:stat-permutation} is $1/2001 \approx 0.0005$, which is what a
-typical seed reports here; the stream seeded with `seed=0` happens to draw
-both exact-maximum arrangements (at iterations 70 and 1146 of the 2000), so
-the count is 2 and the reported p-value is $3/2001$.  The example
-illustrates the convention rather than a typical run: with any other seed
-the same call reproduces the floor value, and in either case the test
-correctly never reports the impossible $p = 0$.
+Among $\binom{20}{10}=184756$ equiprobable group allocations, exactly two
+attain the maximum absolute mean difference. A 2000-draw Monte Carlo sample
+may see zero, one, two, or more such hits; no statement about every other
+seed follows from the displayed seed-zero result. The positive add-one
+floor is $1/2001$. The example illustrates Monte Carlo resolution, not an
+exact enumeration of the permutation distribution.
 
 The two interval families meet on common ground in a second example.
 Two synthetic lattice-error samples with a planted mean shift are drawn
@@ -382,7 +373,7 @@ samples reports $t \approx -4.75$ with $p \approx 5.4 \times 10^{-6}$
 (\eqref{eq:stat-welch}), in agreement with the shift both interval
 families detect.
 
-![**Bootstrap versus jackknife 95% confidence intervals for two lattice-error samples.** Sample means (dots) of two seeded synthetic error samples — $n = 64$ per group from `numpy.random.default_rng(17)`, scale 0.15, planted mean shift 0.08 in the B population — each carrying a 95% percentile bootstrap interval (`bootstrap_ci`, 2000 resamples, seed 17, $\alpha = 0.05$) and a deterministic normal-approximation jackknife interval (`jackknife_ci`, $\alpha = 0.05$), drawn together in one `plot_ci_bars` call; the dashed line marks the unbiased population mean 0.0. Routine B's intervals exclude 0 while routine A's straddle it, and the two CI families agree within whisker width on both samples. Regenerate: `uv run python quadmath/scripts/stats_diagnostics_gallery.py`.](../output/figures/stats_ci_comparison.png)
+![**Bootstrap versus jackknife intervals for synthetic errors.** Two 64-sample groups use seed 17, standard deviation 0.15, and a planted B-population mean shift 0.08. The plot compares percentile-bootstrap and normal-approximation jackknife intervals. In the recorded values, A's bootstrap upper endpoint is just below zero while its jackknife upper endpoint is just above; B's intervals exclude zero. This method-sensitive boundary is not identical coverage or a substitute for a between-group test. Generate with `uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py`.](../output/figures/stats_ci_comparison.png)
 
 ## Cross-references
 

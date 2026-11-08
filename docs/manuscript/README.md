@@ -1,55 +1,48 @@
-# manuscript/
+# Generated manuscript projection and published figure assets
 
-Template-layout manuscript tree for the shared docxology render pipeline, ported
-from `../../quadmath/markdown/`. Status: `../MANUSCRIPT_STATUS.md`.
-Re-port after source edits with: `uv run python docs/manuscript/port_from_source.py`.
-For an isolated `QUADMATH_OUTPUT_DIR=/tmp/run` build, select its actual figures
-with `uv run python docs/manuscript/port_from_source.py --figures-dir /tmp/run/figures`.
+Edit [canonical chapters](../../quadmath/markdown/01_introduction.md), then
+regenerate this template-layout tree. The [manuscript workflow](../MANUSCRIPT_STATUS.md)
+owns setup, isolation and production-font rendering requirements.
 
-> **Canonical source:** `quadmath/markdown/`. This directory is generated: the
-> section files, `preamble.md`, and `figures/` are written by
-> `port_from_source.py`, so do not edit them here. `config.yaml`,
-> `references.bib`, and this README are maintained by hand.
+## Authoritative content versus maintained template metadata
 
-## Layout
-
-| File | Origin | Role |
+| Files | Role | Editing rule |
 |---|---|---|
-| `config.yaml` | new (metadata from root `README.md`) | Paper metadata (title, authors, DOI, keywords, license, render toggles) — consumed by `stage_03_render` / `infrastructure.rendering` |
-| `preamble.md` | `00_preamble.md` + closing fence | LaTeX preamble; the fenced `latex` block is extracted by `infrastructure.rendering._pdf_latex_helpers.extract_preamble` |
-| `references.bib` | built from `07_resources.md` + in-text citations | BibTeX database; `*.bib` files at manuscript top level are auto-discovered (`_bibliography.resolve_bibliography`) |
-| `01_introduction.md` … `06_discussion.md` | same-name sources, verbatim | Main sections |
-| `08_equations_appendix.md`, `09_free_energy_active_inference.md` | same-name sources, verbatim except 3 repointed links (see below) | Appendices A–B |
-| `11_ivm_field_learning.md`, `12_ivm_dynamics.md`, `13_lattice_tooling.md` | same-name sources, verbatim | IVM lattice sections (field learning, dynamics, tooling) |
-| `14_conversions_spec.md`, `15_learning_evaluation.md`, `16_lattice_gallery.md` | same-name sources, verbatim | Conversion/specification, learning & evaluation, and the visualization gallery (embeds `figures/vis_gallery_*.png`) |
-| `98_symbols_glossary.md` | `10_symbols_glossary.md`, verbatim | Template glossary bucket (`98_*.md`); snapshot of the auto-generated source |
-| `99_resources.md` | `07_resources.md`, verbatim | Template references bucket (`99_*.md`, rendered last) |
-| `figures/` | copies of the generated `FIGURE_NAMES`, defaulting to `quadmath/output/figures/`; override with `--figures-dir` | Figure images referenced by the sections |
-| `port_from_source.py` | new | Reproducible re-port script (copies sections/figures, applies the rewrites, closes the preamble fence, verifies links) |
+| Numbered chapters, `preamble.md` | Projection of `quadmath/markdown/` | Edit source, regenerate glossary if needed, then re-port |
+| `98_symbols_glossary.md` | Projection of source chapter `10` | Regenerate through `generate_glossary.py`, not here |
+| `99_resources.md` | Projection of source chapter `07` | Edit canonical bibliography prose and re-port |
+| `figures/` | Required generated raster assets and graphical-abstract SVG companion | Regenerate through the owning figure scripts, then re-port |
+| `config.yaml`, `references.bib`, directory guides | Maintained template metadata and operational guidance | Keep aligned with source and actual pipeline contracts |
 
-## Path rewrites applied during the port
+## Port only the current source; do not retain repair shims
 
-- Images: `../output/figures/X` → `figures/X` (self-contained: `quadmath/output/`
-  is disposable — `clean_output.sh` wipes it)
-- LICENSE: `../LICENSE` → `../../LICENSE` (repo root)
-- Section links: `07_resources.md` → `99_resources.md`, `10_symbols_glossary.md` → `98_symbols_glossary.md`
-- Code-anchor repoint (upstream link defect): section 09 links
-  `{#code:free_energy}`, `{#code:fisher_information_matrix}`,
-  `{#code:natural_gradient_step}` at `08_equations_appendix.md`, which defines
-  only `{#eq:*}` anchors; the targets live in `03_quadray_methods.md`, so the
-  port repoints the three links there.
-- Preamble: the upstream `00_preamble.md` opens a ` ```latex ` fence that is
-  **never closed** (upstream defect: the local `render_pdf.sh` sed extractor
-  tolerates this; the template `extract_preamble` regex does not and would
-  silently drop the whole preamble). The port appends the closing fence.
+```bash
+uv run --python 3.13 --group dev python docs/manuscript/port_from_source.py --figures-dir /path/to/isolated-run/figures
+```
 
-Everything else (equations, labels, anchors, captions, tables, code blocks) is
-ported verbatim. Sections `11`–`16` port under their own numbers.
+The porter rewrites image paths, root-license paths and the resource/glossary
+bucket filenames. Other content, including the already-closed preamble, comes
+from the canonical source unchanged. Correct code anchors in the source;
+there is no separate repair-only version of chapter 09.
 
-## Relationship to the source
+Missing required assets fail. Port verification uses the shared relative-link
+and Markdown-fragment checker; it is not a semantic proof or an external URL
+crawler. Porting writes tracked projection files, so preserve unrelated local
+changes before regeneration.
 
-`quadmath/markdown/` remains the **authoritative** editing source; this tree is
-the template-layout projection. Content changes happen in the source and are
-re-ported with `port_from_source.py`. `98_symbols_glossary.md` is generated
-upstream by `quadmath/scripts/generate_glossary.py` — regenerate there, then
-re-port.
+## Inspect the vector abstract and numerical figure boundaries
+
+The [graphical abstract SVG](figures/graphical_abstract_quadray.svg) preserves
+the actual scale-one basis rays and full twelve-around-one FCC contact cluster.
+Its PNG counterpart is embedded in the manuscript for the PDF toolchain.
+The regression, categorical and simplex figures label their actual models,
+units, feasible domains and recorded rather than presumed convergence.
+
+## Distinguish template compatibility from a successful PDF build
+
+This layout supplies numbered chapters, fenced preamble, bibliography and
+configuration for the external template renderer. The local production
+pipeline is [`render_pdf.sh`](../../quadmath/scripts/render_pdf.sh); its real
+font/TeX/Pandoc/video build has a separate Linux CI gate. Old deposited PDFs
+and release assets remain evidence for their archived versions, not for an
+unrendered changed checkout.

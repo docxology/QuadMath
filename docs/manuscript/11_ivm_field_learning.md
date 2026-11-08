@@ -1,6 +1,6 @@
 # Static IVM Field Learning
 
-## Overview
+## Scalar fields, soft fitting, and hard constraints
 
 This section develops machine learning on a static synergetic geometry: scalar
 fields defined over the Isotropic Vector Matrix (IVM) lattice, learned from
@@ -199,13 +199,12 @@ graphs, and anchored versus unanchored disconnected components.
 
 ## Recovering Tetrahedral Geometry from Noisy Points
 
-`fit_geometry()` recovers the orientation and scale of a tetrahedron from
-noisy 3D point clouds, using the quadray basis of `quadray.py`. The four
-canonical vertex images are $v_i = \texttt{to\_xyz}(e_i)$, where $e_i$ are
-the unit quadray axes mapped through the 3$\times$4 embedding matrix of
-`quadray.py`. Given labeled observations $p^{(i)}_m \approx R\, v_i + o$
-(noisy samples of vertex $i$ under rotation $R$ and offset $o$), vertex
-centroids $c_i$ are formed and the linear map $G$ is fit in closed form:
+`fit_geometry(points, labels, embedding)` fits a general linear map from the
+four canonical basis images to labeled observed vertex means. It does not
+constrain the result to a rotation times a uniform scale: shear and
+anisotropic scaling are possible. No translation parameter is fitted or
+returned. Center translated data externally when a centered physical fit is
+required; a common translation contributes to the reported residual.
 
 \begin{equation}
 \label{eq:ivm-fit}
@@ -215,22 +214,20 @@ G \;=\; \arg\min_{M \in \mathbb{R}^{3\times 3}} \sum_{i=1}^{4}
 \text{scale} \;=\; \operatorname{sign}\bigl(\det G\bigr)\, \bigl|\det G\bigr|^{1/3}.
 \end{equation}
 
-The least-squares solve uses `numpy.linalg.lstsq` on the transpose system,
-so noisy multi-sample vertices average out; the residual reported by
-`TetrahedronFit.residual` is the RMS vertex-centroid mismatch. The test
-suite recovers a rotated, scaled tetrahedron to $10^{-6}$ from $\sigma =
-10^{-7}$ noise, verifies the signed scale for reflected (negative
-determinant) fits, and checks that doubling the embedding halves the
-recovered matrix — orientation and scale separate cleanly.
+The solve uses `numpy.linalg.lstsq` on the transpose system. The returned
+`TetrahedronFit.matrix` is the fitted $3\times3$ map,
+`scale` is its signed determinant cube root (not a separately estimated
+edge scale for an arbitrary sheared fit), and `residual` is the RMS
+vertex-mean mismatch. These are floating least-squares quantities, not exact
+orientation or rigid-registration certificates.
 
-## Demonstration
+## Seeded noisy-field reconstruction example {#demonstration}
 
-The script `quadmath/scripts/ivm_field_demo.py` (run with `MPLBACKEND=Agg`,
-seed 12) renders the pipeline on the radius-3 ball (147 lattice sites): the
-synthetic field (a harmonic linear part plus a weak quadratic bowl), the
-noisy observations at 74 of the 147 sites, and the learned field. The learned
-reconstruction beats the raw observation noise (reconstruction MSE 0.0558
-against observation-noise MSE 0.0720, printed by the demo):
+The recorded demonstration in `quadmath/scripts/ivm_field_demo.py` uses seed
+12 on a graph-shell-radius-3 ball (147 sites), with a linear field plus a
+weak quadratic bowl and noisy observations at 74 sites. Its saved example
+reports reconstruction MSE 0.0558 versus observation-noise MSE 0.0720. This
+is a synthetic example receipt, not a new run or a general denoising bound:
 
 ![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](figures/ivm_field_demo.png)
 

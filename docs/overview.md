@@ -1,43 +1,63 @@
-# QuadMath — repository overview
+# QuadMath Repository Tour: Runtime, Chapters, Projections and Proof Models
 
-Analytical review of Quadray coordinates (Fuller.4D), integer volume
-quantization on the IVM lattice, optimization on tetrahedral lattices, and
-information geometry. Apache-2.0. Published v1 with DOI
-[10.5281/zenodo.16887791](https://zenodo.org/records/16887791).
+The [root guide](../README.md) covers installation and suite context; this tour
+shows where a change belongs. For mathematical conventions use
+[SPEC.md](../SPEC.md), not a separate operational derivation.
 
-## Tour
+## Runtime versus checkout tools
 
-| Path | Contents |
-|---|---|
-| `src/quadmath/` | Python package: `core/quadray.py` (coordinates, Ace 5×5 volume), `core/linalg_utils.py` (Bareiss determinant), `core/cayley_menger.py` (length-based volumes), `lattice/conversions.py` (embeddings), `optimize/nelder_mead_quadray.py` + `optimize/discrete_variational.py` (optimizers), `inference/information.py` (Fisher/free energy), `lattice/ivm_field.py` (lattice field learning), `lattice/ivm_dynamics.py` (field dynamics/coupling ID), `learn/learning_eval.py` (evaluation methodology) + `viz/vis_lattice.py` (gallery rendering — see `docs/learning/`), `lattice/lattice_search.py`, `lattice/omni_numbering.py` (omnidirectional numbering), `viz/visualize.py`, `core/examples.py`, `core/symbolic.py`, `tools/glossary_gen.py`, plus AGENTS/README |
-| `tests/` | Mirror tree; 100% coverage required for `src/` (see `docs/development/`) |
-| `quadmath/markdown/` | Manuscript source of truth: `00_preamble.md` + sections `01_introduction.md` … `18_stats_gallery.md` |
-| `quadmath/scripts/` | Figure generators, `render_pdf.sh`, `clean_output.sh`, `validate_markdown.py` |
-| `quadmath/output/` | Generated artifacts (figures, PDFs, TeX, CSV/NPZ) — regeneratable, do not hand-edit |
-| `docs/manuscript/` | Template-layout manuscript projection (`config.yaml`, `preamble.md`, `references.bib`, sections `01–99`, `figures/`) |
-| `docs/development/` | Test/coverage workflow + link checker |
-| `docs/learning/` | Docs for the IVM learning surface: `ivm_field`, `ivm_dynamics`, `learning_eval`, `vis_lattice` |
-| `docs/lean/` | Lean 4 formalization (core Lean 4; one open shell-count theorem) |
-| `run_all.sh` | Full build entry point (tests → figures → PDFs) |
-| `WORKFLOW.md`, `ARCHITECTURE.md` | Root-level build-pipeline and layout docs |
+`src/quadmath/` is the packaged Python library: core exact/rational geometry,
+lattice construction/search, field/dynamics methods, optimization, information
+helpers, evaluation, statistics, reusable visualization and utility modules.
+[The source guide](../src/README.md) maps modules to canonical chapters.
+`tests/` mirrors runtime responsibilities and adds checkout-tool regressions;
+[the test guide](../tests/README.md) separates configuration from measured status.
+
+`quadmath/scripts/` selects example inputs and orchestrates saved figures,
+API glossary generation, Markdown validation and PDF/TeX conversion. These scripts
+are not part of an installed wheel. `run_all.sh` runs suite/coverage plus figures
+and source checks by default; `--with-pdf` explicitly adds PDF rendering.
+Neither wrapper elaborates Lean or replaces visual/semantic review.
 
 ## Document flow
 
 ```mermaid
 flowchart LR
-    src["src/ modules"] --> tests["tests/ (100% coverage)"]
-    src --> scripts["quadmath/scripts/ generators"]
-    scripts --> figures["quadmath/output/figures/"]
-    figures --> md["quadmath/markdown/ sections"]
-    md --> pdf["render_pdf.sh → PDF/TeX"]
-    md -->|"port (scripted copy + path rewrites)"| dm["docs/manuscript/ (template layout)"]
-    dm -->|"stage_03_render (target)"| pdf2["combined PDF/HTML"]
+    runtime["src/quadmath runtime"] --> consumer["tests and numerical consumers"]
+    runtime --> scripts["figure/data scripts"]
+    scripts --> figures["selected Python output root"]
+    canonical["quadmath/markdown canonical chapters"] --> shell["render_pdf.sh"]
+    shell --> pdf["checkout PDF and TeX outputs"]
+    canonical --> port["scripted manuscript projection"]
+    port --> projected["docs/manuscript template layout"]
+    lean["lean handwritten integer models"] --> elaboration["separate Lean elaboration"]
 ```
 
-## Reading order for new contributors
+Only the marked API-glossary block is regenerated from Python. Other prose
+requires source-informed maintenance. The template projection has a
+[separate guide](manuscript/README.md) and [status](MANUSCRIPT_STATUS.md); do not
+hand-edit copied chapters or figures. A fresh render is not the historical
+version-1 PDF archived on [Zenodo](https://zenodo.org/records/16887791).
 
-1. Root `README.md` and `AGENTS.md` (conventions, quality gates)
-2. `docs/overview.md` (this file)
-3. `docs/development/README.md` (how to run tests/coverage)
-4. `docs/manuscript/README.md` (manuscript layout + render parity)
-5. `WORKFLOW.md` (test-driven development workflow details)
+## Output policy
+
+Python path helpers honor `QUADMATH_OUTPUT_DIR`, enabling isolated figures and
+wheel consumers without repository lookup. The shell renderer fixes PDF/TeX
+paths under `quadmath/output/` and updates the canonical glossary. Its cleanup
+script removes the fixed checkout output tree. Generated files can contain user
+work and are partly tracked: never clean them automatically. See
+[workflow output management](../WORKFLOW.md#output-management).
+
+## Focused operational reading
+
+1. [Development checks](development/README.md): separate evidence gates and ownership.
+2. [Learning operations](learning/README.md): soft versus hard boundaries,
+   transport laws and validation-versus-test distinctions.
+3. [Analysis operations](analysis/README.md): timings, statistical assumptions
+   and illustrative plotting data.
+4. [Lean scope](lean/README.md): quotient/distance/volume declarations, finite
+   computations, trust and unproved universal counts.
+5. [Manuscript tools](../quadmath/README.md): figures, dependencies and PDF isolation.
+
+Return to the [documentation index](README.md) or
+[architecture](../ARCHITECTURE.md).
