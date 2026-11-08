@@ -2,9 +2,9 @@
 
 Every renderer here produces a list of :class:`Frame` objects: small 2D
 numpy arrays (float in ``[0, 1]`` or ``uint8``) plus a title.  No matplotlib
-and no wall-clock or RNG inputs (except the explicit ``seed`` of
-:func:`diffusion_frames`), so identical arguments always yield byte-identical
-frames, and :func:`frames_to_gif` therefore writes byte-identical GIF files.
+and no wall-clock inputs; :func:`diffusion_frames` uses an explicit local seed.
+Numerical frame data is reproducible for fixed numerical inputs. Encoded GIF
+or PNG bytes additionally depend on the plotting and encoding toolchain.
 
 Fixed-camera convention (shared by all renderers):
 the lattice is embedded in R^3 via :data:`quadmath.core.quadray.DEFAULT_EMBEDDING`
@@ -373,11 +373,10 @@ def frames_to_gif(
     Float frames are quantized to ``uint8`` gray levels by ``round(255 * v)``
     (clipped to ``[0, 255]``); ``uint8`` frames are used as-is.  Each frame
     is upscaled by the integer factor ``scale`` with nearest-neighbor
-    resampling, and the sequence is saved with per-frame duration
-    ``1000 // fps`` milliseconds and infinite looping.  PIL is imported
-    lazily inside this function.  The PIL GIF encoder is deterministic and
-    no timestamps are embedded, so identical ``(frames, fps, scale)`` inputs
-    produce byte-identical files.
+    resampling. The requested per-frame duration is ``1000 // fps``
+    milliseconds with infinite looping; GIF timing has centisecond resolution.
+    PIL is imported lazily. Repeated encodes in a fixed toolchain are distinct
+    from a promise of identical bytes across Pillow/plotting versions.
 
     Parameters
     - frames: Non-empty sequence of :class:`Frame`.

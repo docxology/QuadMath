@@ -229,10 +229,10 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
     """Power-law (log-log linear) fit of runtimes against input sizes.
 
     Fits ``log(times) = slope * log(sizes) + intercept`` by ordinary
-    least squares (``np.polyfit(..., 1)``) and returns
-    ``(slope, intercept, r2)`` where ``r2 = 1 - ss_res / ss_tot`` is
-    computed on the log-log fit, so ``slope`` approximates the empirical
-    complexity exponent (e.g. ~1.0 for linear scaling, ~2.0 for quadratic).
+    least squares on centered log sizes, improving conditioning without
+    changing the model. Returns ``(slope, intercept, r2)`` where
+    ``r2 = 1 - ss_res / ss_tot`` is computed in log space. The slope is a
+    fitted scaling exponent, not an algorithmic complexity proof.
     ``r2`` is NaN when all times are equal (no variance to explain).
 
     Raises
@@ -251,11 +251,15 @@ def scaling_fit(sizes: np.ndarray, times: np.ndarray) -> tuple:
         raise ValueError("scaling_fit requires at least two observations")
     if np.any(sizes <= 0) or np.any(times <= 0):
         raise ValueError("sizes and times must be positive for a log-log fit")
-    if np.ptp(np.log(sizes)) <= 0.0:
-        raise ValueError("scaling_fit requires at least two distinct sizes")
-    slope, intercept = np.polyfit(np.log(sizes), np.log(times), 1)
-    fitted = slope * np.log(sizes) + intercept
+    log_sizes = np.log(sizes)
     observed = np.log(times)
+    if np.ptp(log_sizes) <= 0.0:
+        raise ValueError("scaling_fit requires at least two distinct sizes")
+    center = float(np.mean(log_sizes))
+    centered_sizes = log_sizes - center
+    slope, centered_intercept = np.polyfit(centered_sizes, observed, 1)
+    fitted = slope * centered_sizes + centered_intercept
+    intercept = centered_intercept - slope * center
     ss_res = float(np.sum((observed - fitted) ** 2))
     ss_tot = float(np.sum((observed - np.mean(observed)) ** 2))
     r2 = 1.0 - ss_res / ss_tot if ss_tot > 0.0 else float("nan")

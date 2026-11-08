@@ -1,4 +1,4 @@
-# Benchmarks and Statistics
+# Benchmark Measurement and Statistical Inference
 
 ## Measuring workloads and interpreting uncertainty
 
@@ -150,7 +150,9 @@ sampled size range and machine environment; it is not a proof of algorithmic
 asymptotic complexity. The coefficient of determination summarizes fit
 quality on those log-transformed measurements.
 
-## Jackknife, FDR, Welch, and circular statistics {#sec:jackknife_fdr_welch_circular}
+## Jackknife Intervals, False Discoveries, Unequal Variances, and Circular Data {#sec:jackknife_fdr_welch_circular}
+
+### Delete-one jackknife: bias and normal-approximation intervals
 
 `jackknife_ci(x, stat=np.mean, alpha=0.05)` produces both a confidence
 interval and a bias estimate for any scalar statistic without consuming a
@@ -182,10 +184,11 @@ interval itself stays centered on the uncorrected $\hat{\theta}$.  The
 normal quantile $z$ comes from bisecting `math.erfc(z / sqrt(2))`, which
 decreases monotonically from $2$ to $0$ as $z$ runs from $-\infty$ to
 $\infty$, so one hundred halvings of the bracket $[-40, 40]$ pin $z$ to
-double precision.  This deterministic erfc-bisection quantile needs no
-seed and no lookup table, so repeated calls with identical arguments
-return bit-identical results — the same reproducibility contract as the
-seeded routines above, but with no generator to seed at all.
+double precision within the exercised numerical toolchain. This quantile uses
+neither a seed nor a lookup table; a deterministic algorithm is not a promise
+of cross-version bitwise equality.
+
+### Benjamini-Hochberg: false-discovery-rate adjustment
 
 `benjamini_hochberg(pvals)` controls a different error rate from the
 Bonferroni map of \eqref{eq:stat-bonferroni}: instead of the
@@ -212,6 +215,8 @@ The stable argsort of the input is recorded so the adjusted values can
 be mapped back to the original input order, and the final cap at $1.0$
 keeps the output a valid p-value vector.
 
+### Welch: unequal-variance tests of two means
+
 `welch_t_test(a, b, alternative="two-sided")` compares two sample means
 without assuming equal variances, the assumption that the pooled
 standard deviation $s_p$ of `cohens_d` makes.  Writing
@@ -227,9 +232,9 @@ t \;=\; \frac{\bar{a} - \bar{b}}{\sqrt{w_a + w_b}},
 {\dfrac{w_a^{2}}{n_a - 1} + \dfrac{w_b^{2}}{n_b - 1}} .
 \end{equation}
 
-The p-value is evaluated from the exact Student-$t$ tails rather than a
-normal approximation, and it needs no `scipy`: the two-sided tail uses
-the identity
+Student-$t$ tails are evaluated numerically via an incomplete beta function,
+rather than replaced with a normal approximation. No `scipy` is needed;
+the two-sided tail uses the identity
 
 \begin{equation}
 \label{eq:stat-tail}
@@ -250,6 +255,8 @@ equal means give $t = 0.0$ (p-value $1.0$ two-sided) while different
 means give a signed infinite $t$ whose tail probabilities are exactly
 $0$ or $1$, evaluated against the finite pooled fallback
 $\nu = n_a + n_b - 2$ so the tails stay well-defined.
+
+### Circular mean and concentration: radians, not linear coordinates
 
 `rotation_stats(angles)` treats angles in radians as points on a circle
 rather than points on a line, where $359°$ and $1°$ are neighbors:
@@ -273,13 +280,12 @@ full $[0, 2\pi)$ circle, which ranges over $[0, 2]$ and approaches the
 familiar linear variance for tightly clustered angles.  Because sine
 and cosine are $2\pi$-periodic, wrapping the angles into any full
 circle leaves every returned value unchanged; when the resultant
-vanishes the mean degenerates to whatever `atan2` returns for the
-cancelled components.  Like everything else in
-`src/quadmath/stats/statistics.py`, all four routines are pure
-`numpy`-plus-`math` computations: no randomness, no optional scientific
-stack, and bit-identical repeats for identical arguments.
+vanishes, its direction is undefined; `atan2` merely maps the rounded
+cancelled components to a conventional number. These four routines use
+NumPy and Python's `math` without consuming random draws or importing an
+optional scientific stack. Repeatability is bounded by the selected toolchain.
 
-## Seeded resampling examples and Monte Carlo resolution {#a-reproducible-example}
+## Seeded Resampling: Monte Carlo Resolution and Interval Boundaries {#a-reproducible-example}
 
 The seeded examples below are reproducible in the documented numerical
 environment, not mathematical constants independent of library versions.
@@ -324,17 +330,17 @@ seed follows from the displayed seed-zero result. The positive add-one
 floor is $1/2001$. The example illustrates Monte Carlo resolution, not an
 exact enumeration of the permutation distribution.
 
-The two interval families meet on common ground in a second example.
-Two synthetic lattice-error samples with a planted mean shift are drawn
-once from a seeded generator: routine A contributes $n = 64$ error
-residuals centered on $0.0$ and routine B $64$ residuals whose population
-mean sits $0.08$ higher, both with scale $0.15$ — the unit being whatever
-the error residual measures.  For each sample mean, the 95% percentile
-bootstrap interval of \eqref{eq:stat-bootstrap} ($B = 2000$ resamples,
-re-seeded at 17) and the jackknife interval of \eqref{eq:stat-jackknife}
-(which consumes no randomness at all) are computed, and the script
-`quadmath/scripts/stats_diagnostics_gallery.py` draws all four intervals
-in a single `plot_ci_bars` call:
+### Seeded Gaussian groups: zero exclusion is not a two-group test
+
+Two independent synthetic Gaussian groups illustrate the interval families.
+One seeded generator draws $n=64$ values for A with population mean $0$ and
+$64$ for B with population mean $0.08$, both with standard deviation $0.15$.
+The units are arbitrary: these are not measured lattice errors or timings.
+For each sample mean, the nominal 95% percentile bootstrap interval of
+\eqref{eq:stat-bootstrap} ($B=2000$ resamples, re-seeded at 17) and the
+normal-approximation jackknife interval of \eqref{eq:stat-jackknife} are
+computed. `quadmath/scripts/stats_diagnostics_gallery.py` draws all four
+intervals in one `plot_ci_bars` call and marks both known population means:
 
 ```python
 import numpy as np
@@ -350,42 +356,43 @@ jackknife_ci(a, np.mean, alpha=0.05)[:2]
 # (-0.07682589122849623, 0.0013292867175937334)
 ```
 
-What the two families assume is where they differ.  The percentile
-bootstrap needs no shape assumption at all — only that the empirical
-resampling distribution of \eqref{eq:stat-bootstrap} approximates the
-sampling distribution of $\hat{\theta}$ — while the jackknife interval is
-the normal approximation $\hat{\theta} \pm
-z_{1-\alpha/2}\,\mathrm{se}_{\text{jack}}$ built from the $n$
-leave-one-out scores of \eqref{eq:stat-jackknife}.  On the sample mean
-with $n = 64$ the two agree to within a whisker: routine A's bootstrap
+Neither family turns a nominal level into an observed coverage guarantee.
+This percentile bootstrap resamples observations as independent empirical
+draws; the approximation in \eqref{eq:stat-bootstrap} must suit the data and
+statistic. Dependence, heavy tails or nonregular statistics can defeat its
+coverage. The jackknife uses the normal approximation $\hat{\theta} \pm
+z_{1-\alpha/2}\,\mathrm{se}_{\text{jack}}$, built from the leave-one-out
+scores of \eqref{eq:stat-jackknife}. For these sample means
+with $n=64$, A's bootstrap
 interval is $[-0.076095,\,-0.000487]$ against the jackknife's
-$[-0.076826,\,0.001329]$, and routine B's is $[0.056788,\,0.132418]$
+$[-0.076826,\,0.001329]$, and B's is $[0.056788,\,0.132418]$
 against $[0.056011,\,0.130639]$ (sample means $-0.037748$ and $0.093325$;
 the jackknife bias estimates sit at floating-point zero, as
 \eqref{eq:stat-jackknife} predicts for a linear statistic).  The figure
-records the comparison: routine B's planted shift shows up as both of its
-intervals clearing the dashed zero line, while routine A hugs the line so
+records the comparison: B's planted shift shows up as both of its
+intervals clearing the dashed zero line, while A hugs the line so
 tightly that the bootstrap upper endpoint stops $0.0005$ short of it and
 the jackknife upper endpoint crosses it by $0.0013$ — a hair-width
-disagreement that is the honest lesson of the panel.  Coverage verdicts
-this close to the boundary are method-sensitive; a Welch test on the same
-samples reports $t \approx -4.75$ with $p \approx 5.4 \times 10^{-6}$
-(\eqref{eq:stat-welch}), in agreement with the shift both interval
-families detect.
+disagreement between nominal interval constructions. A Welch test directly
+compares the two group means on the same samples, giving
+$t \approx -4.75$ and $p \approx 5.4 \times 10^{-6}$
+(\eqref{eq:stat-welch}). Excluding zero in an individual mean interval is
+not itself a test of the difference between group means.
 
-![**Bootstrap versus jackknife intervals for synthetic errors.** Two 64-sample groups use seed 17, standard deviation 0.15, and a planted B-population mean shift 0.08. The plot compares percentile-bootstrap and normal-approximation jackknife intervals. In the recorded values, A's bootstrap upper endpoint is just below zero while its jackknife upper endpoint is just above; B's intervals exclude zero. This method-sensitive boundary is not identical coverage or a substitute for a between-group test. Generate with `uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py`.](../output/figures/stats_ci_comparison.png)
+![**Bootstrap and jackknife on labelled synthetic groups.** Two 64-sample Gaussian groups use seed 17 and standard deviation 0.15. Crosses mark their known population means 0 and 0.08; the dashed line marks zero. The nominal 95% percentile-bootstrap and normal-approximation jackknife intervals disagree on A's zero exclusion, while B's both exclude zero. This is one seeded realization, not a coverage study or a substitute for a between-group test. Generate with `uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py`.](../output/figures/stats_ci_comparison.png)
 
 ## Cross-references
 
-- Timing harness, `BenchRow`, and the four benchmark constructors:
-  `src/quadmath/stats/benchmarks.py`.
-- Bootstrap, permutation tests, `cohens_d`, `p_adjust_bonferroni`,
-  `scaling_fit`: `src/quadmath/stats/statistics.py`.
-- The figure primitives built on these results: `18_stats_gallery.md`.
-- The interval-comparison script and figure behind the second example:
-  `quadmath/scripts/stats_diagnostics_gallery.py`
-  (`quadmath/output/figures/stats_ci_comparison.png`).
-- Measured surfaces: `quadray.py` (conventions in `SPEC.md`),
-  `omni_numbering.py` and `lattice_search.py` (`13_lattice_tooling.md`),
-  `ivm_field.py` (`11_ivm_field_learning.md`).
-- Sibling gallery of the lattice layer: `16_lattice_gallery.md`.
+- [Timing harness and benchmark constructors](../../src/quadmath/stats/benchmarks.py):
+  measured wall-clock samples and their problem-size inputs.
+- [Statistical functions](../../src/quadmath/stats/statistics.py): bootstrap,
+  permutation tests, effect sizes, multiple testing and scaling fits.
+- [Statistical graphics](18_stats_gallery.md): interval geometry, stable fitted
+  curves, empirical mass and the distinction between synthetic and measured data.
+- [Interval-comparison producer](../../quadmath/scripts/stats_diagnostics_gallery.py):
+  the actual model and generating population means behind the example.
+- [Coordinate conventions](../../SPEC.md),
+  [lattice tooling](13_lattice_tooling.md) and
+  [field models](11_ivm_field_learning.md): interpretation of measured inputs.
+- [Composable lattice figures](16_lattice_gallery.md): shared figure ownership,
+  model-specific panels and animation boundaries.

@@ -13,16 +13,6 @@ from __future__ import annotations
 import os
 import sys
 
-#: Output file names of the four gallery figures, in composition order.
-#: Must equal ``src/quadmath/viz/vis_stats.py::GALLERY_FILES`` (enforced by
-#: ``tests/unit/viz/test_vis_stats.py``).
-GALLERY_FILES = (
-    "stats_gallery_latency.png",
-    "stats_gallery_scaling.png",
-    "stats_gallery_ci.png",
-    "stats_gallery_ecdf.png",
-)
-
 
 def _ensure_src_on_path() -> None:
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -39,8 +29,7 @@ def main(out_dir: str | None = None) -> list[str]:
       ``<repo>/quadmath/output/figures`` via ``src/quadmath/paths.py``.
 
     Returns
-    - list[str]: The four absolute written paths, in
-      :data:`GALLERY_FILES` order.
+    - list[str]: The four absolute written paths, in the package gallery's order.
     """
     os.environ.setdefault("MPLBACKEND", "Agg")
     _ensure_src_on_path()

@@ -1,21 +1,11 @@
-"""Tests for the statistics visualization gallery (quadmath/viz/vis_stats.py).
-
-All assertions are deterministic and pixel-free: artist placement on
-caller-provided or freshly created axes, exact fit/step values on small
-known inputs, and byte-identical PNG re-renders for a fixed seed.
-"""
+"""Real statistical geometry, numerical boundaries and figure ownership."""
 from __future__ import annotations
-
-import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-import quadmath.paths as paths_module
-import stats_gallery
 from quadmath.viz.vis_stats import (
-    GALLERY_FILES,
     gallery,
     plot_ci_bars,
     plot_ecdf,
@@ -25,199 +15,156 @@ from quadmath.viz.vis_stats import (
 
 
 @pytest.fixture(autouse=True)
-def _close_figures():
-    """Close every matplotlib figure a test created (headless Agg via conftest)."""
+def close_owned_figures():
+    before = set(plt.get_fignums())
     yield
-    plt.close("all")
+    for number in set(plt.get_fignums()) - before:
+        plt.close(number)
 
 
-# ---------------------------------------------------------------------------
-# plot_latency_hist
-# ---------------------------------------------------------------------------
+def test_histogram_counts_and_sample_mean():
+    ax = plot_latency_hist(np.array([1., 2., 2., 3., 4.]), bins=4)
+    np.testing.assert_array_equal([patch.get_height() for patch in ax.patches], [1, 2, 1, 1])
+    np.testing.assert_allclose(ax.lines[0].get_xdata(), [2.4, 2.4])
 
 
-def test_latency_hist_creates_figure_with_mean_line():
+@pytest.mark.parametrize("sample, expected", [
+    ([0., 0.], 0.),
+    ([1e308, 1.1e308, 1.2e308], 1.1e308),
+])
+def test_histogram_mean_remains_representable(sample, expected):
+    ax = plot_latency_hist(np.array(sample), bins=3)
+    np.testing.assert_allclose(ax.lines[0].get_xdata(), [expected, expected], rtol=2e-15)
+
+
+def test_histogram_composes_without_replacing_caller_data():
+    fig, ax = plt.subplots()
+    original, = ax.plot([0., 1.], [3., 4.])
     before = plt.get_fignums()
-    ax = plot_latency_hist(np.array([1.0, 2.0, 2.0, 3.0, 4.0]), bins=10)
-    assert isinstance(ax, plt.Axes)
-    assert plt.get_fignums() == before + [ax.figure.number]
-    assert ax.get_title() == "Latency distribution"
-    assert len(ax.patches) == 10
-    assert ax.get_xlabel() == "latency" and ax.get_ylabel() == "count"
-    (mean_line,) = ax.lines
-    assert mean_line.get_linestyle() == "--"
-    assert 2.4 in np.asarray(mean_line.get_xdata(), dtype=float)
-    legend_labels = [text.get_text() for text in ax.get_legend().get_texts()]
-    assert any("mean" in label for label in legend_labels)
+    returned = plot_latency_hist(np.array([0.5, 1.5]), ax=ax)
+    assert returned is ax and plt.figure(fig.number) is fig
+    assert plt.get_fignums() == before
+    np.testing.assert_array_equal(original.get_ydata(), [3., 4.])
+    np.testing.assert_allclose(ax.lines[-1].get_xdata(), [1., 1.])
 
 
-def test_latency_hist_draws_on_caller_axes():
-    fig = plt.figure()
-    caller_ax = fig.add_subplot(1, 1, 1)
+@pytest.mark.parametrize("sample", [
+    [], [np.nan], [np.inf], [[1., 2.]], [1. + 2.j], np.array(1.), ["not numeric"],
+])
+def test_invalid_observations_do_not_allocate_a_figure(sample):
     before = plt.get_fignums()
-    ax = plot_latency_hist(np.array([0.5, 1.5]), ax=caller_ax, title="custom title")
-    assert ax is caller_ax
-    assert plt.get_fignums() == before  # no new figure created
-    assert ax.get_title() == "custom title"
+    with pytest.raises(ValueError):
+        plot_ecdf(np.asarray(sample))
+    assert plt.get_fignums() == before
 
 
-# ---------------------------------------------------------------------------
-# plot_scaling_loglog
-# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("borrowed", [False, True])
+def test_real_drawing_error_closes_only_owned_figures(borrowed):
+    fig, caller = plt.subplots()
+    original, = caller.plot([0., 1.], [3., 4.])
+    before = plt.get_fignums()
+    with pytest.raises(ValueError):
+        plot_latency_hist(np.array([1., 2.]), ax=caller if borrowed else None, bins=0)
+    assert plt.get_fignums() == before and plt.figure(fig.number) is fig
+    np.testing.assert_array_equal(original.get_ydata(), [3., 4.])
 
 
-def test_scaling_loglog_default_axes_and_fit_slope():
-    sizes = np.array([8.0, 16.0, 32.0])
-    times = np.array([10.0, 30.0, 95.0])
+def test_scaling_predictions_remain_finite_and_ordered_at_extreme_sizes():
+    sizes = np.array([1e202, 1e200, 1e201])
+    times = np.array([10000., 1., 100.])
     ax = plot_scaling_loglog(sizes, times)
-    assert ax.get_xscale() == "log" and ax.get_yscale() == "log"
-    assert ax.get_title() == "Scaling (log-log)"
-    (expected_slope, _) = np.polyfit(np.log(sizes), np.log(times), 1)
-    legend_labels = [text.get_text() for text in ax.get_legend().get_texts()]
-    assert any("slope" in label for label in legend_labels)
-    assert any(f"slope = {expected_slope:.3f}" in label for label in legend_labels)
+    scatter, fit = ax.lines
+    np.testing.assert_array_equal(scatter.get_xdata(), sizes)
+    np.testing.assert_array_equal(scatter.get_ydata(), times)
+    x = np.asarray(fit.get_xdata())
+    assert np.all(np.diff(x) > 0)
+    np.testing.assert_allclose(fit.get_ydata(), (x / 1e200) ** 2, rtol=1e-10)
 
 
-def test_scaling_loglog_draws_on_caller_axes():
-    fig = plt.figure()
-    caller_ax = fig.add_subplot(1, 1, 1)
+def test_constant_timing_fit_is_drawn_without_invented_variation():
+    ax = plot_scaling_loglog(np.array([1., 10., 100.]), np.array([5., 5., 5.]))
+    np.testing.assert_allclose(ax.lines[1].get_ydata(), [5., 5., 5.], rtol=1e-12)
+
+
+@pytest.mark.parametrize("sizes, times", [
+    ([1., 2.], [1.]),
+    ([0., 1.], [1., 2.]),
+    ([1., 2.], [-1., 2.]),
+    ([1.], [2.]),
+    ([4., 4., 4.], [1., 2., 3.]),
+])
+def test_unidentified_or_invalid_scaling_data_cannot_leave_a_chart(sizes, times):
     before = plt.get_fignums()
-    ax = plot_scaling_loglog(
-        np.array([1.0, 2.0]), np.array([1.0, 4.0]), ax=caller_ax, title="power law"
-    )
-    assert ax is caller_ax
+    with pytest.raises(ValueError):
+        plot_scaling_loglog(np.array(sizes), np.array(times))
     assert plt.get_fignums() == before
-    assert ax.get_title() == "power law"
-    assert ax.get_xscale() == "log" and ax.get_yscale() == "log"
 
 
-# ---------------------------------------------------------------------------
-# plot_ci_bars
-# ---------------------------------------------------------------------------
-
-
-def test_ci_bars_default_axes_and_rotated_labels():
-    labels = ["a", "bb", "ccc"]
-    means = np.array([1.0, 2.0, 3.0])
-    lows = np.array([0.9, 1.8, 2.7])
-    highs = np.array([1.1, 2.2, 3.3])
-    ax = plot_ci_bars(labels, means, lows, highs)
-    assert ax.get_title() == "Estimates with CI"
-    assert ax.get_ylabel() == "estimate"
-    tick_labels = [text.get_text() for text in ax.get_xticklabels()]
-    assert tick_labels == labels
-    for text in ax.get_xticklabels():
-        assert text.get_rotation() == 30.0
-    assert len(ax.containers) == 1
-    # capsize > 0 draws cap lines above and below each estimate; the cap
-    # Line2D artists live in the ErrorbarContainer, not in ax.lines.
-    assert len(ax.lines) >= len(labels)
-    # Caps render as Line2Ds (legacy) or one LineCollection (modern
-    # matplotlib); either way the container carries them.
-    assert len(ax.containers[0][2]) >= 1
-
-
-def test_ci_bars_draws_on_caller_axes():
-    fig = plt.figure()
-    caller_ax = fig.add_subplot(1, 1, 1)
+@pytest.mark.parametrize("times", [[1e308, 1e308, 1e-308], [1e-308, 1e-308, 1e308]])
+def test_unrepresentable_fitted_curve_fails_instead_of_disappearing(times):
     before = plt.get_fignums()
-    ax = plot_ci_bars(
-        ["x"], np.array([1.0]), np.array([0.9]), np.array([1.1]),
-        ax=caller_ax, title="with CI",
-    )
-    assert ax is caller_ax
+    with pytest.raises(ValueError):
+        plot_scaling_loglog(np.array([1., 2., 3.]), np.array(times))
     assert plt.get_fignums() == before
-    assert ax.get_title() == "with CI"
 
 
-def test_ci_bars_rejects_mismatched_lengths():
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    with pytest.raises(ValueError, match="equal length"):
-        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9, 1.8]), np.array([1.1]), ax=ax)
-    with pytest.raises(ValueError, match="equal length"):
-        plot_ci_bars(["a", "b"], np.array([1.0, 2.0]), np.array([0.9]), np.array([1.1, 2.2]), ax=ax)
-    with pytest.raises(ValueError, match="equal length"):
-        plot_ci_bars(["a"], np.array([1.0, 2.0]), np.array([0.9, 1.8]), np.array([1.1, 2.2]))
+def test_interval_endpoints_and_estimates_are_independent_geometry():
+    means = np.array([-1., 3., 0.5, 7.])
+    lows = np.array([0., 0., 0.25, 5.])
+    highs = np.array([1., 1., 0.75, 5.])
+    ax = plot_ci_bars(["below", "above", "inside", "zero-width"], means, lows, highs)
+    segments = np.asarray(ax.collections[0].get_segments())
+    np.testing.assert_array_equal(segments[:, :, 0], np.repeat(np.arange(4)[:, None], 2, axis=1))
+    np.testing.assert_array_equal(segments[:, :, 1], np.column_stack((lows, highs)))
+    points = np.vstack([np.column_stack(line.get_data()) for line in ax.lines])
+    for x, mean in enumerate(means):
+        assert np.any(np.all(points == [x, mean], axis=1))
 
 
-# ---------------------------------------------------------------------------
-# plot_ecdf
-# ---------------------------------------------------------------------------
-
-
-def test_ecdf_step_values_on_known_sample():
-    ax = plot_ecdf(np.array([3.0, 1.0, 2.0, 2.0]))
-    assert ax.get_title() == "Empirical CDF"
-    (step_line,) = ax.lines
-    np.testing.assert_allclose(step_line.get_xdata(), [1.0, 2.0, 2.0, 3.0])
-    np.testing.assert_allclose(step_line.get_ydata(), [0.25, 0.5, 0.75, 1.0])
-    assert ax.get_xlabel() == "value" and ax.get_ylabel() == "P(X <= x)"
-
-
-def test_ecdf_draws_on_caller_axes():
-    fig = plt.figure()
-    caller_ax = fig.add_subplot(1, 1, 1)
+@pytest.mark.parametrize("labels, lows, highs", [
+    (["a"], [0., 1.], [2., 3.]),
+    (["a", "b"], [0.], [2., 3.]),
+    (["a", "b"], [0., 1.], [2.]),
+])
+def test_misaligned_intervals_do_not_allocate_a_figure(labels, lows, highs):
     before = plt.get_fignums()
-    ax = plot_ecdf(np.array([1.0]), ax=caller_ax, title="sample ECDF")
-    assert ax is caller_ax
+    with pytest.raises(ValueError):
+        plot_ci_bars(labels, np.array([1., 2.]), np.array(lows), np.array(highs))
     assert plt.get_fignums() == before
-    assert ax.get_title() == "sample ECDF"
 
 
-# ---------------------------------------------------------------------------
-# gallery: composition, determinism, reproducibility
-# ---------------------------------------------------------------------------
+def test_reversed_interval_bounds_do_not_mutate_caller_axes():
+    fig, ax = plt.subplots()
+    original, = ax.plot([0., 1.], [3., 4.])
+    before = plt.get_fignums()
+    with pytest.raises(ValueError):
+        plot_ci_bars(["reversed"], np.array([0.]), np.array([2.]), np.array([1.]), ax=ax)
+    assert plt.get_fignums() == before and plt.figure(fig.number) is fig
+    assert list(ax.lines) == [original]
+    np.testing.assert_array_equal(original.get_ydata(), [3., 4.])
 
 
-def test_gallery_writes_reproducible_figures(tmp_path):
-    run1 = tmp_path / "run1"
-    run2 = tmp_path / "run2"
-    paths1 = stats_gallery.main(str(run1))
-    paths2 = stats_gallery.main(str(run2))
-    assert [os.path.basename(p) for p in paths1] == list(GALLERY_FILES)
-    for path in paths1:
-        assert os.path.isfile(path)
-        assert os.path.getsize(path) > 0
-    for first, second in zip(paths1, paths2):
-        with open(first, "rb") as fh_a, open(second, "rb") as fh_b:
-            assert fh_a.read() == fh_b.read()
-    # Every figure is closed after each run.
-    assert plt.get_fignums() == []
+def test_ecdf_ties_accumulate_their_exact_empirical_mass():
+    sample = np.array([3., 1., 2., 2.])
+    ax = plot_ecdf(sample)
+    x, y = map(np.asarray, ax.lines[0].get_data())
+    assert y[0] == 0. and y[-1] == 1. and np.all(np.diff(y) >= 0)
+    for value, fraction in [(1., 0.25), (2., 0.75), (3., 1.)]:
+        assert y[x <= value][-1] == fraction
+    np.testing.assert_array_equal(sample, [3., 1., 2., 2.])
 
 
-def test_gallery_existing_dir_rerun_identical(tmp_path):
-    run_dir = tmp_path / "shared"
-    paths_a = stats_gallery.main(str(run_dir))  # creates the directory
-    paths_b = stats_gallery.main(str(run_dir))  # reuses the existing directory
-    assert paths_a == paths_b
-    for first, second in zip(paths_a, paths_b):
-        with open(first, "rb") as fh_a, open(second, "rb") as fh_b:
-            assert fh_a.read() == fh_b.read()
+def test_singleton_ecdf_has_a_visible_zero_to_one_jump():
+    ax = plot_ecdf(np.array([5.]))
+    vertices = ax.lines[0].get_path().vertices
+    np.testing.assert_array_equal(vertices[:, 0], np.full(vertices.shape[0], 5.))
+    assert vertices[:, 1].min() == 0. and vertices[:, 1].max() == 1.
 
 
-def test_gallery_module_entrypoint_matches_script(tmp_path):
-    paths = gallery(str(tmp_path / "direct"), seed=32)
-    assert [os.path.basename(p) for p in paths] == list(GALLERY_FILES)
-    for path in paths:
-        assert os.path.isfile(path)
-
-
-# ---------------------------------------------------------------------------
-# thin script contract (quadmath/scripts/stats_gallery.py)
-# ---------------------------------------------------------------------------
-
-
-def test_stats_gallery_script_prints_paths(tmp_path, monkeypatch, capsys):
-    figures_dir = tmp_path / "figures"
-    monkeypatch.setattr(paths_module, "get_figure_dir", lambda: str(figures_dir))
-    assert stats_gallery.GALLERY_FILES == GALLERY_FILES  # manifest consistency
-    written = stats_gallery.main()
-    lines = capsys.readouterr().out.splitlines()
-    assert len(lines) == 4
-    assert lines == written
-    assert [os.path.basename(line) for line in lines] == list(GALLERY_FILES)
-    for line in lines:
-        assert os.path.isabs(line)
-        assert os.path.isfile(line)
-        assert os.path.getsize(line) > 0
+def test_gallery_preserves_caller_figure_and_closes_its_own(tmp_path):
+    fig, ax = plt.subplots()
+    original, = ax.plot([0., 1.], [3., 4.])
+    before = plt.get_fignums()
+    gallery(str(tmp_path / "gallery"), seed=137)
+    assert plt.get_fignums() == before and plt.figure(fig.number) is fig
+    np.testing.assert_array_equal(original.get_ydata(), [3., 4.])
