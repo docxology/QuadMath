@@ -260,3 +260,55 @@ def test_pairwise_displacements_preserve_nearby_points_far_from_first_vertex():
     assert d2[1, 2] == 3.0
     assert d2[1, 3] == 3.0
     assert d2[2, 3] == 8.0
+
+
+@pytest.mark.parametrize("scalar", (int, np.int64))
+def test_integer_embedding_distances_do_not_square_in_fixed_width(scalar):
+    length = 2**32
+    points = (
+        Quadray(0, 0, 0, 0), Quadray(length, 0, 0, 0),
+        Quadray(0, 1, 0, 0), Quadray(0, 0, 1, 0),
+    )
+    embedding = tuple(tuple(scalar(v) for v in row) for row in DEFAULT_EMBEDDING)
+    actual = squared_distances_from_quadrays(*points, embedding)
+    # Independent integer Cartesian oracle; no NumPy arithmetic before float().
+    images = [
+        tuple(sum(int(weight) * value for weight, value in zip(row, point.as_tuple()))
+              for row in embedding)
+        for point in points
+    ]
+    expected = [
+        [float(sum((a - b) ** 2 for a, b in zip(left, right))) for right in images]
+        for left in images
+    ]
+    np.testing.assert_array_equal(actual, expected)
+    assert actual[0, 1] == float(3 * 2**64)
+
+
+def test_custom_rational_distances_round_only_after_exact_squaring():
+    from fractions import Fraction
+
+    n = 2**60
+    embedding = (
+        (n + 1, -n, 0, 0),
+        (Fraction(1, 3), Fraction(1, 7), 0, 0),
+        (0, 0, Fraction(5, 11), 0),
+    )
+    points = (
+        Quadray(0, 0, 0, 0), Quadray(1, 1, 0, 0),
+        Quadray(0, 0, 1, 0), Quadray(0, 0, 0, 1),
+    )
+    images = [
+        tuple(sum(weight * value for weight, value in zip(row, point.as_tuple()))
+              for row in embedding)
+        for point in points
+    ]
+    expected = [
+        [float(sum((a - b) ** 2 for a, b in zip(left, right))) for right in images]
+        for left in images
+    ]
+    actual = squared_distances_from_quadrays(
+        *points, (iter(row) for row in embedding)
+    )
+    np.testing.assert_array_equal(actual, expected)
+    assert actual[0, 1] == float(1 + Fraction(10, 21)**2)

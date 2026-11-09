@@ -125,6 +125,22 @@ Descriptions:
 | OCN | Oregon Curriculum Network (educational framework integrating Quadrays) |
 | POV-Ray | Persistence of Vision Raytracer (used in quadcraft.py visualizations) |
 
+## Range-safe statistics and anchored prediction
+
+`quadmath.stats.statistics.sample_mean(x)` returns a range-safe float mean of
+a nonempty finite vector. It is the default statistic for
+`bootstrap_ci(x, stat=sample_mean, *, iters=2000, seed=0, alpha=0.05)` and
+`jackknife_ci(x, stat=sample_mean, alpha=0.05)`. Both callbacks receive one
+one-dimensional sample and must return a finite real scalar. Bootstrap draws
+stream from one seeded generator with sample-plus-iteration storage.
+
+`scaling_fit(sizes, times)` keeps its `(slope, intercept, r2)` reporting tuple;
+`scaling_predict(sizes, times, query_sizes)` returns owned predictions from the
+same anchored log-ratio OLS model without reconstructing the global intercept.
+Permutation ties use centered normalized pooled-range tolerance, not absolute
+offset magnitude. See [inference methods](17_benchmarks_statistics.md) for
+domains, representability limits and scientific assumptions.
+
 ## API Index (auto-generated; Methods linkage)
 
 The table below enumerates public symbols from `src/` modules.
@@ -296,7 +312,9 @@ The table below enumerates public symbols from `src/` modules.
 | `quadmath.stats.statistics` | `p_adjust_bonferroni` | function | `(pvals)` | Bonferroni-adjusted p-values, elementwise ``min(1, p * m)``. |
 | `quadmath.stats.statistics` | `permutation_test` | function | `(a, b, iters=, seed=, alternative=)` | Pooled permutation test on the difference of sample means. |
 | `quadmath.stats.statistics` | `rotation_stats` | function | `(angles)` | Circular statistics for angles given in radians. |
-| `quadmath.stats.statistics` | `scaling_fit` | function | `(sizes, times)` | Power-law (log-log linear) fit of runtimes against input sizes. |
+| `quadmath.stats.statistics` | `sample_mean` | function | `(x)` | Mean of a nonempty finite 1-D sample without overflowing its sum. |
+| `quadmath.stats.statistics` | `scaling_fit` | function | `(sizes, times)` | Return ``(slope, intercept, r2)`` for a power-law log-space OLS fit. |
+| `quadmath.stats.statistics` | `scaling_predict` | function | `(sizes, times, query_sizes)` | Predict positive runtimes from the same anchored fit as ``scaling_fit``. |
 | `quadmath.stats.statistics` | `summarize` | function | `(x)` | Descriptive summary of a sample. |
 | `quadmath.stats.statistics` | `welch_t_test` | function | `(a, b, alternative)` | Welch's unequal-variance two-sample t test. |
 | `quadmath.tools.atomic_write` | `atomic_open` | function | `(path, newline=)` | Yield a text handle whose contents replace ``path`` only if the block succeeds. |

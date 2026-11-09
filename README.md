@@ -18,12 +18,15 @@ See [figure destinations and reproduction](#figure-and-manuscript-generation).
 
 ## Status & Next Actions
 
-This guide describes the development checkout. The version-1 manuscript archived
-on Zenodo and the immutable `0.6.0` package release are historical artifacts;
-a fresh render is not a reproduction of the archived PDF. See the
-[release notes](CHANGELOG.md), [manuscript status](docs/MANUSCRIPT_STATUS.md)
-and [backlog](TODO.md). Test counts and coverage results belong to dated run
-receipts, not permanent claims about this checkout.
+This checkout prepares QuadMath **0.7.0**; release availability and assets belong
+to [GitHub releases](https://github.com/docxology/QuadMath/releases), with current
+verification in [workflow runs](https://github.com/docxology/QuadMath/actions).
+The version-1 manuscript archived on Zenodo and the `0.6.0` package release
+remain historical artifacts; a fresh render does not reproduce the archived
+PDF or change its DOI. See the [release notes](CHANGELOG.md),
+[manuscript status](docs/MANUSCRIPT_STATUS.md) and [backlog](TODO.md).
+Test counts and coverage results belong to dated run receipts, not permanent
+claims about this checkout.
 
 ## Quick Start
 

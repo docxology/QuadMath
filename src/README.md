@@ -13,13 +13,13 @@ Python 3.13 setup are in the [root guide](../README.md#quick-start).
 | `core.cayley_menger` | Length-based volume and tetrahedron radius calculations | [Methods](../quadmath/markdown/03_quadray_methods.md) |
 | `core.geometry`, `core.metrics`, `core.symbolic`, `core.examples` | Lorentz helpers, information diagnostics, symbolic expressions and example configurations | [Namespaces](../quadmath/markdown/02_4d_namespaces.md), [glossary](../quadmath/markdown/10_symbols_glossary.md) |
 | `lattice.omni_numbering`, `lattice.lattice_search` | BFS shell/site numbering and precomputed finite-ball queries | [Lattice tooling](../quadmath/markdown/13_lattice_tooling.md) |
-| `lattice.conversions` | Batch embedding, snapping and bounded enumeration | [Conversions](../quadmath/markdown/14_conversions_spec.md) |
+| `lattice.conversions` | Shape-validated embedding and strict represented-value rational inverse, distinct from floating snapping | [Conversions](../quadmath/markdown/14_conversions_spec.md) |
 | `lattice.ivm_field` | Centered-norm shell enumeration, soft field fitting and hard-boundary harmonic extension | [Field learning](../quadmath/markdown/11_ivm_field_learning.md) |
 | `lattice.ivm_dynamics` | Euclidean-radius graphs, distinct update laws, trajectories and coupling identification | [Dynamics](../quadmath/markdown/12_ivm_dynamics.md) |
 | `learn.learning_eval` | Site-fold selection, temporal holdout, learning curves and linear baselines | [Evaluation](../quadmath/markdown/15_learning_evaluation.md) |
 | `optimize` | Quadray Nelder–Mead and discrete IVM descent | [Optimization](../quadmath/markdown/04_optimization_in_4d.md) |
 | `inference.information` | Fisher pullbacks, free energy and Active Inference helpers | [Inference](../quadmath/markdown/09_free_energy_active_inference.md) |
-| `stats.statistics`, `stats.benchmarks` | Statistical inference versus machine-dependent timing | [Analysis operations](../docs/analysis/README.md) |
+| `stats.statistics`, `stats.benchmarks` | Range-safe `sample_mean`, inference, anchored `scaling_fit`/`scaling_predict`, versus machine-dependent timing | [Analysis operations](../docs/analysis/README.md) |
 | `viz` | Reusable plots, animations, lattice/statistics galleries and graphical abstract | [Figure guide](../quadmath/README.md) |
 | `validate.validate` | Numerical quaternion property reports | [API glossary](../quadmath/markdown/10_symbols_glossary.md) |
 | `pipeline` | Typed `Step`/`Pipeline` composition over runtime operations | [API glossary](../quadmath/markdown/10_symbols_glossary.md) |

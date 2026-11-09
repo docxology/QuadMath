@@ -24,23 +24,27 @@ numbers do not become timings merely by being plotted.
 
 The gallery uses 256 seeded lognormal draws with log mean 0 and log standard
 deviation 0.6, clipped to `[0.05, 5.0]`. Its axis explicitly calls these
-**synthetic latency seconds**. The mean calculation scales finite observations
-before reduction so a representable mean need not overflow with their sum.
+**synthetic latency seconds**. The shared `sample_mean` uses compensated
+summation, with exact represented-value accumulation only if the intermediate
+sum overflows; it preserves cancellation residuals as well as finite means.
 
 ![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](../output/figures/stats_gallery_latency.png)
 
 ## Shared log-space regression without overflowing intermediate powers
 
 `plot_scaling_loglog(sizes, times, ax=None, *, title=...)` delegates to
-[`scaling_fit`](17_benchmarks_statistics.md) for ordinary least squares in log
-space. Sizes and times must align and be positive, with at least two distinct
-log sizes. The statistical method centers log sizes for conditioning, returns
-the original-model intercept, and computes its residual diagnostic in log space.
+[`scaling_fit` and `scaling_predict`](17_benchmarks_statistics.md) for a shared
+ordinary least-squares model. Sizes and times must align and be positive,
+finite vectors with at least two distinct represented sizes. The kernel
+centers/scales log ratios relative to a paired observation at the maximum
+runtime, using `log1p` near the reference to retain adjacent-size differences.
 
-The plotted prediction is `exp(intercept + slope * log(size))`. Computing
-`exp(intercept) * size**slope` can instead produce `0 * inf` even when every
-input and predicted time is representable. The fitted curve is ordered by size;
-unrepresentable positive predictions raise rather than silently disappearing.
+Prediction uses the relative fitted offset and binary-exponent decomposition,
+not `exp(intercept + slope * log(size))` or
+`exp(intercept) * size**slope`. A residual-derived offset keeps the noisy fit
+from being forced through the reference observation. The global intercept is
+for reporting only. Curves are ordered by size; unrepresentable positive
+predictions raise rather than silently disappearing.
 The legend reports the fitted exponent and log-space $R^2$, which is undefined
 when all observed times are equal.
 
@@ -48,7 +52,7 @@ The example uses sizes `{8,16,32,64,128,256}` and a planted power law
 $t = 3 n^{1.35}(1+\varepsilon)$ with seeded 2% normal relative noise. It is an
 illustration, not a measurement or proof of an algorithm's asymptotic complexity.
 
-![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared numerical fit is evaluated in log space, avoiding an underflowed coefficient multiplied by an overflowing power.](../output/figures/stats_gallery_scaling.png)
+![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared anchored fit avoids an underflowed coefficient multiplied by an overflowing power or cancellation through a global intercept.](../output/figures/stats_gallery_scaling.png)
 
 ## Computed bootstrap intervals and independent point estimates
 
@@ -61,7 +65,8 @@ that estimate. Reversed bounds and misaligned inputs are rejected before drawing
 The gallery draws independent normal samples of sizes **16, 64 and 256**, with
 generating mean 1.5 and standard deviation 0.4. For each sample it computes a
 mean and a **nominal 95% percentile-bootstrap interval** using 2,000 seeded
-resamples through the shared `bootstrap_ci`. The generating population mean is
+resamples through the shared `bootstrap_ci` with its `sample_mean` default.
+The generating population mean is
 shown as a separate reference, not substituted for the observed estimate.
 A particular interval can miss the generating value; its confidence level is
 not a guarantee about one realization. These are not timings for API-name labels.

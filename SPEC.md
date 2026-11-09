@@ -139,6 +139,10 @@ $$\lVert (2,1,1,0) \rVert = 2\sqrt{2}, \quad
 
 and `distance((0,0,0,0), (2,1,1,0))` $= 2\sqrt{2}$ — the dot product and angle follow
 from the column Gram identity (S9).
+`distance` forms the native displacement exactly before applying the embedding
+and taking a scale-safe floating norm. It does not subtract two rounded absolute
+XYZ positions; a small displacement between large coordinates therefore survives.
+`squared_distance_exact` retains the rational squared result without a square root.
 
 ---
 
@@ -165,7 +169,10 @@ $M$ send the four quadray axes to the vertices of a regular tetrahedron in $\mat
 `conversions.quadray_to_xyz(q, M=None)` delegates to `quadray.to_xyz`:
 `quadray_to_xyz(q)` is *identical* to `quadray.to_xyz(q, quadray.DEFAULT_EMBEDDING)` (an
 explicit `M` is threaded through the shared internal helper `_embedding_rows`). An
-explicit embedding that is not of shape $(3,4)$ raises `ValueError`.
+explicit embedding that is not of shape $(3,4)$ raises `ValueError`. Shape validation
+also applies directly to `quadray.to_xyz` and exact geometry methods. Mixed
+integer/rational/floating entries retain their scalar values rather than being
+coerced to one homogeneous floating matrix.
 
 ---
 
@@ -321,11 +328,13 @@ half-integer FCC picture of the same sites, through the same scaled matrix).
 
 ### 5.2 Exact entry types (S21)
 
-`xyz` and `M` entries may be `int`, `float`, `fractions.Fraction`, or a NumPy integer
-(`np.int64` via `numbers.Integral`); `np.float64` is a `float` subclass and is accepted.
-Every accepted entry is converted to its **exact** rational value. Worked examples, all
-recovering `Quadray(1,1,1,0)` from the image of $(1,1,1,0)$, namely $(-1, 1, 1)$:
-a `Fraction` triple, an `np.int64` triple, and an `np.float64` array.
+`xyz` and `M` entries may be `int`, `float`, `fractions.Fraction`,
+`numbers.Integral` (including NumPy integers), or finite `numpy.floating`
+scalars (including `np.float32` and `np.float64`). Floating entries retain
+their **exact represented binary rational** values; mixed matrix entries are
+not first coerced to a common floating dtype. Nonfinite floating entries raise
+`ValueError` or `OverflowError`. Fraction and NumPy integer/floating triples
+for $(-1,1,1)$ recover `Quadray(1,1,1,0)`.
 
 ### 5.3 The fiber and its tie-break (S22)
 
@@ -371,9 +380,9 @@ for non-numeric entries:
   ("shape"); any embedding row not summing to exactly 0 ("does not sum to exactly 0");
   rank-deficient embedding ("rank < 3", S23); non-image point ("not in the embedding
   image", S24).
-- `TypeError`: an `xyz` or `M` entry that is not `int`/`float`/`Fraction`/
-  `numbers.Integral` — e.g. a `str` entry (note: a length-3 `str` passes the length
-  check and then fails entry conversion) or an `np.float32` entry, which is rejected.
+- `TypeError`: an `xyz` or `M` entry outside `int`/`float`/`Fraction`/
+  `numbers.Integral`/`numpy.floating` — e.g. a `str` entry (a length-3
+  `str` passes the length check and then fails entry conversion).
 
 ---
 
@@ -553,11 +562,11 @@ function appears here).
 | S18 | `within_radius`/`nearest` use float64 distances and radius cutoffs, with deterministic distance/lexicographic ordering and brute-force comparison examples | `lattice_search.nearest`, `lattice_search.within_radius` | `test_nearest_within_radius_exact_and_deterministic` |
 | S19 | Search is fail-closed: queries needing enumeration beyond `MAX_SHELL` raise `ValueError` instead of truncating | `lattice_search.nearest`, `lattice_search.within_radius` | `test_search_fails_closed_beyond_max_shell` |
 | S20 | Exact canonical recovery: `xyz_to_quadray_canonical(to_xyz(q)) == q` for all 309 canonical sites through shell 4, also at scale $1/2$ | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_exact_recovery_shells_0_to_4` |
-| S21 | Exact entry types: `int`/`float`/`Fraction`/`np.int64`/`np.float64` accepted and converted to exact rationals | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_exact_entry_types` |
+| S21 | Exact entry types: integers, `Fraction`, Python floats and finite NumPy floating scalars (including `np.float32`) retain exact represented values | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_exact_entry_types` |
 | S22 | The fiber is $y + t\,\mathbf{1}$; the inverse returns the unique min-0 representative (worked: $(3,2,2,1)$'s image $\to$ $(2,1,1,0)$) | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_fiber_tiebreak_min_zero` |
 | S23 | Rank lemma: with zero row sums, rank $M = 3$ iff $\det[C_0\,C_1\,C_2] \neq 0$; Urner determinant $= 4c^3$; rank-deficient input raises `ValueError` | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_rank_lemma` |
 | S24 | $xyz$ is in the image iff the preimage is integral; non-image points raise `ValueError` (never snapped) | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_rejects_non_image` |
-| S25 | Fail-closed taxonomy: wrong length/shape/row sums $\to$ `ValueError`; non-numeric entries (`str`, `np.float32`) $\to$ `TypeError` | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_fail_closed_taxonomy` |
+| S25 | Fail-closed taxonomy: wrong length/shape/row sums → `ValueError`; unsupported entries such as `str` → `TypeError`; nonfinite floats → `ValueError` or `OverflowError` | `conversions.xyz_to_quadray_canonical` | `test_canonical_inversion_fail_closed_taxonomy` |
 | S26 | Round-trip identity `quadray_roundtrip(q) == q` for all 309 canonical sites through shell 4; both legs share the same rows | `conversions.quadray_roundtrip` | `test_roundtrip_identity_shells_0_to_4` |
 | S27 | The exact-real inverse identity is scale independent for $c\ne0$; numerical round trips require finite resolvable images and coherent rounding | `conversions.quadray_roundtrip` | `test_roundtrip_scale_robustness` |
 | S28 | Documented failure: unnormalized input raises `AssertionError` "roundtrip is not the identity"; $(2,2,2,1) \to (1,1,1,0)$ | `conversions.quadray_roundtrip` | `test_roundtrip_documented_failure_unnormalized` |

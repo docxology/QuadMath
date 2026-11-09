@@ -45,7 +45,7 @@ def main() -> None:
     import numpy as np  # noqa: WPS433
 
     from quadmath.paths import get_figure_dir  # noqa: WPS433
-    from quadmath.stats.statistics import bootstrap_ci, jackknife_ci  # noqa: WPS433
+    from quadmath.stats.statistics import bootstrap_ci, jackknife_ci, sample_mean  # noqa: WPS433
     from quadmath.viz.vis_stats import plot_ci_bars  # noqa: WPS433
     from quadmath.viz._common import figure_scope, save_figure  # noqa: WPS433
 
@@ -60,11 +60,11 @@ def main() -> None:
     lows: list[float] = []
     highs: list[float] = []
     for name, sample in (("A", sample_a), ("B", sample_b)):
-        mean = float(np.mean(sample))
+        mean = sample_mean(sample)
         boot_lo, boot_hi = bootstrap_ci(
-            sample, np.mean, iters=2000, seed=SEED, alpha=ALPHA
+            sample, iters=2000, seed=SEED, alpha=ALPHA
         )
-        jack_lo, jack_hi, _bias = jackknife_ci(sample, np.mean, alpha=ALPHA)
+        jack_lo, jack_hi, _bias = jackknife_ci(sample, alpha=ALPHA)
         labels.extend((f"{name} bootstrap", f"{name} jackknife"))
         means.extend((mean, mean))
         lows.extend((float(boot_lo), float(jack_lo)))

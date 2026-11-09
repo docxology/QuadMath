@@ -273,7 +273,10 @@ def conservative_heat_step(
       once per lattice; ordinary updates use O(N + E) work and O(N) workspace.
       Fluxes accumulate before the state changes. Overflow/underflow-risk
       fields use exact binary-rational weights and accumulation before
-      converting the representable result back to floating point.
+      converting the representable result back to floating point. For
+      magnitude bound M, incident absolute flux sums are at most 2*M and
+      adding the old state is bounded by 3*M before cancellation. The fast
+      path therefore reserves headroom with M <= float_max/4.
     """
     arr = np.asarray(_validated_field(u, lattice), dtype=float)
     value = _validated_alpha(alpha)
@@ -285,7 +288,7 @@ def conservative_heat_step(
     magnitudes = np.abs(arr)
     if (
         weight < limits.tiny
-        or np.any(magnitudes > limits.max / 2)
+        or np.any(magnitudes > limits.max / 4)
         or np.any((magnitudes != 0) & (magnitudes < limits.tiny / weight))
     ):
         exact_weight = Fraction(value) / maximum_degree

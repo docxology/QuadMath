@@ -103,10 +103,10 @@ def squared_distances_from_quadrays(
 ) -> np.ndarray:
     """Build the 4x4 squared-distance matrix from four quadray vertices.
 
-    Embeds each integer pairwise displacement, rather than subtracting
-    floating images of absolute positions, preserving spatial translations.
-    The result can be passed directly to ``tetra_volume_cayley_menger`` or
-    ``ivm_tetra_volume_cayley_menger``.
+    Computes each pairwise squared distance exactly in native coordinates,
+    then rounds once to float64, preserving spatial translations and avoiding
+    fixed-width integer overflow. The result can be passed directly to
+    ``tetra_volume_cayley_menger`` or ``ivm_tetra_volume_cayley_menger``.
 
     Parameters
     - p0, p1, p2, p3: Quadray vertices (Fuller.4D)
@@ -120,14 +120,13 @@ def squared_distances_from_quadrays(
     by 1/sqrt(2) if results must match the sphere-radius-1 convention of
     `ivm_tetra_volume_cayley_menger`.
     """
-    from quadmath.core.quadray import to_xyz
-    embedding = tuple(tuple(row) for row in embedding)
+    from quadmath.core.quadray import _float_metric, _xyz_tuple, squared_distance_exact
+    embedding = _xyz_tuple(embedding)
     pts = (p0, p1, p2, p3)
     d2 = np.zeros((4, 4))
     for i in range(4):
         for j in range(i + 1, 4):
-            diff = np.asarray(to_xyz(pts[i].sub(pts[j]), embedding))
-            val = float(diff @ diff)
+            val = _float_metric(squared_distance_exact(pts[i], pts[j], embedding))
             d2[i, j] = val
             d2[j, i] = val
     return d2

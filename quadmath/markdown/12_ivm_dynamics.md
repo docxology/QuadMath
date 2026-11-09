@@ -106,6 +106,10 @@ E(u)=\tfrac12 u^{\mathsf T}Lu
 implementation costs \(O(N+|\mathcal E|)\); accumulation precedes the final
 state addition. Exceptional floating ranges use exact binary-rational fluxes
 before rounding, preserving recoverable subnormal flow and finite constants.
+For maximum absolute input $M>\mathrm{MAX}/4$, exact accumulation also avoids
+overflow of the total incident flux plus the old state, not just individual
+edge differences. On the ordinary path the incident absolute flux is bounded
+by $2M$ and the old state plus flux by $3M$.
 Conservation for ordinary floating trajectories holds up to roundoff, not
 bitwise equality. At \(\alpha=1\), bipartite components can oscillate, so
 non-increasing energy is not a claim of strict convergence.

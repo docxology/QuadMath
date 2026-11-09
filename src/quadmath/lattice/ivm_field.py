@@ -37,6 +37,7 @@ from __future__ import annotations
 import math
 
 from dataclasses import dataclass, field
+from fractions import Fraction
 from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -301,12 +302,25 @@ class IVMField:
           observation, and Nadaraya–Watson kernel target
           ``t_i = sum_j K(d_ij) y_j / sum_j K(d_ij)``.
 
+        Kernel targets use relative Gaussian weights, so even a very narrow
+        kernel retains the nearest-observation limit without raising the
+        absolute confidence above its floor. The solve transports observation
+        weights rather than globally scaled data: a small observation is not
+        subtracted from, or divided by, the largest observation. Convex means
+        preserve representable constants at both floating extremes.
+
         The Laplacian regularizer (``L``, the graph Laplacian) propagates
         field structure from observed sites across the lattice graph.  The
         normal equations ``(C + lam * L) f = C t`` are solved densely with
-        ``numpy`` — no ML frameworks.  The fit is fully deterministic;
-        callers seed any observation sampling themselves (e.g. with
-        ``numpy.random.default_rng(seed)``).
+        ``numpy`` — no ML frameworks. For positive ``lam`` the dense solve
+        computes the observation response weights; for zero ``lam`` the
+        solution is the kernel target itself. Double-precision response weights
+        can lose accuracy in ill-conditioned systems or underflow at extremely
+        weak coupling. Nonfinite, nonconvex, or backward-inaccurate results are
+        rejected before replacing the field; this is not a forward-error
+        guarantee for ill-conditioned systems. Each connected component must
+        contain an observation. Callers seed observation sampling themselves
+        (e.g. with ``numpy.random.default_rng(seed)``).
 
         Observations are soft constraints: for positive ``lam`` even the
         observed values can move.  Use :meth:`harmonic_extension` for hard
@@ -322,21 +336,25 @@ class IVMField:
         - IVMField: Self, with ``values`` replaced by the fitted field.
 
         Raises
-        - ValueError: If ``lam`` is negative, ``kernel_width`` is not
-          positive, no observations are given, lengths differ, an
-          observation value is not finite, or an observation site lies
-          outside the ball.
+        - ValueError: If ``lam`` is not finite and non-negative,
+          ``kernel_width`` is not finite and positive, no observations are
+          given, values are not a finite one-dimensional sequence of matching
+          length, observation sites repeat or lie outside the ball, or a
+          connected component contains no observation.
+        - numpy.linalg.LinAlgError: If the dense response or resulting field
+          is nonfinite or numerically inaccurate. Failed learning leaves the
+          previous values unchanged.
         """
-        if not lam >= 0.0:
-            raise ValueError(f"lam must be non-negative, got {lam}")
-        if not kernel_width > 0.0:
-            raise ValueError(f"kernel_width must be positive, got {kernel_width}")
+        if not np.isfinite(lam) or not lam >= 0.0:
+            raise ValueError(f"lam must be non-negative and finite, got {lam}")
+        if not np.isfinite(kernel_width) or not kernel_width > 0.0:
+            raise ValueError(f"kernel_width must be positive and finite, got {kernel_width}")
         obs = list(observation_sites)
         y = np.asarray(list(observation_values), dtype=float)
         if len(obs) == 0:
             raise ValueError("at least one observation is required")
-        if y.shape[0] != len(obs):
-            raise ValueError("observation_sites and observation_values must have the same length")
+        if y.ndim != 1 or len(y) != len(obs):
+            raise ValueError("observation_sites and observation_values must have the same length and values must be one-dimensional")
         if not np.all(np.isfinite(y)):
             raise ValueError("observation values must be finite")
         obs_idx: List[int] = []
@@ -352,26 +370,77 @@ class IVMField:
         observed = np.zeros(n, dtype=bool)
         observed[np.asarray(obs_idx, dtype=int)] = True
         d_min = _multi_source_distances(self.adjacency, obs_idx)
-        confidence = np.where(
-            observed,
-            1.0,
-            np.maximum(np.exp(-((d_min / kernel_width) ** 2)), _WEIGHT_FLOOR),
-        )
+        if np.any(d_min < 0):
+            raise ValueError("each connected component must have an observation")
+        # Absolute confidence is part of the objective, unlike the common
+        # factor that cancels from the normalized kernel targets.
+        with np.errstate(over="ignore", under="ignore"):
+            confidence = np.where(
+                observed,
+                1.0,
+                np.maximum(np.exp(-((d_min / kernel_width) ** 2)), _WEIGHT_FLOOR),
+            )
 
-        num = np.zeros(n, dtype=float)
-        den = np.zeros(n, dtype=float)
-        for j, y_j in zip(obs_idx, y):
+        mixture = np.zeros((n, len(obs_idx)), dtype=float)
+        for column, j in enumerate(obs_idx):
             d_j = _multi_source_distances(self.adjacency, [j])
-            k_row = np.exp(-((d_j / kernel_width) ** 2))
-            num += k_row * y_j
-            den += k_row
-        y_hat = num / den
+            reachable = d_j >= 0
+            # Relative squared distances avoid -inf - -inf for narrow kernels.
+            # Observations in other components have exactly zero influence.
+            distance_gap = (d_j[reachable] - d_min[reachable]).astype(float) * (
+                d_j[reachable] + d_min[reachable]
+            )
+            with np.errstate(over="ignore", under="ignore"):
+                mixture[reachable, column] = np.exp(
+                    -(distance_gap / kernel_width) / kernel_width
+                )
+        mixture /= mixture.sum(axis=1, keepdims=True)
+        mixture[obs_idx] = 0.0
+        mixture[obs_idx, np.arange(len(obs_idx))] = 1.0
+        target = np.array([_convex_mean(y, row) for row in mixture])
 
-        lap = self._laplacian()
-        target = y_hat.copy()
-        target[obs_idx] = y  # observed targets, not hard constraints on f
-        system = np.diag(confidence) + lam * lap
-        self.values = np.linalg.solve(system, confidence * target)
+        if lam == 0.0:
+            values = target
+        else:
+            lap = self._laplacian()
+            with np.errstate(over="ignore", invalid="ignore"):
+                system = np.diag(confidence) + lam * lap
+            if not np.all(np.isfinite(system)):
+                raise np.linalg.LinAlgError("learning system is not finite")
+            response = np.linalg.solve(system, confidence[:, None] * mixture)
+            tolerance = 64.0 * np.finfo(float).eps * n
+            if (
+                not np.all(np.isfinite(response))
+                or np.any(response < 0.0)
+                or np.any(np.abs(response.sum(axis=1) - 1.0) > tolerance)
+            ):
+                raise np.linalg.LinAlgError("learning response is not numerically convex")
+            values = np.array([_convex_mean(y, row) for row in response])
+            # Check the actual data-term/edge-gradient equations, not just the
+            # response solve. This also catches lost weak-coupling influence
+            # when tiny response coefficients underflow before meeting large y.
+            for i, neighbors in enumerate(self.adjacency):
+                scale = max(abs(target[i]), abs(values[i]), *(abs(values[j]) for j in neighbors))
+                if scale == 0.0:
+                    continue
+                coefficient = max(confidence[i], lam)
+                data_weight = confidence[i] / coefficient
+                edge_weight = lam / coefficient
+                fitted, desired = values[i] / scale, target[i] / scale
+                adjacent = [values[j] / scale for j in neighbors]
+                residual = math.fsum(
+                    [data_weight * (fitted - desired)]
+                    + [edge_weight * (fitted - value) for value in adjacent]
+                )
+                bound = (
+                    data_weight * (abs(fitted) + abs(desired))
+                    + edge_weight * math.fsum(
+                        abs(fitted) + abs(value) for value in adjacent
+                    )
+                )
+                if abs(residual) > tolerance * bound:
+                    raise np.linalg.LinAlgError("learned field fails the backward-error check")
+        self.values = values
         return self
 
     def harmonic_extension(
@@ -469,6 +538,36 @@ class IVMField:
             for j in neighbors:
                 lap[i, j] = -1.0
         return lap
+
+
+def _convex_mean(values: "np.ndarray", weights: "np.ndarray") -> float:
+    """Evaluate a nonnegative weighted mean without a global data scale.
+
+    Same-sign ordinary data are anchored at their smallest magnitude and use
+    compensated summation. Mixed signs and floating extremes use exact rational
+    accumulation to avoid cancellation, intermediate overflow and premature
+    subnormal-product underflow; only the final mean is rounded back to float.
+    """
+    active = weights > 0.0
+    data = values[active]
+    mass = weights[active]
+    largest = float(np.max(np.abs(data)))
+    nonzero = np.abs(data[data != 0.0])
+    if (
+        largest > np.finfo(float).max / 4.0
+        or (len(nonzero) and float(np.min(nonzero)) < np.finfo(float).tiny)
+        or np.min(data) < 0.0 < np.max(data)
+    ):
+        exact_mass = [Fraction(float(weight)) for weight in mass]
+        return float(
+            sum(weight * Fraction(float(value)) for weight, value in zip(exact_mass, data))
+            / sum(exact_mass)
+        )
+    denominator = math.fsum(mass)
+    reference = float(data[np.argmin(np.abs(data))])
+    return reference + math.fsum(
+        float(delta) * float(weight) for delta, weight in zip(data - reference, mass)
+    ) / denominator
 
 
 def _multi_source_distances(

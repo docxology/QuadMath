@@ -71,7 +71,7 @@ deleted.
 - [x] Doc drift corrected: radius-3 lattice is 13 sites and free-energy formula in `docs/manuscript/08, 09, 12, 16`; test and file counts in `tests/README.md`, `tests/AGENTS.md`; flat `src/*.py` paths in SPEC, ARCHITECTURE, README, AGENTS, docs; broken links in `quadmath/markdown/`; scripts README counts and paths.
 - [x] `validate.check_slerp_midpoint` (validate.py ~L270-286) fails correct slerp for any pair with dot < 0, so q and -q are reported as failures. Design decision: compares against the shorter-arc representative (`validate/validate.py`).
 - [x] Stat-callable convention: `bootstrap_ci` calls `stat(x, axis=1)`; `jackknife_ci` calls `stat(1-D)`. Decision: the stat callable is 1-D in, scalar out (`stats/statistics.py`); `bootstrap_ci` loops per resample.
-- [x] `bootstrap_ci` and `scaling_fit` reject NaN; `permutation_test` compares with tolerance 1e-12 * max|pool| for float ties.
+- [x] `bootstrap_ci` and `scaling_fit` reject nonfinite/nonvector samples; `permutation_test` compares float ties with `1e-12 * ptp(pool)` in a centered normalized pool, not an absolute-offset tolerance.
 - [x] `quadmath/output/data/figure_manifest.txt` regenerated with repo-relative paths (no `/Volumes/...`). (34 lines, `/Volumes/...` paths) and fails the new existence assertion. Regenerate with the full pipeline.
 - [x] `quadmath/markdown/10_symbols_glossary.md` not regenerated; regenerated; `generate_glossary.py --check` passes.
 - [x] `render_pdf.sh` MODULES covers sections 01–18 (`check_module_coverage`); pandoc and xelatex helpers are shared (`pandoc_to_tex`, `compile_tex_to_pdf`). Decision: `gpu_acceleration_demo.py` stays a manual timing benchmark, documented as writing no artifact and outside `FIGURE_SCRIPTS`.

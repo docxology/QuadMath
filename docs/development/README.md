@@ -82,6 +82,17 @@ It does not run Lean or the docs checker. Its PDF/TeX/temp paths are fixed under
 `quadmath/output/`: the Python override does not isolate this entire pipeline.
 See [build dependencies](../../quadmath/README.md#build-requirements).
 
+## Original and source-rebuilt distribution receipts
+
+The [workflow package-evidence section](../../WORKFLOW.md#installed-distribution-evidence-by-python-version)
+maps `quadmath-distributions-python-3.11` and
+`quadmath-distributions-python-3.13` to their original/rebuilt wheels and
+consumer JSON, dependency/toolchain records and hashes. Inspect both consumers;
+source tests or the existence of an uploaded artifact do not prove the
+published wheel/source archive. The separate manuscript artifact is
+`quadmath-manuscript`. Current run status is in the
+[workflow index](https://github.com/docxology/QuadMath/actions), not this guide.
+
 ## Separate Lean evidence and safe handoff
 
 Lean elaboration (`lake build` from `lean/`) and declaration-level trust audits

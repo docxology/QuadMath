@@ -1,11 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.7.0 — 2026-11-09
 
 ### Statistical geometry, stable fitting and honest examples
 
 - Draw confidence-interval endpoints independently of point estimates, including intervals that exclude an estimate and zero-width intervals; validate before allocating figures and close only owned figures after real drawing failures.
-- Evaluate fitted scaling curves in log space through the shared centered fit rather than overflowing `exp(intercept) * size**slope`. Preserve sorted fit geometry, constant timings and explicit failure for unrepresentable curves.
+- Evaluate fitted scaling curves through a shared anchored, centered/scaled log-ratio fit with binary-exponent prediction rather than reconstructing a global intercept. Preserve adjacent represented sizes/runtimes, sorted fit geometry, constant timings and explicit failure for unrepresentable curves.
 - Preserve tied empirical mass and a visible zero-to-one jump for singleton ECDFs. Compute representable histogram means without overflowing an intermediate sum.
 - Replace arbitrary interval widths and misleading benchmark labels with computed seeded percentile-bootstrap intervals and explicitly synthetic inputs. Show known population means in the bootstrap/jackknife comparison.
 - Modularize method sections and clarify nominal coverage, individual zero exclusion versus between-group tests, figure ownership and numerical versus encoded-file reproducibility. Replace copied inventories/byte assertions with consumer-visible geometry and resource regressions.
@@ -21,9 +21,23 @@
 
 ### Modular documentation and verification
 
-- Audit mathematical chapters, specification and operational guides against current source; preserve explicit anchors, regenerate the API glossary and port the canonical manuscript.
+- Audit mathematical chapters, specification and operational guides against current source; maintain canonical API-glossary and scripted manuscript-projection ownership.
 - Check fragment-only links, duplicate heading slugs, encoded/reference targets and linked Markdown outside scanned roots. Preserve long code fences. Missing/empty authored roots fail; multi-root repository scans prune dependency/generated trees without exempting linked targets.
 - Add numerical data/domain/eigenvector regressions and real multi-root link-gate fixtures. Historical releases and deposited PDFs remain version-specific evidence, not claims about current main.
+
+### Exact geometry, range-safe inference and field transport
+
+- Subtract quadray points exactly before embedding floating distances, preserving small displacements between large native coordinates. Preserve mixed integer/rational matrix entries without homogeneous float coercion, and reject malformed embeddings consistently.
+- Accept finite NumPy floating scalars, including `np.float32`, in strict inverse coordinates and matrices as their exact represented binary rationals; retain tolerance-free lattice membership, exact row sums and rank checks.
+- Add public `sample_mean` and `scaling_predict(sizes, times, query_sizes)`; retain the `scaling_fit` three-tuple summary. Use compensated means with an overflow-only exact fallback, exact endpoint quantile interpolation and local centered/scaled moments.
+- Stream bootstrap resamples through one seeded generator with linear sample-plus-iteration storage. Bootstrap and jackknife now default to `sample_mean`; require finite one-dimensional samples and finite real scalar callbacks. Reject unrepresentable jackknife bias/intervals.
+- Use centered normalized pool-range permutation tie tolerance rather than absolute-offset tolerance. Stabilize Cohen's d and Welch inference across extreme representable offsets/units, and retain representable tiny Student-t tails without a normal approximation. Singleton descriptive standard deviation remains undefined; genuinely out-of-range descriptive spread can be infinite.
+- Transport nonnegative Gaussian observation mixtures through the dense regularized learning system, preserving mixed-magnitude observations and cancellation-sensitive targets. Zero regularization evaluates the kernel target directly. Require observations in each graph component; reject nonfinite, nonconvex or physically backward-inaccurate fits atomically, without promising forward accuracy in ill-conditioned systems.
+- Keep physical convex means portable on Python 3.11: compensate ordinary same-sign sums and accumulate mixed-sign or extreme products exactly. Preserve the zero-field optimum and require either an accurate ill-conditioned fit or an atomic numerical rejection.
+- Retain conservative edge-flux transport at extreme finite magnitudes using exact accumulation when incident flux plus old state could overflow. Floating ordinary-path conservation remains subject to roundoff.
+- Separate original wheel and source-distribution-rebuilt wheel proofs per supported Python version; distinguish installed-artifact receipts from editable-source checks and fixed-toolchain repeatability from universal byte reproducibility.
+
+Verification for this release requires current [workflow runs](https://github.com/docxology/QuadMath/actions) and dated artifact receipts; this note does not report a new test, build, rendering, package-publication or CI result. Coordinated contracts and evidence boundaries live in the authoritative [suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
 
 ## 0.6.0 — 2026-11-07
 

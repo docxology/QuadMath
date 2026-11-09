@@ -42,13 +42,37 @@ jobs:
           uv run --frozen python quadmath/scripts/generate_glossary.py --check
           uv run --frozen python quadmath/scripts/validate_markdown.py --strict
           uv run --frozen python docs/development/check_links.py
-      - name: Build source distribution and wheel
-        run: uv build --python '${{ matrix.python }}'
-      - name: Exercise installed wheel outside the checkout
+      - name: Build wheel, source archive and source-rebuilt wheel with toolchain evidence
         run: |
-          uv venv --python '${{ matrix.python }}' /tmp/quadmath-wheel
-          uv pip install --python /tmp/quadmath-wheel/bin/python dist/*.whl
-          /tmp/quadmath-wheel/bin/python -I - <<'PY'
+          package_dir="$RUNNER_TEMP/quadmath-package"
+          mkdir -p "$package_dir/original" "$package_dir/rebuilt" "$package_dir/proof" "$package_dir/source"
+          uv --version > "$package_dir/proof/runner.txt"
+          python --version >> "$package_dir/proof/runner.txt"
+          python -m pip freeze > "$package_dir/proof/runner-packages.txt"
+          uv venv --python '${{ matrix.python }}' "$RUNNER_TEMP/quadmath-builder"
+          python -c 'import tomllib; print("\n".join(tomllib.load(open("pyproject.toml","rb"))["build-system"]["requires"]))' > "$package_dir/proof/build-requirements.txt"
+          uv pip install --python "$RUNNER_TEMP/quadmath-builder/bin/python" -r "$package_dir/proof/build-requirements.txt"
+          uv pip freeze --python "$RUNNER_TEMP/quadmath-builder/bin/python" > "$package_dir/proof/build-toolchain.txt"
+          uv export --frozen --no-dev --no-emit-project --no-header --format requirements-txt --output-file "$package_dir/proof/runtime-constraints.txt"
+          uv build --no-build-isolation --python "$RUNNER_TEMP/quadmath-builder/bin/python" --wheel --sdist --out-dir "$package_dir/original"
+          tar -xzf "$package_dir"/original/*.tar.gz -C "$package_dir/source"
+          uv build --no-build-isolation --python "$RUNNER_TEMP/quadmath-builder/bin/python" --wheel --out-dir "$package_dir/rebuilt" "$package_dir"/source/*
+          sha256sum "$package_dir"/original/* "$package_dir"/rebuilt/* | sed "s|$package_dir/||" > "$package_dir/proof/sha256.txt"
+      - name: Exercise both installed distributions outside the checkout
+        run: |
+          package_dir="$RUNNER_TEMP/quadmath-package"
+          expected_version=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')
+          cd "$RUNNER_TEMP"
+          for kind in original rebuilt; do
+            environment="$RUNNER_TEMP/quadmath-$kind"
+            uv venv --python '${{ matrix.python }}' "$environment"
+            uv pip install --python "$environment/bin/python" --constraint "$package_dir/proof/runtime-constraints.txt" "$package_dir/$kind"/*.whl
+            uv pip freeze --python "$environment/bin/python" > "$package_dir/proof/$kind-installed.txt"
+            "$environment/bin/python" -I - "$expected_version" > "$package_dir/proof/$kind-consumer.json" <<'PY'
+          import json, sys
+          from importlib.metadata import version
+          from pathlib import Path
+          import quadmath
           from fractions import Fraction
           import numpy as np
           from quadmath import (
@@ -59,6 +83,10 @@ jobs:
           from quadmath.core.quadray import integer_tetra_volume
           from quadmath.core.metrics import kl_divergence, shannon_entropy
           from quadmath.inference.information import fisher_information_matrix
+          from quadmath.stats.statistics import sample_mean, scaling_fit, scaling_predict
+          assert Path(quadmath.__file__).resolve().is_relative_to(Path(sys.prefix).resolve())
+          installed_version = version("quadmath-project")
+          assert installed_version == sys.argv[1]
           points = [Quadray(0,0,0,0), Quadray(1,0,0,0),
                     Quadray(0,1,0,0), Quadray(0,0,1,0)]
           assert integer_tetra_volume(*points) == Fraction(1,4)
@@ -76,12 +104,26 @@ jobs:
           assert midpoint == (Fraction(1,2), Fraction(0), Fraction(0), Fraction(0))
           assert signed_tetra_volume_exact(points[0], midpoint, *points[2:]) == Fraction(1,8)
           assert triangle_area_squared_exact(*points[:3]) == 2
+          mean = sample_mean([1e308, 1e308])
+          assert mean == 1e308
+          exponent, _, r_squared = scaling_fit([1,2,4], [3,12,48])
+          prediction = scaling_predict([1,2,4], [3,12,48], [8])
+          assert np.isclose(exponent, 2) and np.isclose(r_squared, 1)
+          assert np.allclose(prediction, [192])
+          print(json.dumps({"distribution": "quadmath-project", "version": installed_version,
+                            "python": sys.version, "tetra_volume": str(integer_tetra_volume(*points)),
+                            "triangle_area_squared": str(triangle_area_squared_exact(*points[:3])),
+                            "sample_mean": mean, "scaling_prediction": np.asarray(prediction).tolist()}))
           PY
+          done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: matrix.python == '3.13'
+        if: always()
         with:
-          name: quadmath-distributions
-          path: dist/*
+          name: quadmath-distributions-python-${{ matrix.python }}
+          path: |
+            ${{ runner.temp }}/quadmath-package/original
+            ${{ runner.temp }}/quadmath-package/rebuilt
+            ${{ runner.temp }}/quadmath-package/proof
           if-no-files-found: error
 
   formal:

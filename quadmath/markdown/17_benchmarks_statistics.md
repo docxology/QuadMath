@@ -62,14 +62,26 @@ scenarios with defaults from `BENCH_DEFAULTS` and returns
 text table.  The harness measures only; it asserts nothing — timing
 distributions belong to analysis, not to test assertions.
 
+## Finite sample domains and range-safe summaries
+
+`sample_mean(x)` accepts a nonempty finite one-dimensional sample and returns
+a float without mutating its input. Compensated summation preserves small
+cancellation residuals; exact represented-value accumulation is used only
+when the intermediate sum overflows. `summarize(x)` shares that mean,
+interpolates order-statistic endpoints exactly before rounding, and computes
+sample spread in a local centered/scaled frame rather than squaring raw data.
+Singleton sample standard deviation is undefined (`NaN`, without a warning).
+A genuinely out-of-range standard deviation or IQR may be infinite.
+Resampling, effect-size, Welch and scaling sample arguments likewise require
+finite vectors; this is not a multidimensional reduction API.
+
 ## Percentile bootstrap
 
-`bootstrap_ci(x, stat=np.mean, *, iters=2000, seed=0, alpha=0.05)` gives a
-confidence interval for any statistic $\hat{\theta}$ by resampling the data
-with replacement.  With $n = |x|$ and a seeded
-`numpy.random.default_rng(seed)`, iteration $b$ draws resampling indices
-$i_{bj} \sim \mathrm{Uniform}\{0,\dots,n-1\}$ in one vectorized call
-(`rng.integers(0, n, size=(iters, n))`) and evaluates
+`bootstrap_ci(x, stat=sample_mean, *, iters=2000, seed=0, alpha=0.05)` gives a
+confidence interval by resampling with replacement. With $n=|x|$ and one seeded
+`numpy.random.default_rng(seed)`, iteration $b$ draws indices
+$i_{bj}\sim\mathrm{Uniform}\{0,\dots,n-1\}$ with
+`rng.integers(0, n, size=n)` and evaluates:
 
 \begin{equation}
 \label{eq:stat-bootstrap}
@@ -81,11 +93,15 @@ $i_{bj} \sim \mathrm{Uniform}\{0,\dots,n-1\}$ in one vectorized call
 Q_{1-\alpha/2}\big(\hat{\theta}^{*}_{1..B}\big) \Big],
 \end{equation}
 
-with $B$ = `iters`.  The percentile interval needs no distributional
-assumption about $\hat{\theta}$ — only that the empirical resampling
-distribution approximates its sampling distribution.  All randomness is
-consumed from the seeded generator, so the interval is exactly
-reproducible.
+with $B$ = `iters`. Resamples stream through the generator, requiring
+$O(n+B)$ storage, not an $B\times n$ index matrix. Each callback receives
+one one-dimensional float sample and must return a finite real scalar;
+nonfinite or nonscalar results raise `ValueError`. The default is the
+range-safe `sample_mean`, not `numpy.mean`.
+The interval relies on the empirical resampling distribution approximating
+the sampling distribution; a percentile recipe alone does not validate that
+assumption. A seed reproduces draws/results within the same numerical
+toolchain, not across arbitrary dependency versions.
 
 ## Pooled permutation tests
 
@@ -110,6 +126,12 @@ impossible zero p-value, and the estimate is conservative.
 `alternative="greater"` and `"less"` use the same convention with signed
 comparisons of $d_r$ against the signed observed difference.
 
+The implementation compares differences in a centered normalized pooled
+frame, using `1e-12 * ptp(pool)` there as rounding-level tie tolerance.
+It is based on pooled **range**, not `max(abs(pool))`; representable common
+offsets or positive changes of units should not turn different partitions
+into ties. A constant pool is an exact null.
+
 ## Effect size, multiplicity, and scaling
 
 `cohens_d(a, b)` reports the standardized mean difference
@@ -125,6 +147,10 @@ s_p \;=\;
 with $s_a,s_b$ the unbiased sample standard deviations. A p-value measures
 compatibility with the chosen null/test assumptions; it is not the probability
 that a difference is noise. The effect size describes standardized magnitude.
+Local centered/scaled within-sample moments avoid raw squared overflow or
+underflow. Identical constant samples give `d=0`; unequal constant means
+give signed infinity because the pooled spread is zero.
+
 
 `p_adjust_bonferroni(pvals)` controls the family-wise error rate when $m$
 hypotheses are tested at once:
@@ -150,12 +176,26 @@ sampled size range and machine environment; it is not a proof of algorithmic
 asymptotic complexity. The coefficient of determination summarizes fit
 quality on those log-transformed measurements.
 
+`scaling_predict(sizes, times, query_sizes)` evaluates that same OLS model and
+returns an independently owned floating prediction vector. The shared kernel
+chooses the paired observed size/runtime at the maximum runtime as reference,
+uses `log1p` for nearby ratios, centers/scales the fit and averages residuals
+for its relative intercept. It does **not** force a noisy fit through the
+reference observation. Binary-exponent evaluation retains representable
+predictions near floating endpoints without reconstructing
+`exp(intercept + slope * log(size))` or `exp(intercept) * size**slope`.
+The global intercept returned by `scaling_fit` is a reporting coefficient,
+not the stable prediction representation. Fit vectors must align, contain
+at least two positive finite observations and have distinct represented sizes;
+queries must be a nonempty positive finite vector. Unrepresentable positive
+predictions raise `ValueError`. Constant times give undefined (`NaN`) $R^2$.
+
 ## Jackknife Intervals, False Discoveries, Unequal Variances, and Circular Data {#sec:jackknife_fdr_welch_circular}
 
 ### Delete-one jackknife: bias and normal-approximation intervals
 
-`jackknife_ci(x, stat=np.mean, alpha=0.05)` produces both a confidence
-interval and a bias estimate for any scalar statistic without consuming a
+`jackknife_ci(x, stat=sample_mean, alpha=0.05)` produces both a confidence
+interval and a bias estimate for a finite real scalar statistic without consuming a
 single random draw.  Where the percentile bootstrap of
 \eqref{eq:stat-bootstrap} resamples with replacement, the jackknife
 deletes one observation at a time: each of the $n$ leave-one-out samples
@@ -187,6 +227,9 @@ $\infty$, so one hundred halvings of the bracket $[-40, 40]$ pin $z$ to
 double precision within the exercised numerical toolchain. This quantile uses
 neither a seed nor a lookup table; a deterministic algorithm is not a promise
 of cross-version bitwise equality.
+Callbacks follow the bootstrap's one-dimensional finite-scalar contract.
+At least two observations are required. Unrepresentable bias or interval
+endpoints raise `ValueError`, rather than returning numerical infinities.
 
 ### Benjamini-Hochberg: false-discovery-rate adjustment
 
@@ -255,6 +298,15 @@ equal means give $t = 0.0$ (p-value $1.0$ two-sided) while different
 means give a signed infinite $t$ whose tail probabilities are exactly
 $0$ or $1$, evaluated against the finite pooled fallback
 $\nu = n_a + n_b - 2$ so the tails stay well-defined.
+
+Within-sample local frames avoid raw variance overflow/underflow. Tail
+evaluation chooses the beta/complement representation by convergence region
+and retains a log statistic when a nondegenerate $t$ exceeds the float range.
+Thus a reported infinite statistic can still have a small positive
+representable tail; it is not necessarily the true zero-variance case.
+Representable tiny one-sided tails are evaluated directly, not subtracted
+from a rounded-to-one CDF. These are numerical Student-$t$ probabilities,
+not exact symbolic values or a normal-approximation shortcut.
 
 ### Circular mean and concentration: radians, not linear coordinates
 
