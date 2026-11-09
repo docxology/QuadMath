@@ -106,12 +106,14 @@ def to_xyz(
 ) -> Tuple[float | Fraction, float | Fraction, float | Fraction]:
     """Map quadray to R^3 via a 3x4 embedding matrix (Fuller.4D -> Coxeter.4D slice).
 
-    Rows correspond to X,Y,Z and columns to a,b,c,d. Linear combinations
-    are evaluated exactly. Rational coordinates with rational embedding rows
-    retain rational results; rows containing floating data round once after
-    interpreting finite coefficients as exact binary rationals. If every row
-    sums to exactly zero, the common gauge is removed first. Nongauge
-    embeddings retain their ordinary, gauge-dependent linear map.
+    Rows correspond to X,Y,Z and columns to a,b,c,d. Exactly three rows of
+    four entries are required; rows and the outer container may be iterators.
+    Linear combinations are evaluated exactly. Rational coordinates with
+    rational embedding rows retain rational results; rows containing floating
+    data round once after interpreting finite coefficients as exact binary
+    rationals. If every row sums to exactly zero, the common gauge is removed
+    first. Nongauge and rank-deficient embeddings retain their ordinary linear
+    map. Invalid embedding shapes raise ValueError.
     """
     r0, r1, r2 = _xyz_tuple(embedding)
     if all(_row_sum_is_zero(row) for row in (r0, r1, r2)):
@@ -184,9 +186,11 @@ DEFAULT_EMBEDDING: Tuple[Tuple[float, float, float, float], ...] = (
 
 
 def _xyz_tuple(embedding: Iterable[Iterable[float]]) -> Tuple[Tuple[float, float, float, float], ...]:
-    """Internal helper to enforce shape on an embedding."""
-    r0, r1, r2 = embedding  # type: ignore[misc]
-    return (tuple(r0), tuple(r1), tuple(r2))  # type: ignore[return-value]
+    """Materialize iterable rows and reject embeddings other than 3x4."""
+    rows = tuple(tuple(row) for row in embedding)
+    if len(rows) != 3 or any(len(row) != 4 for row in rows):
+        raise ValueError("embedding must have shape (3, 4)")
+    return rows
 
 
 def _components_exact(point: Quadray | Iterable[float]) -> tuple[Fraction, ...]:

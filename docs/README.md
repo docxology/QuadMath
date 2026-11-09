@@ -15,6 +15,7 @@ a new receipt for the [archived manuscript DOI](https://zenodo.org/records/16887
 | Understand Lean declarations and trust limits | [Lean scope](lean/README.md) |
 | Generate figures, PDF or TeX | [Manuscript tools](../quadmath/README.md) |
 | Understand the template-layout projection | [Projection guide](manuscript/README.md), [manuscript status](MANUSCRIPT_STATUS.md) |
+| Inspect original/rebuilt wheels and release evidence | [Package receipts](../WORKFLOW.md#installed-distribution-evidence-by-python-version), [0.7.0 notes](../CHANGELOG.md#070--2026-11-09), [authoritative suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md) |
 
 ## Canonical mathematical reading
 

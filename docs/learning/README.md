@@ -12,12 +12,18 @@ Start with the [methods](../../quadmath/markdown/03_quadray_methods.md), then
 
 [`ivm_field.py`](../../src/quadmath/lattice/ivm_field.py) supplies
 `IVMField.lattice_ball`, `learn`, `harmonic_extension`, `predict` and `score`.
-`learn` solves soft Laplacian-regularized kernel-weighted least squares: observed
-targets need not be retained exactly. `harmonic_extension` fixes supplied values
-exactly and solves the interior graph Laplacian system; each connected component
-must have an anchor. Boundary sites can be any anchored subset, not just the
-outer shell. Duplicate gauge-equivalent anchors, nonfinite values and unanchored
-components are rejected.
+`learn` solves soft Laplacian-regularized kernel-weighted least squares:
+at positive regularization observed targets can move; at zero regularization
+the kernel targets are evaluated directly and observed floats retained exactly.
+Relative geodesic Gaussian mixtures keep narrow-kernel targets distinct from
+the absolute confidence floor. The dense observation-response solve requires
+an observation in every component and rejects inaccurate results atomically;
+it is not a universal forward-accuracy guarantee.
+`harmonic_extension` instead fixes supplied values exactly and solves the
+interior graph Laplacian system; each component must have a boundary anchor.
+Boundary sites can be any anchored subset, not just the outer shell.
+Both reject duplicate gauge-equivalent sites, nonfinite values and unanchored
+components. See the canonical chapter for their distinct numerical contracts.
 
 `quadray_shell_norm` is the centered L1 norm, with `shell_sites(k)` targeting
 norm `2k`; `shell_ball_sites(radius)` uses **shell units**. The positive-shell

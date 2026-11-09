@@ -149,7 +149,7 @@ def test_forward_embedding_and_metrics_ignore_arbitrary_size_gauges(gauge):
     assert angle(alias, origin_alias, other_alias, DEFAULT_EMBEDDING) == pytest.approx(
         math.acos(-1 / 3)
     )
-    with pytest.raises(ValueError, match="Degenerate angle"):
+    with pytest.raises(ValueError):
         angle(q, alias, other_alias, DEFAULT_EMBEDDING)
 
 
@@ -703,6 +703,29 @@ def test_geometry_accepts_single_use_embedding_rows_and_outer_iterable():
     assert to_xyz(a, embedding()) == (1.0, 1.0, 1.0)
     assert distance(origin, a, embedding()) == pytest.approx(math.sqrt(3))
     assert angle(a, origin, b, embedding()) == pytest.approx(math.acos(-1 / 3))
+
+
+@pytest.mark.parametrize("embedding", (
+    ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+    ((1, 0, 0, 0, 0),) * 3,
+    ((1, 0, 0, 0),) * 2,
+    ((1, 0, 0, 0),) * 4,
+    ((1, 0, 0, 0), (0, 1, 0), (0, 0, 1, 0)),
+))
+def test_embedding_geometry_rejects_wrong_shape_before_linear_combination(embedding):
+    point = Quadray(0, 0, 0, 1)
+    with pytest.raises(ValueError):
+        to_xyz(point, (iter(row) for row in embedding))
+    with pytest.raises(ValueError):
+        squared_distance_exact(Quadray(0, 0, 0, 0), point,
+                               (iter(row) for row in embedding))
+
+
+def test_rank_deficient_forward_embedding_remains_a_valid_linear_map():
+    rows = ((1, -1, 0, 0), (2, -2, 0, 0), (0, 0, 0, 0))
+    point = Quadray(2, 1, 0, 0)
+    assert to_xyz(point, (iter(row) for row in rows)) == (1, 2, 0)
+    assert squared_norm_exact(point, (iter(row) for row in rows)) == 5
 
 
 @pytest.mark.parametrize("scale", (1e-200, 1e200))

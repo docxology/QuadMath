@@ -117,9 +117,13 @@ assert triangle_area_squared_exact(o, a, b) == 2
 assert signed_tetra_volume_exact(o, midpoint, b, c) == Fraction(1, 8)
 ```
 
-Floating dot products round completed native expressions once; norms use
-scale-safe evaluation and angles use a scaled `atan2` construction. Thus large
-common offsets and resolved cancellation are not discarded before geometry.
+Floating dot products round completed native expressions once. `distance`
+subtracts native points exactly before embedding and taking a scale-safe norm;
+it does not subtract already rounded absolute XYZ images. Thus a small
+displacement between large labels is retained even for a nongauge custom map.
+Norms use scale-safe evaluation and angles use a scaled `atan2` construction.
+All these embedding paths require three rows of four entries; mixed integer,
+rational and floating coefficients retain their represented scalar values.
 
 Cross-project orientation, precision boundaries and executable comparisons are
 documented in the [Synergetics suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).

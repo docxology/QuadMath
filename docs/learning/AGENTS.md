@@ -7,9 +7,11 @@ This folder documents `lattice.ivm_field`, `lattice.ivm_dynamics`,
 
 ## Keep method claims source-bound
 
-Distinguish shell-radius field balls from Euclidean-radius dynamics balls and
-BFS enumeration. Soft `learn` does not fix observations as hard constraints;
-`harmonic_extension` does, with an anchor in every connected component.
+Distinguish shell-radius field balls, Euclidean-radius dynamics balls and
+BFS enumeration.
+`learn` uses soft observations at positive regularization; zero regularization
+evaluates its kernel target directly. `harmonic_extension` instead fixes hard
+boundary values, with an anchor in every connected component.
 Symmetric-normalized heat, conservative concentration transport and integer
 rounded averaging have different invariants. Do not promise mass conservation
 for normalized heat or squared-norm contraction for majority updates.

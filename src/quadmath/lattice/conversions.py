@@ -35,7 +35,7 @@ __all__ = [
 
 
 def _validate_embedding(M: Optional[np.ndarray]) -> np.ndarray:
-    """Validate a 3x4 embedding matrix and return it as an ndarray.
+    """Validate a 3x4 embedding without coercing mixed scalar entry types.
 
     Parameters
     - M: 3x4 embedding matrix (array-like), or None for
@@ -49,7 +49,7 @@ def _validate_embedding(M: Optional[np.ndarray]) -> np.ndarray:
     """
     if M is None:
         return np.asarray(quadray.DEFAULT_EMBEDDING)
-    arr = np.asarray(M)
+    arr = np.asarray(M, dtype=object)
     if arr.shape != (3, 4):
         raise ValueError(
             f"embedding must have shape (3, 4), got {arr.shape}"
@@ -85,27 +85,29 @@ def _embedding_rows(
 def _exact_fraction(v: object) -> Fraction:
     """Convert one embedding/xyz entry to an exact Fraction.
 
-    A Python float (or np.float64, a float subclass) becomes its exact binary
-    rational; numpy integers convert through numbers.Integral. Fraction fields
-    are promoted to native integers. np.float32 and every other type is rejected.
+    Python and NumPy floating scalars denote their exact represented binary
+    rationals; numpy integers convert through numbers.Integral. Fraction
+    fields are promoted to native integers. Nonfinite floats are rejected.
 
     Parameters
-    - v: Entry of type int, float, Fraction, or numbers.Integral.
+    - v: Entry of type int, float, Fraction, numpy floating, or numbers.Integral.
 
     Returns
     - Fraction: The exact rational value of v.
 
     Raises
-    - TypeError: If v is not int, float, Fraction, or numbers.Integral.
+    - TypeError: If v is not an accepted numeric scalar.
+    - ValueError or OverflowError: If v is a nonfinite floating scalar.
     """
     if isinstance(v, numbers.Integral):
         return Fraction(int(v))
     if isinstance(v, Fraction):
         return quadray._exact_fraction(v)
-    if isinstance(v, float):
-        return Fraction(v)
+    if isinstance(v, (float, np.floating)):
+        numerator, denominator = v.as_integer_ratio()
+        return Fraction(int(numerator), int(denominator))
     raise TypeError(
-        "entries must be int, float, Fraction, or numbers.Integral, "
+        "entries must be int, float, Fraction, numpy floating, or numbers.Integral, "
         f"got {type(v).__name__}"
     )
 
@@ -192,12 +194,13 @@ def xyz_to_quadray_canonical(
     the membership of xyz in the lattice image {M*q : q in Z^4} (every integer
     solution is y + t*(1,1,1,1), t in Z).
 
-    Entry types: int, float, Fraction, numpy integer (np.int64 goes through
-    numbers.Integral; np.float64 is a float subclass and is accepted).
-    np.float32 and other types are REJECTED.  The same entry types apply to M.
+    Entry types: int, float, Fraction, numpy integer and numpy floating
+    scalars (including np.float32). Finite floating entries retain their
+    represented binary value. The same entry types apply to M, without
+    homogeneous numeric coercion of mixed matrix entries.
 
     Parameters
-    - xyz: Length-3 sequence of int | float | Fraction | numpy integer.
+    - xyz: Length-3 sequence of int | float | Fraction | numpy numeric scalar.
     - M: 3x4 embedding whose rows each sum to exactly 0, or None for the
       default embedding.
 
@@ -210,8 +213,8 @@ def xyz_to_quadray_canonical(
       any row of M does not sum to exactly 0; the embedding has rank < 3
       (det of columns 0-2 == 0); or xyz is not in the embedding image
       (non-integral preimage).
-    - TypeError: If an xyz or M entry is not int, float, Fraction, or
-      numbers.Integral.
+    - TypeError: If an xyz or M entry is not an accepted numeric scalar.
+    - ValueError or OverflowError: If an xyz or M entry is a nonfinite float.
     """
     try:
         length = len(xyz)

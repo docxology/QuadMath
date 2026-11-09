@@ -50,9 +50,10 @@ projective: `to_xyz(q) == to_xyz(q + t*(1, 1, 1, 1))` for every integer $t$, and
 normalization (see [Quadray Methods](03_quadray_methods.md)) simply selects the min-0 representative
 of that equivalence class. The forward map `quadray_to_xyz(q, M=None)` delegates to
 `quadray.to_xyz`; passing `M=None` selects `quadray.DEFAULT_EMBEDDING`, and an explicit `M` is
-shape-validated against the shared internal helper `_embedding_rows` (a `(3, 4)` array is required,
-`ValueError` otherwise) before the product is taken. Existing callers that pass an explicit
-embedding — for example `quadmath/scripts/quadray_clouds.py` — are unaffected.
+shape-validated against the shared internal helper `_embedding_rows` (three rows
+of four entries are required, `ValueError` otherwise) before the product is taken.
+Mixed integer, rational and floating entries retain their individual values;
+validation does not first coerce the whole matrix to a homogeneous floating dtype.
 
 ## Gram identities and exact distances
 
@@ -136,10 +137,11 @@ raises `ValueError` (the point is not in the image).
 
 The taxonomy is fail-closed. `ValueError` covers: `xyz` of length other than 3; `M` of the wrong
 shape; any row sum different from zero; $\det = 0$ (rank below 3); a non-integral preimage.
-`TypeError` covers entries that are not `int`/`float`/`Fraction`/`numbers.Integral` — note that
-`numpy.float64` (a `float` subclass) and `numpy.int64` (integral) are accepted, while
-`numpy.float32` is rejected. There is no floating-point fuzz anywhere: an off-lattice point raises
-rather than snapping to a neighbor.
+`TypeError` covers entries outside `int`/`float`/`Fraction`/`numbers.Integral`/
+`numpy.floating`. Finite NumPy floating scalars, including `numpy.float32`,
+enter as their exact represented binary rationals, not rounded decimal guesses.
+Nonfinite floating entries raise `ValueError` or `OverflowError`.
+There is no floating-point fuzz: an off-lattice point raises rather than snapping.
 
 The float-valued inverse `quadray.quadray_from_xyz` is a distinct snapping
 contract: it retains component-wise half-up rounding of the minimum-norm real
@@ -241,7 +243,9 @@ recovery of every site through \eqref{eq:conv-canonical}, the Gram identities
 \eqref{eq:conv-gram-row} and \eqref{eq:conv-gram-col} with `embedding_basis`, the distance identity
 \eqref{eq:conv-distance} cross-checked against float embeddings and `quadray.distance`, and the
 fail-closed error taxonomy (`ValueError` for off-image points, bad shapes, zero determinants and
-non-zero row sums; `TypeError` for inexact-foreign entry types such as `numpy.float32`). The
+non-zero row sums; `TypeError` for unsupported entry types such as strings;
+`ValueError` or `OverflowError` for nonfinite floating entries). Finite NumPy
+floating entries, including `numpy.float32`, retain represented-value semantics. The
 repository-root `SPEC.md` (the full mathematical specification) and `tests/unit/lattice/test_spec_examples.py`
 pin the worked examples of this section numerically as they land. Run the suite:
 

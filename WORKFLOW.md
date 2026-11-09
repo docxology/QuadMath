@@ -80,6 +80,29 @@ paths relative to that output root in `data/figure_manifest.txt`. A manifest
 or successful save is not visual inspection. Examine mathematical units,
 actual panel data, clipping and legibility before accepting a figure.
 
+## Installed distribution evidence by Python version
+
+The [`mathematical-verification` workflow](.github/workflows/verify.yml)
+configures Python 3.11 and 3.13 package jobs. Each builds an original wheel and
+source distribution, rebuilds a wheel from the extracted source archive,
+then exercises **both** installed wheels outside the checkout with isolated
+`python -I` consumers. Editable-source tests are separate evidence.
+
+The artifact names are `quadmath-distributions-python-3.11` and
+`quadmath-distributions-python-3.13`. Each includes `original/`, `rebuilt/`
+and `proof/`, with distribution hashes, runner/build/runtime information,
+resolved installed packages and `original-consumer.json`/
+`rebuilt-consumer.json`. The manuscript job separately publishes
+`quadmath-manuscript`. A configured upload, including an `always()` upload,
+does not establish that either build or consumer succeeded: inspect the
+actual job and complete receipts in [workflow runs](https://github.com/docxology/QuadMath/actions).
+
+The frozen runtime lock does not pin unbounded PEP 517 build requirements.
+The package job captures the resolved build toolchain; repeatable bytes are
+conditional on that toolchain, not a universal promise. Release contracts and
+cross-runtime limits belong to the authoritative
+[suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
+
 ## Integration Phase
 
 The shell wrapper selects Python through its internal `uv run` calls, so supply

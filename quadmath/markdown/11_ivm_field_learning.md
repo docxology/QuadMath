@@ -76,10 +76,11 @@ difference operator on that adjacency:
 
 ## Learning: Laplacian-Regularized Kernel-Weighted Least Squares
 
-Observations $y_j$ arrive at a sampled subset $\Omega$ of sites. Graph
-distances $d(\cdot,\cdot)$ are hop counts from a multi-source BFS
-(`_multi_source_distances()` in `ivm_field.py`), and the Gaussian kernel over
-hops with width $\tau$ (`kernel_width`) is:
+Observations $y_j$ arrive at distinct sampled sites $\Omega$. Graph geodesic
+distances $d(i,j)$ are shortest-path hop counts in the actual finite adjacency,
+computed by BFS (`_multi_source_distances()` in `ivm_field.py`), not Euclidean
+distances in the embedding. The Gaussian kernel with width $\tau$
+(`kernel_width`) is:
 
 \begin{equation}
 \label{eq:ivm-kernel}
@@ -92,7 +93,7 @@ K(d) \;=\; \exp\!\bigl( -(d/\tau)^2 \bigr), \qquad d(i,j) = \text{hop distance}.
 \label{eq:ivm-objective}
 \min_{f} \;\; \sum_{i \in \Omega} \bigl( f_i - y_i \bigr)^2
 \;+\; \sum_{i \notin \Omega} c_i \bigl( f_i - t_i \bigr)^2
-\;+\; \lambda \sum_{i \sim j} \bigl( f_i - f_j \bigr)^2 ,
+\;+\; \lambda \sum_{\{i,j\}\in E} \bigl( f_i - f_j \bigr)^2 ,
 \end{equation}
 
 with two data-fidelity regimes: observed sites have their data as targets
@@ -106,7 +107,17 @@ c_i \;=\; \max\bigl( K\bigl(\min_{j \in \Omega} d(i,j)\bigr),\ \varepsilon \bigr
 t_i \;=\; \frac{\sum_{j \in \Omega} K(d(i,j))\, y_j}{\sum_{j \in \Omega} K(d(i,j))},
 \end{equation}
 
-where $\varepsilon$ — the `_WEIGHT_FLOOR` constant, $10^{-12}$, in `ivm_field.py` — is a numerical floor keeping the normal-equation matrix of \eqref{eq:ivm-objective} positive definite on the connected lattice ball.
+where each undirected edge in $E$ is counted once, and $\varepsilon$ is the
+absolute `_WEIGHT_FLOOR`, $10^{-12}$. The floor is part of the confidence
+model, not a replacement for the normalized target weights. On each component,
+targets use relative weights
+$\exp(-(d(i,j)^2-d_{\min}(i)^2)/\tau^2)$ before normalization.
+This cancels a common factor without changing the mathematical target and
+retains the nearest-observation/tied-nearest limit even for narrow kernels.
+Confidence still uses the absolute Gaussian, floored at $\varepsilon$;
+it is not artificially raised when all absolute kernels underflow.
+Unreachable observations have zero target weight. Every connected component
+must contain an observation, including isolated sites in a custom graph.
 The normal equations of \eqref{eq:ivm-objective} are
 
 \begin{equation}
@@ -114,14 +125,34 @@ The normal equations of \eqref{eq:ivm-objective} are
 \bigl( C + \lambda L \bigr) f \;=\; C\, t ,
 \end{equation}
 
-with $C = \mathrm{diag}(c_i)$ and $t$ the target vector; `IVMField.learn()`
-solves them with a dense `numpy.linalg.solve`. The Laplacian term propagates
-field structure from observed sites across the lattice graph. These are
-**soft** observations: unit confidence does not pin the fitted value.
-At positive $\lambda$, regularization can move observed values as well as
-unobserved ones. As $\lambda \to 0$, observed fits approach their targets;
-moderate $\lambda$ can denoise noisy data. The positive unobserved
-confidence and kernel targets remain part of this estimator.
+with $C = \mathrm{diag}(c_i)$ and $t$ the target vector. Let $P$ be the
+site-by-observation mixture matrix: observed rows select their own data,
+and unobserved rows contain the normalized relative Gaussian weights.
+For positive $\lambda$, `learn()` solves the dense response system
+$(C+\lambda L)R=CP$ and evaluates $f_i$ as a convex mean of the original
+observations with row $R_i$. It does not globally scale observations or
+subtract all values from the largest observation; small independent values
+and cancellation residuals need not disappear in target construction.
+Extreme convex means use exact represented-value accumulation where needed.
+Response storage adds a site-by-observation array to the dense site system.
+
+At **zero** $\lambda$, the direct solution is $f=t=Py$, without a dense solve;
+observed values are retained exactly as supplied floats. For positive
+$\lambda$, observations are **soft**: unit confidence does not pin a fitted
+value. Regularization can move both observed and unobserved values, while
+positive unobserved confidence and kernel targets remain in the estimator.
+
+`lam` must be finite and nonnegative and `kernel_width` finite and positive.
+Observation values must be a finite one-dimensional sequence matching the
+distinct in-graph sites (gauge-equivalent duplicates are rejected).
+Invalid inputs or an unobserved component raise `ValueError`.
+Nonfinite systems, singular solves, nonconvex responses or physical
+backward-error failures raise `numpy.linalg.LinAlgError` **before** replacing
+the previous values array. Extremely weak coupling can underflow response
+coefficients whose physical contribution matters; inaccurate fields are
+rejected rather than silently accepted. Double-precision weights and a
+backward-error check do not guarantee forward accuracy for ill-conditioned
+systems or exact arithmetic for general positive regularization.
 
 For example, on `IVMField.lattice_ball(1)`, observing all twelve outer sites
 with their embedded $X$ values and choosing $\lambda=1$ fits each boundary

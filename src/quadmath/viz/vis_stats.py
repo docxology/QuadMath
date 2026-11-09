@@ -5,9 +5,10 @@ They preserve caller axes and leave newly created figures open on success,
 transferring ownership to the caller. Drawing errors close only owned figures;
 invalid data is rejected before any figure is created.
 
-Scaling uses the shared :func:`quadmath.stats.statistics.scaling_fit` and
-evaluates predictions in log space. Interval bounds are independent of the
-point estimate: a valid confidence interval need not contain that estimate.
+Scaling uses the shared anchored regression kernel behind
+:func:`quadmath.stats.statistics.scaling_predict`, not a reconstructed global
+log intercept. Interval bounds are independent of the point estimate.
+
 ECDFs include the initial jump, including tied and singleton samples.
 
 :func:`gallery` owns four saved figures and closes them on success or failure.
@@ -25,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from quadmath.paths import get_figure_dir
-from quadmath.stats.statistics import bootstrap_ci, scaling_fit
+from quadmath.stats.statistics import _fit_scaling, bootstrap_ci, sample_mean
 from quadmath.viz._common import figure_scope, resolve_output_path, save_figure
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -99,8 +100,7 @@ def plot_latency_hist(
     - ValueError: If the sample is empty, non-finite, complex or not 1-D.
     """
     values = _finite_vector(times, "times")
-    scale = float(np.max(np.abs(values)))
-    mean = float(np.mean(values / scale) * scale) if scale else 0.0
+    mean = sample_mean(values)
     with _axes_scope(ax, title) as ax:
         ax.hist(values, bins=bins)
         ax.axvline(mean, color="C1", linestyle="--", label=f"mean = {mean:.3g}")
@@ -119,9 +119,9 @@ def plot_scaling_loglog(
 ) -> "Axes":
     """Log-log scatter of times versus sizes with the fitted power law.
 
-    The shared ``scaling_fit`` performs ordinary least squares on log data.
-    Predictions are evaluated as ``exp(intercept + slope * log(size))``,
-    rather than multiplying an underflowed coefficient by an overflowed power.
+    The shared regression kernel centers log ratios to observed references.
+    Anchored binary-exponent predictions retain adjacent-float variation and
+    avoid overflowing an intermediate power or losing a global intercept.
     The fitted line is sorted by size; the legend reports the log-space R².
 
     Parameters
@@ -139,14 +139,9 @@ def plot_scaling_loglog(
     """
     sizes_f = _finite_vector(sizes, "sizes")
     times_f = _finite_vector(times, "times")
-    slope, intercept, r2 = scaling_fit(sizes_f, times_f)
-    try:
-        with np.errstate(over="raise", invalid="raise"):
-            fitted = np.exp(intercept + slope * np.log(sizes_f))
-    except FloatingPointError as error:
-        raise ValueError("Fitted scaling values are outside the floating display range") from error
-    if np.any(fitted == 0):
-        raise ValueError("Fitted scaling values are outside the floating display range")
+    fit = _fit_scaling(sizes_f, times_f)
+    slope, r2 = fit.slope, fit.r2
+    fitted = fit.predict(sizes_f)
     order = np.argsort(sizes_f)
     r2_text = f"{r2:.3f}" if np.isfinite(r2) else "undefined"
     with _axes_scope(ax, title) as ax:
@@ -282,9 +277,9 @@ def gallery(paths_out_dir: str, seed: int = 32) -> List[str]:
     sample_sizes = (16, 64, 256)
     samples = [rng.normal(1.5, 0.4, size=n) for n in sample_sizes]
     labels = [f"n={n}" for n in sample_sizes]
-    means = np.array([np.mean(sample) for sample in samples])
+    means = np.array([sample_mean(sample) for sample in samples])
     intervals = np.array([
-        bootstrap_ci(sample, np.mean, iters=2000, seed=int(seed) + index, alpha=0.05)
+        bootstrap_ci(sample, iters=2000, seed=int(seed) + index, alpha=0.05)
         for index, sample in enumerate(samples)
     ])
     lows, highs = intervals.T

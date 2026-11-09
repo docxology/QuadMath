@@ -91,8 +91,16 @@ geometry and belongs in the figure manifest. An explicit destination must be a
 PNG path; the sibling uses its stem. Each save is atomic, but the pair is not
 a transaction: a successfully saved PNG remains if the SVG save fails.
 Renderer-owned figures close on success and failure without closing caller
-figures. This entrypoint is a main/Unreleased addition, not an API of the
-immutable 0.6.0 wheel.
+figures. This entrypoint is introduced in 0.7.0; it is not an API of the
+historical 0.6.0 wheel.
+
+### Shared statistics producers
+
+The statistical gallery delegates finite means and bootstrap defaults to
+`stats.statistics.sample_mean`; scaling curves share `scaling_fit`'s anchored
+kernel with `scaling_predict`. See the
+[canonical gallery contracts](../markdown/18_stats_gallery.md) rather than
+reconstructing predictions from the reported global intercept.
 
 ### Requirements
 

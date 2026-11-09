@@ -29,18 +29,26 @@ methods without a SciPy dependency:
 
 | Methods | Interpretation |
 |---|---|
-| `summarize`, `cohens_d` | Descriptive sample summaries and pooled-standard-deviation effect size |
-| `bootstrap_ci` | Seeded percentile bootstrap for a supplied statistic; resampling assumptions still matter |
-| `permutation_test` | Pooled-label difference-of-means test with add-one finite-simulation p-values; exchangeability is a scientific assumption |
+| `sample_mean`, `summarize`, `cohens_d` | Range-safe mean, descriptive summaries and pooled-standard-deviation effect size |
+| `bootstrap_ci` | Streamed seeded percentile bootstrap, defaulting to `sample_mean`; resampling assumptions still matter |
+| `permutation_test` | Pooled-label mean test with add-one p-values and centered range-based tie tolerance; exchangeability remains an assumption |
 | `p_adjust_bonferroni`, `benjamini_hochberg` | Multiple-comparison adjustments with different error-control meanings |
-| `scaling_fit` | Floating OLS slope/intercept/R² on log-log data, not a complexity proof |
-| `jackknife_ci` | Leave-one-out estimate, interval and bias estimate |
+| `scaling_fit`, `scaling_predict` | Log-ratio OLS reporting tuple and stable anchored predictions, not a complexity proof |
+| `jackknife_ci` | Leave-one-out normal interval and bias, defaulting to `sample_mean`; unrepresentable results raise |
 | `welch_t_test` | Unequal-variance two-sample test implemented locally |
 | `rotation_stats` | Circular summaries for angles in radians |
 
 Seeded resampling is repeatable within its numerical environment. Neither a
 bootstrap nor random site folds automatically correct spatial/temporal dependence.
 Use [learning operations](../learning/README.md) for selection/test boundaries.
+
+Sample arguments are nonempty finite one-dimensional vectors. Resampling
+callbacks receive one vector and must return a finite real scalar.
+`sample_mean` uses compensated summation with an exact overflow-only fallback;
+local moment scales and exact quantile interpolation avoid unnecessary range
+loss. Singleton descriptive standard deviation is undefined (`NaN`); truly
+out-of-range descriptive spread may be infinite. Welch uses numerical
+Student-t tails, not a large-degree normal approximation.
 
 ## Composable statistics plotting
 

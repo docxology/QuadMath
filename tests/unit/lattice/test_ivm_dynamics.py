@@ -19,6 +19,7 @@ import pytest
 
 from quadmath.lattice.ivm_dynamics import (
     DynamicsParams,
+    IVMLattice,
     ball_sites,
     conservative_heat_step,
     dirichlet_energy,
@@ -526,6 +527,47 @@ def test_conservative_representable_constants_at_float_extremes(value):
     initial = np.full(LATTICE.size, value)
     assert np.array_equal(conservative_heat_step(initial, LATTICE, 1.0), initial)
 
+
+
+@pytest.mark.parametrize("degree", [11, 18])
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("offset", [0.0, 2.0**970])
+def test_conservative_star_accumulation_stays_convex_at_old_overflow_boundary(
+    degree, sign, offset,
+):
+    adjacency = np.zeros((degree + 1, degree + 1), dtype=np.uint8)
+    adjacency[0, 1:] = adjacency[1:, 0] = 1
+    graph = IVMLattice(
+        radius=0,
+        sites=tuple(Quadray(i, 0, 0, 0) for i in range(degree + 1)),
+        adjacency=adjacency,
+        degrees=adjacency.sum(axis=1),
+        diffusion=adjacency / np.sqrt(degree),
+        average=adjacency / np.maximum(adjacency.sum(axis=1), 1)[:, None],
+    )
+    magnitude = np.finfo(float).max / 2 - offset
+    initial = np.full(graph.size, sign * magnitude)
+    initial[0] = -sign * magnitude
+    # Independent convex row weights: the center exchanges its entire value;
+    # a leaf keeps (degree-1)/degree and receives 1/degree of the center.
+    leaf = float(sign * Fraction(float(magnitude)) * (degree - 2) / degree)
+    expected = np.full(graph.size, leaf)
+    expected[0] = sign * magnitude
+    with np.errstate(over="raise", invalid="raise"):
+        actual = conservative_heat_step(initial, graph, 1.0)
+    assert np.array_equal(actual, expected)
+    assert np.all(np.abs(actual) <= magnitude)
+    assert initial[0] == -sign * magnitude
+    assert np.array_equal(initial[1:], np.full(degree, sign * magnitude))
+
+
+def test_conservative_zero_coupling_preserves_signed_zero_and_owned_output():
+    initial = np.zeros(LATTICE.size)
+    initial[0] = -0.0
+    initial[1] = np.finfo(float).max / 2
+    actual = conservative_heat_step(initial, LATTICE, 0.0)
+    assert np.array_equal(actual.view(np.uint64), initial.view(np.uint64))
+    assert not np.shares_memory(actual, initial)
 
 def test_conservative_subnormal_coupling_has_representable_flux():
     initial = np.zeros(LATTICE.size)
