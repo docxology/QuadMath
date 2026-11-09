@@ -179,9 +179,11 @@ quality on those log-transformed measurements.
 `scaling_predict(sizes, times, query_sizes)` evaluates that same OLS model and
 returns an independently owned floating prediction vector. The shared kernel
 chooses the paired observed size/runtime at the maximum runtime as reference,
-uses `log1p` for nearby ratios, centers/scales the fit and averages residuals
-for its relative intercept. It does **not** force a noisy fit through the
-reference observation. Binary-exponent evaluation retains representable
+uses `log1p` for nearby ratios and binary mantissa/exponent reduction for
+distant ratios, rather than subtracting large absolute logarithms. The
+centered/scaled fit averages residuals for its relative intercept. It does
+**not** force a noisy fit through the reference observation. Binary-exponent
+evaluation retains representable
 predictions near floating endpoints without reconstructing
 `exp(intercept + slope * log(size))` or `exp(intercept) * size**slope`.
 The global intercept returned by `scaling_fit` is a reporting coefficient,

@@ -825,3 +825,15 @@ def test_scaling_prediction_preserves_representable_top_binade_endpoints():
     predicted = scaling_predict(sizes, times, sizes)
     np.testing.assert_allclose(predicted, times, rtol=2e-14, atol=0.0)
     assert predicted[0] == limit
+
+
+@pytest.mark.parametrize("descending", [False, True])
+def test_scaling_power_of_two_units_preserve_maximum_time(descending):
+    limit = float(np.finfo(float).max)
+    sizes = np.array([1.0, 2.0, 4.0])
+    times = np.array([limit / 4, limit / 2, limit])
+    if descending:
+        times = times[::-1]
+    predicted = scaling_predict(sizes, times, sizes)
+    np.testing.assert_allclose(predicted, times, rtol=2e-15, atol=0.0)
+    assert predicted[np.argmax(times)] == limit

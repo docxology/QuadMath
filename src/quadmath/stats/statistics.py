@@ -333,12 +333,17 @@ def p_adjust_bonferroni(pvals: np.ndarray) -> np.ndarray:
 
 
 def _relative_logs(values: np.ndarray, reference: float) -> np.ndarray:
-    """Log ratios, retaining distinct adjacent floats near the reference."""
+    """Log ratios with near-pair precision and binary range reduction."""
     differences = values - reference
     near = (values >= 0.5 * reference) & (differences <= reference)
     result = np.empty(values.size, dtype=float)
     result[near] = np.log1p(differences[near] / reference)
-    result[~near] = np.log(values[~near]) - math.log(reference)
+    mantissas, exponents = np.frexp(values[~near])
+    reference_mantissa, reference_exponent = math.frexp(reference)
+    result[~near] = (
+        np.log1p((mantissas - reference_mantissa) / reference_mantissa)
+        + (exponents - reference_exponent) * _LN2
+    )
     return result
 
 
