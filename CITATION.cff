@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "QuadMath"
+authors:
+  - family-names: Friedman
+    given-names: Daniel Ari
+    orcid: "https://orcid.org/0000-0001-6232-9096"
+repository-code: "https://github.com/docxology/QuadMath"
+abstract: "Quadray mathematics in Python: rank-three embeddings, exact rational volumes, lattice dynamics, optimization and reproducible scientific figures. Part of the Synergetics suite with symergetics and QuadCraft."
+license: Apache-2.0
