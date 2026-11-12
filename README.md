@@ -1,5 +1,12 @@
 # QuadMath: Quadray Mathematics, Lattice Methods and Manuscript Tools
 
+<p align="center">
+  <a href="https://github.com/docxology/QuadMath/actions/workflows/verify.yml"><img alt="verify.yml workflow status on main" src="https://github.com/docxology/QuadMath/actions/workflows/verify.yml/badge.svg?branch=main"></a>
+  <a href="https://doi.org/10.5281/zenodo.16887791"><img alt="Digital Object Identifier (DOI), manuscript record: 10.5281/zenodo.16887791" src="https://zenodo.org/badge/DOI/10.5281/zenodo.16887791.svg"></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
+  <img alt="Requires Python 3.11 or newer" src="https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white">
+</p>
+
 QuadMath combines an importable Python library, canonical mathematical chapters,
 Lean models and source-checkout tools for figures and PDFs. Physical quadrays
 are common-offset equivalence classes of four coordinates with rank-three
@@ -85,6 +92,39 @@ Do not interchange default embeddings or assume all native tetra-volumes are int
 | `docs/manuscript/` | Scripted template-layout projection, not an independent editing source | [Projection guide](docs/manuscript/README.md) |
 | `docs/` | Operational navigation and focused learning/analysis/Lean guides | [Documentation index](docs/README.md) |
 | `lean/` | Handwritten Lean 4 integer quotient, distance, volume and shell models | [Proof scope](docs/lean/README.md) |
+
+### Package map
+
+Generated on 2026-11-12 from the `import` statements under `src/quadmath/`. An arrow from A to B means code in A imports B; arrows already implied by a longer path are left out, so the picture shows layering rather than every edge.
+
+```mermaid
+flowchart TB
+    accTitle: Internal dependency map of the quadmath package
+    accDescr: Generated from import statements in src/quadmath. Each box is a subpackage or module of the package; an arrow from A to B means code in A imports B; arrows already implied by a longer path are omitted. Most-imported: core, lattice, optimize.
+    n_viz["viz/"]
+    n_lattice["lattice/"]
+    n_core["core/"]
+    n_stats["stats/"]
+    n_learn["learn/"]
+    n_validate["validate/"]
+    n_inference["inference/"]
+    n_optimize["optimize/"]
+    n_pipeline["pipeline.py"]
+    n_tools["tools/"]
+    n_paths["paths.py"]
+    n_viz --> n_core
+    n_viz --> n_paths
+    n_stats --> n_lattice
+    n_inference --> n_core
+    n_learn --> n_lattice
+    n_optimize --> n_core
+    n_pipeline --> n_lattice
+    n_core --> n_optimize
+    n_lattice --> n_viz
+    n_validate --> n_core
+    n_viz --> n_tools
+    n_viz --> n_stats
+```
 
 ## Mathematical and learning entry points
 
