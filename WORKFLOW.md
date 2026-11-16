@@ -50,6 +50,8 @@ uv run --python 3.13 python docs/development/check_links.py
 
 - Coverage uses branches and the configured aggregate floor. Report the actual
   result, never infer correctness or a current percentage from configuration.
+  `run_all.sh` reports completion without inventing a percentage; read the
+  preceding `coverage report` table for the measured result.
 - `generate_glossary.py --check` checks freshness; without `--check` it updates
   the marked canonical API block.
 - The manuscript validator checks its implemented source-tree syntax/reference

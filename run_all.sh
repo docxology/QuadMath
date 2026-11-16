@@ -96,7 +96,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run coverage run -m pytest -q
 print_info "Generating coverage report..."
 uv run coverage report
 
-print_success "All tests passed with 100% coverage"
+print_success "All tests passed; coverage report generated"
 
 if [ "$TEST_ONLY" = true ]; then
     print_header "Complete (test-only mode)"
@@ -149,7 +149,7 @@ print_header "Pipeline Complete"
 
 echo ""
 echo "Summary:"
-echo "  ✓ Tests:      All passing with 100% coverage"
+echo "  ✓ Tests:      All passing; coverage report generated"
 echo "  ✓ Figures:    Generated to quadmath/output/figures/"
 echo "  ✓ Validation: Markdown references verified"
 
