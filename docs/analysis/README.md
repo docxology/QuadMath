@@ -1,8 +1,8 @@
 # Analysis Operations: Measured Timings, Resampling and Statistics Figures
 
 Keep numerical inference, timing measurements and illustrative rendering separate.
-The canonical treatments are [benchmarks/statistics](../../quadmath/markdown/17_benchmarks_statistics.md)
-and the [statistics gallery](../../quadmath/markdown/18_stats_gallery.md).
+The canonical treatments are [benchmarks/statistics](../chapters/17_benchmarks_statistics.md)
+and the [statistics gallery](../chapters/18_stats_gallery.md).
 This page maps methods and practical recipes, not fixed performance claims.
 
 ## Timing harness and workload scope
@@ -92,5 +92,5 @@ print("permutation p:", permutation_test(sample, sample + 1, iters=200, seed=7))
 
 These are consumer recipes, not test-suite gates or evidence of real-world
 effectiveness. See [development checks](../development/README.md),
-[output policy](../../WORKFLOW.md#output-management) and the
+[output policy](../workflow.md#output-management) and the
 [documentation index](../README.md).

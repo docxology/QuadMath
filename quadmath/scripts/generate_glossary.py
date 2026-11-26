@@ -14,7 +14,7 @@ def _repo_root() -> str:
 def build_glossary(repo: str) -> Tuple[str, str, str]:
     """Return (glossary_path, current_text, regenerated_text) for the repo."""
     src_dir = os.path.join(repo, "src")
-    glossary_md = os.path.join(repo, "quadmath", "markdown", "10_symbols_glossary.md")
+    glossary_md = os.path.join(repo, "docs", "chapters", "10_symbols_glossary.md")
 
     sys.path.insert(0, src_dir)
     from quadmath.tools.glossary_gen import build_api_index, generate_markdown_table, inject_between_markers  # type: ignore

@@ -2,11 +2,11 @@
 
 This page maps runtime methods to their canonical chapters. It does not define
 an independent geometry or promise out-of-sample skill from a successful fit.
-Start with the [methods](../../quadmath/markdown/03_quadray_methods.md), then
-[field learning](../../quadmath/markdown/11_ivm_field_learning.md),
-[dynamics](../../quadmath/markdown/12_ivm_dynamics.md),
-[evaluation](../../quadmath/markdown/15_learning_evaluation.md) and
-[lattice gallery](../../quadmath/markdown/16_lattice_gallery.md).
+Start with the [methods](../chapters/03_quadray_methods.md), then
+[field learning](../chapters/11_ivm_field_learning.md),
+[dynamics](../chapters/12_ivm_dynamics.md),
+[evaluation](../chapters/15_learning_evaluation.md) and
+[lattice gallery](../chapters/16_lattice_gallery.md).
 
 ## Field fitting and hard-boundary extension
 
@@ -110,6 +110,6 @@ QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results" MPLBACKEND=Agg \
 ```
 
 Python renderers honor the output helper policy; the shell PDF pipeline does not
-share that override. See [workflow](../../WORKFLOW.md) and
+share that override. See [workflow](../workflow.md) and
 [development checks](../development/README.md). Return to the
 [documentation index](../README.md).

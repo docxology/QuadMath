@@ -110,6 +110,6 @@ The [4dsolutions organization](https://github.com/4dsolutions) hosts related Qua
 - **Flextegrity**: [Generating the Flextegrity Lattice (academia.edu)](https://www.academia.edu/44531954/Generating_the_Flextegrity_Lattice)
 
 ### Context and Integration
-These materials discuss FCC sphere centers, selected integer-volume solids, and common-offset Quadray normalization. Arbitrary integer Quadray vertices need only have quarter-unit rational tetravolumes; see [native volume conventions](03_quadray_methods.md#sec:integer_volume).
+These materials discuss FCC sphere centers, selected integer-volume solids, and common-offset Quadray normalization. Arbitrary integer Quadray vertices need only have quarter-unit rational tetravolumes; see [native volume conventions](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#sec:integer_volume).
 
 For an actual comparison, record the external revision, basis orientation, length scale, inputs, and observed outputs. External implementations are potential independent evidence, not automatic verification of this codebase.

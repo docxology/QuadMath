@@ -2,7 +2,7 @@
 
 The [root guide](../README.md) covers installation and suite context; this tour
 shows where a change belongs. For mathematical conventions use
-[SPEC.md](../SPEC.md), not a separate operational derivation.
+[SPEC.md](specification.md), not a separate operational derivation.
 
 ## Runtime versus checkout tools
 
@@ -26,7 +26,7 @@ flowchart LR
     runtime["src/quadmath runtime"] --> consumer["tests and numerical consumers"]
     runtime --> scripts["figure/data scripts"]
     scripts --> figures["selected Python output root"]
-    canonical["quadmath/markdown canonical chapters"] --> shell["render_pdf.sh"]
+    canonical["docs/chapters canonical chapters"] --> shell["render_pdf.sh"]
     shell --> pdf["checkout PDF and TeX outputs"]
     canonical --> port["scripted manuscript projection"]
     port --> projected["docs/manuscript template layout"]
@@ -46,7 +46,7 @@ wheel consumers without repository lookup. The shell renderer fixes PDF/TeX
 paths under `quadmath/output/` and updates the canonical glossary. Its cleanup
 script removes the fixed checkout output tree. Generated files can contain user
 work and are partly tracked: never clean them automatically. See
-[workflow output management](../WORKFLOW.md#output-management).
+[workflow output management](workflow.md#output-management).
 
 ## Focused operational reading
 
@@ -60,4 +60,4 @@ work and are partly tracked: never clean them automatically. See
 5. [Manuscript tools](../quadmath/README.md): figures, dependencies and PDF isolation.
 
 Return to the [documentation index](README.md) or
-[architecture](../ARCHITECTURE.md).
+[architecture](architecture.md).

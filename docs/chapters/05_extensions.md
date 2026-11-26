@@ -46,4 +46,4 @@ An $n$-simplex for $n>3$ cannot be decomposed into three-dimensional tetrahedra 
 
 ## Limitations and Future Work
 
-Research questions include broader objective families, embedding/scale sensitivity, explicit continuous/discrete projection schedules, and domain-specific robustness tests. None is a guarantee supplied by integer volume quantization. Use [the mathematical specification](../../SPEC.md) for current quotient, metric, and formal scope rather than treating this proposal chapter as an API contract.
+Research questions include broader objective families, embedding/scale sensitivity, explicit continuous/discrete projection schedules, and domain-specific robustness tests. None is a guarantee supplied by integer volume quantization. Use [the mathematical specification](../specification.md) for current quotient, metric, and formal scope rather than treating this proposal chapter as an API contract.

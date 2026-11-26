@@ -433,7 +433,7 @@ $t \approx -4.75$ and $p \approx 5.4 \times 10^{-6}$
 (\eqref{eq:stat-welch}). Excluding zero in an individual mean interval is
 not itself a test of the difference between group means.
 
-![**Bootstrap and jackknife on labelled synthetic groups.** Two 64-sample Gaussian groups use seed 17 and standard deviation 0.15. Crosses mark their known population means 0 and 0.08; the dashed line marks zero. The nominal 95% percentile-bootstrap and normal-approximation jackknife intervals disagree on A's zero exclusion, while B's both exclude zero. This is one seeded realization, not a coverage study or a substitute for a between-group test. Generate with `uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py`.](../output/figures/stats_ci_comparison.png)
+![**Bootstrap and jackknife on labelled synthetic groups.** Two 64-sample Gaussian groups use seed 17 and standard deviation 0.15. Crosses mark their known population means 0 and 0.08; the dashed line marks zero. The nominal 95% percentile-bootstrap and normal-approximation jackknife intervals disagree on A's zero exclusion, while B's both exclude zero. This is one seeded realization, not a coverage study or a substitute for a between-group test. Generate with `uv run --python 3.13 python quadmath/scripts/stats_diagnostics_gallery.py`.](../../quadmath/output/figures/stats_ci_comparison.png)
 
 ## Cross-references
 
@@ -445,7 +445,7 @@ not itself a test of the difference between group means.
   curves, empirical mass and the distinction between synthetic and measured data.
 - [Interval-comparison producer](../../quadmath/scripts/stats_diagnostics_gallery.py):
   the actual model and generating population means behind the example.
-- [Coordinate conventions](../../SPEC.md),
+- [Coordinate conventions](../specification.md),
   [lattice tooling](13_lattice_tooling.md) and
   [field models](11_ivm_field_learning.md): interpretation of measured inputs.
 - [Composable lattice figures](16_lattice_gallery.md): shared figure ownership,

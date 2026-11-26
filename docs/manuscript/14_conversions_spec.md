@@ -2,7 +2,7 @@
 
 ## The conversion layer and its mathematical authority
 
-Sections [2](02_4d_namespaces.md), [3](03_quadray_methods.md) and [13](13_lattice_tooling.md)
+Sections [2](https://github.com/docxology/QuadMath/blob/main/docs/chapters/02_4d_namespaces.md), [3](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md) and [13](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md)
 establish the Quadray/IVM framework and its computational tooling; this section documents the
 conversion layer that joins its two coordinate namespaces — `conversions.py`, the module that maps
 between Fuller.4D quadray coordinates and Coxeter.4D Cartesian coordinates. Three concerns live
@@ -10,12 +10,12 @@ here: the embedding itself and its projective fiber, the Gram identities that ma
 distances exact, and an **exact rational inversion** that answers "which lattice point is this
 point?" with `fractions.Fraction` arithmetic instead of floating-point rounding.
 
-The full mathematical authority is [SPEC.md](../../SPEC.md), whose worked
+The full mathematical authority is [SPEC.md](https://github.com/docxology/QuadMath/blob/main/docs/specification.md), whose worked
 examples are transcribed in `tests/unit/lattice/test_spec_examples.py`.
 This chapter explains the same representation, numerical boundaries, and
-error taxonomy. Its dependencies are [coordinate methods](03_quadray_methods.md),
-[FCC membership and graph shells](11_ivm_field_learning.md), and
-[float64 nearest-site search](13_lattice_tooling.md). Exact identities
+error taxonomy. Its dependencies are [coordinate methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md),
+[FCC membership and graph shells](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md), and
+[float64 nearest-site search](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md). Exact identities
 must not be confused with arbitrary-precision query implementations.
 
 ## The embedding (Fuller.4D to Coxeter.4D)
@@ -47,7 +47,7 @@ q \;\sim\; q + t\,\mathbf{1}, \qquad t \in \mathbb{Z},
 
 where $\mathbf{1} = (1, 1, 1, 1)$. The vector $\mathbf{1}$ spans the kernel of $M$, so the map is
 projective: `to_xyz(q) == to_xyz(q + t*(1, 1, 1, 1))` for every integer $t$, and quadray
-normalization (see [Quadray Methods](03_quadray_methods.md)) simply selects the min-0 representative
+normalization (see [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md)) simply selects the min-0 representative
 of that equivalence class. The forward map `quadray_to_xyz(q, M=None)` delegates to
 `quadray.to_xyz`; passing `M=None` selects `quadray.DEFAULT_EMBEDDING`, and an explicit `M` is
 shape-validated against the shared internal helper `_embedding_rows` (three rows
@@ -86,7 +86,7 @@ d^{2}(p, q) \;=\; \sum_{i} (M\delta)_i^{2}
 \end{equation}
 
 the same identity documented as Eq. \eqref{eq:lattice-distance-identity} in
-[Lattice Tooling](13_lattice_tooling.md), where it powers ranking and filtering.
+[Lattice Tooling](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md), where it powers ranking and filtering.
 The implementation removes common gauge offsets before float conversion where
 possible and evaluates nonnegative Cartesian squares, avoiding cancellation
 between large quadratic terms. Exact algebra does not imply arbitrary float64
@@ -204,7 +204,7 @@ assert quadray_roundtrip(q0, urner_embedding(0.5)) == q0   # scale-robust (same 
 ## Lattice context
 
 The canonical representatives produced by \eqref{eq:conv-canonical} sit in the IVM site structure
-of [IVM Field Learning](11_ivm_field_learning.md). A normalized quadray whose component sum is
+of [IVM Field Learning](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md). A normalized quadray whose component sum is
 $\equiv 0 \pmod 4$ is an IVM sphere center (`is_ivm_site`); the other three residue classes are the
 octahedral and tetrahedral voids of the packing. The graph-shell observable is
 
@@ -218,7 +218,7 @@ computed by `quadray_shell_norm`: shell $k$ is the set of sites with $N(q) = 2k$
 $10k^2+2$ centers for $k\ge1$ (one center at $k=0$).
 `ivm_field.shell_sites(k)` enumerates each graph shell lexicographically.
 Graph shells are not surfaces of constant Euclidean radius. Sections
-[11](11_ivm_field_learning.md) and [13](13_lattice_tooling.md) detail the field learner and the
+[11](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md) and [13](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md) detail the field learner and the
 query machinery respectively.
 
 ## API Summary

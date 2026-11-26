@@ -7,8 +7,8 @@ observations through the graph can look excellent on the very data it was fit
 to, and a dynamics model identified on early snapshots can silently diverge on
 late ones. This section develops the training/testing methodology used to
 evaluate the two IVM learners honestly — the static field learner of
-[Static IVM Field Learning](11_ivm_field_learning.md) and the dynamics
-identifier of [IVM Lattice Dynamics](12_ivm_dynamics.md). All utilities live
+[Static IVM Field Learning](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md) and the dynamics
+identifier of [IVM Lattice Dynamics](https://github.com/docxology/QuadMath/blob/main/docs/chapters/12_ivm_dynamics.md). All utilities live
 in the `learning_eval.py` module (`kfold_site_splits()`,
 `cross_validate_field()`, `trajectory_train_test()`, `learning_curve()`,
 `enclosing_radius()`), use `numpy` only, and are fully deterministic for
@@ -104,7 +104,7 @@ noise, and the chosen regularizer; no universal preferred $\lambda$ is implied.
 
 `trajectory_train_test(observed, split_frac, lattice)` evaluates
 `fit_trajectory()`-style identification of the coupling $\alpha$
-([IVM Lattice Dynamics](12_ivm_dynamics.md)). The snapshot matrix
+([IVM Lattice Dynamics](https://github.com/docxology/QuadMath/blob/main/docs/chapters/12_ivm_dynamics.md)). The snapshot matrix
 ($T+1$ rows, row 0 the initial condition) is split **temporally**: the first
 nearest-integer-rounded fraction of rows trains, the trailing rows are held out, and
 no shuffling is ever applied — a shuffled split interpolates between adjacent
@@ -271,7 +271,7 @@ $\sigma = 0.05$ (seed $0$). Fitted with `lr = 0.05`, `max_iters = 300`,
 `tol = 1e-9`; the loss falls from $6.23$ at iteration $0$ to the
 noise-floor scale $\sigma^2 = 2.5\times 10^{-3}$, flagged as converged
 after $126$ iterations. Regenerate with
-`quadmath/scripts/learning_gallery.py`.](figures/learn_loss_history.png)
+`quadmath/scripts/learning_gallery.py`.](../figures/learn_loss_history.png)
 
 ## Split, fit, and forecast regression scope
 
@@ -285,12 +285,12 @@ the misspecified one, manual recomputation of the one-step-ahead error,
 fraction clamping at both extremes, and the learning curve's final-below-first
 invariant. These are test scopes, not a fresh coverage receipt. Validation
 rules and numerical limits are defined by the current implementation;
-the [operational workflow](../../WORKFLOW.md) describes how to obtain
+the [operational workflow](https://github.com/docxology/QuadMath/blob/main/docs/workflow.md) describes how to obtain
 dated test and coverage results.
 
 ## Cross-References
 
-- Coordinate foundations and the twelve-around-one shell: [Quadray Methods](03_quadray_methods.md)
-- The learner being evaluated: [Static IVM Field Learning](11_ivm_field_learning.md)
-- The dynamics being identified: [IVM Lattice Dynamics](12_ivm_dynamics.md)
-- Enumeration and search infrastructure: [Lattice Tooling](13_lattice_tooling.md)
+- Coordinate foundations and the twelve-around-one shell: [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md)
+- The learner being evaluated: [Static IVM Field Learning](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md)
+- The dynamics being identified: [IVM Lattice Dynamics](https://github.com/docxology/QuadMath/blob/main/docs/chapters/12_ivm_dynamics.md)
+- Enumeration and search infrastructure: [Lattice Tooling](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md)

@@ -8,7 +8,7 @@ sparse noisy observations by Laplacian-regularized kernel-weighted least
 squares, or extended harmonically from hard boundary values on the lattice
 graph. All methods live in `quadmath.lattice.ivm_field`
 (`IVMField`, `quadray_shell_norm`, `shell_sites`, `fit_geometry`) and reuse
-the quadray machinery described in [Quadray Methods](03_quadray_methods.md).
+the quadray machinery described in [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md).
 Both methods use `numpy` only — no machine-learning frameworks — and are
 fully deterministic for a fixed observation or boundary set.
 
@@ -16,7 +16,7 @@ fully deterministic for a fixed observation or boundary set.
 
 Quadray coordinates represent IVM close-packed sphere centers as non-negative
 integer quadrays normalized so the minimum component is zero (see
-[Quadray Methods](03_quadray_methods.md)). Two facts organize the lattice.
+[Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md)). Two facts organize the lattice.
 First, normalization adds or subtracts $(k,k,k,k)$, so the component sum is a
 projective invariant modulo 4. Second, the IVM sites are exactly one of the
 four residue classes:
@@ -52,7 +52,7 @@ cardinalities are the cuboctahedral numbers:
 
 giving the sequence 1, 12, 42, 92, 162, ... for $k = 0, 1, 2, 3, 4$ — the
 center plus the cuboctahedral numbers, with shell 1 the twelve-around-one
-vector equilibrium of [Quadray Methods](03_quadray_methods.md).
+vector equilibrium of [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md).
 `shell_cardinalities()` counts shells of an enumerated ball, and the test
 suite pins the sequence exactly.
 
@@ -260,10 +260,10 @@ weak quadratic bowl and noisy observations at 74 sites. Its saved example
 reports reconstruction MSE 0.0558 versus observation-noise MSE 0.0720. This
 is a synthetic example receipt, not a new run or a general denoising bound:
 
-![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](figures/ivm_field_demo.png)
+![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](../figures/ivm_field_demo.png)
 
 ## Cross-References
 
-- Coordinate foundations and the twelve-around-one shell: [Quadray Methods](03_quadray_methods.md)
-- Optimization methods on tetrahedral lattices: [Optimization in 4D](04_optimization_in_4d.md)
-- Applications and generalizations: [Extensions](05_extensions.md)
+- Coordinate foundations and the twelve-around-one shell: [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md)
+- Optimization methods on tetrahedral lattices: [Optimization in 4D](https://github.com/docxology/QuadMath/blob/main/docs/chapters/04_optimization_in_4d.md)
+- Applications and generalizations: [Extensions](https://github.com/docxology/QuadMath/blob/main/docs/chapters/05_extensions.md)

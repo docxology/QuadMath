@@ -111,7 +111,7 @@ Notes.
 - **Native IVM**: No S3 conversion is needed. The factor $1/4$ returns native tetravolume; a regular tetrahedron formed by the origin and three mutually adjacent FCC neighbors has determinant magnitude 4 and volume 1.
 - **Exact arithmetic**: integer Quadray coordinates give an integer determinant, evaluated exactly by the Bareiss algorithm as a `fractions.Fraction`; the code implements Eq. \eqref{eq:gdj} as `integer_tetra_volume`, and the magnitude agrees exactly with the Ace determinant of Eq. \eqref{eq:ace5x5} on every integer-quadray input.
 
-See code: [`tetra_volume_cayley_menger`](03_quadray_methods.md#code:tetra_volume_cayley_menger). For tetrahedron volume background, see [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume). Exact integer determinants in code use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm). External validation: these formulas align with implementations in the 4dsolutions ecosystem. See the [Resources](99_resources.md) section for comprehensive details.
+See code: [`tetra_volume_cayley_menger`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:tetra_volume_cayley_menger). For tetrahedron volume background, see [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume). Exact integer determinants in code use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm). External validation: these formulas align with implementations in the 4dsolutions ecosystem. See the [Resources](https://github.com/docxology/QuadMath/blob/main/docs/chapters/07_resources.md) section for comprehensive details.
 
 ## Fisher Information Matrix (FIM) {#eq:fim}
 
@@ -125,7 +125,7 @@ Notes.
 
 - **Symbols**: $x$ is an observation, $\theta = (\theta_1, \ldots, \theta_m)$ the parameter vector, and $p(x;\theta)$ the likelihood; the expectation is over $x \sim p(\cdot;\theta)$, so $F$ is a function of $\theta$. Each score $\partial \log p(x;\theta)/\partial \theta_i$ carries inverse parameter units, so $F_{i,j}$ carries inverse squared parameter units per observation.
 - $F$ is symmetric positive semi-definite: large eigenvalues mark sensitive (high-curvature) directions, small eigenvalues sloppy ones (Section 4 and the Discussion). The empirical estimate of Eq. \eqref{eq:fim_empirical} is the per-observation counterpart.
-- See [`fisher_information_matrix`](03_quadray_methods.md#code:fisher_information_matrix) for the empirical outer-product implementation. The regression heatmap in Section 4 instead supplies squared-loss gradients and must be read as a Gram surrogate.
+- See [`fisher_information_matrix`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:fisher_information_matrix) for the empirical outer-product implementation. The regression heatmap in Section 4 instead supplies squared-loss gradients and must be read as a Gram surrogate.
 
 ## Empirical Fisher Information Matrix
 
@@ -138,7 +138,7 @@ F_{i,j} = \frac{1}{N} \sum_{n=1}^{N} \frac{\partial \, \log p(x_n;\theta)}{\part
 Notes.
 
 - **Symbols**: $x_1, \ldots, x_N$ are $N$ i.i.d. observations and $g_n = \nabla_\theta \log p(x_n;\theta)$ the per-sample score vector (same units as Eq. \eqref{eq:fim}); the estimator is $F = \tfrac{1}{N} \sum_n g_n g_n^{\mathsf{T}}$, with a `normalize` flag controlling the $1/N$ division.
-- With observations drawn from the model and finite score second moments, this estimator converges to Eq. \eqref{eq:fim}. Arbitrary loss gradients produce a Gram surrogate instead. See the regression-estimator note in [optimization](04_optimization_in_4d.md).
+- With observations drawn from the model and finite score second moments, this estimator converges to Eq. \eqref{eq:fim}. Arbitrary loss gradients produce a Gram surrogate instead. See the regression-estimator note in [optimization](https://github.com/docxology/QuadMath/blob/main/docs/chapters/04_optimization_in_4d.md).
 
 ## Natural Gradient {#eq:natgrad}
 
@@ -154,7 +154,7 @@ Explanation.
 - **Update**: Applying the inverse metric to the gradient gives metric steepest descent. The ideal undamped vector field is coordinate-covariant; finite Euler steps and ridge damping need not preserve exact reparameterization invariance. Natural-gradient flows are not generally geodesics.
 - **Damping**: the implementation `natural_gradient_step` solves the damped system $(F + \lambda I)\,\delta = \nabla_\theta L$ and applies $\theta \leftarrow \theta - \eta\,\delta$, with a small Tikhonov ridge $\lambda$ (default $10^{-9}$) keeping the solve stable when $F$ is near-singular.
 
-See code: [`natural_gradient_step`](03_quadray_methods.md#code:natural_gradient_step) in `src/quadmath/inference/information.py` — damped inverse-Fisher step.
+See code: [`natural_gradient_step`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:natural_gradient_step) in `src/quadmath/inference/information.py` — damped inverse-Fisher step.
 
 ## Free Energy (Active Inference) {#eq:free_energy}
 
@@ -167,9 +167,9 @@ Explanation.
 - **Symbols**: $o$ the observation, $s$ the latent state, $Q(s)$ the approximate posterior (recognition distribution), and $P$ the generative model, so $P(o \mid s)$ is the likelihood and $P(s)$ the prior; $\mathcal{F}$ is the variational free energy in nats (natural logarithm, Section 10). **Notation flag**: capital $P$ here is a probability distribution, unrelated to the vertex labels $P_i$ of the volume sections.
 - **Trade-off**: The likelihood contribution is explicitly averaged under $Q$; the KL term compares that normalized posterior with the prior. With a well-defined generative model, minimizing over unrestricted $Q$ recovers the posterior. Arbitrary supplied log-likelihood arrays do not automatically describe a normalized generative model.
 
-See code: [`free_energy`](03_quadray_methods.md#code:free_energy) in `src/quadmath/inference/information.py` — discrete-state variational free energy (inputs are unnormalized distributions, normalized internally).
+See code: [`free_energy`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:free_energy) in `src/quadmath/inference/information.py` — discrete-state variational free energy (inputs are unnormalized distributions, normalized internally).
 
-**Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
+**Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](https://github.com/docxology/QuadMath/blob/main/docs/chapters/04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
 ## Expected Free Energy (Active Inference) {#eq:expected_free_energy}
 
@@ -185,7 +185,7 @@ Explanation.
 - The KL term already includes negative posterior entropy. The likelihood term is an expected negative log-likelihood under the supplied $Q$; calling it conditional outcome entropy requires additional model assumptions.
 - $-\log P(o)$ lowers the scalar objective for preferred outcomes. With the default `log_p_o=0`, this preference term vanishes; it does not normalize an unspecified outcome distribution.
 
-See [`expected_free_energy`](03_quadray_methods.md#code:expected_free_energy). Equation \eqref{eq:expected_free_energy} documents this toy objective, not every expected-free-energy convention in the literature.
+See [`expected_free_energy`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:expected_free_energy). Equation \eqref{eq:expected_free_energy} documents this toy objective, not every expected-free-energy convention in the literature.
 
 ## Quadray Normalization (Fuller.4D)
 
@@ -218,7 +218,7 @@ For sensitive determinants, exact native rational arithmetic or SymPy is availab
   - `ivm_neighbors_data.csv` / `ivm_neighbors_edges_data.npz`: neighbor coordinates (Quadray and XYZ)
   - `polyhedra_quadray_constructions.png`: synergetics volume relationships schematic
 
-- **External comparison resources**: The [resource bibliography](99_resources.md) links related implementations; links alone do not establish an executed cross-validation.
+- **External comparison resources**: The [resource bibliography](https://github.com/docxology/QuadMath/blob/main/docs/chapters/07_resources.md) links related implementations; links alone do not establish an executed cross-validation.
 
 ## Namespaces summary (notation)
 

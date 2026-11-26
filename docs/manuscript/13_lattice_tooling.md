@@ -2,12 +2,12 @@
 
 ## Shell indexing and bounded spatial queries
 
-Sections [2](02_4d_namespaces.md) and [3](03_quadray_methods.md) develop the Quadray/IVM framework analytically; this section documents the computational tooling that operates directly on the close-packed lattice. Two modules extend the analytical core without touching it:
+Sections [2](https://github.com/docxology/QuadMath/blob/main/docs/chapters/02_4d_namespaces.md) and [3](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md) develop the Quadray/IVM framework analytically; this section documents the computational tooling that operates directly on the close-packed lattice. Two modules extend the analytical core without touching it:
 
 - `omni_numbering` — omnidirectional close-packing numbering: vectorized enumeration of the IVM shell sequence, cumulative counts, and bidirectional site/index mappings.
 - `lattice_search` — fast nearest-lattice-point queries: `nearest(site, R, k)` and `within_radius(site, R)` built on a precomputed ball index, entirely in NumPy (no scipy).
 
-Both modules operate on canonical quadray integer 4-tuples (non-negative components, at least one zero — the projective normalization of [Section 3](03_quadray_methods.md)), and both rely on the same verified shell invariants.
+Both modules operate on canonical quadray integer 4-tuples (non-negative components, at least one zero — the projective normalization of [Section 3](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md)), and both rely on the same verified shell invariants.
 
 ## Omnidirectional Close Packing and Frequency Shells
 

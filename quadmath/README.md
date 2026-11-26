@@ -76,15 +76,15 @@ override with this renderer can leave the manuscript using older checkout figure
 
 Canonical mathematics is maintained in `markdown/`, not repeated in this guide:
 
-- [Methods and exact geometry](markdown/03_quadray_methods.md),
-  [equations](markdown/08_equations_appendix.md), [specification](../SPEC.md).
-- [Field learning](markdown/11_ivm_field_learning.md),
-  [dynamics](markdown/12_ivm_dynamics.md), [lattice tooling](markdown/13_lattice_tooling.md),
-  [conversions](markdown/14_conversions_spec.md), [evaluation](markdown/15_learning_evaluation.md).
-- [Lattice gallery](markdown/16_lattice_gallery.md),
-  [benchmarks/statistics](markdown/17_benchmarks_statistics.md),
-  [statistics gallery](markdown/18_stats_gallery.md),
-  [API glossary](markdown/10_symbols_glossary.md).
+- [Methods and exact geometry](../docs/chapters/03_quadray_methods.md),
+  [equations](../docs/chapters/08_equations_appendix.md), [specification](../docs/specification.md).
+- [Field learning](../docs/chapters/11_ivm_field_learning.md),
+  [dynamics](../docs/chapters/12_ivm_dynamics.md), [lattice tooling](../docs/chapters/13_lattice_tooling.md),
+  [conversions](../docs/chapters/14_conversions_spec.md), [evaluation](../docs/chapters/15_learning_evaluation.md).
+- [Lattice gallery](../docs/chapters/16_lattice_gallery.md),
+  [benchmarks/statistics](../docs/chapters/17_benchmarks_statistics.md),
+  [statistics gallery](../docs/chapters/18_stats_gallery.md),
+  [API glossary](../docs/chapters/10_symbols_glossary.md).
 
 `00_preamble.md` supplies the extracted TeX header, not a standalone numbered
 section. The renderer's module table is the authoritative build inventory;
@@ -128,5 +128,5 @@ preservation and authorization.
 
 - [Agent guidance](AGENTS.md)
 - [Script guide](scripts/README.md)
-- [Canonical source formatting](markdown/README.md)
-- [Development workflow](../WORKFLOW.md)
+- [Canonical source formatting](../docs/chapters/README.md)
+- [Development workflow](../docs/workflow.md)

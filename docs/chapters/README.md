@@ -1,6 +1,6 @@
 # Canonical QuadMath Manuscript Sources
 
-Edit these Markdown sources, not generated copies under `docs/manuscript/` or `quadmath/output/`. The build scripts assemble individual chapters and the combined manuscript. The mathematical authority for quotient coordinates, conversion, and lattice contracts is [SPEC.md](../../SPEC.md).
+Edit these Markdown sources, not generated copies under `docs/manuscript/` or `quadmath/output/`. The build scripts assemble individual chapters and the combined manuscript. The mathematical authority for quotient coordinates, conversion, and lattice contracts is [SPEC.md](../specification.md).
 
 ## Reading paths through the mathematical modules {#manuscript-sections}
 
@@ -55,4 +55,4 @@ uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
 bash quadmath/scripts/render_pdf.sh
 ```
 
-The builder owns combined/individual PDF and LaTeX output. A direct single-file Pandoc invocation does not reproduce its preamble, staging, and figure handling. See [the build-system overview](../README.md), [script documentation](../scripts/README.md), and [operational workflow](../../WORKFLOW.md). When retaining existing generated evidence, select an isolated `QUADMATH_OUTPUT_DIR`; do not overwrite user-generated outputs just to inspect an example.
+The builder owns combined/individual PDF and LaTeX output. A direct single-file Pandoc invocation does not reproduce its preamble, staging, and figure handling. See [the build-system overview](../../quadmath/README.md), [script documentation](../../quadmath/scripts/README.md), and [operational workflow](../workflow.md). When retaining existing generated evidence, select an isolated `QUADMATH_OUTPUT_DIR`; do not overwrite user-generated outputs just to inspect an example.

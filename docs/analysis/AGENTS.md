@@ -13,7 +13,7 @@ permutation and multiple-testing methods retain their scientific assumptions.
 The stats gallery's seeded illustrative data are not fresh benchmark results.
 
 Link methodology to canonical `17_benchmarks_statistics.md` and
-`18_stats_gallery.md` under `quadmath/markdown/`; do not maintain a second
+`18_stats_gallery.md` under `docs/chapters/`; do not maintain a second
 inconsistent derivation or edit generated projection copies. Runtime APIs are
 owned by source implementers, not this docs task.
 

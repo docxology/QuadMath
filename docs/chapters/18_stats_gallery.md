@@ -28,7 +28,7 @@ deviation 0.6, clipped to `[0.05, 5.0]`. Its axis explicitly calls these
 summation, with exact represented-value accumulation only if the intermediate
 sum overflows; it preserves cancellation residuals as well as finite means.
 
-![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](../output/figures/stats_gallery_latency.png)
+![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](../../quadmath/output/figures/stats_gallery_latency.png)
 
 ## Shared log-space regression without overflowing intermediate powers
 
@@ -52,7 +52,7 @@ The example uses sizes `{8,16,32,64,128,256}` and a planted power law
 $t = 3 n^{1.35}(1+\varepsilon)$ with seeded 2% normal relative noise. It is an
 illustration, not a measurement or proof of an algorithm's asymptotic complexity.
 
-![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared anchored fit avoids an underflowed coefficient multiplied by an overflowing power or cancellation through a global intercept.](../output/figures/stats_gallery_scaling.png)
+![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared anchored fit avoids an underflowed coefficient multiplied by an overflowing power or cancellation through a global intercept.](../../quadmath/output/figures/stats_gallery_scaling.png)
 
 ## Computed bootstrap intervals and independent point estimates
 
@@ -75,7 +75,7 @@ Overlap of two individual intervals is not equivalent to a specified test of
 their difference. Sampling design, dependence and the comparison target matter;
 see [statistical methods and assumptions](17_benchmarks_statistics.md).
 
-![**Calculated intervals for three synthetic sample means.** The labels report sample sizes, bounds come from percentile-bootstrap inference, and the dotted reference marks the known generating mean. Neither interval width nor overlap establishes performance or a hypothesis-test result.](../output/figures/stats_gallery_ci.png)
+![**Calculated intervals for three synthetic sample means.** The labels report sample sizes, bounds come from percentile-bootstrap inference, and the dotted reference marks the known generating mean. Neither interval width nor overlap establishes performance or a hypothesis-test result.](../../quadmath/output/figures/stats_gallery_ci.png)
 
 ## Right-continuous ECDF jumps, ties, and singleton observations
 
@@ -94,7 +94,7 @@ interpolation between probability jumps, or future-latency guarantee is inferred
 NumPy's interpolated percentile summaries need not coincide with inverse-step
 quantiles.
 
-![**Empirical distribution of the same synthetic latency sample.** Combined tied observations retain their empirical mass, and the first jump begins at zero. The plotted sample fractions are not a guarantee for later observations.](../output/figures/stats_gallery_ecdf.png)
+![**Empirical distribution of the same synthetic latency sample.** Combined tied observations retain their empirical mass, and the first jump begins at zero. The plotted sample fractions are not a guarantee for later observations.](../../quadmath/output/figures/stats_gallery_ecdf.png)
 
 ## Reproducing numerical inputs and checking observable behavior
 

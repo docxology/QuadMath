@@ -25,7 +25,7 @@ a constrained rigid fit. Keep example inputs complete and scale/gauge explicit.
 ## Canonical navigation and ownership
 
 Link derivations to canonical field/dynamics/evaluation/gallery chapters under
-`quadmath/markdown/`, not copied projection prose. Do not hand-edit
+`docs/chapters/`, not copied projection prose. Do not hand-edit
 `docs/manuscript/` numbered sections or figures. No source changes from this
 documentation task. Explicit Python 3.13 and isolated Python output roots are
 required in rendering recipes; shell PDFs do not honor the override.

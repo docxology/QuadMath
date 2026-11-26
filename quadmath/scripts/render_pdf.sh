@@ -35,7 +35,7 @@ done
 # =============================================================================
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-MARKDOWN_DIR="$REPO_ROOT/quadmath/markdown"
+MARKDOWN_DIR="$REPO_ROOT/docs/chapters"
 OUTPUT_DIR="$REPO_ROOT/quadmath/output"
 PREAMBLE_MD="$MARKDOWN_DIR/00_preamble.md"
 
@@ -320,6 +320,10 @@ pandoc_to_tex() {
     -o "$out_tex"
   )
 
+  local bibliography="$REPO_ROOT/docs/manuscript/references.bib"
+  if [ -f "$bibliography" ]; then
+    pandoc_args+=(--citeproc --bibliography="$bibliography")
+  fi
   pandoc "$in_md" "${pandoc_args[@]}"
 }
 

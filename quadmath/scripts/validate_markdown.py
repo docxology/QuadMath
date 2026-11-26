@@ -125,7 +125,7 @@ def validate_math(md_paths: List[str], repo_root: str) -> List[str]:
 
 def main() -> None:
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    markdown_dir = os.path.join(repo_root, "quadmath", "markdown")
+    markdown_dir = os.path.join(repo_root, "docs", "chapters")
     md_paths = find_markdown_files(markdown_dir)
 
     labels, anchors = collect_symbols(md_paths)

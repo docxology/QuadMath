@@ -6,7 +6,7 @@ This section provides detailed analytical methods for working with Quadray coord
 
 ## Mathematical Foundations
 
-The methods presented here rest on three interconnected mathematical frameworks. For comprehensive definitions, see [Section 2: 4D Namespaces](02_4d_namespaces.md).
+The methods presented here rest on three interconnected mathematical frameworks. For comprehensive definitions, see [Section 2: 4D Namespaces](https://github.com/docxology/QuadMath/blob/main/docs/chapters/02_4d_namespaces.md).
 
 ### Framework Distinctions
 - **Coxeter.4D**: Euclidean 4D geometry with standard metric tensor and volume forms
@@ -131,7 +131,7 @@ documented in the [Synergetics suite guide](https://github.com/docxology/symerge
 ### Integer-coordinate constructions (compact derivation box)
 
 - Under the synergetics convention (unit regular tetrahedron has tetravolume 1), many familiar solids admit Quadray integer coordinates. For example, the octahedron at the same edge length has tetravolume 4, and its vertices can be formed as integer linear combinations of the four axes A,B,C,D subject to the Quadray normalization rule.
-- The cuboctahedron (vector equilibrium) arises as the shell of the 12 nearest IVM neighbors given by the permutations of \((2,1,1,0)\). The rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the FCC/CCP packing centered at the origin under the same embedding.
+- The cuboctahedron (vector equilibrium) arises as the shell of the 12 nearest IVM neighbors given by the permutations of $(2,1,1,0)$. The rhombic dodecahedron (tetravolume 6) is the Voronoi cell of the FCC/CCP packing centered at the origin under the same embedding.
 - See the following figure for a schematic summary of these relationships.
 
 | Object | Quadray construction (sketch) | IVM volume |
@@ -211,7 +211,7 @@ V_cube = inner + 4 * corner  # 1 + 4*(1/2) = 3
 Notes.
 
 - The octahedron and cube snippets specify exact decompositions using `ace_tetravolume_5x5`; they are examples to reproduce, not a new verification receipt.
-- Volumes are invariant to adding \((k,k,k,k)\) to each vertex of a tetra (projective normalization), which the 5×5 determinant respects.
+- Volumes are invariant to adding $(k,k,k,k)$ to each vertex of a tetra (projective normalization), which the 5×5 determinant respects.
 
 ## Quarter-Unit Rational Volume Quantization {#sec:integer_volume}
 
@@ -261,19 +261,19 @@ Table: Native placements in the closed-mesh figure; edge lengths are not all equ
 
 ## Distances and Metrics
 
-Distance definitions depend on the chosen embedding and normalization. For cross-references to information geometry, see [Eq. (FIM)](08_equations_appendix.md#eq:fim) and [natural gradient](08_equations_appendix.md#eq:natgrad) in the Equations appendix.
+Distance definitions depend on the chosen embedding and normalization. For cross-references to information geometry, see [Eq. (FIM)](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:fim) and [natural gradient](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:natgrad) in the Equations appendix.
 
 ## XYZ determinant and S3 conversion {#sec:xyz_conversion}
 
 Given XYZ coordinates of tetrahedron vertices (x_i, y_i, z_i), the Euclidean volume is computed as shown in Eq. \eqref{eq:xyz_det} in the equations appendix.
 
-The conversion depends on the coordinate scale: `DEFAULT_EMBEDDING` has unit tetrahedron XYZ volume \(8/3\), so \(V_{\rm ivm}=(3/8)V_{\rm xyz}\). For a uniformly scaled Urner matrix \(M(c)\), the factor is \(3/(8|c|^3)\), \(c\ne0\). Only at \(c=1/\sqrt2\), with tetrahedron edge 2, does this become \(S3=\sqrt{9/8}\). Length-based formulas must use the same declared units.
+The conversion depends on the coordinate scale: `DEFAULT_EMBEDDING` has unit tetrahedron XYZ volume $8/3$, so $V_{\rm ivm}=(3/8)V_{\rm xyz}$. For a uniformly scaled Urner matrix $M(c)$, the factor is $3/(8|c|^3)$, $c\ne0$. Only at $c=1/\sqrt2$, with tetrahedron edge 2, does this become $S3=\sqrt{9/8}$. Length-based formulas must use the same declared units.
 
 ### Alternative Volume Formulas
 
 - **Piero della Francesca (PdF) formula**, which consumes edge lengths and returns Euclidean volumes. See Eq. \eqref{eq:pdf} in the equations appendix.
 
-  Convert using \(3/8\) for default scale-one XYZ, or \(S3=\sqrt{9/8}\) for sphere-radius-one XYZ. Do not apply the latter to unrescaled default coordinates.
+  Convert using $3/8$ for default scale-one XYZ, or $S3=\sqrt{9/8}$ for sphere-radius-one XYZ. Do not apply the latter to unrescaled default coordinates.
 
 - **Gerald de Jong (GdJ) formula**, which natively returns tetravolumes. See Eq. \eqref{eq:gdj} in the equations appendix.
 
@@ -336,14 +336,14 @@ Euclidean lengths; their output must use the scale-specific bridge in
 [XYZ conversion](#sec:xyz_conversion).
 
 The following native-versus-length comparison uses sphere-radius-one lengths
-before multiplying by \(S3\). Default scale-one lengths require the \(3/8\)
+before multiplying by $S3$. Default scale-one lengths require the $3/8$
 factor instead.
 
-![**Native versus length-based tetrahedral volumes.** Exact Ace determinants agree with symbolic Cayley–Menger calculations after converting default squared distances to sphere-radius-one units before applying S3. Cases include the unit tetrahedron (1), doubled edges (8), mixed coordinates, the centered example (2) and a larger mixed tetrahedron. Values are native IVM rationals, not necessarily integers; the numerical data are exported alongside the figure.](figures/bridging_vs_native.png)
+![**Native versus length-based tetrahedral volumes.** Exact Ace determinants agree with symbolic Cayley–Menger calculations after converting default squared distances to sphere-radius-one units before applying S3. Cases include the unit tetrahedron (1), doubled edges (8), mixed coordinates, the centered example (2) and a larger mixed tetrahedron. Values are native IVM rationals, not necessarily integers; the numerical data are exported alongside the figure.](../figures/bridging_vs_native.png)
 
-![**Volume scaling in sphere-radius-one XYZ units.** Euclidean regular-tetrahedron volume is \(\sqrt2 L^3/12\); native IVM volume in this convention is \(L^3/8\). Their ratio is \(S3=\sqrt{9/8}\). Both describe the same Euclidean geometry with different volume units; default scale-one Urner coordinates instead use the \(3/8\) bridge.](figures/volumes_scale_plot.png)
+![**Volume scaling in sphere-radius-one XYZ units.** Euclidean regular-tetrahedron volume is $\sqrt2 L^3/12$; native IVM volume in this convention is $L^3/8$. Their ratio is $S3=\sqrt{9/8}$. Both describe the same Euclidean geometry with different volume units; default scale-one Urner coordinates instead use the $3/8$ bridge.](../figures/volumes_scale_plot.png)
 
-![**Closed polyhedra in shared scale-one XYZ units.** Six panels use identical axes, camera and unit aspect. Face cycles come from supporting planes; native tetrahedral decompositions measure the displayed volumes: 1, 3, 4, 6, 20 and 96. Edge-squared labels distinguish the cube and FCC Voronoi cell from the four solids with tetrahedron-length edges. The truncated octahedron has all 24 vertices and 14 faces; no independent display rescaling or guessed volume network is used.](figures/polyhedra_quadray_constructions.png)
+![**Closed polyhedra in shared scale-one XYZ units.** Six panels use identical axes, camera and unit aspect. Face cycles come from supporting planes; native tetrahedral decompositions measure the displayed volumes: 1, 3, 4, 6, 20 and 96. Edge-squared labels distinguish the cube and FCC Voronoi cell from the four solids with tetrahedron-length edges. The truncated octahedron has all 24 vertices and 14 faces; no independent display rescaling or guessed volume network is used.](../figures/polyhedra_quadray_constructions.png)
 
 ### Exact and length-based Python volume recipes {#short-python-snippets}
 
@@ -393,7 +393,7 @@ V_ivm_sym = simplify(convert_xyz_volume_to_ivm_symbolic(V_xyz_sym))  # 1/8
 
 ### Random tetrahedra in the IVM (integer volumes)
 
-- The 12 CCP directions are the permutations of \((2,1,1,0)\). Random walks on this move set generate integer-coordinate Quadrays; resulting tetrahedra have integer tetravolumes.
+- The 12 CCP directions are the permutations of $(2,1,1,0)$. Random walks on this move set generate integer-coordinate Quadrays; resulting tetrahedra have integer tetravolumes.
 
 ```python
 from random import Random
@@ -430,11 +430,11 @@ V = ace_tetravolume_5x5(A,B,C,D)            # exact IVM volume as a Fraction
 - **60-degree corner heuristic**: Three edges of lengths $A,B,C$ meeting pairwise at 60 degrees enclose a tetrahedron of Euclidean volume $ABC/(6\sqrt2)$. Dividing by the regular reference tetrahedron's Euclidean volume $L_0^3/(6\sqrt2)$ gives native volume $ABC/L_0^3$. Thus the product rule holds for edge ratios measured against $L_0$, not for arbitrary unscaled XYZ lengths or for the four origin-to-vertex basis rays.
 - **Pedagogical note**: Adopt a vector-first approach. Differences like $(P_i-P_0)$ denote edge vectors; Quadrays and Cartesian can be taught in parallel as vector languages on the same Euclidean container.
 
-Reference notebook with worked examples and code: See the [Resources](99_resources.md) section for comprehensive educational materials and computational implementations.
+Reference notebook with worked examples and code: See the [Resources](https://github.com/docxology/QuadMath/blob/main/docs/chapters/07_resources.md) section for comprehensive educational materials and computational implementations.
 
 See implementation: `tetra_volume_cayley_menger`.
 
-- Lattice snapping is implementation-specific: `quadray_from_xyz` uses half-up component rounding with coherent recovery of resolvable lattice images. It is not generally XYZ-nearest; see [canonical inversion and snapping](14_conversions_spec.md#exact-canonical-inversion).
+- Lattice snapping is implementation-specific: `quadray_from_xyz` uses half-up component rounding with coherent recovery of resolvable lattice images. It is not generally XYZ-nearest; see [canonical inversion and snapping](https://github.com/docxology/QuadMath/blob/main/docs/chapters/14_conversions_spec.md#exact-canonical-inversion).
 
 ## Reproducing native and numerical calculations {#practical-implementation-workflow}
 
@@ -442,9 +442,9 @@ See implementation: `tetra_volume_cayley_menger`.
 2. Use native integer determinants for exact rational tetravolumes; use the scale-specific XYZ bridge for length-based formulas.
 3. Distinguish score-based Fisher information from loss-gradient Gram surrogates. Damping is numerical regularization, not a proof of geometric invariance.
 4. Run examples in the supported Python 3.13 environment and route generated artifacts with `QUADMATH_OUTPUT_DIR` when preserving a working output tree.
-5. Use the [learning evaluation module](15_learning_evaluation.md) for held-out predictions and the [benchmark module](17_benchmarks_statistics.md) for measurements. A fixed workload seed does not make timing deterministic.
+5. Use the [learning evaluation module](https://github.com/docxology/QuadMath/blob/main/docs/chapters/15_learning_evaluation.md) for held-out predictions and the [benchmark module](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md) for measurements. A fixed workload seed does not make timing deterministic.
 
-The source index below preserves explicit code anchors. Formulas discussed as proposals in [extensions](05_extensions.md) are not implemented promises.
+The source index below preserves explicit code anchors. Formulas discussed as proposals in [extensions](https://github.com/docxology/QuadMath/blob/main/docs/chapters/05_extensions.md) are not implemented promises.
 
 ## Source-linked mathematical API index {#code-methods-anchors}
 
@@ -480,7 +480,7 @@ Source: `src/quadmath/core/quadray.py` — `dot_exact`, `squared_norm_exact`,
 `squared_distance_exact`, `affine_combination_exact`,
 `signed_tetra_volume_exact` and `triangle_area_squared_exact` retain native
 rational arithmetic. See the executable examples above and the generated API
-[glossary](98_symbols_glossary.md).
+[glossary](https://github.com/docxology/QuadMath/blob/main/docs/chapters/10_symbols_glossary.md).
 
 ### Quaternion operations {#code:quaternion_operations}
 
@@ -506,7 +506,7 @@ Source: `src/quadmath/core/quadray.py` — axis-angle convenience wrapper: build
 
 The property checks in `src/quadmath/validate/validate.py` — normalization, conjugate-inverse, double cover, slerp midpoint, and associativity — consume these operations over quaternion sequences via `run_validation`, which collects the resulting deterministic validation reports.
 
-![**Shortest-arc quaternion interpolation and its rotated site path.** A unit quaternion interpolates from identity to a right-handed $\pi/2$ rotation about Z over sixteen samples. The displayed site starts at $(2,2,2)$ and follows a quarter-circle of radius $2\sqrt2$ at height $z=2$. Slerp is a shortest arc in unit-quaternion rotation geometry; the displayed Euclidean site path is not a straight-line XYZ geodesic or a natural-gradient trajectory. Generated by `uv run --python 3.13 python quadmath/scripts/quaternion_gallery.py`.](figures/quaternion_slerp_path.png)
+![**Shortest-arc quaternion interpolation and its rotated site path.** A unit quaternion interpolates from identity to a right-handed $\pi/2$ rotation about Z over sixteen samples. The displayed site starts at $(2,2,2)$ and follows a quarter-circle of radius $2\sqrt2$ at height $z=2$. Slerp is a shortest arc in unit-quaternion rotation geometry; the displayed Euclidean site path is not a straight-line XYZ geodesic or a natural-gradient trajectory. Generated by `uv run --python 3.13 python quadmath/scripts/quaternion_gallery.py`.](../figures/quaternion_slerp_path.png)
 
 ### Quaternion metrics {#code:quaternion_metrics}
 
@@ -765,7 +765,7 @@ Relevant tests (`tests/`):
 
 ### Regression coverage and evidence boundaries
 
-The numerical regressions under `tests/unit/` cover coordinate operations, rational determinants, optimization trajectories, information metrics, plotting, and symbolic comparisons. Their existence is not a current pass or coverage result. Consult [the operational workflow](../../WORKFLOW.md) for the integrated verification procedure.
+The numerical regressions under `tests/unit/` cover coordinate operations, rational determinants, optimization trajectories, information metrics, plotting, and symbolic comparisons. Their existence is not a current pass or coverage result. Consult [the operational workflow](https://github.com/docxology/QuadMath/blob/main/docs/workflow.md) for the integrated verification procedure.
 
 ## Reproducibility checklist
 
@@ -774,4 +774,21 @@ The numerical regressions under `tests/unit/` cover coordinate operations, ratio
 - Record seeds, parameters, dependency versions, and output locations with numerical results.
 - Treat simplex volume as a diagnostic, not a monotone objective or a convergence certificate.
 - Preserve generated evidence as a dated result. Re-running a script may change outputs when its implementation or scientific environment changes.
-- Consult [the conversion specification](../../SPEC.md) for integer quotient and formalization scope; it does not verify floating simulation or application-level claims.
+- Consult [the conversion specification](https://github.com/docxology/QuadMath/blob/main/docs/specification.md) for integer quotient and formalization scope; it does not verify floating simulation or application-level claims.
+
+## Reproducing four tetrahedron volumes {#reproducing-tetrahedron-volumes}
+
+The companion volume fixture uses the projected determinant, the Ace
+determinant and the numeric Cayley–Menger implementation on the same
+vertices. The exact routes agree on the primitive tetrahedron (one
+quarter), the unit IVM tetrahedron (one), and the doubled unit IVM
+tetrahedron (eight). Adding independent common offsets to the four
+primitive vertices preserves its one-quarter volume. Each distance-based
+calculation first halves the default XYZ squared distances to express
+them in sphere-radius-one units, then agrees with the exact value within
+the fixture's floating tolerance. These checks concern the fixed
+tetrahedra and declared units.
+
+The [pinned Template workflow](https://github.com/docxology/QuadMath/blob/main/docs/MANUSCRIPT_STATUS.md#render-the-pinned-template-editions)
+runs the [fixture](https://github.com/docxology/QuadMath/blob/main/docs/manuscript/geometry_evidence.py) and records the
+vertices, exact fractions and numeric estimates in a JSON receipt.

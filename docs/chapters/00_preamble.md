@@ -26,27 +26,8 @@ This file contains LaTeX preamble commands that will be inserted at the beginnin
 \definecolor{codeborder}{RGB}{200, 200, 200}  % Medium gray border
 \definecolor{codefg}{RGB}{50, 50, 50}         % Dark gray text
 
-% Configure Verbatim environment for inline code
-\DefineVerbatimEnvironment{Verbatim}{Verbatim}{%
-    fontsize=\small,
-    frame=single,
-    framerule=0.5pt,
-    framesep=3pt,
-    rulecolor=\color{codeborder},
-    bgcolor=\color{codebg},
-    fgcolor=\color{codefg}
-}
-
-% Configure code block styling
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
-    fontsize=\footnotesize,
-    frame=single,
-    framerule=0.5pt,
-    framesep=5pt,
-    rulecolor=\color{codeborder},
-    bgcolor=\color{codebg},
-    fgcolor=\color{codefg}
-}
+% Leave Pandoc's Verbatim and Highlighting environments intact.
+% The listings configuration below styles the local shell edition.
 
 % Style inline code with \texttt
 \renewcommand{\texttt}[1]{%

@@ -16,7 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-MARKDOWN = ROOT / "quadmath" / "markdown"
+MARKDOWN = ROOT / "docs" / "chapters"
 RENDER = ROOT / "quadmath" / "scripts" / "render_pdf.sh"
 
 # Records every argument (one per line) into the file named by -o.
@@ -260,8 +260,8 @@ def test_renderer_entrypoint_uses_repository_cwd_from_spaced_nonroot_path(tmp_pa
     scripts = root / "quadmath" / "scripts"
     scripts.mkdir(parents=True)
     shutil.copy2(RENDER, scripts / "render_pdf.sh")
-    markdown = root / "quadmath" / "markdown"
-    markdown.mkdir()
+    markdown = root / "docs" / "chapters"
+    markdown.mkdir(parents=True)
     for name, _ in _pairs("MODULES"):
         (markdown / name).write_text("# Section\n", encoding="utf-8")
     (markdown / "00_preamble.md").write_text("```latex\n% preamble\n```\n", encoding="utf-8")

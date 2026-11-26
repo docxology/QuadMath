@@ -1,7 +1,7 @@
 # Development Checks: Numerical Evidence, Links and Render Boundaries
 
 This page describes integration commands, not a current green-run receipt.
-The [root workflow](../../WORKFLOW.md) assigns verification once concurrent edits
+The [root workflow](../workflow.md) assigns verification once concurrent edits
 have settled. Workers skip builds/test suites/lint/formatters during implementation;
 real isolated consumer probes are reported separately.
 
@@ -37,7 +37,7 @@ uv run --python 3.13 python docs/development/check_links.py \
 ```
 
 Without `--check`, glossary generation writes its marked block in
-`quadmath/markdown/10_symbols_glossary.md`. Other prose is not automatically
+`docs/chapters/10_symbols_glossary.md`. Other prose is not automatically
 synchronized with source. The manuscript validator owns its implemented
 canonical-source rules. The checker CLI is `check_links.py [ROOT ...]`, where
 roots are documentation directories; no arguments defaults to QuadMath `docs/`.
@@ -84,7 +84,7 @@ See [build dependencies](../../quadmath/README.md#build-requirements).
 
 ## Original and source-rebuilt distribution receipts
 
-The [workflow package-evidence section](../../WORKFLOW.md#installed-distribution-evidence-by-python-version)
+The [workflow package-evidence section](../workflow.md#installed-distribution-evidence-by-python-version)
 maps `quadmath-distributions-python-3.11` and
 `quadmath-distributions-python-3.13` to their original/rebuilt wheels and
 consumer JSON, dependency/toolchain records and hashes. Inspect both consumers;
@@ -106,5 +106,5 @@ records expanded changed paths, actual probe outputs, unrun gates and cross-owne
 links. Source-linked corrections are useful evidence, not a substitute for the
 integration owner's final combined checks and visual inspection.
 
-Return to [documentation](../README.md), [architecture](../../ARCHITECTURE.md)
+Return to [documentation](../README.md), [architecture](../architecture.md)
 or [root agent guidance](../../AGENTS.md).

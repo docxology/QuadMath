@@ -1,3 +1,5 @@
+manuscript_dir: docs/manuscript
+
 paper:
   title: "QuadMath: Analytical Review of Quadray Coordinates (4D)"
   subtitle: "Integer volume quantization, optimization on tetrahedral lattices, and information geometry"
@@ -13,7 +15,7 @@ authors:
 
 publication:
   doi: "10.5281/zenodo.16887791" # concept DOI — stable citation
-  github_repository: "QuadMath"
+  github_repository: "docxology/QuadMath"
   repository_url: "https://github.com/docxology/QuadMath"
 
 keywords:
@@ -40,6 +42,8 @@ render:
     pdf: true
     html: true
     slides: false
+    docx: false
+    epub: false
 
 llm:
   reviews:
@@ -50,7 +54,7 @@ llm:
 testing:
   max_test_failures: 0
 
-# Ported from quadmath/markdown/ into the shared docxology/template render
+# Ported from docs/chapters/ into the shared docxology/template render
 # layout (see MANUSCRIPT_STATUS.md). The local render path remains
 # quadmath/scripts/render_pdf.sh; stage_03_render (infrastructure.rendering)
 # is the target pipeline for this tree.

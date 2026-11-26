@@ -271,7 +271,7 @@ $\sigma = 0.05$ (seed $0$). Fitted with `lr = 0.05`, `max_iters = 300`,
 `tol = 1e-9`; the loss falls from $6.23$ at iteration $0$ to the
 noise-floor scale $\sigma^2 = 2.5\times 10^{-3}$, flagged as converged
 after $126$ iterations. Regenerate with
-`quadmath/scripts/learning_gallery.py`.](../output/figures/learn_loss_history.png)
+`quadmath/scripts/learning_gallery.py`.](../../quadmath/output/figures/learn_loss_history.png)
 
 ## Split, fit, and forecast regression scope
 
@@ -285,7 +285,7 @@ the misspecified one, manual recomputation of the one-step-ahead error,
 fraction clamping at both extremes, and the learning curve's final-below-first
 invariant. These are test scopes, not a fresh coverage receipt. Validation
 rules and numerical limits are defined by the current implementation;
-the [operational workflow](../../WORKFLOW.md) describes how to obtain
+the [operational workflow](../workflow.md) describes how to obtain
 dated test and coverage results.
 
 ## Cross-References

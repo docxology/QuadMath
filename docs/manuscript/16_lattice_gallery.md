@@ -14,23 +14,23 @@ runs reproducible.
 ## Frequency shells
 
 `shell_scatter(ax, sites, k)` embeds the graph shell `k` from
-`omni_numbering.generate_shell`. For \(k>0\) its cardinality is
-\(10k^2+2\); shell zero is the origin. The label includes both the graph
+`omni_numbering.generate_shell`. For $k>0$ its cardinality is
+$10k^2+2$; shell zero is the origin. The label includes both the graph
 shell index and site count. A graph-shell radius counts neighbor moves:
 it is **not** an XYZ Euclidean radius. With `axis_hints`, dashed rays
 mark the four embedding columns, the tetrahedral quadray directions.
 `shell_scatter` and `dynamics_strip` enforce equal physical XYZ metric
 aspect using the shared `set_axes_equal` helper.
 
-![**IVM graph shells.** Shell 1 (12 sites) and shell 2 (42 sites) under the scale-1 `DEFAULT_EMBEDDING`, with tetrahedral axis hints and equal XYZ metric aspect.](figures/vis_gallery_shell.png)
+![**IVM graph shells.** Shell 1 (12 sites) and shell 2 (42 sites) under the scale-1 `DEFAULT_EMBEDDING`, with tetrahedral axis hints and equal XYZ metric aspect.](../figures/vis_gallery_shell.png)
 
 ## Lattice-plane slices
 
 `field_slice(ax, field, sites, plane)` renders a scalar
 `ivm_field.IVMField` as a heatmap restricted to a lattice plane.  A plane
-is parametrized by an origin \(q_0\) and two independent integer
-translation vectors \(u\), \(v\) — by default two of the twelve IVM
-neighbor moves, both permutations of \((2,1,1,0)\) — and its points are
+is parametrized by an origin $q_0$ and two independent integer
+translation vectors $u$, $v$ — by default two of the twelve IVM
+neighbor moves, both permutations of $(2,1,1,0)$ — and its points are
 
 \begin{equation}
 \label{eq:vis-plane}
@@ -39,7 +39,7 @@ q(i, j) \;=\; \operatorname{normalize}\!\big(q_0 + i\,u + j\,v\big),
 \end{equation}
 
 with `normalize` the canonical quadray representative. Membership means
-\(q-q_0=i u+j v+m(1,1,1,1)\) for **integer** \(i,j,m\).
+$q-q_0=i u+j v+m(1,1,1,1)$ for **integer** $i,j,m$.
 The implementation first subtracts each vector's fourth component,
 removing the common-offset gauge. A nonzero two-by-two minor of the
 resulting three-by-two integer basis gives Cramer's numerators;
@@ -71,27 +71,27 @@ an identically zero field maps to the colormap midpoint.
 `boundary_comparison(axs, hard, soft, boundary_sites, boundary_values)`
 uses four caller-owned 2D axes: two matched-color plane slices,
 prescribed-versus-fitted boundary values, and absolute interior residuals
-\(|Lf|\). It returns the slice artists, boundary-error arrays and interior
+$|Lf|$. It returns the slice artists, boundary-error arrays and interior
 residual arrays derived from the supplied model fields.
 
 The gallery supplies the same noisy, spatially varying observations to
 `IVMField.harmonic_extension` and `IVMField.learn` on the **graph-shell
 radius-3 ball (147 sites)**. Boundary sites are those with fewer than
 twelve in-domain neighbors. Hard extension pins those values and solves
-\(L_{UU}f_U=-L_{UB}f_B\), so the interior is harmonic up to floating solver
+$L_{UU}f_U=-L_{UB}f_B$, so the interior is harmonic up to floating solver
 residual. Soft learning instead solves its regularized data-fit system
 (`lam=0.4`, kernel width `1.5`); it need not interpolate observations or
 have a harmonic interior. Neither fit is labeled exact recovery of an
-unknown truth. See [Static IVM Field Learning](11_ivm_field_learning.md).
+unknown truth. See [Static IVM Field Learning](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md).
 
-![**Hard boundary versus soft fit.** Matched-color plane slices, boundary agreement and interior graph-Laplacian residuals on the graph-shell-radius-3 domain. Both methods receive identical observations; their constraints are deliberately different.](figures/vis_gallery_field.png)
+![**Hard boundary versus soft fit.** Matched-color plane slices, boundary agreement and interior graph-Laplacian residuals on the graph-shell-radius-3 domain. Both methods receive identical observations; their constraints are deliberately different.](../figures/vis_gallery_field.png)
 
 ## Dynamics and finite-boundary diagnostics
 
 `dynamics_strip(axs, trajectory, t_indices, norm=None)` renders selected
 snapshots on a symmetric color scale shared across panels, or an explicit
 shared `Normalize` supplied by the caller. A zero trajectory uses
-\([-1,1]\), putting zero at the neutral midpoint rather than a colormap
+$[-1,1]$, putting zero at the neutral midpoint rather than a colormap
 endpoint.
 
 `dynamics_comparison(axs, conservative, normalized)` takes six axes:
@@ -102,20 +102,20 @@ trajectories must share the same graph, initial state and horizon.
 Returned diagnostics include componentwise stationary fields and
 residual norms, not an ordinary-mean interpretation of normalized heat.
 
-The gallery compares forty updates at \(\alpha=0.45\) on the
+The gallery compares forty updates at $\alpha=0.45$ on the
 **Euclidean-radius-3 domain (13 sites)**. Conservative transport uses the
 unnormalized Laplacian with the model's degree-bound step size, preserves
-\(\sum_i u_i\), and has a constant stationary field on each connected
+$\sum_i u_i$, and has a constant stationary field on each connected
 component. Symmetric-normalized heat uses
-\(S=D^{-1/2}AD^{-1/2}\); its connected nonisolated stationary mode is
-\(\sqrt{d}\), with conserved projection \(\sqrt{d}^{\,T}u\), generally
+$S=D^{-1/2}AD^{-1/2}$; its connected nonisolated stationary mode is
+$\sqrt{d}$, with conserved projection $\sqrt{d}^{\,T}u$, generally
 **not** conserved ordinary sum. Isolated sites retain their concentration
 under conservative transport but have zero stationary projection for
 positive-coupling normalized heat. The degree panel exposes the finite
 boundary that produces this distinction. Stationary references are
 computed separately for every connected component.
 
-![**Conservative versus symmetric-normalized diffusion.** Equal-metric final fields and finite-domain degree, changes in ordinary mass and normalized stationary projection, recorded sum of squares, and distance to the operator-specific stationary field. Both operators use the same seeded initial condition on the Euclidean-radius-3 domain.](figures/vis_gallery_dynamics.png)
+![**Conservative versus symmetric-normalized diffusion.** Equal-metric final fields and finite-domain degree, changes in ordinary mass and normalized stationary projection, recorded sum of squares, and distance to the operator-specific stationary field. Both operators use the same seeded initial condition on the Euclidean-radius-3 domain.](../figures/vis_gallery_dynamics.png)
 
 ## Deterministic animations and gallery plots {#sec:animation_frames}
 
@@ -156,13 +156,13 @@ across encoder versions.
 `frames_strip(frames, out_path=None, labels=None, save=True)` creates one
 grayscale panel per actual `Frame`, using brightness range $[0,1]$ and mapping
 `uint8` values through $v/255$. Labels are supplied explicitly or taken from
-frame titles. The strip follows the [standalone plot](../../src/quadmath/viz/plots.py)
+frame titles. The strip follows the [standalone plot](https://github.com/docxology/QuadMath/blob/main/src/quadmath/viz/plots.py)
 save convention: a bare name uses the configured figure directory; a path with
 a directory component is used as supplied. It returns the saved path, or `""`
 when saving is disabled or no name is supplied. Empty frames and mismatched
 labels raise `ValueError`. Encoded PNG bytes depend on the rendering toolchain.
 
-![**Animation stills with distinct model semantics.** Left: a pulsing graph-shell-radius-2 ball. Center: a quaternion rotation of the thirteen-site graph-shell-radius-1 cluster. Right: row-average diffusion on the graph-shell-radius-3 ball, normalized by that frame's maximum. These are fixed-camera grayscale projections, not metric-preserving flattened geometries or matched absolute diffusion scales. Generated by `uv run --python 3.13 python quadmath/scripts/animation_stills.py`.](figures/animation_frames_strip.png)
+![**Animation stills with distinct model semantics.** Left: a pulsing graph-shell-radius-2 ball. Center: a quaternion rotation of the thirteen-site graph-shell-radius-1 cluster. Right: row-average diffusion on the graph-shell-radius-3 ball, normalized by that frame's maximum. These are fixed-camera grayscale projections, not metric-preserving flattened geometries or matched absolute diffusion scales. Generated by `uv run --python 3.13 python quadmath/scripts/animation_stills.py`.](../figures/animation_frames_strip.png)
 
 `quadmath/scripts/animation_gallery.py` writes `animation_lattice.gif`,
 `animation_simplex.gif`, and `animation_diffusion.gif`; the still-strip
@@ -202,10 +202,10 @@ not merely the same seed across library versions.
 ## Cross-references
 
 - Site geometry, normalization, and the embedding:
-  [Quadray Methods](03_quadray_methods.md).
+  [Quadray Methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md).
 - Shell enumeration and nearest-site search:
-  [Lattice Tooling](13_lattice_tooling.md).
+  [Lattice Tooling](https://github.com/docxology/QuadMath/blob/main/docs/chapters/13_lattice_tooling.md).
 - The sliced learner: [Static IVM Field
-  Learning](11_ivm_field_learning.md).
+  Learning](https://github.com/docxology/QuadMath/blob/main/docs/chapters/11_ivm_field_learning.md).
 - The stripped dynamics: [Dynamics and Learning on the IVM
-  Lattice](12_ivm_dynamics.md).
+  Lattice](https://github.com/docxology/QuadMath/blob/main/docs/chapters/12_ivm_dynamics.md).

@@ -10,7 +10,7 @@ here: the embedding itself and its projective fiber, the Gram identities that ma
 distances exact, and an **exact rational inversion** that answers "which lattice point is this
 point?" with `fractions.Fraction` arithmetic instead of floating-point rounding.
 
-The full mathematical authority is [SPEC.md](../../SPEC.md), whose worked
+The full mathematical authority is [SPEC.md](../specification.md), whose worked
 examples are transcribed in `tests/unit/lattice/test_spec_examples.py`.
 This chapter explains the same representation, numerical boundaries, and
 error taxonomy. Its dependencies are [coordinate methods](03_quadray_methods.md),

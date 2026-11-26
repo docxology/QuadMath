@@ -8,22 +8,22 @@ Python 3.13 setup are in the [root guide](../README.md#quick-start).
 
 | Package/module | Responsibility | Canonical explanation |
 |---|---|---|
-| `core.quadray` | Four-component labels, canonical gauge, embedding, exact metric/affine/oriented operations, native tetra-volumes and quaternions | [Methods](../quadmath/markdown/03_quadray_methods.md) |
-| `core.linalg_utils` | Exact Bareiss determinant/rank and integer adjugate | [Equations](../quadmath/markdown/08_equations_appendix.md) |
-| `core.cayley_menger` | Length-based volume and tetrahedron radius calculations | [Methods](../quadmath/markdown/03_quadray_methods.md) |
-| `core.geometry`, `core.metrics`, `core.symbolic`, `core.examples` | Lorentz helpers, information diagnostics, symbolic expressions and example configurations | [Namespaces](../quadmath/markdown/02_4d_namespaces.md), [glossary](../quadmath/markdown/10_symbols_glossary.md) |
-| `lattice.omni_numbering`, `lattice.lattice_search` | BFS shell/site numbering and precomputed finite-ball queries | [Lattice tooling](../quadmath/markdown/13_lattice_tooling.md) |
-| `lattice.conversions` | Shape-validated embedding and strict represented-value rational inverse, distinct from floating snapping | [Conversions](../quadmath/markdown/14_conversions_spec.md) |
-| `lattice.ivm_field` | Centered-norm shell enumeration, soft field fitting and hard-boundary harmonic extension | [Field learning](../quadmath/markdown/11_ivm_field_learning.md) |
-| `lattice.ivm_dynamics` | Euclidean-radius graphs, distinct update laws, trajectories and coupling identification | [Dynamics](../quadmath/markdown/12_ivm_dynamics.md) |
-| `learn.learning_eval` | Site-fold selection, temporal holdout, learning curves and linear baselines | [Evaluation](../quadmath/markdown/15_learning_evaluation.md) |
-| `optimize` | Quadray Nelder–Mead and discrete IVM descent | [Optimization](../quadmath/markdown/04_optimization_in_4d.md) |
-| `inference.information` | Fisher pullbacks, free energy and Active Inference helpers | [Inference](../quadmath/markdown/09_free_energy_active_inference.md) |
+| `core.quadray` | Four-component labels, canonical gauge, embedding, exact metric/affine/oriented operations, native tetra-volumes and quaternions | [Methods](../docs/chapters/03_quadray_methods.md) |
+| `core.linalg_utils` | Exact Bareiss determinant/rank and integer adjugate | [Equations](../docs/chapters/08_equations_appendix.md) |
+| `core.cayley_menger` | Length-based volume and tetrahedron radius calculations | [Methods](../docs/chapters/03_quadray_methods.md) |
+| `core.geometry`, `core.metrics`, `core.symbolic`, `core.examples` | Lorentz helpers, information diagnostics, symbolic expressions and example configurations | [Namespaces](../docs/chapters/02_4d_namespaces.md), [glossary](../docs/chapters/10_symbols_glossary.md) |
+| `lattice.omni_numbering`, `lattice.lattice_search` | BFS shell/site numbering and precomputed finite-ball queries | [Lattice tooling](../docs/chapters/13_lattice_tooling.md) |
+| `lattice.conversions` | Shape-validated embedding and strict represented-value rational inverse, distinct from floating snapping | [Conversions](../docs/chapters/14_conversions_spec.md) |
+| `lattice.ivm_field` | Centered-norm shell enumeration, soft field fitting and hard-boundary harmonic extension | [Field learning](../docs/chapters/11_ivm_field_learning.md) |
+| `lattice.ivm_dynamics` | Euclidean-radius graphs, distinct update laws, trajectories and coupling identification | [Dynamics](../docs/chapters/12_ivm_dynamics.md) |
+| `learn.learning_eval` | Site-fold selection, temporal holdout, learning curves and linear baselines | [Evaluation](../docs/chapters/15_learning_evaluation.md) |
+| `optimize` | Quadray Nelder–Mead and discrete IVM descent | [Optimization](../docs/chapters/04_optimization_in_4d.md) |
+| `inference.information` | Fisher pullbacks, free energy and Active Inference helpers | [Inference](../docs/chapters/09_free_energy_active_inference.md) |
 | `stats.statistics`, `stats.benchmarks` | Range-safe `sample_mean`, inference, anchored `scaling_fit`/`scaling_predict`, versus machine-dependent timing | [Analysis operations](../docs/analysis/README.md) |
 | `viz` | Reusable plots, animations, lattice/statistics galleries and graphical abstract | [Figure guide](../quadmath/README.md) |
-| `validate.validate` | Numerical quaternion property reports | [API glossary](../quadmath/markdown/10_symbols_glossary.md) |
-| `pipeline` | Typed `Step`/`Pipeline` composition over runtime operations | [API glossary](../quadmath/markdown/10_symbols_glossary.md) |
-| `paths`, `tools.atomic_write`, `tools.glossary_gen` | Output roots, atomic writes and API-document generation | [Architecture](../ARCHITECTURE.md) |
+| `validate.validate` | Numerical quaternion property reports | [API glossary](../docs/chapters/10_symbols_glossary.md) |
+| `pipeline` | Typed `Step`/`Pipeline` composition over runtime operations | [API glossary](../docs/chapters/10_symbols_glossary.md) |
+| `paths`, `tools.atomic_write`, `tools.glossary_gen` | Output roots, atomic writes and API-document generation | [Architecture](../docs/architecture.md) |
 
 ## Exact geometry consumer example
 
@@ -49,7 +49,7 @@ The name `integer_tetra_volume` describes the exact integer determinant
 construction, not an always-integer result. Its native volume is `abs(det)/4`
 and scale-one XYZ volume is `8/3` times native. Do not replace this with the
 unit-edge or QuadCraft-rescaled volume convention. Use
-[SPEC.md](../SPEC.md) for all conventions, not an alternate local derivation.
+[SPEC.md](../docs/specification.md) for all conventions, not an alternate local derivation.
 
 ## Package Re-Exports
 
@@ -82,4 +82,4 @@ units, gauge, shapes, failure modes and resources. Numerical regressions should
 exercise behavior rather than source text or coverage totals. The configured
 coverage floor is an integration gate, not a measured status claim. For test
 commands see [tests/README.md](../tests/README.md); for delegated-work and build
-rules see [AGENTS.md](AGENTS.md) and [WORKFLOW.md](../WORKFLOW.md).
+rules see [AGENTS.md](AGENTS.md) and [WORKFLOW.md](../docs/workflow.md).

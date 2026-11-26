@@ -9,7 +9,7 @@ Read [root guidance](../AGENTS.md) and [the documentation index](README.md).
 - `learning/`: runtime field/dynamics/evaluation operations with canonical links.
 - `analysis/`: timing/statistical methods and figure data provenance.
 - `lean/`: declaration/trust scope, not an undated green-build receipt.
-- `manuscript/`: scripted template-layout projection of `quadmath/markdown/`.
+- `manuscript/`: scripted template-layout projection of `docs/chapters/`.
   Canonical chapters and copied figures are not independently edited here.
 - `MANUSCRIPT_STATUS.md`: projection/render evidence maintained by integration.
 
@@ -33,7 +33,7 @@ Use explicit Python 3.13 commands, retaining `.python-version`. Isolated Python
 rendering sets a fresh `QUADMATH_OUTPUT_DIR`; the shell PDF/cleanup scripts do
 not share that override. Never purge or overwrite tracked/user-generated outputs.
 A projection port or PDF render can write beyond an apparent output directory;
-follow its real implementation and [workflow](../WORKFLOW.md).
+follow its real implementation and [workflow](workflow.md).
 
 ## Integration handoff
 
