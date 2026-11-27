@@ -38,20 +38,20 @@ claims about this checkout.
 ## Quick Start
 
 Run commands from the repository root. The scientific workflow uses Python 3.13
-explicitly; the repository's `.python-version` pin is unchanged.
+explicitly. The checkout's `.python-version` selects Python 3.15 for commands without an explicit version. Use the locked commands below to reproduce the scientific environment.
 
 ```bash
 git clone https://github.com/docxology/QuadMath.git
 cd QuadMath
-uv sync --python 3.13
-uv run --python 3.13 python -c "from quadmath import Quadray; print(Quadray(3, 2, 2, 1).normalize())"
+uv sync --locked --python 3.13
+uv run --locked --python 3.13 python -c "from quadmath import Quadray; print(Quadray(3, 2, 2, 1).normalize())"
 ```
 
 For an isolated, headless figure recipe that does not touch tracked outputs:
 
 ```bash
 export QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results"
-MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+MPLBACKEND=Agg uv run --locked --python 3.13 python quadmath/scripts/stats_gallery.py
 ```
 
 The output override applies to Python path helpers and cooperating generators,
@@ -180,8 +180,8 @@ rendering and integration. [ARCHITECTURE.md](docs/architecture.md) describes bou
 For an integration owner explicitly running verification:
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
-uv run --python 3.13 coverage report
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --locked --python 3.13 coverage run -m pytest -q
+uv run --locked --python 3.13 coverage report
 ```
 
 The configured coverage floor is a gate, not proof of every mathematical claim.
