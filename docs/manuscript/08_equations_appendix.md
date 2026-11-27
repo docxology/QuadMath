@@ -113,7 +113,7 @@ Notes.
 
 See code: [`tetra_volume_cayley_menger`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:tetra_volume_cayley_menger). For tetrahedron volume background, see [Tetrahedron – volume](https://en.wikipedia.org/wiki/Tetrahedron#Volume). Exact integer determinants in code use the [Bareiss algorithm](https://en.wikipedia.org/wiki/Bareiss_algorithm). External validation: these formulas align with implementations in the 4dsolutions ecosystem. See the [Resources](https://github.com/docxology/QuadMath/blob/main/docs/chapters/07_resources.md) section for comprehensive details.
 
-## Fisher Information Matrix (FIM) {#eq:fim}
+## Fisher Information Matrix (FIM) {#sec:fim}
 
 Background: [Fisher information](https://en.wikipedia.org/wiki/Fisher_information).
 
@@ -156,7 +156,7 @@ Explanation.
 
 See code: [`natural_gradient_step`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/03_quadray_methods.md#code:natural_gradient_step) in `src/quadmath/inference/information.py` — damped inverse-Fisher step.
 
-## Free Energy (Active Inference) {#eq:free_energy}
+## Free Energy (Active Inference) {#sec:free_energy}
 
 \begin{equation}\label{eq:free_energy}
 \mathcal{F} = \mathbb{E}_{Q(s)}[-\log P(o\mid s)] + \mathrm{KL}\big[ Q(s)\;\|\; P(s) \big]
@@ -171,7 +171,7 @@ See code: [`free_energy`](https://github.com/docxology/QuadMath/blob/main/docs/c
 
 **Note**: The main figures demonstrating natural gradient trajectories and free energy landscapes are shown in [Section 4: Optimization in 4D](https://github.com/docxology/QuadMath/blob/main/docs/chapters/04_optimization_in_4d.md). The appendix focuses on unique figures specific to mathematical formulations and validation.
 
-## Expected Free Energy (Active Inference) {#eq:expected_free_energy}
+## Expected Free Energy (Active Inference) {#sec:expected_free_energy}
 
 Background: [Active Inference (Parr, Pezzulo & Friston, MIT Press, 2022)](https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind).
 

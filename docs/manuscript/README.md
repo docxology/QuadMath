@@ -49,3 +49,22 @@ pipeline is [`render_pdf.sh`](../../quadmath/scripts/render_pdf.sh); its real
 font/TeX/Pandoc/video build has a separate Linux CI gate. Old deposited PDFs
 and release assets remain evidence for their archived versions, not for an
 unrendered changed checkout.
+
+## Link equations in the Template HTML reader
+
+Run this web-only step after Template Stage 03 has produced PDF and HTML
+together, and before Stage 04 records the output fingerprints. From the
+QuadMath checkout, pass that run's output directory.
+
+```bash
+python quadmath/scripts/link_web_equations.py /path/to/QuadMath/output
+```
+
+The step reads numbered equation entries from the combined PDF's auxiliary
+file. It checks their order against the combined HTML, then links equation
+references in the combined and section pages. Section pages link back to the
+combined reader when the equation is in another section. The generated
+equation IDs are separate from heading IDs. The step leaves the PDF, authored
+chapters, and displayed formulas intact. Use matched outputs from the same
+Stage 03 run. After an interruption, rerun this step on those outputs. It checks
+already-linked pages against the same PDF before replacing any remaining pages.

@@ -11,7 +11,7 @@ The implemented contribution is a coherent set of exact native geometric primiti
 
 ## Fisher Information and Curvature
 
-Population Fisher information is a positive-semidefinite score metric, positive definite only on identifiable directions. The regression figures use sample loss-gradient Gram matrices; their eigenvalues describe the displayed gradient sensitivities and are not automatically loss-Hessian eigenvalues. The [equations appendix](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:fim) separates the population and empirical definitions.
+Population Fisher information is a positive-semidefinite score metric, positive definite only on identifiable directions. The regression figures use sample loss-gradient Gram matrices; their eigenvalues describe the displayed gradient sensitivities and are not automatically loss-Hessian eigenvalues. The [equations appendix](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#sec:fim) separates the population and empirical definitions.
 
 `natural_gradient_step` returns a damped metric increment. Its continuous undamped ideal is coordinate-covariant steepest descent, not generally a geodesic. `information_geometric_distance` evaluates one fixed quadratic metric; `information_length` is a gradient-weighted path-length proxy. Neither computes a general position-dependent Fisher geodesic. Comparisons with tensegrity or least action are analogies, not equivalences proved by these functions.
 
