@@ -261,7 +261,7 @@ Table: Native placements in the closed-mesh figure; edge lengths are not all equ
 
 ## Distances and Metrics
 
-Distance definitions depend on the chosen embedding and normalization. For cross-references to information geometry, see [Eq. (FIM)](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:fim) and [natural gradient](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:natgrad) in the Equations appendix.
+Distance definitions depend on the chosen embedding and normalization. For cross-references to information geometry, see [Eq. (FIM)](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#sec:fim) and [natural gradient](https://github.com/docxology/QuadMath/blob/main/docs/chapters/08_equations_appendix.md#eq:natgrad) in the Equations appendix.
 
 ## XYZ determinant and S3 conversion {#sec:xyz_conversion}
 
