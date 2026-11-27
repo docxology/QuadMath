@@ -26,8 +26,8 @@ pinned interpreter instead. The declared runtime floor is Python 3.11, not a
 claim that every scientific dependency has wheels for every later interpreter.
 
 ```bash
-uv sync --python 3.13
-uv run --python 3.13 python -c "import quadmath; from quadmath.core.quadray import Quadray; print(Quadray(2, 1, 1, 0).normalize())"
+uv sync --locked --python 3.13
+uv run --locked --python 3.13 python -c "import quadmath; from quadmath.core.quadray import Quadray; print(Quadray(2, 1, 1, 0).normalize())"
 ```
 
 Use `python -I` for out-of-checkout numerical scripts so unrelated working-directory
@@ -41,11 +41,11 @@ These commands are for the integration owner when verification is assigned,
 not a requirement for every concurrently editing worker.
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
-uv run --python 3.13 coverage report
-uv run --python 3.13 python quadmath/scripts/generate_glossary.py --check
-uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
-uv run --python 3.13 python docs/development/check_links.py
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --locked --python 3.13 coverage run -m pytest -q
+uv run --locked --python 3.13 coverage report
+uv run --locked --python 3.13 python quadmath/scripts/generate_glossary.py --check
+uv run --locked --python 3.13 python quadmath/scripts/validate_markdown.py --strict
+uv run --locked --python 3.13 python docs/development/check_links.py
 ```
 
 - Coverage uses branches and the configured aggregate floor. Report the actual
@@ -70,9 +70,9 @@ See [test guide](../tests/README.md) and [development checks](development/README
 
 ```bash
 export QUADMATH_OUTPUT_DIR="$(mktemp -d)/quadmath-results"
-MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/stats_gallery.py
+MPLBACKEND=Agg uv run --locked --python 3.13 python quadmath/scripts/stats_gallery.py
 # An integration owner may generate the full configured gallery set:
-MPLBACKEND=Agg uv run --python 3.13 python quadmath/scripts/make_all_figures.py
+MPLBACKEND=Agg uv run --locked --python 3.13 python quadmath/scripts/make_all_figures.py
 ```
 
 Python helpers resolve the override, create `figures/` and `data/` as requested,

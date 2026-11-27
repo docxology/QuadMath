@@ -77,12 +77,12 @@ From the repository root, scientific commands explicitly select Python 3.13;
 leave `.python-version` unchanged. For an assigned integration owner:
 
 ```bash
-uv sync --python 3.13
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --python 3.13 coverage run -m pytest -q
-uv run --python 3.13 coverage report
-uv run --python 3.13 python quadmath/scripts/generate_glossary.py --check
-uv run --python 3.13 python quadmath/scripts/validate_markdown.py --strict
-uv run --python 3.13 python docs/development/check_links.py
+uv sync --locked --python 3.13
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --locked --python 3.13 coverage run -m pytest -q
+uv run --locked --python 3.13 coverage report
+uv run --locked --python 3.13 python quadmath/scripts/generate_glossary.py --check
+uv run --locked --python 3.13 python quadmath/scripts/validate_markdown.py --strict
+uv run --locked --python 3.13 python docs/development/check_links.py
 ```
 
 For isolated Python rendering, set `QUADMATH_OUTPUT_DIR` to a fresh external
