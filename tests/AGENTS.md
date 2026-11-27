@@ -1,7 +1,7 @@
 # Test Agent Guide: Real Consumer Behavior, Not Incidental Counters
 
 Read [root guidance](../AGENTS.md), [test operations](README.md) and
-[the workflow](../WORKFLOW.md). `unit/` mirrors runtime package responsibilities;
+[the workflow](../docs/workflow.md). `unit/` mirrors runtime package responsibilities;
 `tools/` tests checkout orchestrators. Do not maintain exhaustive saved inventories
 or current test counts in documentation.
 

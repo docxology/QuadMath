@@ -2,7 +2,7 @@
 
 Tests exercise the runtime package and checkout tools. Results, collection
 counts and coverage percentages are properties of a particular run, not
-permanent guarantees. The [workflow](../WORKFLOW.md) assigns integrated
+permanent guarantees. The [workflow](../docs/workflow.md) assigns integrated
 verification after concurrent implementation work has settled.
 
 ## Running Tests

@@ -11,8 +11,8 @@ def _make_repo(tmp_path, glossary_text: str):
     repo = tmp_path / "repo"
     (repo / "src" / "pkg").mkdir(parents=True)
     (repo / "src" / "pkg" / "mod.py").write_text('def f(x):\n    """Doc for f."""\n', encoding="utf-8")
-    (repo / "quadmath" / "markdown").mkdir(parents=True)
-    glossary = repo / "quadmath" / "markdown" / "10_symbols_glossary.md"
+    (repo / "docs" / "chapters").mkdir(parents=True)
+    glossary = repo / "docs" / "chapters" / "10_symbols_glossary.md"
     glossary.write_text(glossary_text, encoding="utf-8")
     return repo, glossary
 

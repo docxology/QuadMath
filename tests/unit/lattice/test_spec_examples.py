@@ -1,6 +1,6 @@
 """Executable transcription of SPEC.md — the QuadMath lattice-core specification.
 
-Every normative claim S1..S30 in the repo-root ``SPEC.md`` is exercised by exactly
+Every normative claim S1..S30 in the ``docs/specification.md`` is exercised by exactly
 one named test below; the set of test function names equals the set of names in
 SPEC.md's claim index (§7.5) in both directions.  All examples are deterministic
 real numerical values (no randomness, no mocks); results that are exact in the

@@ -1,7 +1,7 @@
 # Source Agent Guide: Runtime Contracts and Figure Ownership
 
 `src/quadmath/` is the wheel's runtime package. See the [module map](README.md),
-[root rules](../AGENTS.md) and [workflow](../WORKFLOW.md).
+[root rules](../AGENTS.md) and [workflow](../docs/workflow.md).
 
 ## Before changing a public method
 
@@ -14,8 +14,8 @@ sibling suite packages.
 
 ## Mathematical methods
 
-Follow [SPEC.md](../SPEC.md) and the canonical
-[methods chapter](../quadmath/markdown/03_quadray_methods.md). Preserve common-offset
+Follow [SPEC.md](../docs/specification.md) and the canonical
+[methods chapter](../docs/chapters/03_quadray_methods.md). Preserve common-offset
 invariance, rational exactness and explicit floating boundaries. Native tetra-volume
 is not always integral. Shell-norm, Euclidean-radius and BFS enumerations have
 different contracts. Hard-boundary harmonic extension differs from soft fitting;

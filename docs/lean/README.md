@@ -40,9 +40,9 @@ Native volume is rational `abs(tetraDet)/4`; a primitive tetrahedron can have
 volume `1/4`. `tetraVolume_xyz_bridge` uses **scale-one XYZ**: native volume is
 `3/8` of XYZ volume. QuadCraft's swapped/rescaled embedding is not the same
 convention and its irrational scaling is not formalized here. See the canonical
-[methods](../../quadmath/markdown/03_quadray_methods.md),
-[conversions](../../quadmath/markdown/14_conversions_spec.md) and
-[equations](../../quadmath/markdown/08_equations_appendix.md).
+[methods](../chapters/03_quadray_methods.md),
+[conversions](../chapters/14_conversions_spec.md) and
+[equations](../chapters/08_equations_appendix.md).
 
 The shell lower bounds concern centered-norm enumeration. No Lean theorem here
 identifies that enumeration with Python's BFS implementation, proves a general

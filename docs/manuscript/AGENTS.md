@@ -2,7 +2,7 @@
 
 ## Preserve canonical content and local work
 
-- `quadmath/markdown/` is authoritative. Never hand-edit projected numbered
+- `docs/chapters/` is authoritative. Never hand-edit projected numbered
   chapters, glossary, preamble or figure bytes; change their producer and port.
 - `config.yaml`, `references.bib` and directory guides are maintained here.
   Keep bibliography keys case-insensitively unique.

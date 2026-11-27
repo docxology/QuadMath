@@ -95,7 +95,7 @@ Descriptions:
 - **Figures referenced**: In-text references use LaTeX's automatic figure numbering for consistent cross-referencing.
 - **Equation references**: Use labels defined in the text (e.g., Eq. \eqref{eq:lattice_det} in the equations appendix).
 - **Namespaces**: We use Coxeter.4D, Einstein.4D, Fuller.4D consistently to designate Euclidean E⁴, Minkowski spacetime, and Quadray/IVM synergetics, respectively. This avoids conflation of Euclidean 4D objects (e.g., tesseracts) with spacetime constructs and synergetic tetravolume conventions.
-- **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) for algorithmic verification and performance comparison baselines. See the [Resources](99_resources.md) section for comprehensive details.
+- **External validation**: Cross-reference implementations from the [4dsolutions ecosystem](https://github.com/4dsolutions) for algorithmic verification and performance comparison baselines. See the [Resources](https://github.com/docxology/QuadMath/blob/main/docs/chapters/07_resources.md) section for comprehensive details.
 
 ## Polyhedra and Synergetic Shapes
 
@@ -138,7 +138,7 @@ stream from one seeded generator with sample-plus-iteration storage.
 `scaling_predict(sizes, times, query_sizes)` returns owned predictions from the
 same anchored log-ratio OLS model without reconstructing the global intercept.
 Permutation ties use centered normalized pooled-range tolerance, not absolute
-offset magnitude. See [inference methods](17_benchmarks_statistics.md) for
+offset magnitude. See [inference methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md) for
 domains, representability limits and scientific assumptions.
 
 ## API Index (auto-generated; Methods linkage)

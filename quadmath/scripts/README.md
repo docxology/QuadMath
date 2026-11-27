@@ -13,7 +13,7 @@ model setup and plot composition here; they are not all single-call wrappers.
 | `clean_output.sh` | Remove generated files under `quadmath/output/`, keeping the per-folder `AGENTS.md` and `README.md` | filesystem only | `bash quadmath/scripts/clean_output.sh` |
 | `make_all_figures.py` | Run the 19 generators; atomically write deduplicated paths relative to the configured output root, including isolated `QUADMATH_OUTPUT_DIR` builds | the 19 scripts listed under Pipeline composition (subprocess); `quadmath.tools.atomic_write`; `src/quadmath/paths.py` | `uv run python quadmath/scripts/make_all_figures.py` |
 | `validate_markdown.py` | Check image refs, internal links/anchors, equation-label uniqueness | none (stdlib only) | `uv run python quadmath/scripts/validate_markdown.py` |
-| `generate_glossary.py` | Regenerate `quadmath/markdown/10_symbols_glossary.md` from the `src/` API; `--check` exits 1 when the file is stale and never writes | `src/quadmath/tools/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py [--check]` |
+| `generate_glossary.py` | Regenerate `docs/chapters/10_symbols_glossary.md` from the `src/` API; `--check` exits 1 when the file is stale and never writes | `src/quadmath/tools/glossary_gen.py` | `uv run python quadmath/scripts/generate_glossary.py [--check]` |
 | `information_demo.py` | Actual regression predictions and gradient-Gram spectra; separate constant-metric descent, categorical free energy and discrete path | `src/quadmath/inference/information.py`, `src/quadmath/core/metrics.py`, `src/quadmath/optimize/discrete_variational.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/viz/_common.py` | `uv run --python 3.13 python quadmath/scripts/information_demo.py` |
 | `active_inference_figures.py` | State-aligned four-coefficient regression diagnostics and a valid categorical-simplex face; not a biological agent | `src/quadmath/inference/information.py`, `src/quadmath/viz/_common.py`, `src/quadmath/paths.py` | `uv run --python 3.13 python quadmath/scripts/active_inference_figures.py` |
 | `simplex_animation.py` | Integer Nelder–Mead history, bounded snapshots and the actual final recorded best; slot traces are not persistent vertex identities | `src/quadmath/optimize/nelder_mead_quadray.py`, `src/quadmath/viz/visualize.py`, `src/quadmath/viz/_common.py`, `src/quadmath/core/quadray.py` | `uv run --python 3.13 python quadmath/scripts/simplex_animation.py` |
@@ -99,7 +99,7 @@ historical 0.6.0 wheel.
 The statistical gallery delegates finite means and bootstrap defaults to
 `stats.statistics.sample_mean`; scaling curves share `scaling_fit`'s anchored
 kernel with `scaling_predict`. See the
-[canonical gallery contracts](../markdown/18_stats_gallery.md) rather than
+[canonical gallery contracts](../../docs/chapters/18_stats_gallery.md) rather than
 reconstructing predictions from the reported global intercept.
 
 ### Requirements

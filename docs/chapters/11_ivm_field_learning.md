@@ -260,7 +260,7 @@ weak quadratic bowl and noisy observations at 74 sites. Its saved example
 reports reconstruction MSE 0.0558 versus observation-noise MSE 0.0720. This
 is a synthetic example receipt, not a new run or a general denoising bound:
 
-![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](../output/figures/ivm_field_demo.png)
+![Static IVM field learning on the radius-3 IVM lattice ball (147 sites, shown at their XYZ embedding from the quadray coordinates; axes in embedding units). Panel A: the synthetic ground-truth field — a harmonic linear part plus a weak quadratic bowl — with dot color giving field value on the shared color bar (right). Panel B: the noisy observations at 74 of the 147 sites (seed 12). Panel C: the learned field from Laplacian-regularized kernel-weighted least squares (Eqs. \eqref{eq:ivm-objective}–\eqref{eq:ivm-normal-equations}); reconstruction MSE 0.0558 against observation-noise MSE 0.0720. Reproduce with `quadmath/scripts/ivm_field_demo.py` (`MPLBACKEND=Agg`, seed 12).](../../quadmath/output/figures/ivm_field_demo.png)
 
 ## Cross-References
 

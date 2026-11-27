@@ -214,7 +214,7 @@ Generate with `uv run --python 3.13 python quadmath/scripts/ivm_dynamics_demo.py
 The seeded numerical inputs are reproducible in a fixed environment; this
 is not a promise of identical PNG bytes across scientific-library versions.
 
-![**Dynamics and learning on the 13-site IVM cluster**. Top: symmetric-normalized heat snapshots at \(t=0,20,40\), \(\alpha=0.35\), seed 7, on one color scale; the nonuniform-degree equilibrium is proportional to \(\sqrt{\deg}\), not a homogeneous concentration. Bottom: heat/majority squared norms, coupling-identification MSE and the final integer field. Conservative transport and its constant equilibrium are compared separately in the lattice gallery.](../output/figures/ivm_dynamics_demo.png)
+![**Dynamics and learning on the 13-site IVM cluster**. Top: symmetric-normalized heat snapshots at \(t=0,20,40\), \(\alpha=0.35\), seed 7, on one color scale; the nonuniform-degree equilibrium is proportional to \(\sqrt{\deg}\), not a homogeneous concentration. Bottom: heat/majority squared norms, coupling-identification MSE and the final integer field. Conservative transport and its constant equilibrium are compared separately in the lattice gallery.](../../quadmath/output/figures/ivm_dynamics_demo.png)
 
 ## Reproducibility and test contract
 

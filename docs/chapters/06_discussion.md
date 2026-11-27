@@ -44,4 +44,4 @@ K-FAC is external research on structured curvature approximations, not an implem
 
 ## Community Ecosystem and Validation
 
-The [4dsolutions references](07_resources.md) provide independent implementations and pedagogy. Cross-implementation agreement can be useful evidence only when versions, units, cases, and actual comparisons are recorded. A repository link alone is not a validation result. Likewise, [Lean proofs](../../SPEC.md#73-lean-4-mirror-status) cover the stated integer quotient/metric/volume/bound theorems, not floating solvers, universal shell counts, gameplay, or empirical application claims.
+The [4dsolutions references](07_resources.md) provide independent implementations and pedagogy. Cross-implementation agreement can be useful evidence only when versions, units, cases, and actual comparisons are recorded. A repository link alone is not a validation result. Likewise, [Lean proofs](../specification.md#73-lean-4-mirror-status) cover the stated integer quotient/metric/volume/bound theorems, not floating solvers, universal shell counts, gameplay, or empirical application claims.

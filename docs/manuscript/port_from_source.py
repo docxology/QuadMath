@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Project canonical manuscript chapters and required figure assets into docs/.
 
-The authoritative source is ``quadmath/markdown/``. The port rewrites figure
-and license paths, maps resource/glossary chapters to the template's 99/98
+The authoritative source is ``docs/chapters/``. The port rebases figures and links to canonical public source, maps
+resource/glossary chapters to the template's 99/98
 buckets and copies the closed canonical preamble unchanged. It does not repair
 obsolete source defects or maintain a divergent manuscript.
 
@@ -22,12 +22,19 @@ import runpy
 import shutil
 import sys
 from pathlib import Path
+import posixpath
+import re
+from urllib.parse import quote, unquote, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-SRC = ROOT / "quadmath" / "markdown"
+SRC = ROOT / "docs" / "chapters"
 FIGS = ROOT / "quadmath" / "output" / "figures"
 DST = ROOT / "docs" / "manuscript"
-DST_FIGS = DST / "figures"
+DST_FIGS = ROOT / "docs" / "figures"
+REPOSITORY_BLOB_URL = "https://github.com/docxology/QuadMath/blob/main/"
+LINK_TARGET = re.compile(r"\]\(([^)\s]+)\)")
+CODE = re.compile(r"^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`", re.DOTALL | re.MULTILINE)
+INLINE_TEX = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
 
 RENAMES = {
     "07_resources.md": "99_resources.md",
@@ -88,23 +95,28 @@ FIGURE_NAMES = [
 
 
 def rewrite(text: str) -> str:
-    """Apply the template-layout rewrites to one section's markdown text.
+    """Project figure paths and point document links at canonical public source."""
+    def rewrite_target(match: re.Match[str]) -> str:
+        href = urlsplit(match[1])
+        if href.scheme or href.netloc or not href.path:
+            return match[0]
+        target = posixpath.normpath(f"docs/chapters/{unquote(href.path)}")
+        figure_prefix = "quadmath/output/figures/"
+        if target.startswith(figure_prefix):
+            path = "../figures/" + quote(target.removeprefix(figure_prefix))
+            return f"]({urlunsplit(('', '', path, href.query, href.fragment))})"
+        url = urlsplit(REPOSITORY_BLOB_URL + quote(target))
+        return f"]({urlunsplit((url.scheme, url.netloc, url.path, href.query, href.fragment))})"
 
-    Parameters
-    ----------
-    text : str
-        Raw markdown of a source section.
-
-    Returns
-    -------
-    str
-        Markdown with figure, license and resource/glossary links rewritten.
-    """
-    text = text.replace("](../output/figures/", "](figures/")
-    text = text.replace("](../LICENSE)", "](../../LICENSE)")
-    for old, new in RENAMES.items():
-        text = text.replace(f"]({old}", f"]({new}")
-    return text
+    blocks = []
+    start = 0
+    for code in CODE.finditer(text):
+        prose = LINK_TARGET.sub(rewrite_target, text[start:code.start()])
+        blocks.extend((INLINE_TEX.sub(r"$\1$", prose), code[0]))
+        start = code.end()
+    prose = LINK_TARGET.sub(rewrite_target, text[start:])
+    blocks.append(INLINE_TEX.sub(r"$\1$", prose))
+    return "".join(blocks)
 
 
 def port(figures_dir: Path = FIGS) -> None:
@@ -119,7 +131,8 @@ def port(figures_dir: Path = FIGS) -> None:
         src, dst = figures_dir / name, DST_FIGS / name
         if not src.is_file():
             raise FileNotFoundError(f"missing figure in source tree: {src}")
-        shutil.copyfile(src, dst)
+        if not dst.exists() or not src.samefile(dst):
+            shutil.copyfile(src, dst)
 
     for name in SECTIONS:
         text = (SRC / name).read_text(encoding="utf-8")

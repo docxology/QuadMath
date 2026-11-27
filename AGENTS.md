@@ -7,14 +7,14 @@
 - `tests/unit/`: library behavior/resource regressions; `tests/tools/`:
   checkout-orchestration regressions.
 - `quadmath/scripts/`: thin example/generation and manuscript/PDF orchestration.
-- `quadmath/markdown/`: canonical mathematical chapters. Preserve explicit
+- `docs/chapters/`: canonical mathematical chapters. Preserve explicit
   equation/code anchors; regenerate only the marked API-glossary block.
 - `docs/`: operational guides; `docs/manuscript/` is a scripted projection,
   not a second source of mathematical prose or hand-edited figures.
 - `quadmath/output/`: generated, partly tracked and possibly user-modified.
 - `lean/`: independent handwritten Lean models, not Python extraction.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md), [WORKFLOW.md](WORKFLOW.md) and the
+See [ARCHITECTURE.md](docs/architecture.md), [WORKFLOW.md](docs/workflow.md) and the
 [documentation index](docs/README.md). Scoped `AGENTS.md` refine local guidance.
 
 ## Before Making Changes
@@ -33,8 +33,8 @@ Do not mutate Git branches, tags or generated release artifacts unless assigned.
 - Preserve exact integer/rational arithmetic until the declared floating boundary.
   Physical gauge classes are rank three; raw four-tuples need not compare equal
   merely because their physical positions coincide.
-- Refer to [SPEC.md](SPEC.md) and canonical
-  [methods](quadmath/markdown/03_quadray_methods.md) for embedding and volume
+- Refer to [SPEC.md](docs/specification.md) and canonical
+  [methods](docs/chapters/03_quadray_methods.md) for embedding and volume
   contracts. Native volume may be `Fraction`; do not infer integrality from a name.
 - Give public methods accurate annotations and docstrings, including units,
   gauge, shapes, errors and ownership of returned resources.
@@ -53,7 +53,7 @@ that only pin wording, test counts, default spellings or source text.
 The branch-enabled coverage floor is a configured aggregate integration gate,
 not proof of universal correctness or a current measured result.
 
-## Documentation Standards (`quadmath/markdown/` and `docs/`)
+## Documentation Standards (`docs/chapters/` and `docs/`)
 
 Canonical chapters own mathematical explanations; operational guides link there.
 Keep module recipes source-accurate and self-contained, distinguish validation
@@ -89,7 +89,7 @@ For isolated Python rendering, set `QUADMATH_OUTPUT_DIR` to a fresh external
 root and use a specific generator. **This does not redirect the shell PDF
 renderer or cleanup script.** PDF builds update checkout outputs and the
 canonical API glossary; use an isolated checkout when needed. Full commands
-and dependencies are in [WORKFLOW.md](WORKFLOW.md).
+and dependencies are in [WORKFLOW.md](docs/workflow.md).
 
 ## Quality Gates and Handoff
 

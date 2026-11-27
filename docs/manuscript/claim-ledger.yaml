@@ -1,0 +1,19 @@
+# Numeric claims in strict table, figure and result contexts.
+# Values refer to the declared units, retained receipt or formula below.
+claims:
+  - {claim_id: rhombic-dodecahedron-ivm-volume, value: 6, artifact_path: src/quadmath/viz/vis_polyhedra.py}
+  - {claim_id: cuboctahedron-ivm-volume, value: 20, artifact_path: src/quadmath/viz/vis_polyhedra.py}
+  - {claim_id: cuboctahedron-shell-size, value: 12, artifact_path: src/quadmath/core/examples.py}
+  - {claim_id: truncated-octahedron-vertex-count, value: 24, artifact_path: src/quadmath/viz/vis_polyhedra.py}
+  - {claim_id: truncated-octahedron-hexagonal-face-count, value: 8, artifact_path: src/quadmath/viz/vis_polyhedra.py}
+  - {claim_id: truncated-octahedron-ivm-volume, value: 96, artifact_path: src/quadmath/viz/vis_polyhedra.py}
+  - {claim_id: regression-sample-count, value: 200, artifact_path: quadmath/output/data/fisher_information_matrix.npz}
+  - {claim_id: regression-generating-second-coefficient, value: -2, artifact_path: quadmath/output/data/fisher_information_matrix.npz}
+  - {claim_id: regression-generating-noise-sigma, value: 0.1, artifact_path: quadmath/scripts/information_demo.py}
+  - {claim_id: regression-estimate-first-coefficient, value: 0.3, artifact_path: quadmath/output/data/fisher_information_matrix.npz}
+  - {claim_id: regression-estimate-second-coefficient, value: -1.2, artifact_path: quadmath/output/data/fisher_information_matrix.npz}
+  - {claim_id: simplex-final-objective-rounded, value: 0.6, artifact_path: quadmath/output/data/simplex_trace.csv}
+  - {claim_id: s3-squared-numerator, value: 9, artifact_path: src/quadmath/core/cayley_menger.py}
+  - {claim_id: s3-squared-denominator, value: 8, artifact_path: src/quadmath/core/cayley_menger.py}
+  - {claim_id: cayley-menger-volume-squared-factor, value: 288, artifact_path: src/quadmath/core/cayley_menger.py}
+  - {claim_id: tetrahedral-basis-cosine-numerator, value: -1, artifact_path: tests/unit/core/test_quadray.py}

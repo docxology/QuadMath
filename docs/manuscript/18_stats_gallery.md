@@ -2,14 +2,14 @@
 
 ## Reusable axes primitives and explicitly synthetic examples
 
-[The statistical graphics module](../../src/quadmath/viz/vis_stats.py) owns
+[The statistical graphics module](https://github.com/docxology/QuadMath/blob/main/src/quadmath/viz/vis_stats.py) owns
 `plot_latency_hist`, `plot_scaling_loglog`, `plot_ci_bars` and `plot_ecdf`.
 Each accepts nonempty, real, finite one-dimensional data. Caller axes remain
 caller-owned. Without axes, a successful call transfers its new figure to the
 caller; a drawing failure closes only a figure created by that call. Invalid
 data is rejected before allocating a figure.
 
-[The gallery entry point](../../quadmath/scripts/stats_gallery.py) selects seed 32 and prints
+[The gallery entry point](https://github.com/docxology/QuadMath/blob/main/quadmath/scripts/stats_gallery.py) selects seed 32 and prints
 four output paths for the manuscript manifest. Its examples are generated data,
 **not measurements of package routines or evidence of a performance advantage**.
 The composer reuses the shared statistical fit and bootstrap methods rather
@@ -19,7 +19,7 @@ than inventing confidence widths.
 
 `plot_latency_hist(times, ax=None, *, bins=20, title=...)` displays sample counts
 and their mean. Units belong to the caller: a measured sample from
-[`time_callable`](17_benchmarks_statistics.md) is in seconds, but arbitrary
+[`time_callable`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md) is in seconds, but arbitrary
 numbers do not become timings merely by being plotted.
 
 The gallery uses 256 seeded lognormal draws with log mean 0 and log standard
@@ -28,12 +28,12 @@ deviation 0.6, clipped to `[0.05, 5.0]`. Its axis explicitly calls these
 summation, with exact represented-value accumulation only if the intermediate
 sum overflows; it preserves cancellation residuals as well as finite means.
 
-![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](figures/stats_gallery_latency.png)
+![**Seeded synthetic latency counts.** The histogram and dashed sample mean describe generated clipped-lognormal values, not observed routine timings. The ECDF below uses the same sample.](../figures/stats_gallery_latency.png)
 
 ## Shared log-space regression without overflowing intermediate powers
 
 `plot_scaling_loglog(sizes, times, ax=None, *, title=...)` delegates to
-[`scaling_fit` and `scaling_predict`](17_benchmarks_statistics.md) for a shared
+[`scaling_fit` and `scaling_predict`](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md) for a shared
 ordinary least-squares model. Sizes and times must align and be positive,
 finite vectors with at least two distinct represented sizes. The kernel
 centers/scales log ratios relative to a paired observation at the maximum
@@ -52,7 +52,7 @@ The example uses sizes `{8,16,32,64,128,256}` and a planted power law
 $t = 3 n^{1.35}(1+\varepsilon)$ with seeded 2% normal relative noise. It is an
 illustration, not a measurement or proof of an algorithm's asymptotic complexity.
 
-![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared anchored fit avoids an underflowed coefficient multiplied by an overflowing power or cancellation through a global intercept.](figures/stats_gallery_scaling.png)
+![**Synthetic power-law fit with planted exponent 1.35.** The data and fitted curve have explicitly synthetic units. The shared anchored fit avoids an underflowed coefficient multiplied by an overflowing power or cancellation through a global intercept.](../figures/stats_gallery_scaling.png)
 
 ## Computed bootstrap intervals and independent point estimates
 
@@ -73,9 +73,9 @@ not a guarantee about one realization. These are not timings for API-name labels
 
 Overlap of two individual intervals is not equivalent to a specified test of
 their difference. Sampling design, dependence and the comparison target matter;
-see [statistical methods and assumptions](17_benchmarks_statistics.md).
+see [statistical methods and assumptions](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md).
 
-![**Calculated intervals for three synthetic sample means.** The labels report sample sizes, bounds come from percentile-bootstrap inference, and the dotted reference marks the known generating mean. Neither interval width nor overlap establishes performance or a hypothesis-test result.](figures/stats_gallery_ci.png)
+![**Calculated intervals for three synthetic sample means.** The labels report sample sizes, bounds come from percentile-bootstrap inference, and the dotted reference marks the known generating mean. Neither interval width nor overlap establishes performance or a hypothesis-test result.](../figures/stats_gallery_ci.png)
 
 ## Right-continuous ECDF jumps, ties, and singleton observations
 
@@ -94,7 +94,7 @@ interpolation between probability jumps, or future-latency guarantee is inferred
 NumPy's interpolated percentile summaries need not coincide with inverse-step
 quantiles.
 
-![**Empirical distribution of the same synthetic latency sample.** Combined tied observations retain their empirical mass, and the first jump begins at zero. The plotted sample fractions are not a guarantee for later observations.](figures/stats_gallery_ecdf.png)
+![**Empirical distribution of the same synthetic latency sample.** Combined tied observations retain their empirical mass, and the first jump begins at zero. The plotted sample fractions are not a guarantee for later observations.](../figures/stats_gallery_ecdf.png)
 
 ## Reproducing numerical inputs and checking observable behavior
 
@@ -118,7 +118,7 @@ Regression coverage targets actual histogram counts, interval geometry,
 extreme-size fitted predictions, tied/singleton ECDFs, input boundaries and
 figure ownership, not incidental wording or copied filename inventories.
 
-[Benchmark and inference methods](17_benchmarks_statistics.md) own numerical
-assumptions. [The lattice gallery](16_lattice_gallery.md) owns coordinate/field
-visualizations. [Figure orchestration](../../quadmath/scripts/README.md) owns output and
+[Benchmark and inference methods](https://github.com/docxology/QuadMath/blob/main/docs/chapters/17_benchmarks_statistics.md) own numerical
+assumptions. [The lattice gallery](https://github.com/docxology/QuadMath/blob/main/docs/chapters/16_lattice_gallery.md) owns coordinate/field
+visualizations. [Figure orchestration](https://github.com/docxology/QuadMath/blob/main/quadmath/scripts/README.md) owns output and
 manifest conventions; Python output redirection is not a shell-PDF build sandbox.

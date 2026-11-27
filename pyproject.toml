@@ -41,4 +41,4 @@ build-backend = "hatchling.build"
 packages = ["src/quadmath"]
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/quadmath/output/**", "/docs/manuscript/figures/**"]
+exclude = ["/quadmath/output/**", "/docs/figures/**"]

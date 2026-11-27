@@ -4,7 +4,7 @@
 
 | Tree | Role | Update path |
 |---|---|---|
-| [`quadmath/markdown/`](../quadmath/markdown/01_introduction.md) | Authoritative preamble, chapters, equations, captions and API glossary | Edit authored chapters; regenerate the glossary |
+| [`docs/chapters/`](chapters/01_introduction.md) | Authoritative preamble, chapters, equations, captions and API glossary | Edit authored chapters; regenerate the glossary |
 | [`docs/manuscript/`](manuscript/config.yaml) | Generated template-layout projection and copied figures | Run [`port_from_source.py`](manuscript/port_from_source.py); do not hand-edit projected chapters |
 | `quadmath/output/` or `QUADMATH_OUTPUT_DIR` | Generated Python figure/data artifacts | Run the registered figure generators |
 | `quadmath/output/pdf/`, `quadmath/output/tex/` | Local shell renderer's publications | Run [`render_pdf.sh`](../quadmath/scripts/render_pdf.sh) with its real media/TeX prerequisites |
@@ -75,3 +75,45 @@ GitHub release assets identify their own archived versions. Neither their page
 counts nor old render/test statistics describe a changed `main` checkout.
 Current release and verification boundaries are in the [changelog](../CHANGELOG.md)
 and [suite guide](https://github.com/docxology/symergetics/blob/main/docs/synergetics-suite.md).
+
+## Render the pinned Template editions
+
+Use Git, Python 3.13 for the QuadMath fixture, the pinned Template
+environment, Pandoc 3.14 and its compatible pandoc-crossref, XeLaTeX,
+BibTeX, and Poppler. This workflow renders the manuscript projection with
+its committed figures and a fresh geometry evidence record. The published
+archives and the independent local shell recipe retain their own provenance.
+
+Run from a clean QuadMath checkout.
+
+```bash
+set -e
+source_checkout="$(pwd -P)"
+source_commit="$(git rev-parse HEAD)"
+scratch="$(mktemp -d)"
+renderer="$scratch/template"
+git clone https://github.com/docxology/template.git "$renderer"
+git -C "$renderer" checkout --detach 87704feae0a4490ef7dad9c931d268e8c30273c2
+mkdir -p "$renderer/projects/working"
+git clone "$source_checkout" "$renderer/projects/working/QuadMath"
+cd "$renderer/projects/working/QuadMath"
+git checkout --detach "$source_commit"
+printf '\n/output/\n' >> .git/info/exclude
+
+uv run --frozen --python 3.13 python quadmath/scripts/validate_markdown.py --strict
+uv run --frozen --python 3.13 python docs/development/check_links.py .
+uv run --frozen --python 3.13 python docs/manuscript/geometry_evidence.py
+mkdir -p output/figures
+cp docs/figures/*.png output/figures/
+
+cd "$renderer"
+uv sync --locked
+uv run --no-sync python scripts/pipeline/stage_03_render.py --project working/QuadMath
+uv run --no-sync python scripts/pipeline/stage_04_validate.py --project working/QuadMath
+printf '%s\n' "$renderer/projects/working/QuadMath/output"
+```
+
+The combined PDF is `pdf/QuadMath_combined.pdf` and the combined HTML
+entry is `web/index.html` under that output directory. The geometry receipt
+is `data/tetra-volume-fixture.json`. Render and validation reports are
+in `reports/`.

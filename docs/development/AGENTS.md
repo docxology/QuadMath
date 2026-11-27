@@ -2,7 +2,7 @@
 
 `README.md` explains integration checks; `check_links.py` implements a Markdown
 link checker. Follow [root rules](../../AGENTS.md), [docs ownership](../AGENTS.md)
-and [the workflow](../../WORKFLOW.md).
+and [the workflow](../workflow.md).
 
 ## Documentation responsibilities
 
